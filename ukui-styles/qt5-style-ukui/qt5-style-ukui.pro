@@ -1,19 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2020-01-02T08:39:47
+# Project created by QtCreator 2020-01-03T19:31:51
 #
 #-------------------------------------------------
 
-QT       += widgets KWindowSystem
+QT       += widgets
 
-TARGET = ukui-proxy-style
+TARGET = qt5-style-ukui
 TEMPLATE = lib
-CONFIG += plugin c++11 link_pkgconfig
-PKGCONFIG += gsettings-qt
-
-include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
-
-DEFINES += PROXYSTYLE_LIBRARY
+CONFIG += plugin
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -27,20 +22,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        proxy-style.cpp \
-    proxy-style-plugin.cpp \
-    blur-helper.cpp
+        qt5-ukui-style-plugin.cpp
 
 HEADERS += \
-        proxy-style.h \
-        proxy-style_global.h \ 
-    proxy-style-plugin.h \
-    blur-helper.h
+        qt5-ukui-style-plugin.h
+DISTFILES += qt5-style-ukui.json 
 
 unix {
     target.path = $$[QT_INSTALL_PLUGINS]/styles
     INSTALLS += target
 }
-
-DISTFILES += \
-    ukui-style.json

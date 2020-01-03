@@ -1,9 +1,14 @@
 <schemalist>
     <schema id="org.ukui.style" path="/org/ukui/style/" gettext-domain="style">
+        <key type="s" name="style-name">
+            <default>"ukui-white"</default>
+            <summary>Current Qt Style</summary>
+            <description>Set default style for UKUI desktop environment.</description>
+        </key>
         <key type="s" name="icon-theme-name">
             <default>"ukui-icon-theme-default"</default>
-            <summary>Icon Theme for Qt Applications</summary>
-            <description>Icon Theme for Qt Applications</description>
+            <summary>Icon Theme for Qt Applications.</summary>
+            <description>Icon Theme for Qt Applications.</description>
         </key>
         <key type="b" name="enabled-global-blur">
             <default>true</default>
@@ -25,7 +30,7 @@
         </key>
         <key type="s" name="blur-exception-classes">
             <default>"[]"</default>
-            <summary>a list of QWidget based classes do not blur</summary>
+            <summary>a list of QWidget based classes do not blur.</summary>
             <description>Example: [QWidget, QWidget1, QWidget2]</description>
         </key>
     </schema>
