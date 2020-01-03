@@ -11,6 +11,8 @@ TEMPLATE = lib
 CONFIG += plugin c++11 link_pkgconfig
 PKGCONFIG += gsettings-qt
 
+include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
+
 DEFINES += PROXYSTYLE_LIBRARY
 
 # The following define makes your compiler emit warnings if you use

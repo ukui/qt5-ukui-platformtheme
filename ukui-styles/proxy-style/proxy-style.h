@@ -3,7 +3,6 @@
 
 #include "proxy-style_global.h"
 #include <QProxyStyle>
-#include <QGSettings>
 
 class BlurHelper;
 

@@ -1,5 +1,10 @@
 <schemalist>
     <schema id="org.ukui.style" path="/org/ukui/style/" gettext-domain="style">
+        <key type="s" name="icon-theme-name">
+            <default>"ukui-icon-theme-default"</default>
+            <summary>Icon Theme for Qt Applications</summary>
+            <description>Icon Theme for Qt Applications</description>
+        </key>
         <key type="b" name="enabled-global-blur">
             <default>true</default>
             <summary>Enable Window Blur Effects.</summary>

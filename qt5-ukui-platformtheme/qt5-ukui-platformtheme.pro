@@ -9,6 +9,10 @@ QT       += widgets dbus gui-private
 TARGET = qt5-ukui-platformtheme
 TEMPLATE = lib
 CONFIG += plugin
+CONFIG += c++11 link_pkgconfig
+PKGCONFIG += gsettings-qt
+
+include(../libqt5-ukui-style/libqt5-ukui-style.pri)
 
 DEFINES += QT5UKUIPLATFORMTHEME_LIBRARY
 

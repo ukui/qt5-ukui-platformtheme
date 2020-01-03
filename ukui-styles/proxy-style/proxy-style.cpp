@@ -1,14 +1,12 @@
 #include "proxy-style.h"
 #include <QWidget>
-#include <QMainWindow>
-#include <QWindow>
 #include "blur-helper.h"
 
 #include <QDebug>
 
 using namespace UKUI;
 
-ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "breeze": key)
+ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusion": key)
 {
     m_blur_helper = new BlurHelper;
 }

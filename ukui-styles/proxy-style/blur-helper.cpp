@@ -1,19 +1,21 @@
 #include "blur-helper.h"
+#include "ukui-style-settings.h"
 #include <QWidget>
 #include <KWindowEffects>
 #include <QGSettings>
 #include <QVariant>
 #include <QEvent>
+#include <QIcon>
 
 #include <QDebug>
 
 BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 {
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
-        auto settings = new QGSettings("org.ukui.style", "/org/ukui/style/", this);
+        auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
-            if (key == "enabled-blur") {
-                bool enable = settings->get("enable-blur").toBool();
+            if (key == "enabled-global-blur") {
+                bool enable = settings->get("enable-global-blur").toBool();
                 this->onBlurEnableChanged(enable);
             }
         });
