@@ -14,12 +14,19 @@ qt5-ukui's route brings us closer to the upstream community. It is not a divisio
 - qt5-default
 - libkf5windowsystem-dev
 - libgsettings-qt-dev
+- libglib2.0-dev
 
 ### Test
 To test the project, you should first install it into system and make sure that the current qpa platform is ukui.
 You can export the QT_QPA_PLATFORMTHEME in terminal.
 
 > export QT_QPA_PLATFORMTHEME=ukui
+
+One more important job,
+
+> sudo glib-compile-schemas /usr/share/glib-2.0/schemas
+
+That will let the gsettings used by qt5-ukui worked.
 
 Then you can run the test in project, or run any qt5 program for testing with ukui platformtheme.
 
