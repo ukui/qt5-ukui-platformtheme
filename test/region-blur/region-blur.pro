@@ -1,17 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2020-01-02T08:39:47
+# Project created by QtCreator 2020-01-03T10:58:54
 #
 #-------------------------------------------------
 
-QT       += widgets KWindowSystem
+QT       += core gui
 
-TARGET = ukui-style
-TEMPLATE = lib
-CONFIG += plugin c++11 link_pkgconfig
-PKGCONFIG += gsettings-qt
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-DEFINES += PROXYSTYLE_LIBRARY
+TARGET = region-blur
+TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -24,21 +22,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += c++11
+
 SOURCES += \
-        proxy-style.cpp \
-    proxy-style-plugin.cpp \
-    blur-helper.cpp
+        main.cpp \
+        mainwindow.cpp
 
 HEADERS += \
-        proxy-style.h \
-        proxy-style_global.h \ 
-    proxy-style-plugin.h \
-    blur-helper.h
+        mainwindow.h
 
-unix {
-    target.path = $$[QT_INSTALL_PLUGINS]/styles
-    INSTALLS += target
-}
-
-DISTFILES += \
-    ukui-style.json
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
