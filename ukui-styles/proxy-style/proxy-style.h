@@ -37,6 +37,11 @@ public:
     void polish(QWidget *widget);
     void unpolish(QWidget *widget);
 
+    void drawPrimitive(QStyle::PrimitiveElement element,
+                       const QStyleOption *option,
+                       QPainter *painter,
+                       const QWidget *widget = nullptr) const;
+
 private:
     BlurHelper *m_blur_helper;
 };

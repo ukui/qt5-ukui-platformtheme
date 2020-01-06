@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>50</y>
+      <y>10</y>
       <width>171</width>
       <height>31</height>
      </rect>
@@ -28,7 +28,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>120</y>
+      <y>80</y>
       <width>171</width>
       <height>31</height>
      </rect>
@@ -38,7 +38,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>50</y>
+      <y>10</y>
       <width>72</width>
       <height>24</height>
      </rect>
@@ -51,13 +51,39 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>120</y>
+      <y>80</y>
       <width>72</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
      <string>icon</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>150</y>
+      <width>160</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>140</y>
+      <width>121</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>menu opacity</string>
     </property>
    </widget>
   </widget>

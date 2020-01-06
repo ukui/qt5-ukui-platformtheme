@@ -16,7 +16,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
     Q_UNUSED(args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
-        qDebug()<<"set icon theme"<<settings->get("icon-theme-name").toString();
         //QIcon::setThemeName(settings->get("icon-theme-name").toString());
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             qDebug()<<key<<"changed";

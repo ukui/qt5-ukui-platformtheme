@@ -20,6 +20,8 @@ private slots:
 
     void on_comboBox_2_currentIndexChanged(const QString &arg1);
 
+    void on_horizontalSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 };

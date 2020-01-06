@@ -6,6 +6,9 @@
 #include <QStringListModel>
 #include <QGSettings>
 
+bool init_style = false;
+bool init_icon_theme = false;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -35,6 +38,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {
+    if (!init_style) {
+        init_style = true;
+        return;
+    }
     //change style
     QGSettings settings("org.ukui.style", "/org/ukui/style/");
     settings.set("styleName", arg1);
@@ -42,7 +49,17 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_comboBox_2_currentIndexChanged(const QString &arg1)
 {
+    if (!init_icon_theme) {
+        init_icon_theme = true;
+        return;
+    }
     //change icon theme
     QGSettings settings("org.ukui.style", "/org/ukui/style/");
     settings.set("iconThemeName", arg1);
+}
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    QGSettings settings("org.ukui.style", "/org/ukui/style/");
+    settings.set("menuTransparency", value);
 }

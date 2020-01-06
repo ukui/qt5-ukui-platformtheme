@@ -17,6 +17,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    QString m_current_style_name;
 };
 
 }

@@ -3,7 +3,6 @@
 
 #include <QStylePlugin>
 
-
 class Qt5UKUIStylePlugin : public QStylePlugin
 {
     Q_OBJECT
