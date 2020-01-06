@@ -3,6 +3,9 @@
 #include "qt5-ukui-platform-theme.h"
 #include "ukui-style-settings.h"
 
+#include <QFontDatabase>
+#include <QApplication>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QFileInfo>
 #include <QIcon>
@@ -16,12 +19,41 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
     Q_UNUSED(args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
+
+        //set font
+        auto font = QApplication::font();
+        auto fontName = settings->get("systemFont").toString();
+        auto fontSize = settings->get("systemFontSize").toInt();
+        font.setFamily(fontName);
+        font.setPixelSize(fontSize);
+        QApplication::setFont(font);
+
         //QIcon::setThemeName(settings->get("icon-theme-name").toString());
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             qDebug()<<key<<"changed";
             if (key == "iconThemeName") {
                 qDebug()<<"icon theme changed";
                 QIcon::setThemeName(settings->get("icon-theme-name").toString());
+            }
+            if (key == "systemFont") {
+                QString font = settings->get("system-font").toString();
+                QFontDatabase db;
+                if (db.families().contains(font)) {
+                    auto oldFont = QApplication::font();
+                    oldFont.setFamily(font);
+                    QApplication::setFont(oldFont);
+                }
+            }
+            if (key == "systemFontSize") {
+                int fontSize = settings->get("system-font-size").toInt();
+                QFontDatabase db;
+                if (fontSize > 0) {
+                    auto oldFont = QApplication::font();
+                    qDebug()<<"set"<<fontSize;
+                    //oldFont.setWeight(fontSize);
+                    oldFont.setPixelSize(fontSize);
+                    QApplication::setFont(oldFont);
+                }
             }
         });
     }

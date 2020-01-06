@@ -5,9 +5,12 @@
 #include <QDir>
 #include <QStringListModel>
 #include <QGSettings>
+#include <QFontDatabase>
 
 bool init_style = false;
 bool init_icon_theme = false;
+bool init_system_font = false;
+bool init_system_font_size = false;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,6 +32,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringListModel *icon_theme_model = new QStringListModel(iconThemes, this);
     ui->comboBox_2->setModel(icon_theme_model);
     ui->comboBox_2->setCurrentText(currentIconTheme);
+
+    QFontDatabase db;
+    QStringListModel *fonts_model = new QStringListModel(db.families(), this);
+    ui->comboBox_3->setModel(fonts_model);
+    ui->comboBox_3->setCurrentText(settings.get("systemFont").toString());
+
+    ui->spinBox->setValue(settings.get("systemFontSize").toInt());
 }
 
 MainWindow::~MainWindow()
@@ -62,4 +72,24 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
     QGSettings settings("org.ukui.style", "/org/ukui/style/");
     settings.set("menuTransparency", value);
+}
+
+void MainWindow::on_comboBox_3_currentTextChanged(const QString &arg1)
+{
+    if (!init_system_font) {
+        init_system_font = true;
+        return;
+    }
+    QGSettings settings("org.ukui.style", "/org/ukui/style/");
+    settings.set("systemFont", arg1);
+}
+
+void MainWindow::on_spinBox_valueChanged(int arg1)
+{
+    if (!init_system_font_size) {
+        init_system_font_size = true;
+        return;
+    }
+    QGSettings settings("org.ukui.style", "/org/ukui/style/");
+    settings.set("systemFontSize", arg1);
 }

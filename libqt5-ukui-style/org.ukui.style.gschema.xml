@@ -10,6 +10,16 @@
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.</description>
         </key>
+        <key type="s" name="system-font">
+            <default>""</default>
+            <summary>System Font for Qt Applications.</summary>
+            <description>System Font for Qt Applications.</description>
+        </key>
+        <key type="i" name="system-font-size">
+            <default>11</default>
+            <summary>System Font Size for Qt Applications.</summary>
+            <description>System Font Size for Qt Applications.</description>
+        </key>
         <key type="b" name="enabled-global-blur">
             <default>true</default>
             <summary>Enable Window Blur Effects.</summary>
