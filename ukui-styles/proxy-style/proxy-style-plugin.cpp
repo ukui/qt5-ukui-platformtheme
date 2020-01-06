@@ -26,6 +26,7 @@ ProxyStylePlugin::ProxyStylePlugin()
                     styleName = "fusion";
                 }
                 QApplication::setStyle(new ProxyStyle(styleName));
+                m_current_style_name = styleName;
             }
         });
     }
