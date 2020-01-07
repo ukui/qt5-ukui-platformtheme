@@ -80,6 +80,14 @@ void MainWindow::on_comboBox_3_currentTextChanged(const QString &arg1)
         init_system_font = true;
         return;
     }
+
+    bool enableMenuSettings = true;
+    if (arg1 != "ukui-white" || arg1 != "ukui-black") {
+        enableMenuSettings = false;
+    }
+
+    ui->horizontalSlider->setEnabled(enableMenuSettings);
+
     QGSettings settings("org.ukui.style", "/org/ukui/style/");
     settings.set("systemFont", arg1);
 }
