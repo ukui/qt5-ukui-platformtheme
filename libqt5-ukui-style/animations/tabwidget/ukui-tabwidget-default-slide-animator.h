@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariantAnimation>
+#include <QStackedWidget>
 #include "ukui-tabwidget-animator-iface.h"
 
 #include <QPixmap>
@@ -25,14 +26,20 @@ public:
 protected:
     void watchSubPage(QWidget *w);
 
+    bool filterTabWidget(QObject *obj, QEvent *e);
+    bool filterStackedWidget(QObject *obj, QEvent *e);
+    bool filterSubPage(QObject *obj, QEvent *e);
+    bool filterTmpPage(QObject *obj, QEvent *e);
+
 private:
     QTabWidget *m_bound_widget = nullptr;
+    QStackedWidget *m_stack = nullptr;
     QList<QWidget *> m_children;
 
     QPixmap m_previous_pixmap;
     QPixmap m_next_pixmap;
 
-    bool m_window_hidden = false;
+    QWidget *m_tmp_page = nullptr;
 };
 
 }

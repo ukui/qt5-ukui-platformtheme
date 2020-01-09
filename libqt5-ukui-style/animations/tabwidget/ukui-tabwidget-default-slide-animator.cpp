@@ -8,6 +8,8 @@
 
 #include <QPainter>
 
+#include <QTimer>
+
 #include <QDebug>
 
 using namespace UKUI::TabWidget;
@@ -24,24 +26,45 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
     if (w) {
         m_bound_widget = w;
 
+        //watch tab widget
+        w->installEventFilter(this);
+
+        m_tmp_page = new QWidget;
+        //watch tmp page;
+        m_tmp_page->installEventFilter(this);
+
         for (auto child : w->children()) {
-            if (!child)
-                continue;
             if (child->objectName() == "qt_tabwidget_stackedwidget") {
-                QStackedWidget *stack = qobject_cast<QStackedWidget *>(child);
-                for (int i = 0; i < stack->count(); i++) {
-                    watchSubPage(stack->widget(i));
-                    m_children<<stack->widget(i);
-                }
-
-                //FIXME: listen child widget add/remove
-                child->installEventFilter(this);
-
+                auto stack = qobject_cast<QStackedWidget *>(child);
+                m_stack = stack;
+                //watch stack widget
+                m_stack->installEventFilter(this);
+                stack->addWidget(m_tmp_page);
                 break;
             }
         }
 
-        m_window_hidden = w->isVisible();
+        for (int i = 0; i < w->count(); i++) {
+            //watch sub page
+            watchSubPage(w->widget(i));
+        }
+
+        connect(w, &QTabWidget::currentChanged, w, [=](int index){
+            qDebug()<<w->currentIndex();
+            qDebug()<<index;
+
+            m_next_pixmap = m_bound_widget->currentWidget()->grab();
+            m_next_pixmap.save("next.png");
+            m_tmp_page->raise();
+            m_tmp_page->show();
+        });
+
+        //we should wait a while so that we can grab current widget
+        //correctly.
+        QTimer::singleShot(1, w, [=](){
+            m_previous_pixmap = w->currentWidget()->grab();
+        });
+
         return true;
     }
     return false;
@@ -50,11 +73,13 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 bool DefaultSlideAnimator::unboundTabWidget()
 {
     if (m_bound_widget) {
-        m_bound_widget->removeEventFilter(this);
-        for (auto child : m_bound_widget->children()) {
-            if (child)
-                child->removeEventFilter(this);
+        for (auto w : m_bound_widget->children()) {
+            w->removeEventFilter(this);
         }
+
+        m_tmp_page->removeEventFilter(this);
+        m_tmp_page->deleteLater();
+        m_tmp_page = nullptr;
         return true;
     }
     return false;
@@ -62,64 +87,66 @@ bool DefaultSlideAnimator::unboundTabWidget()
 
 bool DefaultSlideAnimator::eventFilter(QObject *obj, QEvent *e)
 {
-    //qDebug()<<"event"<<obj<<e->type();
-    if (obj->objectName() == "qt_tabwidget_stackedwidget") {
-        switch (e->type()) {
-        case QEvent::ChildAdded:
-        case QEvent::ChildRemoved: {
-            auto event = static_cast<QChildEvent *>(e);
-            qDebug()<<"is added"<<event->added()<<event->child();
-            //refresh?
-            //dynamicly add/remove?
-            this->unboundTabWidget();
-            this->bindTabWidget(m_bound_widget);
-            break;
-        }
-        case QEvent::Hide: {
-            m_window_hidden = true;
-            break;
-        }
-        case QEvent::Show: {
-            m_window_hidden = false;
-            break;
-        }
-        default:
-            return false;
-        }
+    if (obj == m_tmp_page) {
+        return filterTmpPage(obj, e);
     }
+    if (obj == m_stack) {
+        return filterStackedWidget(obj, e);
+    }
+    if (obj == m_bound_widget) {
+        return filterTabWidget(obj, e);
+    }
+    return filterSubPage(obj, e);
+}
 
+void DefaultSlideAnimator::watchSubPage(QWidget *w)
+{
+    w->installEventFilter(this);
+}
+
+bool DefaultSlideAnimator::filterTabWidget(QObject *obj, QEvent *e)
+{
+    return false;
+}
+
+bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
+{
+    return false;
+}
+
+bool DefaultSlideAnimator::filterSubPage(QObject *obj, QEvent *e)
+{
     switch (e->type()) {
-    case QEvent::Hide: {
-        this->stop();
-
-        QWidget *w = qobject_cast<QWidget *>(obj);
-        m_previous_pixmap = w->grab();
-        break;
-    }
     case QEvent::Show: {
-        //if (m_window_hidden)
-        //    break;
-
-        if (m_previous_pixmap.isNull()) {
-            break;
-        }
-
-        QWidget *w = qobject_cast<QWidget *>(obj);
-        if (w->size() != m_previous_pixmap.size()) {
-            w->resize(m_previous_pixmap.size());
-        }
-        m_next_pixmap = w->grab();
-
-        qDebug()<<"start animate";
         this->start();
-        w->update();
-        break;
+        return false;
+    }
+    case QEvent::Hide: {
+        if (!m_next_pixmap.isNull())
+            m_previous_pixmap = m_next_pixmap;
+        this->stop();
+        return false;
+    }
+    case QEvent::Resize: {
+        this->stop();
+        m_previous_pixmap.detach();
+        m_next_pixmap.detach();
+        return false;
+    }
+    default:
+        return false;
+    }
+}
+
+bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
+{
+    switch (e->type()) {
+    case QEvent::Show: {
+        return false;
     }
     case QEvent::Paint: {
-        //qDebug()<<"paint";
         QWidget *w = qobject_cast<QWidget *>(obj);
         if (this->state() == QAbstractAnimation::Running) {
-            //qDebug()<<this->state()<<"paint";
             QPainter p(w);
             auto value = this->currentValue().toDouble();
             p.setRenderHints(QPainter::Antialiasing);
@@ -148,20 +175,13 @@ bool DefaultSlideAnimator::eventFilter(QObject *obj, QEvent *e)
             //our custom pixmap.
             return true;
         }
-        break;
-    }
-    case QEvent::Resize: {
-        this->stop();
-        break;
+        qDebug()<<"hide";
+        m_tmp_page->hide();
+        m_stack->stackUnder(m_tmp_page);
+        m_previous_pixmap = m_next_pixmap;
+        return false;
     }
     default:
-        break;
+        return false;
     }
-
-    return false;
-}
-
-void DefaultSlideAnimator::watchSubPage(QWidget *w)
-{
-    w->installEventFilter(this);
 }
