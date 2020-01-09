@@ -25,6 +25,8 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
         m_bound_widget = w;
 
         for (auto child : w->children()) {
+            if (!child)
+                continue;
             if (child->objectName() == "qt_tabwidget_stackedwidget") {
                 QStackedWidget *stack = qobject_cast<QStackedWidget *>(child);
                 for (int i = 0; i < stack->count(); i++) {
@@ -50,7 +52,8 @@ bool DefaultSlideAnimator::unboundTabWidget()
     if (m_bound_widget) {
         m_bound_widget->removeEventFilter(this);
         for (auto child : m_bound_widget->children()) {
-            child->removeEventFilter(this);
+            if (child)
+                child->removeEventFilter(this);
         }
         return true;
     }

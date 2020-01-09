@@ -35,6 +35,6 @@ unix {
     INSTALLS += target
 
     gschema.path = /usr/share/glib-2.0/schemas
-    gschema.files += $$PWD/org.ukui.style.gschema.xml
+    gschema.files += $$PWD/settings/org.ukui.style.gschema.xml
     INSTALLS += gschema
 }

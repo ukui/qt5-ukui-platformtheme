@@ -27,7 +27,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
     if (widget->inherits("QTabWidget")) {
         //FIXME: unpolish, extensiable.
         auto w = qobject_cast<QTabWidget *>(widget);
-        auto animator = new UKUI::TabWidget::DefaultSlideAnimator();
+        auto animator = new UKUI::TabWidget::DefaultSlideAnimator(w);
         animator->bindTabWidget(w);
     }
 
