@@ -37,7 +37,7 @@ public:
      */
     virtual const QString description() = 0;
 
-    virtual UKUITabWidgetAnimatorIface *createAnimator();
+    virtual UKUITabWidgetAnimatorIface *createAnimator() = 0;
 };
 
 Q_DECLARE_INTERFACE(UKUITabWidgetAnimatorPluginIface, UKUITabWidgetAnimatorPluginInterface_iid)

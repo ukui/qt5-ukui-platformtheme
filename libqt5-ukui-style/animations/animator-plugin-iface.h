@@ -17,6 +17,7 @@ public:
 
     virtual const QString id() = 0;
     virtual const QString brief() = 0;
+    virtual AnimatorPluginType pluginType() = 0;
 
     /*!
      * \brief inhertKey

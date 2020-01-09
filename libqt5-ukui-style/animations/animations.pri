@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 include(tabwidget/tabwidget.pri)
 
 HEADERS += \

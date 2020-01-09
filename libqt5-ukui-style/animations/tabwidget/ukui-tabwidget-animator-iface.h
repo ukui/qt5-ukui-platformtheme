@@ -17,11 +17,12 @@
  */
 class UKUITabWidgetAnimatorIface
 {
+public:
     virtual ~UKUITabWidgetAnimatorIface() {}
 
-    virtual bool bindTabWidget(QTabWidget *w);
+    virtual bool bindTabWidget(QTabWidget *w) = 0;
 
-    virtual bool unboundTabWidget();
+    virtual bool unboundTabWidget() = 0;
 };
 
 #endif // UKUITABWIDGETANIMATORIFACE_H

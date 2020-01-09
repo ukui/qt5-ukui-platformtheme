@@ -40,10 +40,10 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 
             QVariant regionValue = widget->property("blurRegion");
             QRegion region = qvariant_cast<QRegion>(regionValue);
-            qDebug()<<regionValue<<region;
-            qDebug()<<widget->metaObject()->className()<<widget->geometry()<<widget->mask();
+            //qDebug()<<regionValue<<region;
+            //qDebug()<<widget->metaObject()->className()<<widget->geometry()<<widget->mask();
             if (!region.isEmpty()) {
-                qDebug()<<"blur region"<<region;
+                //qDebug()<<"blur region"<<region;
                 KWindowEffects::enableBlurBehind(widget->winId(), true, region);
                 widget->update();
             } else {

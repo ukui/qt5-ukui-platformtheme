@@ -78,7 +78,7 @@ const QFont *Qt5UKUIPlatformTheme::font(Font type) const
 QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 {
     //FIXME:
-    qDebug()<<"theme hint"<<hint;
+    //qDebug()<<"theme hint"<<hint;
     switch (hint) {
     case QPlatformTheme::StyleNames:
         return QStringList()<<"ukui";

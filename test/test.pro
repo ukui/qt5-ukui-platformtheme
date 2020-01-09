@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     region-blur \
-    system-settings
+    system-settings \
+    tabwidget

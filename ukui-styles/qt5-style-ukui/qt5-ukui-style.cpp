@@ -1,5 +1,6 @@
 #include "qt5-ukui-style.h"
 #include "ukui-style-settings.h"
+#include "ukui-tabwidget-default-slide-animator.h"
 
 #include <QStyleOption>
 #include <QWidget>
@@ -23,6 +24,13 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         widget->setAttribute(Qt::WA_TranslucentBackground);
     }
 
+    if (widget->inherits("QTabWidget")) {
+        //FIXME: unpolish, extensiable.
+        auto w = qobject_cast<QTabWidget *>(widget);
+        auto animator = new UKUI::TabWidget::DefaultSlideAnimator();
+        animator->bindTabWidget(w);
+    }
+
     return QProxyStyle::polish(widget);
 }
 
@@ -37,7 +45,7 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-    qDebug()<<"draw PE"<<element;
+    //qDebug()<<"draw PE"<<element;
     switch (element) {
     case QStyle::PE_PanelMenu:
     case QStyle::PE_FrameMenu:
@@ -47,12 +55,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
           a "disabled" menu paint and blur in error, i have no idea about that.
           */
         if (widget->isEnabled()) {
-            qDebug()<<"draw menu frame"<<option->styleObject<<option->palette;
+            //qDebug()<<"draw menu frame"<<option->styleObject<<option->palette;
             QStyleOption opt = *option;
             auto color = opt.palette.color(QPalette::Base);
             if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
                 auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-                qDebug()<<opacity;
+                //qDebug()<<opacity;
                 color.setAlphaF(opacity);
             }
             opt.palette.setColor(QPalette::Base, color);

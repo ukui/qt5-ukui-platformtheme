@@ -31,7 +31,7 @@ void ProxyStyle::polish(QWidget *widget)
 
     QProxyStyle::polish(widget);
 
-    qDebug()<<widget->metaObject()->className();
+    //qDebug()<<widget->metaObject()->className();
     //add exception.
 
     if (widget->testAttribute(Qt::WA_TranslucentBackground))
