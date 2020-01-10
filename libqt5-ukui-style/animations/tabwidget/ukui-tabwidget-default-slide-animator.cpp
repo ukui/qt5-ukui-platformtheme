@@ -75,7 +75,6 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             qDebug()<<index;
 
             m_next_pixmap = m_bound_widget->currentWidget()->grab();
-            m_next_pixmap.save("next.png");
             m_tmp_page->raise();
             m_tmp_page->show();
         });
