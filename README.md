@@ -9,9 +9,10 @@ This project is intend to provide a common resolution of desktop application dev
 qt5-ukui's route brings us closer to the upstream community. It is not a division, but a desire for fusion and individuality in a compatible way.
 
 ## Build and Test
-### Build Depends
+### Build Depends (reference debian/contorl)
 - pkg-config
 - qt5-default
+- qtbase5-private-dev
 - libkf5windowsystem-dev
 - libgsettings-qt-dev
 - libglib2.0-dev
