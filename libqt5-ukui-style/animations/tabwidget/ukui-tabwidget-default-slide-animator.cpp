@@ -29,13 +29,15 @@ using namespace UKUI::TabWidget;
  * which can avoid the above problems.
  *
  * However, this way might be incompatible with other animations.
- * Because it use a new widget for painting, not relate with orignal
- * page.
+ * Because it uses a new widget for painting, not relate with orignal
+ * page. Another conflict is the oxygen's fade animation might force
+ * raise current tab page when it finished. That might cause a incompleted
+ * slide animation if slide duration is longer than fade's.
  */
 
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
-    setDuration(250);
+    setDuration(150);
     setStartValue(0.0);
     setEndValue(1.0);
 }
