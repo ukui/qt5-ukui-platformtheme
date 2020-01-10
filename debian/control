@@ -33,7 +33,7 @@ Description: UKUI platform theme and styles' shared library.
  It also provides the common metadatas for ukui-styles and platform theme using.
  The library provided many convenient API for changing a qt widgets style, such as buttons color, tabwidget animation, etc.
 
-Package: libqt5-ukui-style1-dev
+Package: libqt5-ukui-style-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same

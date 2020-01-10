@@ -37,4 +37,8 @@ unix {
     gschema.path = /usr/share/glib-2.0/schemas
     gschema.files += $$PWD/settings/org.ukui.style.gschema.xml
     INSTALLS += gschema
+
+    pkgconfig.path = $$[QT_INSTALL_LIBS]/pkgconfig
+    pkgconfig.files += development-files/qt5-ukui.pc
+    INSTALLS += pkgconfig
 }

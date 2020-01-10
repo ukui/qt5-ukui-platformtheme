@@ -1,4 +1,0 @@
-libqt5-ukui-style/*.h usr/include/
-libqt5-ukui-style/*/*.h usr/include/
-libqt5-ukui-style/*/*/*.h usr/include/
-libqt5-ukui-style/settings/org.ukui.style.gschema.xml usr/share/glib-2.0/schemas/
