@@ -14,9 +14,28 @@
 
 using namespace UKUI::TabWidget;
 
+/*!
+ * \note
+ * insert a tmp tab page into tab widget directly is dangerous,
+ * because a custom tab widget's page may be desgined different
+ * with normal tab page, such as peony-qt's directory view.
+ * In that case, it might lead program crashed when
+ * application call a custom page but get a tmp page.
+ *
+ * for those reasons, i use a temporary widgets bound to the
+ * stacked widget with qt's parent&child mechanism.
+ * It can float on the top layer or hide on the lower layer of stack,
+ * but it does not belong to the elements in the stack (no index),
+ * which can avoid the above problems.
+ *
+ * However, this way might be incompatible with other animations.
+ * Because it use a new widget for painting, not relate with orignal
+ * page.
+ */
+
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
-    setDuration(150);
+    setDuration(250);
     setStartValue(0.0);
     setEndValue(1.0);
 }
@@ -38,8 +57,8 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                 auto stack = qobject_cast<QStackedWidget *>(child);
                 m_stack = stack;
                 //watch stack widget
+                m_tmp_page->setParent(m_stack);
                 m_stack->installEventFilter(this);
-                stack->addWidget(m_tmp_page);
                 break;
             }
         }
@@ -59,12 +78,6 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             m_tmp_page->show();
         });
 
-        //we should wait a while so that we can grab current widget
-        //correctly.
-        QTimer::singleShot(1, w, [=](){
-            m_previous_pixmap = w->currentWidget()->grab();
-        });
-
         return true;
     }
     return false;
@@ -72,6 +85,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 
 bool DefaultSlideAnimator::unboundTabWidget()
 {
+    clearPixmap();
     if (m_bound_widget) {
         for (auto w : m_bound_widget->children()) {
             w->removeEventFilter(this);
@@ -106,11 +120,50 @@ void DefaultSlideAnimator::watchSubPage(QWidget *w)
 
 bool DefaultSlideAnimator::filterTabWidget(QObject *obj, QEvent *e)
 {
+    if (e->type() == QEvent::Close) {
+        this->unboundTabWidget();
+    }
     return false;
 }
 
 bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
 {
+    switch (e->type()) {
+    case QEvent::ChildAdded:
+    case QEvent::ChildRemoved: {
+        qDebug()<<"added/removed"<<obj;
+        if (obj->objectName() == "qt_tabwidget_stackedwidget") {
+            QChildEvent *ce = static_cast<QChildEvent *>(e);
+            if (ce->added()) {
+                ce->child()->installEventFilter(this);
+            } else {
+                ce->child()->removeEventFilter(this);
+            }
+        }
+        return false;
+    }
+    case QEvent::Resize:
+        qDebug()<<"resize";
+        m_tab_resizing = true;
+        return false;
+    case QEvent::LayoutRequest: {
+        /// there a 2 case we need excute these codes.
+        /// 1. when stacked widget created and shown, it first do resize, then do a layout request.
+        /// 2. after stacked widget resize.
+        ///
+        /// This event is very suitable for the above two situations,
+        /// both in terms of efficiency and trigger time.
+        if (m_tab_resizing) {
+            qDebug()<<"ok";
+            m_tmp_page->resize(m_stack->size());
+            m_previous_pixmap = m_bound_widget->currentWidget()->grab();
+        }
+        m_tab_resizing = false;
+        return false;
+    }
+    default:
+        break;
+    }
     return false;
 }
 
@@ -129,8 +182,6 @@ bool DefaultSlideAnimator::filterSubPage(QObject *obj, QEvent *e)
     }
     case QEvent::Resize: {
         this->stop();
-        m_previous_pixmap.detach();
-        m_next_pixmap.detach();
         return false;
     }
     default:
@@ -169,6 +220,8 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
 
             //continue paint until animate finished.
+            w->raise();
+            w->show();
             w->update();
 
             //eat event so that widget will not paint default items and override
@@ -184,4 +237,10 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
     default:
         return false;
     }
+}
+
+void DefaultSlideAnimator::clearPixmap()
+{
+    m_previous_pixmap = QPixmap();
+    m_next_pixmap = QPixmap();
 }

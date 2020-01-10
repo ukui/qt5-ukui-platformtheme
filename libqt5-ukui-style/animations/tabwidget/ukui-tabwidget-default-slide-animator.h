@@ -31,6 +31,8 @@ protected:
     bool filterSubPage(QObject *obj, QEvent *e);
     bool filterTmpPage(QObject *obj, QEvent *e);
 
+    void clearPixmap();
+
 private:
     QTabWidget *m_bound_widget = nullptr;
     QStackedWidget *m_stack = nullptr;
@@ -40,6 +42,16 @@ private:
     QPixmap m_next_pixmap;
 
     QWidget *m_tmp_page = nullptr;
+
+    /*!
+     * \brief m_tab_resizing
+     * \details
+     * If a went to a resize event, the animation should handle
+     * widget's relayout after resized.
+     * This bool varient is used to help judege if animator's pixmaps
+     * and template widget' states should be updated.
+     */
+    bool m_tab_resizing = false;
 };
 
 }
