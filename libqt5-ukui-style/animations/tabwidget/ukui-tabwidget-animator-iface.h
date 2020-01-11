@@ -20,8 +20,23 @@ class UKUITabWidgetAnimatorIface
 public:
     virtual ~UKUITabWidgetAnimatorIface() {}
 
+    /*!
+     * \brief bindTabWidget
+     * \param w widget should be bound.
+     * \return true if successed.
+     * \details
+     * this method is used for binding a animator instance for a tab widget.
+     * You have to implement this function in your own implement class.
+     */
     virtual bool bindTabWidget(QTabWidget *w) = 0;
 
+    /*!
+     * \brief unboundTabWidget
+     * \return true if successed.
+     * \details
+     * this method is used to unbound the animator instance and tab widget.
+     * You have to implement this function in your own implement class.
+     */
     virtual bool unboundTabWidget() = 0;
 };
 

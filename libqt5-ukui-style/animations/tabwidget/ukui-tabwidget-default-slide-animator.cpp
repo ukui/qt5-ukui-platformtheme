@@ -15,26 +15,18 @@
 using namespace UKUI::TabWidget;
 
 /*!
+ * \brief DefaultSlideAnimator::DefaultSlideAnimator
+ * \param parent
+ * \details
+ * This class define a slide animator for tab widget sliding animation.
+ * Animator based on QVariantAnimation, paint on a tmp widgets when running.
+ * The content of widget is based on animation's current value and 2 pixmap
+ * grabbed at appropriate times.
+ *
  * \note
- * insert a tmp tab page into tab widget directly is dangerous,
- * because a custom tab widget's page may be desgined different
- * with normal tab page, such as peony-qt's directory view.
- * In that case, it might lead program crashed when
- * application call a custom page but get a tmp page.
- *
- * for those reasons, i use a temporary widgets bound to the
- * stacked widget with qt's parent&child mechanism.
- * It can float on the top layer or hide on the lower layer of stack,
- * but it does not belong to the elements in the stack (no index),
- * which can avoid the above problems.
- *
- * However, this way might be incompatible with other animations.
- * Because it uses a new widget for painting, not relate with orignal
- * page. Another conflict is the oxygen's fade animation might force
- * raise current tab page when it finished. That might cause a incompleted
- * slide animation if slide duration is longer than fade's.
+ * Once an animator have bound a tab widget, it have to unbound current widget at first.
+ * Then it can bind another tab widget again.
  */
-
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
     setDuration(150);
@@ -42,6 +34,14 @@ DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation 
     setEndValue(1.0);
 }
 
+/*!
+ * \brief DefaultSlideAnimator::bindTabWidget
+ * \param w A QTabWidget instance, most passed in QStyle::polish().
+ * \return result if Tab widget be bound \c true for binding successed.
+ * \details
+ * When do a tab widget binding, animator will create a tmp child page for tab widget's
+ * stack widget. Then it will watched their event waiting for preparing and doing a animation.
+ */
 bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 {
     if (w) {
@@ -95,6 +95,7 @@ bool DefaultSlideAnimator::unboundTabWidget()
         m_tmp_page->removeEventFilter(this);
         m_tmp_page->deleteLater();
         m_tmp_page = nullptr;
+        m_bound_widget = nullptr;
         return true;
     }
     return false;
@@ -135,6 +136,8 @@ bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
         qDebug()<<"added/removed"<<obj;
         if (obj->objectName() == "qt_tabwidget_stackedwidget") {
             QChildEvent *ce = static_cast<QChildEvent *>(e);
+            if (!ce->child()->isWidgetType())
+                return false;
             if (ce->added()) {
                 ce->child()->installEventFilter(this);
             } else {
@@ -157,7 +160,8 @@ bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
         if (m_tab_resizing) {
             qDebug()<<"ok";
             m_tmp_page->resize(m_stack->size());
-            m_previous_pixmap = m_bound_widget->currentWidget()->grab();
+            if (m_bound_widget->currentWidget())
+                m_previous_pixmap = m_bound_widget->currentWidget()->grab();
         }
         m_tab_resizing = false;
         return false;

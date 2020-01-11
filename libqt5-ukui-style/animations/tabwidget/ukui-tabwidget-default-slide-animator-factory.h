@@ -14,6 +14,7 @@ namespace TabWidget {
  * This class is an internal plugin. It provides a default tabwidget
  * switch animation for QTabWidget and its drived class.
  *
+ * \note
  * Note that it used in ukui-style, but you can also use its api in other
  * desktop environment.
  */

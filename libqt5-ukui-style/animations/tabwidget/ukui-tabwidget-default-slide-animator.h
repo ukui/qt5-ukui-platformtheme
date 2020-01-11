@@ -12,6 +12,11 @@ namespace UKUI {
 
 namespace TabWidget {
 
+/*!
+ * \brief The DefaultSlideAnimator class
+ * \details
+ * This class is an implement of UKUITabWidgetAnimatorIface.
+ */
 class DefaultSlideAnimator : public QVariantAnimation, public UKUITabWidgetAnimatorIface
 {
     Q_OBJECT
@@ -41,6 +46,27 @@ private:
     QPixmap m_previous_pixmap;
     QPixmap m_next_pixmap;
 
+    /*!
+     * \brief m_tmp_page
+     * \note
+     * insert a tmp tab page into tab widget directly is dangerous,
+     * because a custom tab widget's page may be desgined different
+     * with normal tab page, such as peony-qt's directory view.
+     * In that case, it might lead program crashed when
+     * application call a custom page but get a tmp page.
+     *
+     * for those reasons, i use a temporary widgets bound to the
+     * stacked widget with qt's parent&child mechanism.
+     * It can float on the top layer or hide on the lower layer of stack,
+     * but it does not belong to the elements in the stack (no index),
+     * which can avoid the above problems.
+     *
+     * However, this way might be incompatible with other animations.
+     * Because it uses a new widget for painting, not relate with orignal
+     * page. Another conflict is the oxygen's fade animation might force
+     * raise current tab page when it finished. That might cause a incompleted
+     * slide animation if slide duration is longer than fade's.
+     */
     QWidget *m_tmp_page = nullptr;
 
     /*!

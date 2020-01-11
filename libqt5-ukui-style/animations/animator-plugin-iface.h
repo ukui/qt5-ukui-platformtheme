@@ -8,15 +8,34 @@ class UKUIAnimatorPluginIface
 public:
     enum AnimatorPluginType {
         TabWidget,
+        StackedWidget,
         PushButton,
         ItemView,
+        ScrollBar,
+        MenuBar,
+        Menu,
         Other
     };
 
     virtual ~UKUIAnimatorPluginIface() {}
 
+    /*!
+     * \brief id
+     * \return unique plugin's id.
+     * \details
+     * You have to define a unique id for your animator plugin.
+     */
     virtual const QString id() = 0;
+    /*!
+     * \brief brief
+     * \return a brief of animator.
+     */
     virtual const QString brief() = 0;
+
+    /*!
+     * \brief pluginType
+     * \return animator type for indicating what kinds of widget to bind with.
+     */
     virtual AnimatorPluginType pluginType() = 0;
 
     /*!

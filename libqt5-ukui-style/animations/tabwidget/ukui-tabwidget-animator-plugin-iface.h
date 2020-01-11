@@ -14,6 +14,8 @@
  *
  * UKUI Animation's frameworks is desgined to be extensiable.
  * And this interface is an entry of plugin.
+ *
+ * \see UKUITabWidgetAnimatorIface
  */
 class UKUITabWidgetAnimatorPluginIface : public UKUIAnimatorPluginIface
 {
@@ -23,7 +25,6 @@ public:
     /*!
      * \brief key
      * \return
-     * \details
      * A key word of plugin, such as "slide".
      */
     virtual const QString key() = 0;
@@ -31,12 +32,16 @@ public:
     /*!
      * \brief description
      * \return
-     * \details
      * A description for animator. For example, "Animator for do a horizon slide
      * for tab widget."
      */
     virtual const QString description() = 0;
 
+    /*!
+     * \brief createAnimator
+     * \return
+     * an animator instance, for example a UKUI::TabWidget::DefaultSlideAnimator.
+     */
     virtual UKUITabWidgetAnimatorIface *createAnimator() = 0;
 };
 
