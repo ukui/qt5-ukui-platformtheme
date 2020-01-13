@@ -47,7 +47,7 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
                 KWindowEffects::enableBlurBehind(widget->winId(), true, region);
                 widget->update();
             } else {
-                KWindowEffects::enableBlurBehind(widget->winId(), true);
+                KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
             }
 
             //NOTE: we can not setAttribute Qt::WA_TranslucentBackground here,
