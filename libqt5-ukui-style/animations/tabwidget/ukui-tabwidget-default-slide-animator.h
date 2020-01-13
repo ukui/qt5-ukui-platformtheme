@@ -25,6 +25,7 @@ public:
 
     bool bindTabWidget(QTabWidget *w);
     bool unboundTabWidget();
+    QWidget *boundedWidget() {return m_bound_widget;}
 
     bool eventFilter(QObject *obj, QEvent *e);
 

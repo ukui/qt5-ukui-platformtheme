@@ -2,6 +2,7 @@
 #define UKUITABWIDGETANIMATORIFACE_H
 
 #include <QTabWidget>
+#include "animator-iface.h"
 
 /*!
  * \brief The UKUITabWidgetAnimatorIface class
@@ -15,10 +16,18 @@
  *
  * \see UKUITabWidgetAnimatorPluginIface
  */
-class UKUITabWidgetAnimatorIface
+class UKUITabWidgetAnimatorIface : public AnimatorIface
 {
 public:
     virtual ~UKUITabWidgetAnimatorIface() {}
+
+    virtual bool bindWidget(QWidget *w) {
+        return bindTabWidget(qobject_cast<QTabWidget *>(w));
+    }
+
+    virtual bool unboundWidget() {
+        return unboundTabWidget();
+    }
 
     /*!
      * \brief bindTabWidget

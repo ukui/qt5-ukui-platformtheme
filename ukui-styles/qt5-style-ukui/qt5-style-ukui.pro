@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         qt5-ukui-style-plugin.cpp \
-    qt5-ukui-style.cpp
+    qt5-ukui-style.cpp \
+    tab-widget-animation-helper.cpp
 
 HEADERS += \
         qt5-ukui-style-plugin.h \
-    qt5-ukui-style.h
+    qt5-ukui-style.h \
+    tab-widget-animation-helper.h
 DISTFILES += qt5-style-ukui.json 
 
 unix {

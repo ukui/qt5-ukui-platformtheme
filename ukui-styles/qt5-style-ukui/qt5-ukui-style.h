@@ -3,6 +3,8 @@
 
 #include <QProxyStyle>
 
+class TabWidgetAnimationHelper;
+
 class Qt5UKUIStyle : public QProxyStyle
 {
     Q_OBJECT
@@ -21,6 +23,9 @@ public:
                        const QStyleOption *option,
                        QPainter *painter,
                        const QWidget *widget = nullptr) const;
+
+private:
+    TabWidgetAnimationHelper *m_tab_animation_helper;
 };
 
 #endif // QT5UKUISTYLE_H

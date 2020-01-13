@@ -6,11 +6,13 @@
 #include <QWidget>
 #include <QPainter>
 
+#include "tab-widget-animation-helper.h"
+
 #include <QDebug>
 
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QProxyStyle ("oxygen")
 {
-
+    m_tab_animation_helper = new TabWidgetAnimationHelper(this);
 }
 
 int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
@@ -26,9 +28,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 
     if (widget->inherits("QTabWidget")) {
         //FIXME: unpolish, extensiable.
-        auto w = qobject_cast<QTabWidget *>(widget);
-        auto animator = new UKUI::TabWidget::DefaultSlideAnimator(w);
-        animator->bindTabWidget(w);
+        m_tab_animation_helper->registerWidget(widget);
     }
 
     return QProxyStyle::polish(widget);
@@ -38,6 +38,10 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);
+    }
+
+    if (widget->inherits("QTabWidget")) {
+        m_tab_animation_helper->unregisterWidget(widget);
     }
 
     return QProxyStyle::unpolish(widget);

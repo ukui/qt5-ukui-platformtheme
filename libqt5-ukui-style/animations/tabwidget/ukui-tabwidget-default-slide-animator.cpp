@@ -70,7 +70,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             watchSubPage(w->widget(i));
         }
 
-        connect(w, &QTabWidget::currentChanged, w, [=](int index){
+        connect(w, &QTabWidget::currentChanged, this, [=](int index){
             qDebug()<<w->currentIndex();
             qDebug()<<index;
 
@@ -90,6 +90,7 @@ bool DefaultSlideAnimator::unboundTabWidget()
 {
     clearPixmap();
     if (m_bound_widget) {
+        disconnect(m_bound_widget, &QTabWidget::currentChanged, this, nullptr);
         for (auto w : m_bound_widget->children()) {
             w->removeEventFilter(this);
         }
