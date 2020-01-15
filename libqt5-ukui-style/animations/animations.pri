@@ -1,6 +1,7 @@
 INCLUDEPATH += $$PWD
 
 include(tabwidget/tabwidget.pri)
+include(scrollbar/scrollbar.pri)
 
 HEADERS += \
     $$PWD/animator-plugin-iface.h \
