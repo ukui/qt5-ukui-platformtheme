@@ -11,6 +11,8 @@
 
 #include "animator-iface.h"
 
+#include <QIcon>
+
 #include <QDebug>
 
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QProxyStyle ("oxygen")
@@ -145,10 +147,11 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(0.1*percent);
         auto grooveRect = option->rect;
+        auto currentWidth = animator->value("groove_width").toInt();
         if (is_horizontal) {
-            grooveRect.setY(grooveRect.height() - animator->value("groove_width").toInt());
+            grooveRect.setY(qMax(grooveRect.height() - currentWidth*2, 0));
         } else {
-            grooveRect.setX(grooveRect.width() - animator->value("groove_width").toInt());
+            grooveRect.setX(qMax(grooveRect.width() - currentWidth*2, 0));
         }
         painter->drawRect(grooveRect);
         painter->restore();
@@ -225,8 +228,18 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             } else {
                 sliderRect.setX(sliderRect.width() - sliderWidth);
             }
-            if (sliderWidth > 2) {
-                sliderRect.adjust(1, 1, 0, 0);
+            if (sliderWidth > 3) {
+                if (is_horizontal) {
+                    sliderRect.adjust(0, 1, 0, -1);
+                } else {
+                    sliderRect.adjust(1, 0, -1, 0);
+                }
+            } else {
+                if (is_horizontal) {
+                    sliderRect.adjust(0, -2, 0, -2);
+                } else {
+                    sliderRect.adjust(-2, 0, -2, 0);
+                }
             }
             painter->drawRoundedRect(sliderRect, 6, 6);
             painter->restore();
@@ -234,12 +247,32 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
     case CE_ScrollBarAddLine: {
-        //FIXME:
-        return QProxyStyle::drawControl(element, option, painter, widget);
+        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        if (!animator) {
+            return QProxyStyle::drawControl(element, option, painter, widget);
+        }
+
+        painter->save();
+        auto percent = animator->value("groove_width").toInt()*1.0/12;
+        painter->setOpacity(percent);
+        QProxyStyle::drawControl(element, option, painter, widget);
+        painter->restore();
+        return;
     }
     case CE_ScrollBarSubLine: {
-        //FIXME:
-        return QProxyStyle::drawControl(element, option, painter, widget);
+        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        if (!animator) {
+            return QProxyStyle::drawControl(element, option, painter, widget);
+        }
+
+        painter->save();
+        auto percent = animator->value("groove_width").toInt()*1.0/12;
+        painter->setOpacity(percent);
+        QProxyStyle::drawControl(element, option, painter, widget);
+        painter->restore();
+        return;
     }
     default:
         return QProxyStyle::drawControl(element, option, painter, widget);
