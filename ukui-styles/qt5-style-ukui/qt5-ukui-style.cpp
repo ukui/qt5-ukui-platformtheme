@@ -1,4 +1,7 @@
 #include "qt5-ukui-style.h"
+
+#include "qt5-ukui-style-helper.h"
+
 #include "ukui-style-settings.h"
 #include "ukui-tabwidget-default-slide-animator.h"
 
@@ -29,10 +32,12 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
-    QProxyStyle::polish(widget);
-
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
+        QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
+
+        widget->setMask(mask);
+        //qDebug()<<mask<<"menu mask"<<widget->mask();
     }
 
     if (widget->inherits("QTabWidget")) {
@@ -44,12 +49,17 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         widget->setAttribute(Qt::WA_Hover);
         m_scrollbar_animation_helper->registerWidget(widget);
     }
+
+    QProxyStyle::polish(widget);
 }
 
 void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
+    QProxyStyle::unpolish(widget);
+
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);
+        widget->setMask(QRegion());
     }
 
     if (widget->inherits("QTabWidget")) {
@@ -60,8 +70,6 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         widget->setAttribute(Qt::WA_Hover, false);
         m_scrollbar_animation_helper->unregisterWidget(widget);
     }
-
-    return QProxyStyle::unpolish(widget);
 }
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
@@ -76,21 +84,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
           a "disabled" menu paint and blur in error, i have no idea about that.
           */
         if (widget->isEnabled()) {
-            //qDebug()<<"draw menu frame"<<option->styleObject<<option->palette;
-            QStyleOption opt = *option;
-            auto color = opt.palette.color(QPalette::Base);
-            if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-                auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-                //qDebug()<<opacity;
-                color.setAlphaF(opacity);
-            }
-            opt.palette.setColor(QPalette::Base, color);
-            painter->save();
-            painter->setPen(opt.palette.color(QPalette::Window));
-            painter->setBrush(color);
-            painter->drawRect(opt.rect.adjusted(0, 0, -1, -1));
-            painter->restore();
-            return;
+            return drawMenuPrimitive(option, painter, widget);
         }
 
         return QProxyStyle::drawPrimitive(element, option, painter, widget);

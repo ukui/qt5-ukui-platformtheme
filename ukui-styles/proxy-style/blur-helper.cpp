@@ -25,21 +25,32 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 {
     //FIXME:
-    //qDebug()<<e<<obj;
+    //qDebug()<<e->type()<<obj;
     //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
     switch (e->type()) {
         case QEvent::Hide:
+        case QEvent::UpdateRequest:
         case QEvent::Show:
         case QEvent::Resize:
         {
             // cast to widget and check
             QWidget* widget(qobject_cast<QWidget*>(obj));
+            //KWindowEffects::enableBlurBehind(widget->winId(), false);
 
             if (!widget)
                 break;
 
             QVariant regionValue = widget->property("blurRegion");
             QRegion region = qvariant_cast<QRegion>(regionValue);
+
+            if (widget->inherits("QMenu")) {
+                QPainterPath path;
+                path.addRoundedRect(widget->rect().adjusted(1, 1, -2, -2), 10, 10);
+                KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
+                widget->update();
+                break;
+            }
+
             //qDebug()<<regionValue<<region;
             //qDebug()<<widget->metaObject()->className()<<widget->geometry()<<widget->mask();
             if (!region.isEmpty()) {
@@ -47,7 +58,9 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
                 KWindowEffects::enableBlurBehind(widget->winId(), true, region);
                 widget->update();
             } else {
+                //qDebug()<<widget->mask();
                 KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
+                widget->update(widget->mask());
             }
 
             //NOTE: we can not setAttribute Qt::WA_TranslucentBackground here,
@@ -63,12 +76,25 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
     return false;
 }
 
+/*!
+ * \brief BlurHelper::registerWidget
+ * \param widget
+ * \bug
+ * I want to use mask for blur a specific region, but
+ * it seems that when window update, mask will be cleared.
+ * That makes event filter can not handle the right region to blur.
+ */
 void BlurHelper::registerWidget(QWidget *widget)
 {
     if (!m_blur_widgets.contains(widget)) {
         m_blur_widgets<<widget;
         //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
-        KWindowEffects::enableBlurBehind(widget->winId(), true);
+        if (!widget->mask().isEmpty()) {
+            KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
+        } else {
+            KWindowEffects::enableBlurBehind(widget->winId(), true);
+        }
+
         connect(widget, &QWidget::destroyed, this, [=](){
             this->onWidgetDestroyed(widget);
         });
@@ -76,7 +102,11 @@ void BlurHelper::registerWidget(QWidget *widget)
     widget->removeEventFilter(this);
     widget->installEventFilter(this);
 
-    widget->update();
+    if (!widget->mask().isEmpty()) {
+        widget->update(widget->mask());
+    } else {
+        widget->update();
+    }
 }
 
 void BlurHelper::unregisterWidget(QWidget *widget)

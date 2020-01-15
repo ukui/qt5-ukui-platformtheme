@@ -25,17 +25,19 @@ int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWid
 
 void ProxyStyle::polish(QWidget *widget)
 {
+    QProxyStyle::polish(widget);
+
     //FIXME:
     if(!widget)
         return;
 
-    QProxyStyle::polish(widget);
-
-    //qDebug()<<widget->metaObject()->className();
-    //add exception.
+    //qDebug()<<"\n\n\n============widget mask"<<widget->metaObject()->className()<<widget->mask();
 
     if (widget->testAttribute(Qt::WA_TranslucentBackground))
         m_blur_helper->registerWidget(widget);
+
+    //qDebug()<<widget->metaObject()->className();
+    //add exception.
 }
 
 void ProxyStyle::unpolish(QWidget *widget)
