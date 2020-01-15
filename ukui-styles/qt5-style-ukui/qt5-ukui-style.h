@@ -4,6 +4,7 @@
 #include <QProxyStyle>
 
 class TabWidgetAnimationHelper;
+class ScrollBarAnimationHelper;
 
 class Qt5UKUIStyle : public QProxyStyle
 {
@@ -24,8 +25,21 @@ public:
                        QPainter *painter,
                        const QWidget *widget = nullptr) const;
 
+    void drawComplexControl(QStyle::ComplexControl control,
+                            const QStyleOptionComplex *option,
+                            QPainter *painter,
+                            const QWidget *widget = nullptr) const;
+
+    void drawControl(QStyle::ControlElement element,
+                     const QStyleOption *option,
+                     QPainter *painter,
+                     const QWidget *widget = nullptr) const;
+
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
+    ScrollBarAnimationHelper *m_scrollbar_animation_helper;
+
+    bool m_use_dark_palette = false;
 };
 
 #endif // QT5UKUISTYLE_H

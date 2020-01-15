@@ -25,7 +25,7 @@ public:
     virtual void startAnimator(const QString &property = nullptr) {}
     virtual void stopAnimator(const QString &property = nullptr) {}
     virtual int currentAnimatorTime(const QString &property = nullptr) {return 0;}
-    virtual int toatalDuration(const QString &property = nullptr) {return 0;}
+    virtual int totalAnimationDuration(const QString &property = nullptr) {return 0;}
 };
 
 #endif // ANIMATORIFACE_H

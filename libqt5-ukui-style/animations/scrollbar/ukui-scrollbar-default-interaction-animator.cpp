@@ -7,9 +7,46 @@ using namespace UKUI::ScrollBar;
 
 DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParallelAnimationGroup (parent)
 {
+    m_bg_opacity = new QVariantAnimation(this);
+    m_bg_opacity->setStartValue(0.0);
+    m_bg_opacity->setEndValue(0.1);
+    m_bg_opacity->setDuration(250);
+    addAnimation(m_bg_opacity);
+
+    m_groove_width = new QVariantAnimation(this);
+    m_groove_width->setStartValue(0);
+    m_groove_width->setEndValue(12);
+    m_bg_opacity->setDuration(250);
+    addAnimation(m_groove_width);
+
+    m_slider_opacity = new QVariantAnimation(this);
+    m_slider_opacity->setStartValue(0.2);
+    m_slider_opacity->setEndValue(0.4);
+    m_bg_opacity->setDuration(250);
+    addAnimation(m_slider_opacity);
+
     setObjectName("ukui_scrollbar_default_interaction_animator");
 }
 
+/*!
+ * \brief DefaultInteractionAnimator::bindWidget
+ * \param w
+ * \return
+ *
+ * \details
+ * QObject has a feature that parent object can use findChild() method
+ * getting a specific named child.
+ *
+ * I use QObject::setObjectName() set my animator and bind to a scroll bar.
+ * So that i could not cache a hash or map to manage animators.
+ *
+ * \bug
+ * Cause I use named QObject child to cache the animator for a scrollbar,
+ * However there are some troubles for my unexcepted.
+ *
+ * For example, qt5 assistant's main view can not find child correctly.
+ * I don't know if animator bind with child was been removed at some times.
+ */
 bool DefaultInteractionAnimator::bindWidget(QWidget *w)
 {
     if (qobject_cast<QScrollBar*>(w)) {
@@ -155,5 +192,18 @@ int DefaultInteractionAnimator::currentAnimatorTime(const QString &property)
         return m_slider_opacity->currentTime();
     } else {
         return this->currentTime();
+    }
+}
+
+int DefaultInteractionAnimator::totalAnimationDuration(const QString &property)
+{
+    if (property == "bg_opacity") {
+        return m_bg_opacity->duration();
+    } else if (property == "groove_width") {
+        return m_groove_width->duration();
+    } else if (property == "slider_opacity") {
+        return m_slider_opacity->duration();
+    } else {
+        return this->duration();
     }
 }

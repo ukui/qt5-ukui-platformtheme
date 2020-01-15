@@ -30,6 +30,7 @@ public:
     void startAnimator(const QString &property = nullptr);
     void stopAnimator(const QString &property = nullptr);
     int currentAnimatorTime(const QString &property = nullptr);
+    int totalAnimationDuration(const QString &property);
 
 private:
     QWidget *m_widget = nullptr;
