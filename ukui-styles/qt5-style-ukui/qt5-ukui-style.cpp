@@ -34,9 +34,11 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 {
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
-        QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
+        //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
 
-        widget->setMask(mask);
+        //widget->setMask(mask);
+        //do not polish widget with proxy style.
+        return;
         //qDebug()<<mask<<"menu mask"<<widget->mask();
     }
 
@@ -55,12 +57,13 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 
 void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
-    QProxyStyle::unpolish(widget);
-
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);
-        widget->setMask(QRegion());
+        //widget->setMask(QRegion());
+        return;
     }
+
+    QProxyStyle::unpolish(widget);
 
     if (widget->inherits("QTabWidget")) {
         m_tab_animation_helper->unregisterWidget(widget);

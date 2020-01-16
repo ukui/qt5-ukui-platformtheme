@@ -45,7 +45,7 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 
             if (widget->inherits("QMenu")) {
                 QPainterPath path;
-                path.addRoundedRect(widget->rect().adjusted(1, 1, -2, -2), 10, 10);
+                path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1), 10, 10);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
                 widget->update();
                 break;

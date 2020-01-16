@@ -42,19 +42,22 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     opt.palette.setColor(QPalette::Base, color);
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(opt.palette.color(QPalette::Window));
+    QPen pen(opt.palette.color(QPalette::Normal, QPalette::Dark), 1);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    painter->setPen(pen);
     //painter->setPen(Qt::transparent);
     painter->setBrush(color);
 
     QPainterPath path;
     auto region = widget->mask();
     if (region.isEmpty()) {
-        path.addRoundedRect(opt.rect.adjusted(0, 0, -1, -1), 10, 10);
+        path.addRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 10, 10);
     } else {
         path.addRegion(region);
     }
 
-    painter->drawPath(path);
+    painter->drawPolygon(path.toFillPolygon().toPolygon());
     painter->restore();
     return;
 }
