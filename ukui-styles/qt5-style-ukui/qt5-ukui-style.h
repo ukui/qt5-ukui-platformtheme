@@ -6,6 +6,11 @@
 class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 
+/*!
+ * \brief The Qt5UKUIStyle class
+ * \details
+ * This class provide the default ukui style in UKUI desktop enviroment.
+ */
 class Qt5UKUIStyle : public QProxyStyle
 {
     Q_OBJECT

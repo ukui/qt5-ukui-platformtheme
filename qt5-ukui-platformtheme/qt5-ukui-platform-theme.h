@@ -26,6 +26,13 @@ class QPlatformSystemTrayIcon;
 class QPlatformMenuBar;
 #endif
 
+/*!
+ * \brief The Qt5UKUIPlatformTheme class
+ * \details
+ * In UKUI desktop environment, we have our own platform to manage the qt applications' style.
+ * This class is used to take over the theme and preferences of those applications.
+ * The platform theme will effect globally.
+ */
 class QT5UKUIPLATFORMTHEMESHARED_EXPORT Qt5UKUIPlatformTheme : public QObject, public QPlatformTheme
 {
     Q_OBJECT
