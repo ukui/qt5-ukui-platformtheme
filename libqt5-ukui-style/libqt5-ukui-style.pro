@@ -6,7 +6,7 @@
 
 QT       += widgets
 
-TARGET = libqt5-ukui-style
+TARGET = qt5-ukui-style
 TEMPLATE = lib
 
 DEFINES += LIBQT5UKUISTYLE_LIBRARY

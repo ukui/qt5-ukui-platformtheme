@@ -5,6 +5,7 @@ Maintainer: Yue Lan <lanyue@kylinos.cn>
 Build-Depends: debhelper (>=11~),
                libglib2.0-dev,
                libkf5windowsystem-dev,
+               libgsettings-qt-dev,
                pkg-config,
                qt5-qmake,
                qtbase5-dev,
@@ -13,7 +14,9 @@ Build-Depends: debhelper (>=11~),
                qtchooser,
                qttools5-dev-tools
 Standards-Version: 4.4.0
-Homepage: https://github.com/explorer-cs/qt5-ukui
+Homepage: https://www.ukui.org
+Vcs-Git: https://github.com/ukui/qt5-ukui.git
+Vcs-Browser: https://github.com/ukui/qt5-ukui
 
 Package: qt5-ukui-platformtheme
 Section: libs
@@ -24,7 +27,7 @@ Depends: libqt5-ukui-style1,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Qt5 QPA platform theme of UKUI.
- This package provides a qt5 qpa plaform theme plugin.
+ This package provides a qt5 qpa platform theme plugin.
 
 Package: qt5-styles-ukui
 Section: libs
@@ -35,24 +38,44 @@ Depends: kde-style-oxygen-qt5,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: QStyle plugins provided by ukui.
- This package provides several qstyle plugins which as default styles in ukui.
- For now, kde-style-oxygen-qt5 is the base style of ukui-styles (should be replaced).
+ Qt5-UKUI is official platform theme of UKUI desktop environment.
+ It also provides the common metadatas for ukui-styles and
+ platform theme using. The library provided many convenient API
+ for changing a qt widgets style, such as buttons color,
+ tabwidget animation, etc. 
+ .
+ This package provides several qstyle plugins which as default 
+ styles in ukui. For now, kde-style-oxygen-qt5 is the base style
+ of ukui-styles (should be replaced).
 
 Package: libqt5-ukui-style1
 Section: libs
+Provides: libqt5-ukui-style
 Architecture: any
 Multi-Arch: same
-Depends: libglib2.0-0, libqt5widgets5, ${misc:Depends}, ${shlibs:Depends}
+Depends: libglib2.0-0, libqt5widgets5, libgsettings-qt1, ${misc:Depends}, ${shlibs:Depends}
 Description: UKUI platform theme and styles' shared library.
- This package provides the shared libraries used by ukui platform theme and ukui-styles.
- It also provides the common metadatas for ukui-styles and platform theme using.
- The library provided many convenient API for changing a qt widgets style, such as buttons color, tabwidget animation, etc.
+ Qt5-UKUI is official platform theme of UKUI desktop environment.
+ It also provides the common metadatas for ukui-styles and
+ platform theme using. The library provided many convenient API
+ for changing a qt widgets style, such as buttons color,
+ tabwidget animation, etc.
+ .
+ This package provides the shared libraries used by ukui 
+ platform theme and ukui-styles.
 
 Package: libqt5-ukui-style-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: libqt5-ukui-style1, ${misc:Depends}, ${shlibs:Depends}
+Depends: libqt5-ukui-style1 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Description: Development files of libqt5-ukui-style1.
+ Qt5-UKUI is official platform theme of UKUI desktop environment.
+ It also provides the common metadatas for ukui-styles and
+ platform theme using. The library provided many convenient API
+ for changing a qt widgets style, such as buttons color,
+ tabwidget animation, etc.
+ . 
  This package provides the development files of libqt5-ukui-style1.
- You can use qt5-ukui's API do a secondary development and publish your project under correct License and Copyright.
+ You can use qt5-ukui's API do a secondary development and publish 
+ your project under correct License and Copyright.

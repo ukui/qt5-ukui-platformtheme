@@ -1,1 +1,2 @@
 usr/lib/*/*.so*
+libqt5-ukui-style/settings/org.ukui.style.gschema.xml usr/share/glib-2.0/schemas/
