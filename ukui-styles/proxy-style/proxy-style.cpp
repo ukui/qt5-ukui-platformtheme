@@ -62,12 +62,16 @@ void ProxyStyle::polish(QWidget *widget)
       i have to avoid them by limitting widget's class name,
       but that is no my expected.
       */
-    if (widget->testAttribute(Qt::WA_TranslucentBackground)) {
+    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
+        //FIXME:
+        m_blur_helper->registerWidget(widget);
+        /*
         if (QString(widget->metaObject()->className())=="QMenu" ||
                 widget->inherits("Peony::DirectoryViewMenu") ||
                 widget->inherits("Peony::DesktopMenu")) {
             m_blur_helper->registerWidget(widget);
         }
+        */
     }
 
     //qDebug()<<widget->metaObject()->className();
@@ -77,6 +81,9 @@ void ProxyStyle::polish(QWidget *widget)
 void ProxyStyle::unpolish(QWidget *widget)
 {
     //FIXME:
+    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
+        m_blur_helper->unregisterWidget(widget);
+    }
     QProxyStyle::unpolish(widget);
 }
 

@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     region-blur \
     system-settings \
-    tabwidget
+    tabwidget \
+    mps-style-application

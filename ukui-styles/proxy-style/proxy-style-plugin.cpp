@@ -37,6 +37,11 @@ ProxyStylePlugin::ProxyStylePlugin()
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key){
             if (key == "styleName") {
+                qDebug()<<"style name changed";
+                //We should not swich a application theme which use internal style.
+                if (QApplication::style()->inherits("InternalStyle"))
+                    return;
+
                 auto styleName = settings->get("styleName").toString();
                 if (m_current_style_name == styleName)
                     return;
@@ -56,6 +61,7 @@ ProxyStylePlugin::ProxyStylePlugin()
 
 QStyle *ProxyStylePlugin::create(const QString &key)
 {
+    qDebug()<<"create"<<key;
     if (key == "ukui") {
         //FIXME:
         //get current style, fusion for invalid.

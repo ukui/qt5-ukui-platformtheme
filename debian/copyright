@@ -8,19 +8,6 @@ Files:     .gitignore
            CONTRIBUTING.md
            CONTRIBUTING_zh_CN.md
            README.md
-           debian/99qt5ukui
-           debian/README.Debian
-           debian/compat
-           debian/control
-           debian/libqt5-ukui-style-dev.install
-           debian/libqt5-ukui-style1.install
-           debian/patches/series
-           debian/qt5-styles-ukui.install
-           debian/qt5-ukui-platformtheme.install
-           debian/rules
-           debian/source/format
-           debian/source/local-options
-           debian/watch
            doxygen/Doxyfile.in
            doxygen/README.md
            libqt5-ukui-style/animations/animations.pri
@@ -34,10 +21,6 @@ Files:     .gitignore
            qt5-ukui-platformtheme/qt5-ukui-platformtheme.pro
            qt5-ukui-platformtheme/ukui.json
            qt5-ukui.pro
-           test/region-blur/region-blur.pro
-           test/system-settings/system-settings.pro
-           test/tabwidget/tabwidget.pro
-           test/test.pro
            ukui-styles/proxy-style/proxy-style.pro
            ukui-styles/proxy-style/ukui-style.json
            ukui-styles/qt5-style-ukui/qt5-style-ukui.json
@@ -61,6 +44,7 @@ Files:     libqt5-ukui-style/animations/animation-helper.cpp
            libqt5-ukui-style/libqt5-ukui-style_global.h
            libqt5-ukui-style/settings/ukui-style-settings.cpp
            libqt5-ukui-style/settings/ukui-style-settings.h
+           libqt5-ukui-style/internal-styles/*
            qt5-ukui-platformtheme/main.cpp
            qt5-ukui-platformtheme/qt5-ukui-platform-theme.cpp
            qt5-ukui-platformtheme/qt5-ukui-platform-theme.h
@@ -87,16 +71,7 @@ License:   LGPL-3.0+
 
 Files:     COPYING.GPL3
            LICENSE.GPL3
-           test/region-blur/main.cpp
-           test/region-blur/mainwindow.cpp
-           test/region-blur/mainwindow.h
-           test/system-settings/main.cpp
-           test/system-settings/mainwindow.cpp
-           test/system-settings/mainwindow.h
-           test/system-settings/mainwindow.ui
-           test/tabwidget/main.cpp
-           test/tabwidget/widget.cpp
-           test/tabwidget/widget.h
+           test/*
 Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
 License:   GPL-3.0+
  This program is free software: you can redistribute it and/or modify

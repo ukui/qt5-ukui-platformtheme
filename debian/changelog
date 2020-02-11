@@ -1,3 +1,15 @@
+qt5-ukui (0.0.2ubuntu1) focal; urgency=medium
+
+  * release for focal.
+
+ -- Yue Lan <lanyue@kylinos.cn>  Tue, 11 Feb 2020 16:42:45 +0800
+
+qt5-ukui (0.0.2) eoan; urgency=medium
+
+  * add internal style support.
+
+ -- Yue Lan <lanyue@kylinos.cn>  Tue, 11 Feb 2020 16:41:44 +0800
+
 qt5-ukui (0.0.1) eoan; urgency=low
 
   * Initial release.

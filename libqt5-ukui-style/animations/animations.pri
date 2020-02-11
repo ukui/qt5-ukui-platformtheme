@@ -1,4 +1,5 @@
 INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/..
 
 include(tabwidget/tabwidget.pri)
 include(scrollbar/scrollbar.pri)
