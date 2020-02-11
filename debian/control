@@ -2,7 +2,16 @@ Source: qt5-ukui
 Section: libs
 Priority: optional
 Maintainer: Yue Lan <lanyue@kylinos.cn>
-Build-Depends: debhelper (>=11~), pkg-config, qt5-qmake, qtbase5-dev, qtbase5-private-dev, qtchooser, qtbase5-dev-tools, qttools5-dev-tools, libglib2.0-dev, libkf5windowsystem-dev 
+Build-Depends: debhelper (>=11~),
+               libglib2.0-dev,
+               libkf5windowsystem-dev,
+               pkg-config,
+               qt5-qmake,
+               qtbase5-dev,
+               qtbase5-dev-tools,
+               qtbase5-private-dev,
+               qtchooser,
+               qttools5-dev-tools
 Standards-Version: 4.4.0
 Homepage: https://github.com/explorer-cs/qt5-ukui
 
@@ -10,7 +19,10 @@ Package: qt5-ukui-platformtheme
 Section: libs
 Architecture: any
 Multi-Arch: same
-Depends: ${misc:Depends}, ${shlibs:Depends}, libqt5-ukui-style1, qt5-styles-ukui
+Depends: libqt5-ukui-style1,
+         qt5-styles-ukui,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Description: Qt5 QPA platform theme of UKUI.
  This package provides a qt5 qpa plaform theme plugin.
 
@@ -18,7 +30,10 @@ Package: qt5-styles-ukui
 Section: libs
 Architecture: any
 Multi-Arch: same
-Depends: ${misc:Depends}, ${shlibs:Depends}, libqt5-ukui-style1, kde-style-oxygen-qt5
+Depends: kde-style-oxygen-qt5,
+         libqt5-ukui-style1,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Description: QStyle plugins provided by ukui.
  This package provides several qstyle plugins which as default styles in ukui.
  For now, kde-style-oxygen-qt5 is the base style of ukui-styles (should be replaced).
@@ -27,7 +42,7 @@ Package: libqt5-ukui-style1
 Section: libs
 Architecture: any
 Multi-Arch: same
-Depends: ${misc:Depends}, ${shlibs:Depends}, libglib2.0-0, libqt5widgets5
+Depends: libglib2.0-0, libqt5widgets5, ${misc:Depends}, ${shlibs:Depends}
 Description: UKUI platform theme and styles' shared library.
  This package provides the shared libraries used by ukui platform theme and ukui-styles.
  It also provides the common metadatas for ukui-styles and platform theme using.
@@ -37,7 +52,7 @@ Package: libqt5-ukui-style-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: ${misc:Depends}, ${shlibs:Depends}, libqt5-ukui-style1
+Depends: libqt5-ukui-style1, ${misc:Depends}, ${shlibs:Depends}
 Description: Development files of libqt5-ukui-style1.
  This package provides the development files of libqt5-ukui-style1.
  You can use qt5-ukui's API do a secondary development and publish your project under correct License and Copyright.
