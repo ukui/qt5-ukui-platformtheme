@@ -49,6 +49,12 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QProxyStyle ("oxygen")
 
 int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
 {
+    switch (hint) {
+    case SH_ScrollBar_Transient:
+        return true;
+    default:
+        break;
+    }
     return QProxyStyle::styleHint(hint, option, widget, returnData);
 }
 
@@ -152,13 +158,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (animator->isRunning("groove_width")) {
             const_cast<QWidget*>(widget)->update();
         }
-
-        //draw bg
-        painter->save();
-        painter->setPen(Qt::transparent);
-        painter->setBrush(option->palette.color(enable? QPalette::Normal: QPalette::Disabled, QPalette::Base));
-        painter->drawRect(option->rect);
-        painter->restore();
 
         painter->save();
         painter->setPen(Qt::transparent);
@@ -296,4 +295,19 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     default:
         return QProxyStyle::drawControl(element, option, painter, widget);
     }
+}
+
+int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+{
+    switch (metric) {
+    case PM_ScrollBarExtent: {
+        return 12;
+    }
+    case PM_ScrollView_ScrollBarOverlap: {
+        return -12;
+    }
+    default:
+        break;
+    }
+    return QProxyStyle::pixelMetric(metric, option, widget);
 }

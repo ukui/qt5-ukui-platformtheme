@@ -62,6 +62,10 @@ public:
                      QPainter *painter,
                      const QWidget *widget = nullptr) const;
 
+    int pixelMetric(QStyle::PixelMetric metric,
+                    const QStyleOption *option = nullptr,
+                    const QWidget *widget = nullptr) const;
+
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;
