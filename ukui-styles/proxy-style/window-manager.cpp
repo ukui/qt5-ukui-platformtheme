@@ -7,6 +7,8 @@
 #include <QX11Info>
 #include <xcb/xcb.h>
 
+#include <QDebug>
+
 WindowManager::WindowManager(QObject *parent) : QObject(parent)
 {
     m_timer.setTimerType(Qt::PreciseTimer);
@@ -61,6 +63,19 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
 
 void WindowManager::buttonPresseEvent(QObject *obj, QMouseEvent *e)
 {
+    //qDebug()<<"mouse press event";
+    QWidget *w = qobject_cast<QWidget*>(obj);
+    //NOTE: We have to skip the border for resize event.
+    auto pos = w->mapFromGlobal(e->globalPos());
+    if (!w->rect().adjusted(10, 10, -10, -10).contains(pos)) {
+        //qDebug()<<"skip move event";
+        m_is_dragging = false;
+        m_current_obj = nullptr;
+        m_start_point = QPoint(0, 0);
+        m_timer.stop();
+        return;
+    }
+
     m_is_dragging = true;
     m_current_obj = obj;
     m_start_point = e->globalPos();
@@ -69,6 +84,7 @@ void WindowManager::buttonPresseEvent(QObject *obj, QMouseEvent *e)
 
 void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 {
+    //qDebug()<<"move";
     QWidget *w = qobject_cast<QWidget*>(obj);
 
     const QPoint native = e->globalPos();
