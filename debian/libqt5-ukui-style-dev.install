@@ -2,3 +2,4 @@ libqt5-ukui-style/*.h usr/include/qt5-ukui
 libqt5-ukui-style/*/*.h usr/include/qt5-ukui
 libqt5-ukui-style/*/*/*.h usr/include/qt5-ukui
 usr/lib/*/pkgconfig/*.pc
+usr/lib/*/*.so
