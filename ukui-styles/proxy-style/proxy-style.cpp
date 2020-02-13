@@ -23,6 +23,7 @@
 #include "proxy-style.h"
 #include <QWidget>
 #include "blur-helper.h"
+#include "window-manager.h"
 
 #include <QDebug>
 
@@ -30,7 +31,8 @@ using namespace UKUI;
 
 ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusion": key)
 {
-    m_blur_helper = new BlurHelper;
+    m_blur_helper = new BlurHelper(this);
+    m_window_manager = new WindowManager(this);
 }
 
 int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
@@ -76,6 +78,10 @@ void ProxyStyle::polish(QWidget *widget)
 
     //qDebug()<<widget->metaObject()->className();
     //add exception.
+
+    if (widget->isWindow()) {
+        m_window_manager->registerWidget(widget);
+    }
 }
 
 void ProxyStyle::unpolish(QWidget *widget)
@@ -84,6 +90,11 @@ void ProxyStyle::unpolish(QWidget *widget)
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         m_blur_helper->unregisterWidget(widget);
     }
+
+    if (widget->isWindow()) {
+        m_window_manager->unregisterWidget(widget);
+    }
+
     QProxyStyle::unpolish(widget);
 }
 

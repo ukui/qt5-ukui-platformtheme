@@ -27,6 +27,7 @@
 #include <QProxyStyle>
 
 class BlurHelper;
+class WindowManager;
 
 namespace UKUI {
 
@@ -66,6 +67,7 @@ public:
 
 private:
     BlurHelper *m_blur_helper;
+    WindowManager *m_window_manager;
 };
 
 }

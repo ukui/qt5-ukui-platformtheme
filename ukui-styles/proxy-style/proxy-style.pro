@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets KWindowSystem
+QT       += widgets KWindowSystem x11extras
 
 TARGET = ukui-proxy-style
 TEMPLATE = lib
@@ -29,13 +29,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         proxy-style.cpp \
     proxy-style-plugin.cpp \
-    blur-helper.cpp
+    blur-helper.cpp \
+    window-manager.cpp
 
 HEADERS += \
         proxy-style.h \
         proxy-style_global.h \ 
     proxy-style-plugin.h \
-    blur-helper.h
+    blur-helper.h \
+    window-manager.h
 
 unix {
     target.path = $$[QT_INSTALL_PLUGINS]/styles

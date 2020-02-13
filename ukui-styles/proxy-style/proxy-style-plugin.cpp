@@ -43,8 +43,6 @@ ProxyStylePlugin::ProxyStylePlugin()
                     return;
 
                 auto styleName = settings->get("styleName").toString();
-                if (m_current_style_name == styleName)
-                    return;
 
                 if (styleName == "ukui") {
                     styleName = "ukui-white";
@@ -52,8 +50,8 @@ ProxyStylePlugin::ProxyStylePlugin()
                 if (!QStyleFactory::keys().contains(styleName)) {
                     styleName = "fusion";
                 }
+
                 QApplication::setStyle(new ProxyStyle(styleName));
-                m_current_style_name = styleName;
             }
         });
     }
