@@ -1,4 +1,4 @@
-# qt5-ukui
+# qt5-ukui-platformtheme
 The UKUI platform theme for qt5 QPA.
 
 ## Document
@@ -9,7 +9,7 @@ In the early development of the UKUI 3.0, we used qt5-gtk2-platformtheme to ensu
 
 This project is intend to provide a common resolution of desktop application development with qt5 in UKUI3.0. We hope provide a platform theme to unify and beautify all qt applications according to the design of UKUI3.0, not only our own applications. We are also committed to building our applications that can adapt to different styles. This project is first step to archive those objectives.
 
-qt5-ukui's route brings us closer to the upstream communities. It is not a division, but a desire for fusion and individuality in a compatible way.
+qt5-ukui-platformtheme's route brings us closer to the upstream communities. It is not a division, but a desire for fusion and individuality in a compatible way.
 
 ## Build and Test
 ### Build Depends (reference debian/contorl)
@@ -30,7 +30,7 @@ One more important job,
 
 > sudo glib-compile-schemas /usr/share/glib-2.0/schemas
 
-That will let the gsettings used by qt5-ukui worked.
+That will let the gsettings used by qt5-ukui-platformtheme worked.
 
 Then you can run the test in project, or run any qt5 program for testing with ukui platformtheme.
 

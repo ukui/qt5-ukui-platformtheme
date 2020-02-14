@@ -1,4 +1,4 @@
-Source: qt5-ukui
+Source: qt5-ukui-platformtheme
 Section: libs
 Priority: optional
 Maintainer: Yue Lan <lanyue@kylinos.cn>
@@ -15,8 +15,8 @@ Build-Depends: debhelper (>=11~),
                qttools5-dev-tools
 Standards-Version: 4.4.0
 Homepage: https://www.ukui.org
-Vcs-Git: https://github.com/ukui/qt5-ukui.git
-Vcs-Browser: https://github.com/ukui/qt5-ukui
+Vcs-Git: https://github.com/ukui/qt5-ukui-platformtheme.git
+Vcs-Browser: https://github.com/ukui/qt5-ukui-platformtheme
 
 Package: qt5-ukui-platformtheme
 Section: libs
