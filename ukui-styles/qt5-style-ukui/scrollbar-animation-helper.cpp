@@ -50,3 +50,8 @@ bool ScrollBarAnimationHelper::unregisterWidget(QWidget *w)
     }
     return result;
 }
+
+AnimatorIface *ScrollBarAnimationHelper::animator(const QWidget *w)
+{
+    return m_animators->value(w);
+}

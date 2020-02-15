@@ -34,6 +34,8 @@ public:
     bool registerWidget(QWidget *w);
     bool unregisterWidget(QWidget *w);
 
+    AnimatorIface *animator(const QWidget *w);
+
 signals:
 
 public slots:

@@ -33,8 +33,7 @@ Package: qt5-styles-ukui
 Section: libs
 Architecture: any
 Multi-Arch: same
-Depends: kde-style-oxygen-qt5,
-         libqt5-ukui-style1,
+Depends: libqt5-ukui-style1,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: QStyle plugins provided by ukui.
@@ -45,8 +44,7 @@ Description: QStyle plugins provided by ukui.
  tabwidget animation, etc. 
  .
  This package provides several qstyle plugins which as default 
- styles in ukui. For now, kde-style-oxygen-qt5 is the base style
- of ukui-styles (should be replaced).
+ styles in ukui. For now, fusion is the base style of ukui-styles.
 
 Package: libqt5-ukui-style1
 Section: libs

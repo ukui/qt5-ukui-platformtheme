@@ -47,7 +47,7 @@ protected:
      * \deprecated
      * You should not use this member in newly-written code.
      */
-    QHash<QWidget *, AnimatorIface*> *m_animators = nullptr;
+    QHash<const QWidget *, AnimatorIface*> *m_animators = nullptr;
 };
 
 #endif // ANIMATIONHELPER_H

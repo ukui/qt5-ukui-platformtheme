@@ -46,3 +46,8 @@ bool TabWidgetAnimationHelper::unregisterWidget(QWidget *w)
     m_animators->remove(w);
     return true;
 }
+
+AnimatorIface *TabWidgetAnimationHelper::animator(const QWidget *w)
+{
+    return m_animators->value(w);
+}

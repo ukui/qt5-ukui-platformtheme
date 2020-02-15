@@ -25,6 +25,8 @@
 
 #include <QVariantAnimation>
 
+#include <QDebug>
+
 using namespace UKUI::ScrollBar;
 
 DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParallelAnimationGroup (parent)
@@ -71,6 +73,7 @@ DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParal
  */
 bool DefaultInteractionAnimator::bindWidget(QWidget *w)
 {
+    //qDebug()<<w->objectName()<<w->topLevelWidget()->metaObject()->className();
     if (qobject_cast<QScrollBar*>(w)) {
         m_widget = w;
         this->setParent(w);

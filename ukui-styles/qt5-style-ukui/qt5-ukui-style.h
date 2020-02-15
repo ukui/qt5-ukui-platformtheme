@@ -66,6 +66,17 @@ public:
                     const QStyleOption *option = nullptr,
                     const QWidget *widget = nullptr) const;
 
+    QRect subControlRect(QStyle::ComplexControl control,
+                         const QStyleOptionComplex *option,
+                         QStyle::SubControl subControl,
+                         const QWidget *widget = nullptr) const;
+
+protected:
+    QRect scrollBarSubControlRect(QStyle::ComplexControl control,
+                                  const QStyleOptionComplex *option,
+                                  QStyle::SubControl subControl,
+                                  const QWidget *widget = nullptr) const;
+
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;

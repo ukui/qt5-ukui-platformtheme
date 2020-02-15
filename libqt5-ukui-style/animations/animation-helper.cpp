@@ -27,7 +27,7 @@
 
 AnimationHelper::AnimationHelper(QObject *parent) : QObject(parent)
 {
-    m_animators = new QHash<QWidget *, AnimatorIface *>();
+    m_animators = new QHash<const QWidget *, AnimatorIface *>();
 }
 
 AnimationHelper::~AnimationHelper()
