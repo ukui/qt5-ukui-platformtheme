@@ -37,6 +37,8 @@ bool ScrollBarAnimationHelper::registerWidget(QWidget *w)
     bool result = animator->bindWidget(w);
     if (!result)
         animator->deleteLater();
+
+    m_animators->insert(w, animator);
     return result;
 }
 
@@ -48,6 +50,7 @@ bool ScrollBarAnimationHelper::unregisterWidget(QWidget *w)
         result = animator->unboundWidget();
         animator->deleteLater();
     }
+    m_animators->remove(w);
     return result;
 }
 

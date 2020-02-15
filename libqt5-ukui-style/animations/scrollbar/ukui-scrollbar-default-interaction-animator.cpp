@@ -76,7 +76,6 @@ bool DefaultInteractionAnimator::bindWidget(QWidget *w)
     //qDebug()<<w->objectName()<<w->topLevelWidget()->metaObject()->className();
     if (qobject_cast<QScrollBar*>(w)) {
         m_widget = w;
-        this->setParent(w);
         return true;
     }
     return false;

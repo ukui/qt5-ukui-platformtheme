@@ -130,8 +130,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 {
     switch (control) {
     case CC_ScrollBar: {
-        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
-        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = m_scrollbar_animation_helper->animator(widget);
         bool enable = option->state.testFlag(QStyle::State_Enabled);
         bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
         bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
@@ -186,8 +186,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     switch (element) {
     case CE_ScrollBarSlider: {
         //qDebug()<<"draw slider";
-        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
-        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
             return QProxyStyle::drawControl(element, option, painter, widget);
         }
@@ -266,8 +266,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
     case CE_ScrollBarAddLine: {
-        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
-        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
             return QProxyStyle::drawControl(element, option, painter, widget);
         }
@@ -280,8 +280,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
     case CE_ScrollBarSubLine: {
-        auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
-        auto animator = dynamic_cast<AnimatorIface*>(animatorObj);
+        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+        auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
             return QProxyStyle::drawControl(element, option, painter, widget);
         }
