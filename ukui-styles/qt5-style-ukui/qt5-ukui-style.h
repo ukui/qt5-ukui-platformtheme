@@ -23,6 +23,7 @@
 #ifndef QT5UKUISTYLE_H
 #define QT5UKUISTYLE_H
 
+#include <private/qfusionstyle_p.h>
 #include <QProxyStyle>
 
 class TabWidgetAnimationHelper;
@@ -33,11 +34,14 @@ class ScrollBarAnimationHelper;
  * \details
  * This class provide the default ukui style in UKUI desktop enviroment.
  */
-class Qt5UKUIStyle : public QProxyStyle
+class Qt5UKUIStyle : public QFusionStyle
 {
     Q_OBJECT
 public:
     explicit Qt5UKUIStyle(bool dark = false);
+
+    //debuger
+    bool eventFilter(QObject *obj, QEvent *e);
 
     int styleHint(StyleHint hint,
                   const QStyleOption *option,

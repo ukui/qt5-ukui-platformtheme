@@ -52,6 +52,9 @@ public:
     explicit ProxyStyle(const QString &key);
     virtual ~ProxyStyle() {}
 
+    //debuger
+    bool eventFilter(QObject *obj, QEvent *e);
+
     int styleHint(StyleHint hint,
                   const QStyleOption *option,
                   const QWidget *widget,

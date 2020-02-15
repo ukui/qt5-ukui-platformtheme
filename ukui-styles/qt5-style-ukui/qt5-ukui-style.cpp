@@ -38,13 +38,34 @@
 
 #include <QIcon>
 
+#include <QEvent>
 #include <QDebug>
 
-Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QProxyStyle ("fusion")
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QFusionStyle ()
 {
     m_use_dark_palette = dark;
     m_tab_animation_helper = new TabWidgetAnimationHelper(this);
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
+}
+
+bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
+{
+    /*!
+      \bug
+      There is a bug when use fusion as base style when in qt5 assistant's
+      HelperView. ScrollBar will not draw with our overrided function correctly,
+      and then it will trigger QEvent::StyleAnimationUpdate. by some how it will let
+      HelperView be hidden.
+      I eat this event to aviod this bug, but the scrollbar in HelperView still
+      display with old fusion style, and the animation will be ineffective.
+
+      I don't know why HelperView didn't use our function drawing scrollbar but fusion, that
+      makes me stranged.
+      */
+    if (e->type() == QEvent::StyleAnimationUpdate) {
+        return true;
+    }
+    return false;
 }
 
 int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
@@ -55,11 +76,13 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     default:
         break;
     }
-    return QProxyStyle::styleHint(hint, option, widget, returnData);
+    return QFusionStyle::styleHint(hint, option, widget, returnData);
 }
 
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
+    QFusionStyle::polish(widget);
+
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
@@ -80,18 +103,18 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_scrollbar_animation_helper->registerWidget(widget);
     }
 
-    QProxyStyle::polish(widget);
+    widget->installEventFilter(this);
 }
 
 void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
+    widget->removeEventFilter(this);
+
     if (widget->inherits("QMenu")) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);
         //widget->setMask(QRegion());
         return;
     }
-
-    QProxyStyle::unpolish(widget);
 
     if (widget->inherits("QTabWidget")) {
         m_tab_animation_helper->unregisterWidget(widget);
@@ -101,6 +124,8 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         widget->setAttribute(Qt::WA_Hover, false);
         m_scrollbar_animation_helper->unregisterWidget(widget);
     }
+
+    QFusionStyle::unpolish(widget);
 }
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
@@ -118,12 +143,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             return drawMenuPrimitive(option, painter, widget);
         }
 
-        return QProxyStyle::drawPrimitive(element, option, painter, widget);
+        return QFusionStyle::drawPrimitive(element, option, painter, widget);
     }
     default:
         break;
     }
-    return QProxyStyle::drawPrimitive(element, option, painter, widget);
+    return QFusionStyle::drawPrimitive(element, option, painter, widget);
 }
 
 void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
@@ -136,7 +161,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
         bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
         if (!animator) {
-            return QProxyStyle::drawComplexControl(control, option, painter, widget);
+            return QFusionStyle::drawComplexControl(control, option, painter, widget);
         }
 
         animator->setAnimatorDirectionForward("bg_opacity", mouse_over);
@@ -177,7 +202,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         return QCommonStyle::drawComplexControl(control, option, painter, widget);
     }
     default:
-        return QProxyStyle::drawComplexControl(control, option, painter, widget);
+        return QFusionStyle::drawComplexControl(control, option, painter, widget);
     }
 }
 
@@ -189,7 +214,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QProxyStyle::drawControl(element, option, painter, widget);
+            return QFusionStyle::drawControl(element, option, painter, widget);
         }
 
         bool enable = option->state.testFlag(QStyle::State_Enabled);
@@ -269,13 +294,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QProxyStyle::drawControl(element, option, painter, widget);
+            return QFusionStyle::drawControl(element, option, painter, widget);
         }
 
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        QProxyStyle::drawControl(element, option, painter, widget);
+        QFusionStyle::drawControl(element, option, painter, widget);
         painter->restore();
         return;
     }
@@ -283,18 +308,18 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QProxyStyle::drawControl(element, option, painter, widget);
+            return QFusionStyle::drawControl(element, option, painter, widget);
         }
 
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        QProxyStyle::drawControl(element, option, painter, widget);
+        QFusionStyle::drawControl(element, option, painter, widget);
         painter->restore();
         return;
     }
     default:
-        return QProxyStyle::drawControl(element, option, painter, widget);
+        return QFusionStyle::drawControl(element, option, painter, widget);
     }
 }
 
@@ -310,7 +335,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     default:
         break;
     }
-    return QProxyStyle::pixelMetric(metric, option, widget);
+    return QFusionStyle::pixelMetric(metric, option, widget);
 }
 
 QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleOptionComplex *option, QStyle::SubControl subControl, const QWidget *widget) const
@@ -322,7 +347,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     default:
         break;
     }
-    return QProxyStyle::subControlRect(control, option, subControl, widget);
+    return QFusionStyle::subControlRect(control, option, subControl, widget);
 }
 
 // This fuction is copied from fusion style.

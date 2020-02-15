@@ -25,6 +25,8 @@
 #include "blur-helper.h"
 #include "window-manager.h"
 
+#include <QApplication>
+
 #include <QDebug>
 
 using namespace UKUI;
@@ -33,6 +35,16 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
 {
     m_blur_helper = new BlurHelper(this);
     m_window_manager = new WindowManager(this);
+}
+
+bool ProxyStyle::eventFilter(QObject *obj, QEvent *e)
+{
+//    if (e->type() == QEvent::Hide) {
+//        qDebug()<<obj->metaObject()->className()<<e->type()<<"=========\n\n\n";
+//    } else {
+//        qDebug()<<obj->metaObject()->className()<<e->type();
+//    }
+    return false;
 }
 
 int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
@@ -82,10 +94,14 @@ void ProxyStyle::polish(QWidget *widget)
     if (widget->isWindow()) {
         m_window_manager->registerWidget(widget);
     }
+
+    widget->installEventFilter(this);
 }
 
 void ProxyStyle::unpolish(QWidget *widget)
 {
+    widget->removeEventFilter(this);
+
     //FIXME:
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         m_blur_helper->unregisterWidget(widget);

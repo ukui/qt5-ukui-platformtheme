@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets
+QT       += widgets widgets-private
 
 TARGET = qt5-style-ukui
 TEMPLATE = lib
