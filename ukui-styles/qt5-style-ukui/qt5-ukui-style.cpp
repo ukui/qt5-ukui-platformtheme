@@ -37,6 +37,8 @@
 #include "animator-iface.h"
 
 #include <QIcon>
+#include <QStyleOptionViewItem>
+#include <QAbstractItemView>
 
 #include <QEvent>
 #include <QDebug>
@@ -144,6 +146,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
 
         return QFusionStyle::drawPrimitive(element, option, painter, widget);
+    }
+    case PE_FrameFocusRect: {
+        if (qobject_cast<const QAbstractItemView *>(widget))
+            return;
+        break;
     }
     default:
         break;
