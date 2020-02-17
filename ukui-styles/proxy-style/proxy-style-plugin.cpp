@@ -24,6 +24,8 @@
 #include "proxy-style.h"
 #include "ukui-style-settings.h"
 
+#include "application-style-settings.h"
+
 #include <QApplication>
 #include <QStyleFactory>
 
@@ -36,6 +38,10 @@ ProxyStylePlugin::ProxyStylePlugin()
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key){
+            auto appStyleSettings = ApplicationStyleSettings::getInstance();
+            if (appStyleSettings->currentStyleStretagy() != ApplicationStyleSettings::Default)
+                return;
+
             if (key == "styleName") {
                 qDebug()<<"style name changed";
                 //We should not swich a application theme which use internal style.
@@ -52,6 +58,24 @@ ProxyStylePlugin::ProxyStylePlugin()
                 }
 
                 QApplication::setStyle(new ProxyStyle(styleName));
+                QPalette palette = QApplication::palette();
+                /*!
+                  \todo implemet palette switch.
+                  */
+                switch (appStyleSettings->currentColorStretagy()) {
+                case ApplicationStyleSettings::System: {
+                    break;
+                }
+                case ApplicationStyleSettings::Bright: {
+                    break;
+                }
+                case ApplicationStyleSettings::Dark: {
+                    break;
+                }
+                default:
+                    break;
+                }
+                QApplication::setPalette(palette);
             }
         });
     }

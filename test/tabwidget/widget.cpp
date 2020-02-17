@@ -34,6 +34,7 @@ Widget::Widget(QWidget *parent)
     : QTabWidget(parent)
 {
     auto v1 = new QListView(this);
+    v1->setViewMode(QListView::IconMode);
     auto m1 = new QFileSystemModel(v1);
     v1->setModel(m1);
     m1->setRootPath("/");

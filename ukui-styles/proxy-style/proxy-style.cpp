@@ -24,6 +24,7 @@
 #include <QWidget>
 #include "blur-helper.h"
 #include "window-manager.h"
+#include "application-style-settings.h"
 
 #include <QApplication>
 
@@ -35,6 +36,26 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
 {
     m_blur_helper = new BlurHelper(this);
     m_window_manager = new WindowManager(this);
+
+    m_app_style_settings = ApplicationStyleSettings::getInstance();
+    connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy){
+        /*!
+          \todo implemet palette switch.
+          */
+        switch (stretagy) {
+        case ApplicationStyleSettings::System: {
+            break;
+        }
+        case ApplicationStyleSettings::Bright: {
+            break;
+        }
+        case ApplicationStyleSettings::Dark: {
+            break;
+        }
+        default:
+            break;
+        }
+    });
 }
 
 bool ProxyStyle::eventFilter(QObject *obj, QEvent *e)

@@ -39,6 +39,8 @@
 #include <QIcon>
 #include <QStyleOptionViewItem>
 #include <QAbstractItemView>
+#include <QScrollBar>
+#include <QTreeView>
 
 #include <QEvent>
 #include <QDebug>
@@ -75,6 +77,8 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     switch (hint) {
     case SH_ScrollBar_Transient:
         return true;
+    case SH_ItemView_ShowDecorationSelected:
+        return true;
     default:
         break;
     }
@@ -105,6 +109,10 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_scrollbar_animation_helper->registerWidget(widget);
     }
 
+    if (auto v = qobject_cast<QAbstractItemView *>(widget)) {
+        v->viewport()->setAttribute(Qt::WA_Hover);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -125,6 +133,10 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     if (widget->inherits("QScrollBar")) {
         widget->setAttribute(Qt::WA_Hover, false);
         m_scrollbar_animation_helper->unregisterWidget(widget);
+    }
+
+    if (auto v = qobject_cast<QAbstractItemView *>(widget)) {
+        v->viewport()->setAttribute(Qt::WA_Hover);
     }
 
     QFusionStyle::unpolish(widget);
@@ -151,6 +163,29 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (qobject_cast<const QAbstractItemView *>(widget))
             return;
         break;
+    }
+    case PE_PanelItemViewRow: {
+        return;
+    }
+    case PE_PanelItemViewItem: {
+        /*!
+         * \todo
+         * deal with custom/altenative background items.
+         */
+        bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
+        bool isSelected = option->state & State_Selected;
+        bool enable = option->state & State_Enabled;
+        QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
+                                             QPalette::Highlight);
+        color.setAlpha(0);
+        if (isHover) {
+            color.setAlpha(127);
+        }
+        if (isSelected) {
+            color.setAlpha(255);
+        }
+        painter->fillRect(option->rect, color);
+        return;
     }
     default:
         break;

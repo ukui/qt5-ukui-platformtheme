@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets
+QT       += widgets concurrent
 
 TARGET = qt5-ukui-style
 TEMPLATE = lib

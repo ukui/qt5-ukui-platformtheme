@@ -29,6 +29,8 @@
 class BlurHelper;
 class WindowManager;
 
+class ApplicationStyleSettings;
+
 namespace UKUI {
 
 /*!
@@ -71,6 +73,8 @@ public:
 private:
     BlurHelper *m_blur_helper;
     WindowManager *m_window_manager;
+
+    ApplicationStyleSettings *m_app_style_settings;
 };
 
 }
