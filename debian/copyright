@@ -44,6 +44,8 @@ Files:     libqt5-ukui-style/animations/animation-helper.cpp
            libqt5-ukui-style/libqt5-ukui-style_global.h
            libqt5-ukui-style/settings/ukui-style-settings.cpp
            libqt5-ukui-style/settings/ukui-style-settings.h
+           libqt5-ukui-style/settings/application-style-settings.cpp
+           libqt5-ukui-style/settings/application-style-settings.h
            libqt5-ukui-style/internal-styles/*
            qt5-ukui-platformtheme/main.cpp
            qt5-ukui-platformtheme/qt5-ukui-platform-theme.cpp
@@ -51,6 +53,8 @@ Files:     libqt5-ukui-style/animations/animation-helper.cpp
            qt5-ukui-platformtheme/qt5-ukui-platformtheme_global.h
            ukui-styles/proxy-style/blur-helper.cpp
            ukui-styles/proxy-style/blur-helper.h
+           ukui-styles/proxy-style/window-manager.cpp
+           ukui-styles/proxy-style/window-manager.h
            ukui-styles/proxy-style/proxy-style-plugin.cpp
            ukui-styles/proxy-style/proxy-style-plugin.h
            ukui-styles/proxy-style/proxy-style.cpp
