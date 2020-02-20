@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Yue Lan <lanyue@kylinos.cn>
 Build-Depends: debhelper (>=11~),
                libglib2.0-dev,
+               libqt5x11extras5-dev,
                libkf5windowsystem-dev,
                libgsettings-qt-dev,
                pkg-config,
