@@ -1,83 +1,79 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: qt5-ukui-platformtheme
 Source: <https://github.com/ukui/qt5-ukui-platformtheme>
-#
-# Please double check copyright with the licensecheck(1) command.
 
-Files:     .gitignore
-           CONTRIBUTING.md
-           CONTRIBUTING_zh_CN.md
-           README.md
-           doxygen/Doxyfile.in
-           doxygen/README.md
-           libqt5-ukui-style/animations/animations.pri
-           libqt5-ukui-style/animations/scrollbar/scrollbar.pri
-           libqt5-ukui-style/animations/tabwidget/tabwidget.pri
-           libqt5-ukui-style/development-files/qt5-ukui.pc
-           libqt5-ukui-style/libqt5-ukui-style.pri
-           libqt5-ukui-style/libqt5-ukui-style.pro
-           libqt5-ukui-style/settings/settings.pri
-           libqt5-ukui-style/settings/org.ukui.style.gschema.xml
-           qt5-ukui-platformtheme/qt5-ukui-platformtheme.pro
-           qt5-ukui-platformtheme/ukui.json
-           qt5-ukui.pro
-           ukui-styles/proxy-style/proxy-style.pro
-           ukui-styles/proxy-style/ukui-style.json
-           ukui-styles/qt5-style-ukui/qt5-style-ukui.json
-           ukui-styles/qt5-style-ukui/qt5-style-ukui.pro
-           ukui-styles/ukui-styles.pro
+Files: CONTRIBUTING.md
+       CONTRIBUTING_zh_CN.md
+       README.md
+       doxygen/Doxyfile.in
+       doxygen/README.md
+       libqt5-ukui-style/animations/animations.pri
+       libqt5-ukui-style/animations/scrollbar/scrollbar.pri
+       libqt5-ukui-style/animations/tabwidget/tabwidget.pri
+       libqt5-ukui-style/development-files/qt5-ukui.pc
+       libqt5-ukui-style/libqt5-ukui-style.pri
+       libqt5-ukui-style/libqt5-ukui-style.pro
+       libqt5-ukui-style/settings/settings.pri
+       libqt5-ukui-style/settings/org.ukui.style.gschema.xml
+       qt5-ukui-platformtheme/qt5-ukui-platformtheme.pro
+       qt5-ukui-platformtheme/ukui.json
+       qt5-ukui.pro
+       ukui-styles/proxy-style/proxy-style.pro
+       ukui-styles/proxy-style/ukui-style.json
+       ukui-styles/qt5-style-ukui/qt5-style-ukui.json
+       ukui-styles/qt5-style-ukui/qt5-style-ukui.pro
+       ukui-styles/ukui-styles.pro
+Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
+License: LGPL-3.0+
+
+Files: libqt5-ukui-style/animations/animation-helper.cpp
+       libqt5-ukui-style/animations/animation-helper.h
+       libqt5-ukui-style/animations/animator-iface.h
+       libqt5-ukui-style/animations/animator-plugin-iface.h
+       libqt5-ukui-style/animations/scrollbar/ukui-scrollbar-default-interaction-animator.cpp
+       libqt5-ukui-style/animations/scrollbar/ukui-scrollbar-default-interaction-animator.h
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-animator-iface.h
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-animator-plugin-iface.h
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator-factory.cpp
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator-factory.h
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.cpp
+       libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.h
+       libqt5-ukui-style/libqt5-ukui-style_global.h
+       libqt5-ukui-style/settings/ukui-style-settings.cpp
+       libqt5-ukui-style/settings/ukui-style-settings.h
+       libqt5-ukui-style/settings/application-style-settings.cpp
+       libqt5-ukui-style/settings/application-style-settings.h
+       libqt5-ukui-style/internal-styles/*
+       qt5-ukui-platformtheme/main.cpp
+       qt5-ukui-platformtheme/qt5-ukui-platform-theme.cpp
+       qt5-ukui-platformtheme/qt5-ukui-platform-theme.h
+       qt5-ukui-platformtheme/qt5-ukui-platformtheme_global.h
+       ukui-styles/proxy-style/blur-helper.cpp
+       ukui-styles/proxy-style/blur-helper.h
+       ukui-styles/proxy-style/window-manager.cpp
+       ukui-styles/proxy-style/window-manager.h
+       ukui-styles/proxy-style/proxy-style-plugin.cpp
+       ukui-styles/proxy-style/proxy-style-plugin.h
+       ukui-styles/proxy-style/proxy-style.cpp
+       ukui-styles/proxy-style/proxy-style.h
+       ukui-styles/proxy-style/proxy-style_global.h
+       ukui-styles/qt5-style-ukui/qt5-ukui-style-helper.cpp
+       ukui-styles/qt5-style-ukui/qt5-ukui-style-helper.h
+       ukui-styles/qt5-style-ukui/qt5-ukui-style-plugin.cpp
+       ukui-styles/qt5-style-ukui/qt5-ukui-style-plugin.h
+       ukui-styles/qt5-style-ukui/qt5-ukui-style.cpp
+       ukui-styles/qt5-style-ukui/qt5-ukui-style.h
+       ukui-styles/qt5-style-ukui/scrollbar-animation-helper.cpp
+       ukui-styles/qt5-style-ukui/scrollbar-animation-helper.h
+       ukui-styles/qt5-style-ukui/tab-widget-animation-helper.cpp
+       ukui-styles/qt5-style-ukui/tab-widget-animation-helper.h
 Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
 License:   LGPL-3.0+
 
-Files:     libqt5-ukui-style/animations/animation-helper.cpp
-           libqt5-ukui-style/animations/animation-helper.h
-           libqt5-ukui-style/animations/animator-iface.h
-           libqt5-ukui-style/animations/animator-plugin-iface.h
-           libqt5-ukui-style/animations/scrollbar/ukui-scrollbar-default-interaction-animator.cpp
-           libqt5-ukui-style/animations/scrollbar/ukui-scrollbar-default-interaction-animator.h
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-animator-iface.h
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-animator-plugin-iface.h
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator-factory.cpp
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator-factory.h
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.cpp
-           libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.h
-           libqt5-ukui-style/libqt5-ukui-style_global.h
-           libqt5-ukui-style/settings/ukui-style-settings.cpp
-           libqt5-ukui-style/settings/ukui-style-settings.h
-           libqt5-ukui-style/settings/application-style-settings.cpp
-           libqt5-ukui-style/settings/application-style-settings.h
-           libqt5-ukui-style/internal-styles/*
-           qt5-ukui-platformtheme/main.cpp
-           qt5-ukui-platformtheme/qt5-ukui-platform-theme.cpp
-           qt5-ukui-platformtheme/qt5-ukui-platform-theme.h
-           qt5-ukui-platformtheme/qt5-ukui-platformtheme_global.h
-           ukui-styles/proxy-style/blur-helper.cpp
-           ukui-styles/proxy-style/blur-helper.h
-           ukui-styles/proxy-style/window-manager.cpp
-           ukui-styles/proxy-style/window-manager.h
-           ukui-styles/proxy-style/proxy-style-plugin.cpp
-           ukui-styles/proxy-style/proxy-style-plugin.h
-           ukui-styles/proxy-style/proxy-style.cpp
-           ukui-styles/proxy-style/proxy-style.h
-           ukui-styles/proxy-style/proxy-style_global.h
-           ukui-styles/qt5-style-ukui/qt5-ukui-style-helper.cpp
-           ukui-styles/qt5-style-ukui/qt5-ukui-style-helper.h
-           ukui-styles/qt5-style-ukui/qt5-ukui-style-plugin.cpp
-           ukui-styles/qt5-style-ukui/qt5-ukui-style-plugin.h
-           ukui-styles/qt5-style-ukui/qt5-ukui-style.cpp
-           ukui-styles/qt5-style-ukui/qt5-ukui-style.h
-           ukui-styles/qt5-style-ukui/scrollbar-animation-helper.cpp
-           ukui-styles/qt5-style-ukui/scrollbar-animation-helper.h
-           ukui-styles/qt5-style-ukui/tab-widget-animation-helper.cpp
-           ukui-styles/qt5-style-ukui/tab-widget-animation-helper.h
+Files: test/*
+       debian/*
 Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
-License:   LGPL-3.0+
-
-Files:     COPYING.GPL3
-           LICENSE.GPL3
-           test/*
-Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
-License:   GPL-3.0+
+License: GPL-3.0+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -94,7 +90,7 @@ License:   GPL-3.0+
  On Debian systems, the complete text of the GNU General Public License
  Version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
-License:   LGPL-3.0+
+License: LGPL-3.0+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
@@ -110,4 +106,3 @@ License:   LGPL-3.0+
  .
  On Debian systems, the complete text of the GNU Lesser General Public License
  Version 3 can be found in `/usr/share/common-licenses/LGPL-3'.
-

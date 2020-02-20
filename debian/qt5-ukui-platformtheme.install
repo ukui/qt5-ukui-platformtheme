@@ -1,2 +1,1 @@
-debian/99qt5ukui etc/X11/Xsession.d
 usr/lib/*/qt5/plugins/platformthemes/*.so
