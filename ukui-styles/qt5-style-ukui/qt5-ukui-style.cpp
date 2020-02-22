@@ -41,6 +41,9 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 #include <QTreeView>
+#include <QMenu>
+
+#include <QtPlatformHeaders/QXcbWindowFunctions>
 
 #include <QEvent>
 #include <QDebug>
@@ -72,8 +75,19 @@ bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
     return false;
 }
 
+/*
+ * Note there are some widgets can not be set as transparent one in polish.
+ * Because it has been created as a rgb window.
+ *
+ * To reslove this problem, we have to let attribute be setted more ahead.
+ * Some styleHint() methods are called in the early creation of a widget.
+ * So we can real set them as alpha widgets.
+ */
 int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
 {
+    realSetWindowSurfaceFormatAlpha(widget);
+    realSetMenuTypeToMenu(widget);
+
     switch (hint) {
     case SH_ScrollBar_Transient:
         return true;
@@ -480,4 +494,36 @@ QRect Qt5UKUIStyle::scrollBarSubControlRect(QStyle::ComplexControl control, cons
         ret = visualRect(scrollbar->direction, scrollBarRect, ret);
     }
     return ret;
+}
+
+void Qt5UKUIStyle::realSetWindowSurfaceFormatAlpha(const QWidget *widget) const
+{
+    if (!widget)
+        return;
+
+    if (widget->testAttribute(Qt::WA_WState_Created))
+        return;
+
+    if (auto menu = qobject_cast<const QMenu *>(widget)) {
+        const_cast<QWidget *>(widget)->setAttribute(Qt::WA_TranslucentBackground);
+    }
+}
+
+void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const
+{
+    if (auto menu = qobject_cast<const QMenu *>(widget)) {
+        if (!qobject_cast<const QMenu*>(widget)
+                || widget->testAttribute(Qt::WA_X11NetWmWindowTypeMenu)
+                || !widget->windowHandle())
+            return;
+
+        int wmWindowType = 0;
+        if (widget->testAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu))
+            wmWindowType |= QXcbWindowFunctions::DropDownMenu;
+        if (widget->testAttribute(Qt::WA_X11NetWmWindowTypePopupMenu))
+            wmWindowType |= QXcbWindowFunctions::PopupMenu;
+        if (wmWindowType == 0) return;
+        QXcbWindowFunctions::setWmWindowType(widget->windowHandle(),
+                                             static_cast<QXcbWindowFunctions::WmWindowType>(wmWindowType));
+    }
 }

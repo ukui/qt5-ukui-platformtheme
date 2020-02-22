@@ -81,6 +81,9 @@ protected:
                                   QStyle::SubControl subControl,
                                   const QWidget *widget = nullptr) const;
 
+    void realSetWindowSurfaceFormatAlpha(const QWidget *widget) const;
+    void realSetMenuTypeToMenu(const QWidget *widget) const;
+
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;
