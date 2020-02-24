@@ -877,7 +877,6 @@ void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const
     }
 }
 
-
 void Qt5UKUIStyle::drawComBoxIndicator(SubControl which, const QStyleOptionComplex *option,
                                           QPainter *painter) const
 {
