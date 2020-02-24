@@ -306,6 +306,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
            }
         }
       painter->drawRoundedRect(option->rect,4,4);
+      painter->restore();
 
       /*!
        * \todo
