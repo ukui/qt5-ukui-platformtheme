@@ -409,6 +409,54 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     return;
     }
 
+    case PE_IndicatorArrowDown:case PE_IndicatorArrowUp:case PE_IndicatorArrowLeft:case PE_IndicatorArrowRight:{
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
+        QPolygon points(4);
+        int x = option->rect.x();
+        int y = option->rect.y();
+        int w = 7;
+        int h = 2;
+        x += (option->rect.width() - w) / 2;
+        y += (option->rect.height() - h) / 2;
+        if (option->state & State_Enabled) {
+         painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
+         painter->setBrush(Qt::NoBrush);
+        } else {
+        painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+        painter->setBrush(Qt::NoBrush);
+        }
+      if (element == PE_IndicatorArrowDown) {
+          points[0] = QPoint(x, y-1);
+          points[1] = QPoint(x + w+1, y-1);
+          points[2] = QPoint(x + w / 2, y + h+1);
+          points[3] = QPoint(x + w / 2+1, y + h+1);
+       }
+      else if (element == PE_IndicatorArrowUp) {
+          points[0] = QPoint(x, y+3);
+          points[1] = QPoint(x + w+1, y+3);
+          points[2] = QPoint(x + w / 2, y - h+1);
+          points[3] = QPoint(x + w / 2+1, y - h+1);
+         }
+      else if (element == PE_IndicatorArrowLeft) {
+          points[0] = QPoint(x , y+h/2);
+          points[1] = QPoint(x + w / 2, y +h+2);
+          points[2] = QPoint(x + w / 2, y -h);
+          points[3] = QPoint(x, y+h/2);
+         }
+      else if (element == PE_IndicatorArrowRight) {
+          points[0] = QPoint(x+w/2, y-h-1);
+          points[1] = QPoint(x+w/2 , y+h+2);
+          points[2] = QPoint(x+w, y+h/2-1);
+          points[3] = QPoint(x+w, y+h/2);
+         }
+      painter->drawLine(points[0],  points[2] );
+      painter->drawLine(points[3],  points[1] );
+      painter->restore();
+    return;
+    }
+
     default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
@@ -464,6 +512,35 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
         return QCommonStyle::drawComplexControl(control, option, painter, widget);
     }
+
+    case CC_ComboBox:
+    {
+        QRect rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
+        //adjusted(+1,+1,-1,-1)
+        painter->save();
+        painter->setPen(option->palette.color(QPalette::Button));
+        painter->setBrush(option->palette.color(QPalette::Button));
+        painter->setRenderHint(QPainter::Antialiasing,true);
+         if (widget->isEnabled()) {
+        if (option->state & State_MouseOver) {
+            if (option->state & State_Sunken) {
+                painter->setPen(option->palette.color(QPalette::Highlight));
+
+            } else {
+                painter->setPen(option->palette.color(QPalette::Highlight));
+            }
+         }
+        if (option->state & State_On) {
+            painter->setPen(option->palette.color(QPalette::Highlight));
+        }
+         }
+        painter->drawRoundedRect(rect,4,4);
+        painter->restore();
+        drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
+        return;
+       }
+
+
     default:
         return QFusionStyle::drawComplexControl(control, option, painter, widget);
     }
@@ -628,6 +705,24 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
      return;
      }
 
+    case CE_ComboBoxLabel:
+    {
+        auto comboBoxOption = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+         painter->setPen(option->palette.color(QPalette::ButtonText));
+         if (option->state & State_Selected) {
+             if (option->state & State_Sunken) {
+                 painter->setPen(option->palette.color(QPalette::ButtonText));
+             } else {
+                 painter->setPen(option->palette.color(QPalette::ButtonText));
+             }
+          }
+      painter->drawText(option->rect.adjusted(+4,+0,+0,+0), comboBoxOption->currentText, QTextOption(Qt::AlignVCenter));
+       painter->restore();
+     return;
+    }
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
@@ -780,4 +875,24 @@ void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const
         QXcbWindowFunctions::setWmWindowType(widget->windowHandle(),
                                              static_cast<QXcbWindowFunctions::WmWindowType>(wmWindowType));
     }
+}
+
+
+void Qt5UKUIStyle::drawComBoxIndicator(SubControl which, const QStyleOptionComplex *option,
+                                          QPainter *painter) const
+{
+    PrimitiveElement arrow=PE_IndicatorArrowDown;
+    QRect buttonRect=option->rect.adjusted(+0,+0,-1,-1);
+    buttonRect.translate(buttonRect.width()/2,0);
+    buttonRect.setWidth((buttonRect.width()+1)/2);
+    QStyleOption buttonOpt(*option);
+    painter->save();
+    painter->setClipRect(buttonRect,Qt::IntersectClip);
+    if(!(option->activeSubControls&which))
+        buttonOpt.state&=~(State_MouseOver|State_On|State_Sunken);
+    QStyleOption arrowOpt(buttonOpt);
+    arrowOpt.rect=subControlRect(CC_ComboBox,option,which).adjusted(+0,+0,-0,+0);
+    if(arrowOpt.rect.isValid())
+        drawPrimitive(arrow,&arrowOpt,painter);
+    painter->restore();
 }

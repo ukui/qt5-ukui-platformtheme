@@ -85,6 +85,7 @@ protected:
 
     void realSetWindowSurfaceFormatAlpha(const QWidget *widget) const;
     void realSetMenuTypeToMenu(const QWidget *widget) const;
+    void drawComBoxIndicator(SubControl which, const QStyleOptionComplex *option,QPainter *painter) const;
 
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
