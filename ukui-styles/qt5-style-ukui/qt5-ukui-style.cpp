@@ -326,6 +326,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
      return;
      }
 
+    case PE_FrameStatusBar://UKUI Status style
+   {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.color(QPalette::Dark));
+        painter->drawRect(option->rect);
+        painter->restore();
+     return;
+     }
 
     default:   break;
     }
