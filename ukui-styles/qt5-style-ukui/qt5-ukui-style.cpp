@@ -380,6 +380,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
      return;
      }
 
+    case PE_FrameGroupBox://UKUI GroupBox style
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Base));
+        painter->setBrush(option->palette.color(QPalette::Base));
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
+      return;
+      }
+
     default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
