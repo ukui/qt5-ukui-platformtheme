@@ -281,8 +281,41 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->fillRect(option->rect, color);
         return;
     }
-    default:
-        break;
+
+    case PE_PanelButtonCommand://UKUI PushButton style
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+
+        if(option->state & State_HasFocus){
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.color(QPalette::Highlight));
+        }
+        else {
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(option->palette.color(QPalette::Button));
+        }
+
+       if (option->state & State_MouseOver) {
+           if (option->state & State_Sunken) {
+               painter->setPen(Qt::NoPen);
+               painter->setBrush(option->palette.color(QPalette::Mid));
+           } else {
+               painter->setPen(Qt::NoPen);
+               painter->setBrush(option->palette.color(QPalette::Dark));
+           }
+        }
+      painter->drawRoundedRect(option->rect,4,4);
+
+      /*!
+       * \todo
+       * Judge whether it is OK or other buttons
+       */
+
+    return;
+    }
+
+    default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
 }
@@ -454,6 +487,33 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->restore();
         return;
     }
+
+    case CE_PushButtonLabel:
+    {
+       auto pushbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+       painter->save();
+       painter->setRenderHint(QPainter::Antialiasing,true);
+
+       if(option->state & State_HasFocus){
+         painter->setPen(option->palette.color(QPalette::HighlightedText));
+       }
+       else {
+         painter->setPen(option->palette.color(QPalette::ButtonText));
+       }
+
+        if (option->state & State_MouseOver) {
+            if (option->state & State_Sunken) {
+                painter->setPen(option->palette.color(QPalette::HighlightedText));
+            } else {
+                painter->setPen(option->palette.color(QPalette::HighlightedText));
+            }
+         }
+     painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
+     painter->restore();
+    return;
+    }
+
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
