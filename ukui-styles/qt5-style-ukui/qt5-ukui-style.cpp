@@ -337,6 +337,26 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
      return;
      }
 
+    case PE_PanelButtonTool://UKUI ToolBar  item style
+ {
+       painter->save();
+       painter->setRenderHint(QPainter::Antialiasing,true);
+       painter->setPen(Qt::NoPen);
+       painter->setBrush(Qt::NoBrush);
+      if (option->state & State_MouseOver) {
+         if (option->state & State_Sunken) {
+             painter->setPen(option->palette.color(QPalette::Highlight));
+             painter->setBrush(option->palette.color(QPalette::Highlight));
+          } else {
+             painter->setPen(option->palette.color(QPalette::Highlight));
+             painter->setBrush(option->palette.color(QPalette::Highlight));
+           }
+      }
+     painter->drawRoundedRect(option->rect,4,4);
+     painter->restore();
+   return;
+   }
+
     default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
