@@ -391,6 +391,24 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
       return;
       }
 
+    case PE_PanelLineEdit://UKUI Text edit style
+   {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Button));
+        painter->setBrush(option->palette.color(QPalette::Button));
+        // Cannot write click style ,Will affect spinbox
+        /*
+        if (option->state &State_HasFocus) {
+            if (option->state & State_Sunken) {
+            } else {
+            }
+         }*/
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
+    return;
+    }
+
     default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
