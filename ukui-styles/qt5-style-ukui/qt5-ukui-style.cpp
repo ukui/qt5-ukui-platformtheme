@@ -357,6 +357,29 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
    return;
    }
 
+    case PE_FrameTabWidget://UKUI TabBar item style
+   {
+       painter->save();
+       painter->setRenderHint(QPainter::Antialiasing,true);
+       painter->setBrush(option->palette.color(QPalette::Base));
+       painter->setPen(option->palette.color(QPalette::Base));
+       painter->drawRect(option->rect.adjusted(+3,+2,+0,-10));
+       painter->drawRoundedRect(option->rect.adjusted(+3,+10,+0,+0),5,5);
+       painter->restore();
+     return;
+     }
+
+    case PE_FrameTabBarBase://UKUI TabBar style
+   {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Button));
+        painter->setBrush(option->palette.color(QPalette::Button));
+        painter->drawRoundedRect(option->rect,0,0);
+        painter->restore();
+     return;
+     }
+
     default:   break;
     }
     return QFusionStyle::drawPrimitive(element, option, painter, widget);
@@ -555,6 +578,26 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     return;
     }
 
+    case CE_TabBarTabShape://UKUI TabBar item style
+    {
+       painter->save();
+       painter->setRenderHint(QPainter::Antialiasing,true);
+       painter->setPen(option->palette.color(QPalette::Button));
+       painter->setBrush(option->palette.color(QPalette::Button));
+       if (option->state & State_Selected) {
+           if (option->state & State_Sunken) {
+              painter->setPen(option->palette.color(QPalette::Base));
+               painter->setBrush(option->palette.color(QPalette::Base));
+           } else {
+               painter->setPen(option->palette.color(QPalette::Base));
+               painter->setBrush(option->palette.color(QPalette::Base));
+           }
+        }
+     painter->drawRoundedRect(option->rect.adjusted(+3,+0,+0,-option->rect.height()/2),4,4);
+     painter->drawRect(option->rect.adjusted(+3,+option->rect.height()/2-4,+0,+0));
+     painter->restore();
+     return;
+     }
 
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
