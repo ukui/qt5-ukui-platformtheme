@@ -50,6 +50,8 @@ public:
 
     void polish(QWidget *widget);
     void unpolish(QWidget *widget);
+    void polish(QPalette& palette) ;
+
 
     void drawPrimitive(QStyle::PrimitiveElement element,
                        const QStyleOption *option,
