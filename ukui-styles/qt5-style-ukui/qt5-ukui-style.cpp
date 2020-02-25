@@ -100,18 +100,18 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 }
 void Qt5UKUIStyle::polish(QPalette &palette){
     //ukui-white
-    //    QColor  window_bg(231,231,231),
-    //            window_no_bg(233,233,233),
-    //            base_bg(255,255,255),
-    //            base_no_bg(248, 248, 248),
-    //            font_bg(0,0,0),
-    //            font_br_bg(255,255,255),
-    //            font_di_bg(191,191,191),
-    //            button_bg(217,217,217),
-    //            button_ac_bg(107,142,235),
-    //            button_di_bg(233,233,233),
-    //            tool_br_bg(61,107,229),
-    //            tip_bg(248,248,248);
+    //        QColor  window_bg(231,231,231),
+    //                window_no_bg(233,233,233),
+    //                base_bg(255,255,255),
+    //                base_no_bg(248, 248, 248),
+    //                font_bg(0,0,0),
+    //                font_br_bg(255,255,255),
+    //                font_di_bg(191,191,191),
+    //                button_bg(217,217,217),
+    //                button_ac_bg(107,142,235),
+    //                button_di_bg(233,233,233),
+    //                highlight_bg(61,107,229),
+    //                tip_bg(248,248,248);
 
     //ukui-black
     QColor  window_bg(36,36,38),
