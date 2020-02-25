@@ -100,32 +100,32 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 }
 void Qt5UKUIStyle::polish(QPalette &palette){
     //ukui-white
-//    QColor  window_bg(231,231,231),
-//            window_no_bg(233,233,233),
-//            base_bg(255,255,255),
-//            base_no_bg(248, 248, 248),
-//            font_bg(0,0,0),
-//            font_br_bg(255,255,255),
-//            font_di_bg(191,191,191),
-//            button_bg(217,217,217),
-//            button_ac_bg(107,142,235),
-//            button_di_bg(233,233,233),
-//            tool_br_bg(61,107,229),
-//            tip_bg(248,248,248);
+    //    QColor  window_bg(231,231,231),
+    //            window_no_bg(233,233,233),
+    //            base_bg(255,255,255),
+    //            base_no_bg(248, 248, 248),
+    //            font_bg(0,0,0),
+    //            font_br_bg(255,255,255),
+    //            font_di_bg(191,191,191),
+    //            button_bg(217,217,217),
+    //            button_ac_bg(107,142,235),
+    //            button_di_bg(233,233,233),
+    //            tool_br_bg(61,107,229),
+    //            tip_bg(248,248,248);
 
     //ukui-black
-      QColor  window_bg(36,36,38),
-              window_no_bg(48,46,50),
-              base_bg(0,0,0),
-              base_no_bg(28,28,30),
-              font_bg(255,255,255),
-              font_br_bg(255,255,255),
-              font_di_bg(28,28,30),
-              button_bg(44,44,46),
-              button_ac_bg(97,97,102),
-              button_di_bg(52,52,56),
-              highlight_bg(61,107,229),
-              tip_bg(26,26,26);
+    QColor  window_bg(36,36,38),
+            window_no_bg(48,46,50),
+            base_bg(0,0,0),
+            base_no_bg(28,28,30),
+            font_bg(255,255,255),
+            font_br_bg(255,255,255),
+            font_di_bg(28,28,30),
+            button_bg(44,44,46),
+            button_ac_bg(97,97,102),
+            button_di_bg(52,52,56),
+            highlight_bg(61,107,229),
+            tip_bg(26,26,26);
 
 
     palette.setBrush(QPalette::Window,window_bg);
@@ -289,21 +289,21 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
        * \todo
        * It is selected by default and not done first,because it conflicts with the normal button.
        */
-//        if(option->state & State_HasFocus){
-//            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-//            painter->setBrush(option->palette.color(QPalette::Highlight));
-//        }
-//        else {
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-            painter->setBrush(option->palette.color(QPalette::Button));
-//        }
+        //        if(option->state & State_HasFocus){
+        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+        //            painter->setBrush(option->palette.color(QPalette::Highlight));
+        //        }
+        //        else {
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.color(QPalette::Button));
+        //        }
 
         if (option->state & State_MouseOver) {
             if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+                painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Highlight));
             } else {
-                painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+                painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Highlight));
             }
         }
@@ -398,15 +398,18 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::Button));
-        painter->setBrush(option->palette.color(QPalette::Button));
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.color(QPalette::Base));
         // Cannot write click style ,Will affect spinbox
-        /*
-        if (option->state &State_HasFocus) {
-            if (option->state & State_Sunken) {
-            } else {
+        if (widget->isEnabled()) {
+            // if (option->state &State_MouseOver) {
+            // painter->setBrush(option->palette.color(QPalette::Dark));
+            // }
+            if(option->state &State_HasFocus) {
+                painter->setPen(option->palette.color(QPalette::Highlight));
+                painter->setBrush(option->palette.color(QPalette::Base));
             }
-         }*/
+        }
         painter->drawRoundedRect(option->rect,4,4);
         painter->restore();
         return;
