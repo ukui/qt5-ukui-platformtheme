@@ -99,7 +99,7 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     return QFusionStyle::styleHint(hint, option, widget, returnData);
 }
 void Qt5UKUIStyle::polish(QPalette &palette){
-//ukui-white
+    //ukui-white
     QColor  window_bg(231,231,231),
             window_no_bg(233,233,233),
             base_bg(255,255,255),
@@ -113,19 +113,19 @@ void Qt5UKUIStyle::polish(QPalette &palette){
             tool_br_bg(61,107,229),
             tip_bg(248,248,248);
 
-//ukui-black
-//  QColor  window_bg(45,46,50),
-//          window_no_bg(48,46,50),
-//          base_bg(31,32,34),
-//          base_no_bg(31,32,34),
-//          font_bg(255,255,255),
-//          font_br_bg(255,255,255),
-//          font_di_bg(90,90,90),
-//          button_bg(57,58,62),
-//          button_ac_bg(61,107,229),
-//          button_di_bg(57,58,62),
-//          tool_br_bg(61,107,229),
-//          tip_bg(90,90,90);
+    //ukui-black
+    //  QColor  window_bg(45,46,50),
+    //          window_no_bg(48,46,50),
+    //          base_bg(31,32,34),
+    //          base_no_bg(31,32,34),
+    //          font_bg(255,255,255),
+    //          font_br_bg(255,255,255),
+    //          font_di_bg(90,90,90),
+    //          button_bg(57,58,62),
+    //          button_ac_bg(61,107,229),
+    //          button_di_bg(57,58,62),
+    //          tool_br_bg(61,107,229),
+    //          tip_bg(90,90,90);
 
 
     palette.setBrush(QPalette::Window,window_bg);
@@ -145,7 +145,7 @@ void Qt5UKUIStyle::polish(QPalette &palette){
     palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
     palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
 
-     //Cursor placeholder
+    //Cursor placeholder
     palette.setBrush(QPalette::PlaceholderText,font_di_bg);
 
     palette.setBrush(QPalette::ToolTipBase,tip_bg);
@@ -173,10 +173,10 @@ void Qt5UKUIStyle::polish(QPalette &palette){
     palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
 
 
-//  palette.setBrush(QPalette::Link,QColor(255,0,0));
-//  palette.setBrush(QPalette::LinkVisited,QColor(255,0,0));
+    //  palette.setBrush(QPalette::Link,QColor(255,0,0));
+    //  palette.setBrush(QPalette::LinkVisited,QColor(255,0,0));
 
-   return QFusionStyle::polish(palette);
+    return QFusionStyle::polish(palette);
 }
 
 void Qt5UKUIStyle::polish(QWidget *widget)
@@ -288,98 +288,98 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setRenderHint(QPainter::Antialiasing,true);
 
         if(option->state & State_HasFocus){
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(option->palette.color(QPalette::Highlight));
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(option->palette.color(QPalette::Highlight));
         }
         else {
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Button));
         }
 
-       if (option->state & State_MouseOver) {
-           if (option->state & State_Sunken) {
-               painter->setPen(Qt::NoPen);
-               painter->setBrush(option->palette.color(QPalette::Mid));
-           } else {
-               painter->setPen(Qt::NoPen);
-               painter->setBrush(option->palette.color(QPalette::Dark));
-           }
+        if (option->state & State_MouseOver) {
+            if (option->state & State_Sunken) {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Mid));
+            } else {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Dark));
+            }
         }
-      painter->drawRoundedRect(option->rect,4,4);
-      painter->restore();
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
 
-      /*!
+        /*!
        * \todo
        * Judge whether it is OK or other buttons
        */
 
-    return;
+        return;
     }
 
     case PE_PanelTipLabel://UKUI Tip  style
-   {
+    {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(option->palette.color(QPalette::ToolTipText));
         painter->setBrush(option->palette.color(QPalette::ToolTipBase));
         painter->drawRoundedRect(option->rect,4,4);
         painter->restore();
-     return;
-     }
+        return;
+    }
 
     case PE_FrameStatusBar://UKUI Status style
-   {
+    {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.color(QPalette::Dark));
         painter->drawRect(option->rect);
         painter->restore();
-     return;
-     }
+        return;
+    }
 
     case PE_PanelButtonTool://UKUI ToolBar  item style
- {
-       painter->save();
-       painter->setRenderHint(QPainter::Antialiasing,true);
-       painter->setPen(Qt::NoPen);
-       painter->setBrush(Qt::NoBrush);
-      if (option->state & State_MouseOver) {
-         if (option->state & State_Sunken) {
-             painter->setPen(option->palette.color(QPalette::Highlight));
-             painter->setBrush(option->palette.color(QPalette::Highlight));
-          } else {
-             painter->setPen(option->palette.color(QPalette::Highlight));
-             painter->setBrush(option->palette.color(QPalette::Highlight));
-           }
-      }
-     painter->drawRoundedRect(option->rect,4,4);
-     painter->restore();
-   return;
-   }
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(Qt::NoBrush);
+        if (option->state & State_MouseOver) {
+            if (option->state & State_Sunken) {
+                painter->setPen(option->palette.color(QPalette::Highlight));
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+            } else {
+                painter->setPen(option->palette.color(QPalette::Highlight));
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+            }
+        }
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
+        return;
+    }
 
     case PE_FrameTabWidget://UKUI TabBar item style
-   {
-       painter->save();
-       painter->setRenderHint(QPainter::Antialiasing,true);
-       painter->setBrush(option->palette.color(QPalette::Base));
-       painter->setPen(option->palette.color(QPalette::Base));
-       painter->drawRect(option->rect.adjusted(+3,+2,+0,-10));
-       painter->drawRoundedRect(option->rect.adjusted(+3,+10,+0,+0),5,5);
-       painter->restore();
-     return;
-     }
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setBrush(option->palette.color(QPalette::Base));
+        painter->setPen(option->palette.color(QPalette::Base));
+        painter->drawRect(option->rect.adjusted(+3,+2,+0,-10));
+        painter->drawRoundedRect(option->rect.adjusted(+3,+10,+0,+0),5,5);
+        painter->restore();
+        return;
+    }
 
     case PE_FrameTabBarBase://UKUI TabBar style
-   {
+    {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(option->palette.color(QPalette::Button));
         painter->setBrush(option->palette.color(QPalette::Button));
         painter->drawRoundedRect(option->rect,0,0);
         painter->restore();
-     return;
-     }
+        return;
+    }
 
     case PE_FrameGroupBox://UKUI GroupBox style
     {
@@ -389,11 +389,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setBrush(option->palette.color(QPalette::Base));
         painter->drawRoundedRect(option->rect,4,4);
         painter->restore();
-      return;
-      }
+        return;
+    }
 
     case PE_PanelLineEdit://UKUI Text edit style
-   {
+    {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(option->palette.color(QPalette::Button));
@@ -407,7 +407,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
          }*/
         painter->drawRoundedRect(option->rect,4,4);
         painter->restore();
-    return;
+        return;
     }
 
     case PE_IndicatorArrowDown:case PE_IndicatorArrowUp:case PE_IndicatorArrowLeft:case PE_IndicatorArrowRight:{
@@ -422,40 +422,40 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         x += (option->rect.width() - w) / 2;
         y += (option->rect.height() - h) / 2;
         if (option->state & State_Enabled) {
-         painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
-         painter->setBrush(Qt::NoBrush);
+            painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
+            painter->setBrush(Qt::NoBrush);
         } else {
-        painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-        painter->setBrush(Qt::NoBrush);
+            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+            painter->setBrush(Qt::NoBrush);
         }
-      if (element == PE_IndicatorArrowDown) {
-          points[0] = QPoint(x, y-1);
-          points[1] = QPoint(x + w+1, y-1);
-          points[2] = QPoint(x + w / 2, y + h+1);
-          points[3] = QPoint(x + w / 2+1, y + h+1);
-       }
-      else if (element == PE_IndicatorArrowUp) {
-          points[0] = QPoint(x, y+3);
-          points[1] = QPoint(x + w+1, y+3);
-          points[2] = QPoint(x + w / 2, y - h+1);
-          points[3] = QPoint(x + w / 2+1, y - h+1);
-         }
-      else if (element == PE_IndicatorArrowLeft) {
-          points[0] = QPoint(x , y+h/2);
-          points[1] = QPoint(x + w / 2, y +h+2);
-          points[2] = QPoint(x + w / 2, y -h);
-          points[3] = QPoint(x, y+h/2);
-         }
-      else if (element == PE_IndicatorArrowRight) {
-          points[0] = QPoint(x+w/2, y-h-1);
-          points[1] = QPoint(x+w/2 , y+h+2);
-          points[2] = QPoint(x+w, y+h/2-1);
-          points[3] = QPoint(x+w, y+h/2);
-         }
-      painter->drawLine(points[0],  points[2] );
-      painter->drawLine(points[3],  points[1] );
-      painter->restore();
-    return;
+        if (element == PE_IndicatorArrowDown) {
+            points[0] = QPoint(x, y-1);
+            points[1] = QPoint(x + w+1, y-1);
+            points[2] = QPoint(x + w / 2, y + h+1);
+            points[3] = QPoint(x + w / 2+1, y + h+1);
+        }
+        else if (element == PE_IndicatorArrowUp) {
+            points[0] = QPoint(x, y+3);
+            points[1] = QPoint(x + w+1, y+3);
+            points[2] = QPoint(x + w / 2, y - h+1);
+            points[3] = QPoint(x + w / 2+1, y - h+1);
+        }
+        else if (element == PE_IndicatorArrowLeft) {
+            points[0] = QPoint(x , y+h/2);
+            points[1] = QPoint(x + w / 2, y +h+2);
+            points[2] = QPoint(x + w / 2, y -h);
+            points[3] = QPoint(x, y+h/2);
+        }
+        else if (element == PE_IndicatorArrowRight) {
+            points[0] = QPoint(x+w/2, y-h-1);
+            points[1] = QPoint(x+w/2 , y+h+2);
+            points[2] = QPoint(x+w, y+h/2-1);
+            points[3] = QPoint(x+w, y+h/2);
+        }
+        painter->drawLine(points[0],  points[2] );
+        painter->drawLine(points[3],  points[1] );
+        painter->restore();
+        return;
     }
 
     default:   break;
@@ -522,24 +522,86 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         painter->setPen(option->palette.color(QPalette::Button));
         painter->setBrush(option->palette.color(QPalette::Button));
         painter->setRenderHint(QPainter::Antialiasing,true);
-         if (widget->isEnabled()) {
-        if (option->state & State_MouseOver) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::Highlight));
+        if (widget->isEnabled()) {
+            if (option->state & State_MouseOver) {
+                if (option->state & State_Sunken) {
+                    painter->setPen(option->palette.color(QPalette::Highlight));
 
-            } else {
+                } else {
+                    painter->setPen(option->palette.color(QPalette::Highlight));
+                }
+            }
+            if (option->state & State_On) {
                 painter->setPen(option->palette.color(QPalette::Highlight));
             }
-         }
-        if (option->state & State_On) {
-            painter->setPen(option->palette.color(QPalette::Highlight));
         }
-         }
         painter->drawRoundedRect(rect,4,4);
         painter->restore();
         drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
         return;
-       }
+    }
+
+    case CC_SpinBox:
+    {
+        const QStyleOptionSpinBox *pb=qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+        QRectF r1=subControlRect(control,option,QStyle::SC_SpinBoxUp,widget);
+        QRectF r2=subControlRect(control,option,QStyle::SC_SpinBoxDown,widget);
+        // QRect r3=subControlRect(control,option,QStyle::SC_SpinBoxEditField,widget);
+
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(QPen(option->palette.color(QPalette::Button),1));
+        painter->setBrush(option->palette.color(QPalette::Button));
+        if (widget->isEnabled()) {
+            if(pb->state&QStyle::State_HasFocus){
+                painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
+            }
+
+            if(pb->state&State_MouseOver){
+                painter->setPen(option->palette.color(QPalette::Highlight));
+            }
+        }
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
+
+        /*
+         * There's no PE_IndicatorSpinUp and PE_IndicatorSpinDown here, and it's drawn directly.
+        */
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),option->palette.color(QPalette::Button));
+        if (option->state & State_Enabled) {
+            painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
+            painter->setBrush(Qt::NoBrush);
+        } else {
+            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+            painter->setBrush(Qt::NoBrush);
+        }
+        QPolygon points(4);
+        int x = int(r1.x());
+        int y = int(r1.y());
+        int w=int(r1.width()/2);
+        int h=int(r1.height()/2);
+        points[0] = QPoint(x+w-3, y+h+2);
+        points[1] = QPoint(x+w,y+h-1);
+        points[2] = QPoint(x+w,y+h-1);
+        points[3] = QPoint(x+w+3,y+h+2);
+        painter->drawLine(points[0],  points[1] );
+        painter->drawLine(points[2],  points[3] );
+
+        int x2 = int(r2.x());
+        int y2 = int(r2.y());
+        points[0] = QPoint(x2+w-3, y2+h-2);
+        points[1] = QPoint(x2+w,y2+h+1);
+        points[2] = QPoint(x2+w,y2+h+1);
+        points[3] = QPoint(x2+w+3,y2+h-2);
+        painter->drawLine(points[0],  points[1] );
+        painter->drawLine(points[2],  points[3] );
+        painter->restore();
+
+        return ;
+    }
+
 
 
     default:
@@ -662,16 +724,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_PushButtonLabel:
     {
-       auto pushbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
-       painter->save();
-       painter->setRenderHint(QPainter::Antialiasing,true);
+        auto pushbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
 
-       if(option->state & State_HasFocus){
-         painter->setPen(option->palette.color(QPalette::HighlightedText));
-       }
-       else {
-         painter->setPen(option->palette.color(QPalette::ButtonText));
-       }
+        if(option->state & State_HasFocus){
+            painter->setPen(option->palette.color(QPalette::HighlightedText));
+        }
+        else {
+            painter->setPen(option->palette.color(QPalette::ButtonText));
+        }
 
         if (option->state & State_MouseOver) {
             if (option->state & State_Sunken) {
@@ -679,49 +741,49 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             } else {
                 painter->setPen(option->palette.color(QPalette::HighlightedText));
             }
-         }
-     painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
-     painter->restore();
-    return;
+        }
+        painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
+        painter->restore();
+        return;
     }
 
     case CE_TabBarTabShape://UKUI TabBar item style
     {
-       painter->save();
-       painter->setRenderHint(QPainter::Antialiasing,true);
-       painter->setPen(option->palette.color(QPalette::Button));
-       painter->setBrush(option->palette.color(QPalette::Button));
-       if (option->state & State_Selected) {
-           if (option->state & State_Sunken) {
-              painter->setPen(option->palette.color(QPalette::Base));
-               painter->setBrush(option->palette.color(QPalette::Base));
-           } else {
-               painter->setPen(option->palette.color(QPalette::Base));
-               painter->setBrush(option->palette.color(QPalette::Base));
-           }
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Button));
+        painter->setBrush(option->palette.color(QPalette::Button));
+        if (option->state & State_Selected) {
+            if (option->state & State_Sunken) {
+                painter->setPen(option->palette.color(QPalette::Base));
+                painter->setBrush(option->palette.color(QPalette::Base));
+            } else {
+                painter->setPen(option->palette.color(QPalette::Base));
+                painter->setBrush(option->palette.color(QPalette::Base));
+            }
         }
-     painter->drawRoundedRect(option->rect.adjusted(+3,+0,+0,-option->rect.height()/2),4,4);
-     painter->drawRect(option->rect.adjusted(+3,+option->rect.height()/2-4,+0,+0));
-     painter->restore();
-     return;
-     }
+        painter->drawRoundedRect(option->rect.adjusted(+3,+0,+0,-option->rect.height()/2),4,4);
+        painter->drawRect(option->rect.adjusted(+3,+option->rect.height()/2-4,+0,+0));
+        painter->restore();
+        return;
+    }
 
     case CE_ComboBoxLabel:
     {
         auto comboBoxOption = qstyleoption_cast<const QStyleOptionComboBox*>(option);
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-         painter->setPen(option->palette.color(QPalette::ButtonText));
-         if (option->state & State_Selected) {
-             if (option->state & State_Sunken) {
-                 painter->setPen(option->palette.color(QPalette::ButtonText));
-             } else {
-                 painter->setPen(option->palette.color(QPalette::ButtonText));
-             }
-          }
-      painter->drawText(option->rect.adjusted(+4,+0,+0,+0), comboBoxOption->currentText, QTextOption(Qt::AlignVCenter));
-       painter->restore();
-     return;
+        painter->setPen(option->palette.color(QPalette::ButtonText));
+        if (option->state & State_Selected) {
+            if (option->state & State_Sunken) {
+                painter->setPen(option->palette.color(QPalette::ButtonText));
+            } else {
+                painter->setPen(option->palette.color(QPalette::ButtonText));
+            }
+        }
+        painter->drawText(option->rect.adjusted(+4,+0,+0,+0), comboBoxOption->currentText, QTextOption(Qt::AlignVCenter));
+        painter->restore();
+        return;
     }
 
     default:
@@ -768,7 +830,7 @@ QRect Qt5UKUIStyle::scrollBarSubControlRect(QStyle::ComplexControl control, cons
         sbextent = proxy()->pixelMetric(PM_ScrollBarExtent, scrollbar, widget);
 
         int maxlen = ((scrollbar->orientation == Qt::Horizontal) ?
-                      scrollBarRect.width() : scrollBarRect.height()) - (sbextent * 2);
+                          scrollBarRect.width() : scrollBarRect.height()) - (sbextent * 2);
         int sliderlen;
 
         // calculate slider length
@@ -786,10 +848,10 @@ QRect Qt5UKUIStyle::scrollBarSubControlRect(QStyle::ComplexControl control, cons
         }
 
         int sliderstart = sbextent + sliderPositionFromValue(scrollbar->minimum,
-                          scrollbar->maximum,
-                          scrollbar->sliderPosition,
-                          maxlen - sliderlen,
-                          scrollbar->upsideDown);
+                                                             scrollbar->maximum,
+                                                             scrollbar->sliderPosition,
+                                                             maxlen - sliderlen,
+                                                             scrollbar->upsideDown);
 
         switch (subControl) {
         case SC_ScrollBarSubLine:            // top/left button
@@ -880,7 +942,7 @@ void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const
 
 
 void Qt5UKUIStyle::drawComBoxIndicator(SubControl which, const QStyleOptionComplex *option,
-                                          QPainter *painter) const
+                                       QPainter *painter) const
 {
     PrimitiveElement arrow=PE_IndicatorArrowDown;
     QRect buttonRect=option->rect.adjusted(+0,+0,-1,-1);
