@@ -602,7 +602,86 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         return ;
     }
 
+    case CC_Slider :
+        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            //Size and location of each rectangle used
+            QRectF rect = option->rect;
+            QRectF rectHandle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
+            QRectF rectSliderTickmarks = proxy()->subControlRect(CC_Slider, option, SC_SliderTickmarks, widget);
+            QRect rectGroove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
+            QPen pen;
+            //Drawing chute (line)
+            if (option->subControls & SC_SliderGroove) {
+                pen.setStyle(Qt::CustomDashLine);
+                QVector<qreal> dashes;
+                //qreal space = 1.3;
+                qreal space = 0;
+                dashes << 0.1 << space;
+                // dashes << -0.1 << space;
+                pen.setDashPattern(dashes);
+                pen.setWidthF(3);
+                pen.setColor(option->palette.color(QPalette::Highlight));
+                painter->setPen(pen);
+                painter->setRenderHint(QPainter::Antialiasing);
 
+                if (slider->orientation == Qt::Horizontal) {
+                    painter->drawLine(QPointF(rectGroove.left(), rectHandle.center().y()), QPointF(rectHandle.left(), rectHandle.center().y()));
+                    pen.setColor(option->palette.color(QPalette::Button));
+                    painter->setPen(pen);
+                    painter->drawLine(QPointF(rectGroove.right(), rectHandle.center().y()), QPointF(rectHandle.right(), rectHandle.center().y()));
+                } else {
+                    painter->drawLine(QPointF(rectGroove.center().x(), rectGroove.bottom()), QPointF(rectGroove.center().x(),  rectHandle.bottom()));
+                    pen.setColor(option->palette.color(QPalette::Button));
+                    painter->setPen(pen);
+                    painter->drawLine(QPointF(rectGroove.center().x(),  rectGroove.top()), QPointF(rectGroove.center().x(),  rectHandle.top()));
+                }
+            }
+
+            //Painting slider
+            if (option->subControls & SC_SliderHandle) {
+                pen.setStyle(Qt::SolidLine);
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->drawRoundedRect(rectHandle,5,5);
+            }
+
+            //Drawing scale
+            if ((option->subControls & SC_SliderTickmarks) && slider->tickInterval) {
+                painter->setPen(option->palette.foreground().color());
+                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, slider, widget);
+                int interval = slider->tickInterval;
+                //int tickSize = proxy()->pixelMetric(PM_SliderTickmarkOffset, opt, w);
+                //int ticks = slider->tickPosition;
+                int v = slider->minimum;
+                int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
+                while (v <= slider->maximum + 1) {
+                    const int v_ = qMin(v, slider->maximum);
+                    int pos = sliderPositionFromValue(slider->minimum, slider->maximum, v_, available) + len / 2;
+
+                    if (slider->orientation == Qt::Horizontal) {
+                        if (slider->tickPosition == QSlider::TicksBothSides) {
+                            painter->drawLine(pos, int(rect.top()), pos, int(rectHandle.top()));
+                            painter->drawLine(pos, int(rect.bottom()), pos, int(rectHandle.bottom()));
+                        } else {
+                            painter->drawLine(pos, int(rectSliderTickmarks.top()), pos, int(rectSliderTickmarks.bottom()));
+                        }
+                    } else {
+                        if (slider->tickPosition == QSlider::TicksBothSides) {
+                            painter->drawLine(int(rect.left()), pos, int(rectHandle.left()), pos);
+                            painter->drawLine(int(rect.right()), pos, int(rectHandle.right()), pos);
+                        } else {
+                            painter->drawLine(int(rectSliderTickmarks.left()), pos, int(rectSliderTickmarks.right()), pos);
+                        }
+                    }
+                    // in the case where maximum is max int
+                    int nextInterval = v + interval;
+                    if (nextInterval < v)
+                        break;
+                    v = nextInterval;
+                }
+            }
+
+            return;  }
 
     default:
         return QFusionStyle::drawComplexControl(control, option, painter, widget);
