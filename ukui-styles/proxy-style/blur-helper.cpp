@@ -42,6 +42,8 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
             }
         });
     }
+    m_timer.setSingleShot(true);
+    m_timer.setInterval(100);
 }
 
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
@@ -53,52 +55,12 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
     case QEvent::UpdateRequest:
     case QEvent::LayoutRequest:
     {
-        // cast to widget and check
-        QWidget* widget(qobject_cast<QWidget*>(obj));
-        //KWindowEffects::enableBlurBehind(widget->winId(), false);
-
-        if (!widget)
-            break;
-
-        bool hasMask = false;
-        if (widget->mask().isNull())
-            hasMask = true;
-
-        QVariant regionValue = widget->property("blurRegion");
-        QRegion region = qvariant_cast<QRegion>(regionValue);
-
-        if (widget->inherits("QMenu")) {
-            QPainterPath path;
-            path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1), 6, 6);
-            KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
-            widget->update();
-            break;
-        }
-
-        if (!hasMask && region.isEmpty())
-            break;
-
-        //qDebug()<<regionValue<<region;
-        //qDebug()<<widget->metaObject()->className()<<widget->geometry()<<widget->mask();
-        if (!region.isEmpty()) {
-            //qDebug()<<"blur region"<<region;
-            KWindowEffects::enableBlurBehind(widget->winId(), true, region);
-            widget->update();
-        } else {
-            //qDebug()<<widget->mask();
-            KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
-            widget->update(widget->mask());
-        }
-
-        //NOTE: we can not setAttribute Qt::WA_TranslucentBackground here,
-        //because the window is about to be shown.
-        //widget->setAttribute(Qt::WA_TranslucentBackground);
-        //KWindowEffects::enableBlurBehind(widget->winId(), true);
-        //widget->update();
+        QWidget* widget = qobject_cast<QWidget*>(obj);
+        delayUpdate(widget);
         break;
     }
     case QEvent::Hide: {
-        QWidget* widget(qobject_cast<QWidget*>(obj));
+        QWidget* widget = qobject_cast<QWidget*>(obj);
         KWindowEffects::enableBlurBehind(widget->winId(), false);
     }
 
@@ -163,4 +125,57 @@ void BlurHelper::onBlurEnableChanged(bool enable)
 void BlurHelper::onWidgetDestroyed(QWidget *widget)
 {
     unregisterWidget(widget);
+}
+
+void BlurHelper::delayUpdate(QWidget *w)
+{
+    m_update_list.append(w);
+    if (!m_timer.isActive()) {
+        for (auto widget : m_update_list) {
+            // cast to widget and check
+            //KWindowEffects::enableBlurBehind(widget->winId(), false);
+
+            if (!widget)
+                break;
+
+            bool hasMask = false;
+            if (widget->mask().isNull())
+                hasMask = true;
+
+            QVariant regionValue = widget->property("blurRegion");
+            QRegion region = qvariant_cast<QRegion>(regionValue);
+
+            if (widget->inherits("QMenu")) {
+                QPainterPath path;
+                path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1), 6, 6);
+                KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
+                widget->update();
+                break;
+            }
+
+            if (!hasMask && region.isEmpty())
+                break;
+
+            //qDebug()<<regionValue<<region;
+            //qDebug()<<widget->metaObject()->className()<<widget->geometry()<<widget->mask();
+            if (!region.isEmpty()) {
+                //qDebug()<<"blur region"<<region;
+                KWindowEffects::enableBlurBehind(widget->winId(), true, region);
+                widget->update();
+            } else {
+                //qDebug()<<widget->mask();
+                KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
+                widget->update(widget->mask());
+            }
+
+            //NOTE: we can not setAttribute Qt::WA_TranslucentBackground here,
+            //because the window is about to be shown.
+            //widget->setAttribute(Qt::WA_TranslucentBackground);
+            //KWindowEffects::enableBlurBehind(widget->winId(), true);
+            //widget->update();
+        }
+        m_update_list.clear();
+    } else {
+        m_timer.start();
+    }
 }

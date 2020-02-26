@@ -24,6 +24,7 @@
 #define BLURHELPER_H
 
 #include <QObject>
+#include <QTimer>
 
 class BlurHelper : public QObject
 {
@@ -40,9 +41,13 @@ signals:
 public slots:
     void onBlurEnableChanged(bool enable);
     void onWidgetDestroyed(QWidget *widget);
+    void delayUpdate(QWidget *w);
 
 private:
-    QList<QWidget*> m_blur_widgets;
+    QList<QWidget *> m_blur_widgets;
+
+    QList<QWidget *> m_update_list;
+    QTimer m_timer;
 };
 
 #endif // BLURHELPER_H

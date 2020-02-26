@@ -27,6 +27,7 @@
 #include "application-style-settings.h"
 
 #include <QApplication>
+#include <QMenu>
 
 #include <QDebug>
 
@@ -100,7 +101,22 @@ void ProxyStyle::polish(QWidget *widget)
       */
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         //FIXME:
-        m_blur_helper->registerWidget(widget);
+        if (qobject_cast<QMenu*>(widget)) {
+            if (qobject_cast<QMenu*>(widget->parentWidget())) {
+                m_blur_helper->registerWidget(widget);
+            }
+        }
+
+        switch (widget->windowFlags() & Qt::WindowType_Mask) {
+        case Qt::Window:
+        case Qt::Dialog:
+        case Qt::Popup:
+        case Qt::Sheet:
+            if (!widget->parentWidget())
+                m_blur_helper->registerWidget(widget);
+            break;
+        }
+
         /*
         if (QString(widget->metaObject()->className())=="QMenu" ||
                 widget->inherits("Peony::DirectoryViewMenu") ||
@@ -127,7 +143,21 @@ void ProxyStyle::unpolish(QWidget *widget)
 
     //FIXME:
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
-        m_blur_helper->unregisterWidget(widget);
+        if (qobject_cast<QMenu*>(widget)) {
+            if (qobject_cast<QMenu*>(widget->parentWidget())) {
+                m_blur_helper->unregisterWidget(widget);
+            }
+        }
+
+        switch (widget->windowFlags() & Qt::WindowType_Mask) {
+        case Qt::Window:
+        case Qt::Dialog:
+        case Qt::Popup:
+        case Qt::Sheet:
+            if (!widget->parentWidget())
+                m_blur_helper->unregisterWidget(widget);
+            break;
+        }
     }
 
     if (widget->isWindow() && widget->isTopLevel()) {
