@@ -82,6 +82,7 @@ int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWid
 
 void ProxyStyle::polish(QWidget *widget)
 {
+    //return QProxyStyle::polish(widget);
     QProxyStyle::polish(widget);
 
     //FIXME:
@@ -112,7 +113,7 @@ void ProxyStyle::polish(QWidget *widget)
     //qDebug()<<widget->metaObject()->className();
     //add exception.
 
-    if (widget->isWindow()) {
+    if (widget->isWindow() && widget->isTopLevel()) {
         m_window_manager->registerWidget(widget);
     }
 
@@ -121,6 +122,7 @@ void ProxyStyle::polish(QWidget *widget)
 
 void ProxyStyle::unpolish(QWidget *widget)
 {
+    //return QProxyStyle::unpolish(widget);
     widget->removeEventFilter(this);
 
     //FIXME:
@@ -128,7 +130,7 @@ void ProxyStyle::unpolish(QWidget *widget)
         m_blur_helper->unregisterWidget(widget);
     }
 
-    if (widget->isWindow()) {
+    if (widget->isWindow() && widget->isTopLevel()) {
         m_window_manager->unregisterWidget(widget);
     }
 

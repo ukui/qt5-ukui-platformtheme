@@ -52,6 +52,7 @@ public:
     void unpolish(QWidget *widget);
     void polish(QPalette& palette) ;
 
+    QPalette standardPalette() const;
 
     void drawPrimitive(QStyle::PrimitiveElement element,
                        const QStyleOption *option,
