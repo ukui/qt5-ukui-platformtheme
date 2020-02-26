@@ -57,7 +57,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     QStyleOption opt = *option;
     auto color = opt.palette.color(QPalette::Base);
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-        auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/70.0;
+        auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
         //qDebug()<<opacity;
         color.setAlphaF(opacity);
     }
@@ -79,7 +79,8 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
         path.addRegion(region);
     }
 
-    painter->drawPolygon(path.toFillPolygon().toPolygon());
+    //painter->drawPolygon(path.toFillPolygon().toPolygon());
+    painter->drawPath(path);
     painter->restore();
     return;
 }
