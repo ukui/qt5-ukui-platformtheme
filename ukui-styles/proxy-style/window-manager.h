@@ -28,6 +28,7 @@
 #include <QPoint>
 
 class QMouseEvent;
+class AppEventFilter;
 
 /*!
  * \brief The WindowManager class
@@ -40,6 +41,7 @@ class QMouseEvent;
  */
 class WindowManager : public QObject
 {
+    friend class AppEventFilter;
     Q_OBJECT
 public:
     explicit WindowManager(QObject *parent = nullptr);
@@ -58,6 +60,19 @@ private:
     bool m_is_dragging = false;
     QTimer m_timer;
     QPoint m_start_point;
+};
+
+class AppEventFilter : public QObject
+{
+    friend class WindowManager;
+    Q_OBJECT
+private:
+    explicit AppEventFilter(WindowManager *parent);
+    ~AppEventFilter() {}
+
+    bool eventFilter(QObject *obj, QEvent *e);
+
+    WindowManager *m_wm = nullptr;
 };
 
 #endif // WINDOWMANAGER_H

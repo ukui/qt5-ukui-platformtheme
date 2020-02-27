@@ -29,6 +29,8 @@
 #include <QX11Info>
 #include <xcb/xcb.h>
 
+#include <QApplication>
+
 #include <QDebug>
 
 WindowManager::WindowManager(QObject *parent) : QObject(parent)
@@ -37,6 +39,8 @@ WindowManager::WindowManager(QObject *parent) : QObject(parent)
     m_timer.setInterval(100);
     m_timer.setSingleShot(true);
     m_start_point = QPoint(0, 0);
+
+    qApp->installEventFilter(new AppEventFilter(this));
 }
 
 void WindowManager::registerWidget(QWidget *w)
@@ -72,12 +76,16 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
     }
     case QEvent::MouseMove: {
         if (m_is_dragging) {
+            if (m_current_obj != obj)
+                return false;
             if (m_timer.isActive()) {
                 return false;
             } else {
+                if (QWidget::mouseGrabber()) return false;
                 QMouseEvent *event = static_cast<QMouseEvent*>(e);
                 //move request
                 mouseMoveEvent(obj, event);
+                return true;
             }
         }
         return false;
@@ -110,12 +118,14 @@ void WindowManager::buttonPresseEvent(QObject *obj, QMouseEvent *e)
 
     m_is_dragging = true;
     m_current_obj = obj;
-    m_start_point = e->globalPos();
+    m_start_point = e->pos();
     m_timer.start();
 }
 
 void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 {
+    if (!m_is_dragging)
+        return;
     //qDebug()<<"move";
     QWidget *w = qobject_cast<QWidget*>(obj);
 
@@ -125,7 +135,7 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
     xcb_ungrab_pointer(connection, XCB_TIME_CURRENT_TIME);
     NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x(), native.y(), NET::Move);
 
-    m_start_point = e->globalPos();
+    m_start_point = e->pos();
     m_timer.start();
 }
 
@@ -135,4 +145,30 @@ void WindowManager::mouseReleaseEvent(QObject *obj, QMouseEvent *e)
     m_current_obj = nullptr;
     m_start_point = QPoint(0, 0);
     m_timer.stop();
+}
+
+// AppEventFilter
+AppEventFilter::AppEventFilter(WindowManager *parent) : QObject(parent)
+{
+    m_wm = parent;
+}
+
+bool AppEventFilter::eventFilter(QObject *obj, QEvent *e)
+{
+    if (e->type() == QEvent::MouseButtonRelease) {
+        m_wm->m_is_dragging = false;
+        m_wm->m_current_obj = nullptr;
+        m_wm->m_timer.stop();
+        m_wm->m_start_point = QPoint();
+    }
+
+//    if (m_wm->m_is_dragging && m_wm->m_current_obj && (e->type() == QEvent::MouseButtonPress || e->type() == QEvent::MouseMove)) {
+//        QMouseEvent mouseEvent(QEvent::MouseButtonRelease,
+//                               m_wm->m_start_point,
+//                               Qt::LeftButton,
+//                               Qt::LeftButton,
+//                               Qt::NoModifier);
+//        qApp->sendEvent(m_wm->m_current_obj, &mouseEvent);
+//    }
+    return false;
 }
