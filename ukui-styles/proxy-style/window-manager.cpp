@@ -56,6 +56,7 @@ void WindowManager::unregisterWidget(QWidget *w)
 
 bool WindowManager::eventFilter(QObject *obj, QEvent *e)
 {
+    qDebug()<<e->type();
     switch (e->type()) {
     case QEvent::MouseButtonPress: {
         QMouseEvent *event = static_cast<QMouseEvent*>(e);
@@ -95,6 +96,15 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
         mouseReleaseEvent(obj, event);
         return false;
     }
+    case QEvent::Move: {
+        if (m_current_obj && m_is_dragging) {
+            //qDebug()<<"drag end";
+            endDrag();
+        } else {
+            //qDebug()<<"move";
+        }
+        return false;
+    }
     default:
         return false;
     }
@@ -103,11 +113,7 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
 void WindowManager::buttonPresseEvent(QObject *obj, QMouseEvent *e)
 {
     //qDebug()<<"mouse press event";
-    m_is_dragging = false;
-    m_current_obj = nullptr;
-    m_start_point = QPoint(0, 0);
-    m_timer.stop();
-
+    endDrag();
     QWidget *w = qobject_cast<QWidget*>(obj);
     //NOTE: We have to skip the border for resize event.
     auto pos = w->mapFromGlobal(e->globalPos());
@@ -140,6 +146,11 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 }
 
 void WindowManager::mouseReleaseEvent(QObject *obj, QMouseEvent *e)
+{
+    endDrag();
+}
+
+void WindowManager::endDrag()
 {
     m_is_dragging = false;
     m_current_obj = nullptr;

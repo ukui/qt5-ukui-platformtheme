@@ -99,23 +99,9 @@ void ProxyStyle::polish(QWidget *widget)
       i have to avoid them by limitting widget's class name,
       but that is no my expected.
       */
-    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
+    if (widget->testAttribute(Qt::WA_TranslucentBackground)) {
         //FIXME:
-        if (qobject_cast<QMenu*>(widget)) {
-            if (qobject_cast<QMenu*>(widget->parentWidget())) {
-                m_blur_helper->registerWidget(widget);
-            }
-        }
-
-        switch (widget->windowFlags() & Qt::WindowType_Mask) {
-        case Qt::Window:
-        case Qt::Dialog:
-        case Qt::Popup:
-        case Qt::Sheet:
-            if (!widget->parentWidget())
-                m_blur_helper->registerWidget(widget);
-            break;
-        }
+        m_blur_helper->registerWidget(widget);
 
         /*
         if (QString(widget->metaObject()->className())=="QMenu" ||
@@ -142,22 +128,8 @@ void ProxyStyle::unpolish(QWidget *widget)
     widget->removeEventFilter(this);
 
     //FIXME:
-    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
-        if (qobject_cast<QMenu*>(widget)) {
-            if (qobject_cast<QMenu*>(widget->parentWidget())) {
-                m_blur_helper->unregisterWidget(widget);
-            }
-        }
-
-        switch (widget->windowFlags() & Qt::WindowType_Mask) {
-        case Qt::Window:
-        case Qt::Dialog:
-        case Qt::Popup:
-        case Qt::Sheet:
-            if (!widget->parentWidget())
-                m_blur_helper->unregisterWidget(widget);
-            break;
-        }
+    if (widget->testAttribute(Qt::WA_TranslucentBackground)) {
+        m_blur_helper->unregisterWidget(widget);
     }
 
     if (widget->isWindow() && widget->isTopLevel()) {

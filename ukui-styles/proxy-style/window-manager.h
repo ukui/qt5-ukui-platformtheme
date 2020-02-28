@@ -55,6 +55,9 @@ public:
     void mouseMoveEvent(QObject *obj, QMouseEvent *e);
     void mouseReleaseEvent(QObject *obj, QMouseEvent *e);
 
+protected:
+    void endDrag();
+
 private:
     QObject *m_current_obj = nullptr;
     bool m_is_dragging = false;
