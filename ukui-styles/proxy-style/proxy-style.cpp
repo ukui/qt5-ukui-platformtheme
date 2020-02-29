@@ -115,8 +115,16 @@ void ProxyStyle::polish(QWidget *widget)
     //qDebug()<<widget->metaObject()->className();
     //add exception.
 
-    if (widget->isWindow() && widget->isTopLevel()) {
-        m_window_manager->registerWidget(widget);
+    if (widget->isWindow()) {
+        auto var = widget->property("useStyleWindowManager");
+
+        if (var.isNull()) {
+            m_window_manager->registerWidget(widget);
+        } else {
+            if (var.toBool()) {
+                m_window_manager->registerWidget(widget);
+            }
+        }
     }
 
     widget->installEventFilter(this);
@@ -132,8 +140,16 @@ void ProxyStyle::unpolish(QWidget *widget)
         m_blur_helper->unregisterWidget(widget);
     }
 
-    if (widget->isWindow() && widget->isTopLevel()) {
-        m_window_manager->unregisterWidget(widget);
+    if (widget->isWindow()) {
+        auto var = widget->property("useStyleWindowManager");
+
+        if (var.isNull()) {
+            m_window_manager->unregisterWidget(widget);
+        } else {
+            if (var.toBool()) {
+                m_window_manager->unregisterWidget(widget);
+            }
+        }
     }
 
     QProxyStyle::unpolish(widget);

@@ -56,7 +56,7 @@ void WindowManager::unregisterWidget(QWidget *w)
 
 bool WindowManager::eventFilter(QObject *obj, QEvent *e)
 {
-    qDebug()<<e->type();
+    //qDebug()<<e->type();
     switch (e->type()) {
     case QEvent::MouseButtonPress: {
         QMouseEvent *event = static_cast<QMouseEvent*>(e);
