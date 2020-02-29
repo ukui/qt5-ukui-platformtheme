@@ -921,6 +921,67 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
+
+    case CE_CheckBox:
+    {
+        auto checkbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Text));
+        painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
+        painter->restore();
+
+        painter->save();
+        if (option->state & State_None){//Non optional status
+            painter->save();
+            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
+            painter->restore();
+            painter->save();
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
+            painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
+            painter->restore();
+        } else if (option->state & State_Off) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Button));
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if (option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
+            painter->restore();
+        } else if (option->state & State_On) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Highlight));
+            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if(option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
+            painter->restore();
+
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setPen(QPen(option->palette.color(QPalette::HighlightedText),1.3));
+            painter->drawLine(int(option->rect.x()+4.5),option->rect.y()+8,int(option->rect.x())+8,int(option->rect.y())+13);
+            painter->drawLine(int(option->rect.x())+9,option->rect.y()+12,int(option->rect.x()+13.5),option->rect.y()+6);
+            painter->restore();
+        }
+        painter->restore();
+        return;
+    }
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
