@@ -982,6 +982,64 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
+    case CE_RadioButton:{
+        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.color(QPalette::Text));
+        painter->drawText(option->rect.adjusted(+20,+1,0,0),radiobutton->text);
+        painter->restore();
+
+        if (option->state & State_None){//Non optional status
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
+            painter->restore();
+            painter->save();
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
+            painter->drawText(option->rect.adjusted(+20,+1,0,0),radiobutton->text);
+            painter->restore();
+        } else if (option->state & State_Off) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Button));
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if (option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
+            painter->restore();
+        } else if (option->state & State_On) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Highlight));
+            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if(option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
+            painter->restore();
+
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setPen(option->palette.color(QPalette::HighlightedText));
+            painter->setBrush(option->palette.color(QPalette::HighlightedText));
+            painter->drawEllipse(option->rect.x()+6, option->rect.y()+6, 6.0, 6.0);
+        }
+        painter->restore();
+        return;
+    }
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
