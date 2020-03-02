@@ -1,6 +1,6 @@
 # SymbolsHelper-Confirmed: 0.9.0 amd64
-* Build-Depends-Package: libqt5-ukui-style-dev
 libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
+* Build-Depends-Package: libqt5-ukui-style-dev
  _ZN10QByteArrayD1Ev@Base 0.9.0
  _ZN10QByteArrayD2Ev@Base 0.9.0
  (optional=templinst)_ZN12QtConcurrent15RunFunctionTaskIvE3runEv@Base 0.9.0
