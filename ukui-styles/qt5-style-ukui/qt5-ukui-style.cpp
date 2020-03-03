@@ -106,6 +106,20 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = QFusionStyle::standardPalette();
+    //ukui-white
+    QColor  window_bg(231,231,231),
+            window_no_bg(233,233,233),
+            base_bg(255,255,255),
+            base_no_bg(248, 248, 248),
+            font_bg(0,0,0),
+            font_br_bg(255,255,255),
+            font_di_bg(191,191,191),
+            button_bg(217,217,217),
+            button_ac_bg(107,142,235),
+            button_di_bg(233,233,233),
+            highlight_bg(61,107,229),
+            tip_bg(248,248,248);
+
     if (m_use_dark_palette) {
         //ukui-black
         QColor  window_bg(36,36,38),
@@ -120,112 +134,51 @@ QPalette Qt5UKUIStyle::standardPalette() const
                 button_di_bg(52,52,56),
                 highlight_bg(61,107,229),
                 tip_bg(26,26,26);
-
-
-        palette.setBrush(QPalette::Window,window_bg);
-        palette.setBrush(QPalette::Active,QPalette::Window,window_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Window,window_no_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Window,window_no_bg);
-        palette.setBrush(QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Active,QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::WindowText,font_di_bg);
-
-        palette.setBrush(QPalette::Base,base_bg);
-        palette.setBrush(QPalette::Active,QPalette::Base,base_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Base,base_no_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Base,base_no_bg);
-        palette.setBrush(QPalette::Text,font_bg);
-        palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
-
-        //Cursor placeholder
-        palette.setBrush(QPalette::PlaceholderText,font_di_bg);
-
-        palette.setBrush(QPalette::ToolTipBase,tip_bg);
-        palette.setBrush(QPalette::ToolTipText,font_bg);
-
-        palette.setBrush(QPalette::Highlight,highlight_bg);
-        palette.setBrush(QPalette::Active,QPalette::Highlight,highlight_bg);
-        palette.setBrush(QPalette::HighlightedText,font_br_bg);
-
-        palette.setBrush(QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Active,QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::BrightText,font_di_bg);
-
-        palette.setBrush(QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Active,QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Button,button_di_bg);
-        palette.setBrush(QPalette::ButtonText,font_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::ButtonText,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
-
-        palette.setBrush(QPalette::AlternateBase,button_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,button_ac_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
-        //  palette.setBrush(QPalette::Link,QColor(255,0,0));
-        //  palette.setBrush(QPalette::LinkVisited,QColor(255,0,0));
-    } else {
-        //ukui-white
-        QColor  window_bg(231,231,231),
-                window_no_bg(233,233,233),
-                base_bg(255,255,255),
-                base_no_bg(248, 248, 248),
-                font_bg(0,0,0),
-                font_br_bg(255,255,255),
-                font_di_bg(191,191,191),
-                button_bg(217,217,217),
-                button_ac_bg(107,142,235),
-                button_di_bg(233,233,233),
-                highlight_bg(61,107,229),
-                tip_bg(248,248,248);
-
-        palette.setBrush(QPalette::Window,window_bg);
-        palette.setBrush(QPalette::Active,QPalette::Window,window_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Window,window_no_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Window,window_no_bg);
-        palette.setBrush(QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Active,QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::WindowText,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::WindowText,font_di_bg);
-
-        palette.setBrush(QPalette::Base,base_bg);
-        palette.setBrush(QPalette::Active,QPalette::Base,base_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Base,base_no_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Base,base_no_bg);
-        palette.setBrush(QPalette::Text,font_bg);
-        palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
-
-        //Cursor placeholder
-        palette.setBrush(QPalette::PlaceholderText,font_di_bg);
-
-        palette.setBrush(QPalette::ToolTipBase,tip_bg);
-        palette.setBrush(QPalette::ToolTipText,font_bg);
-
-        palette.setBrush(QPalette::Highlight,highlight_bg);
-        palette.setBrush(QPalette::Active,QPalette::Highlight,highlight_bg);
-        palette.setBrush(QPalette::HighlightedText,font_br_bg);
-
-        palette.setBrush(QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Active,QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::BrightText,font_br_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::BrightText,font_di_bg);
-
-        palette.setBrush(QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Active,QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::Button,button_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::Button,button_di_bg);
-        palette.setBrush(QPalette::ButtonText,font_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::ButtonText,font_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
-
-        palette.setBrush(QPalette::AlternateBase,button_bg);
-        palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,button_ac_bg);
-        palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
     }
+
+    palette.setBrush(QPalette::Window,window_bg);
+    palette.setBrush(QPalette::Active,QPalette::Window,window_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::Window,window_no_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::Window,window_no_bg);
+    palette.setBrush(QPalette::WindowText,font_bg);
+    palette.setBrush(QPalette::Active,QPalette::WindowText,font_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::WindowText,font_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::WindowText,font_di_bg);
+
+    palette.setBrush(QPalette::Base,base_bg);
+    palette.setBrush(QPalette::Active,QPalette::Base,base_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::Base,base_no_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::Base,base_no_bg);
+    palette.setBrush(QPalette::Text,font_bg);
+    palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
+
+    //Cursor placeholder
+    palette.setBrush(QPalette::PlaceholderText,font_di_bg);
+
+    palette.setBrush(QPalette::ToolTipBase,tip_bg);
+    palette.setBrush(QPalette::ToolTipText,font_bg);
+
+    palette.setBrush(QPalette::Highlight,highlight_bg);
+    palette.setBrush(QPalette::Active,QPalette::Highlight,highlight_bg);
+    palette.setBrush(QPalette::HighlightedText,font_br_bg);
+
+    palette.setBrush(QPalette::BrightText,font_br_bg);
+    palette.setBrush(QPalette::Active,QPalette::BrightText,font_br_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::BrightText,font_br_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::BrightText,font_di_bg);
+
+    palette.setBrush(QPalette::Button,button_bg);
+    palette.setBrush(QPalette::Active,QPalette::Button,button_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::Button,button_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::Button,button_di_bg);
+    palette.setBrush(QPalette::ButtonText,font_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::ButtonText,font_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
+
+    palette.setBrush(QPalette::AlternateBase,button_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,button_ac_bg);
+    palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
 
     return palette;
 }
