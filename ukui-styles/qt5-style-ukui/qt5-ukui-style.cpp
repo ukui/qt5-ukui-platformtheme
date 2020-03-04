@@ -93,6 +93,12 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return true;
     case SH_ItemView_ShowDecorationSelected:
         return true;
+    case SH_DialogButtonBox_ButtonsHaveIcons:
+        return int(true);
+    case SH_DialogButtons_DefaultButton:
+        return int(true);
+    case SH_UnderlineShortcut:
+        return true;
     default:
         break;
     }
@@ -400,15 +406,22 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelLineEdit://UKUI Text edit style
     {
+        // Conflict with qspinbox and so on, The widget text cannot use this style
+	if (widget) {
+            if (widget->parentWidget()) {
+                if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")) {
+                    return;
+                }
+            }
+	}
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.color(QPalette::Base));
-        // Cannot write click style ,Will affect spinbox
         if (widget->isEnabled()) {
-            // if (option->state &State_MouseOver) {
-            // painter->setBrush(option->palette.color(QPalette::Dark));
-            // }
+            if (option->state &State_MouseOver) {
+                painter->setBrush(option->palette.color(QPalette::Mid));
+            }
             if(option->state &State_HasFocus) {
                 painter->setPen(option->palette.color(QPalette::Highlight));
                 painter->setBrush(option->palette.color(QPalette::Base));
@@ -692,8 +705,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
             return;  }
 
-    default:
-        return QFusionStyle::drawComplexControl(control, option, painter, widget);
+    default:        return QFusionStyle::drawComplexControl(control, option, painter, widget);
     }
 }
 
@@ -812,17 +824,74 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_PushButtonLabel:
     {
-        auto pushbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+        const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option);
+        QRect textRect = button->rect;
+        //这是是否要绘制"&P" as P（带下划线）
+        uint tf = Qt::AlignVCenter | Qt::TextShowMnemonic;
+        if (!proxy()->styleHint(SH_UnderlineShortcut, button, widget))
+            tf |= Qt::TextHideMnemonic;
+
+        if (!button->icon.isNull()) {
+            //Center both icon and text
+            QRect iconRect;
+            QIcon::Mode mode = button->state & State_Enabled ? QIcon::Normal : QIcon::Disabled;
+            if (mode == QIcon::Normal && button->state & State_HasFocus)
+                mode = QIcon::Active;
+            QIcon::State state = QIcon::Off;
+            if (button->state & State_On)
+                state = QIcon::On;
+
+            QPixmap pixmap = button->icon.pixmap(button->iconSize, mode, state);
+            int labelWidth = pixmap.width();
+            int labelHeight = pixmap.height();
+            int iconSpacing = 4;//4 is currently hardcoded in QPushButton::sizeHint()
+            int textWidth =button->fontMetrics.boundingRect(option->rect, int(tf), button->text).width();
+            if (!button->text.isEmpty())
+                labelWidth += (textWidth + iconSpacing);
+
+            iconRect = QRect(textRect.x() + (textRect.width() - labelWidth) / 2,
+                             textRect.y() + (textRect.height() - labelHeight) / 2,
+                             pixmap.width(), pixmap.height());
+
+            iconRect = visualRect(button->direction, textRect, iconRect);
+
+            tf |= Qt::AlignLeft; //left align, we adjust the text-rect instead
+
+            if (button->direction == Qt::RightToLeft)
+                textRect.setRight(iconRect.left() - iconSpacing);
+            else
+                textRect.setLeft(iconRect.left() + iconRect.width() + iconSpacing);
+
+            if (button->state & (State_On | State_Sunken))
+                iconRect.translate(proxy()->pixelMetric(PM_ButtonShiftHorizontal, option, widget),
+                                   proxy()->pixelMetric(PM_ButtonShiftVertical, option, widget));
+            painter->drawPixmap(iconRect, pixmap);
+        } else {
+            tf |= Qt::AlignHCenter;
+        }
+        if (button->state & (State_On | State_Sunken))
+            textRect.translate(proxy()->pixelMetric(PM_ButtonShiftHorizontal, option, widget),
+                               proxy()->pixelMetric(PM_ButtonShiftVertical, option, widget));
+
+        if (button->features & QStyleOptionButton::HasMenu) {
+            int indicatorSize = proxy()->pixelMetric(PM_MenuButtonIndicator, button, widget);
+            if (button->direction == Qt::LeftToRight)
+                textRect = textRect.adjusted(0, 0, -indicatorSize, 0);
+            else
+                textRect = textRect.adjusted(indicatorSize, 0, 0, 0);
+        }
+        //You can also write static colors directly
+        //proxy()->drawItemText(painter, textRect, tf, button->palette, (button->state & State_Enabled),button->text, QPalette::HighlightedText);
+
+        //The following are text dynamic colors
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-
         if(option->state & State_HasFocus){
             painter->setPen(option->palette.color(QPalette::HighlightedText));
         }
         else {
             painter->setPen(option->palette.color(QPalette::ButtonText));
         }
-
         if (option->state & State_MouseOver) {
             if (option->state & State_Sunken) {
                 painter->setPen(option->palette.color(QPalette::HighlightedText));
@@ -830,7 +899,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->setPen(option->palette.color(QPalette::HighlightedText));
             }
         }
-        painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
+        //painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
+        proxy()->drawItemText(painter, textRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
         painter->restore();
         return;
     }
@@ -885,17 +955,18 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->restore();
 
         painter->save();
-        if (option->state & State_None){//Non optional status
-            painter->save();
-            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
-            painter->restore();
-            painter->save();
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
-            painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
-            painter->restore();
-        } else if (option->state & State_Off) {
+        //  if (option->state & State_None){//Non optional status
+        painter->save();
+        painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+        painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
+        painter->restore();
+        painter->save();
+        painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
+        painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
+        painter->restore();
+        //} else
+        if (option->state & State_Off) {
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setBrush(option->palette.color(QPalette::Button));
