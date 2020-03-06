@@ -531,6 +531,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             grooveRect.setX(qMax(grooveRect.width() - currentWidth*2, 0));
         }
         painter->drawRect(grooveRect);
+
+        const QStyleOptionSlider opt = *qstyleoption_cast<const QStyleOptionSlider*>(option);
+        QStyleOption tmp = opt;
+        auto subLineRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSubLine);
+        tmp.rect = subLineRect;
+        drawControl(CE_ScrollBarSubLine, &tmp, painter, widget);
+
+        auto addLineRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarAddLine);
+        tmp.rect = addLineRect;
+        drawControl(CE_ScrollBarAddLine, &tmp, painter, widget);
+
         painter->restore();
 
         return QCommonStyle::drawComplexControl(control, option, painter, widget);
@@ -803,7 +814,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        QFusionStyle::drawControl(element, option, painter, widget);
+        //QFusionStyle::drawControl(element, option, painter, widget);
+
+        QIcon icon;
+        if (option->state.testFlag(State_Horizontal)) {
+            icon = QIcon::fromTheme("pan-end-symbolic");
+        } else {
+            icon = QIcon::fromTheme("pan-down-symbolic");
+        }
+        icon.paint(painter, option->rect, Qt::AlignCenter);
+
         painter->restore();
         return;
     }
@@ -817,7 +837,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        QFusionStyle::drawControl(element, option, painter, widget);
+        //QFusionStyle::drawControl(element, option, painter, widget);
+
+        QIcon icon;
+        if (option->state.testFlag(State_Horizontal)) {
+            icon = QIcon::fromTheme("pan-start-symbolic");
+        } else {
+            icon = QIcon::fromTheme("pan-up-symbolic");
+        }
+        icon.paint(painter, option->rect, Qt::AlignCenter);
+
         painter->restore();
         return;
     }
