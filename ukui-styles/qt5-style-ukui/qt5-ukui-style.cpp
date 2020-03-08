@@ -519,6 +519,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 {
     switch (control) {
     case CC_ScrollBar: {
+        const QStyleOptionSlider opt = *qstyleoption_cast<const QStyleOptionSlider*>(option);
+        QStyleOption tmp = opt;
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         bool enable = option->state.testFlag(QStyle::State_Enabled);
@@ -550,7 +552,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
         painter->save();
         painter->setPen(Qt::transparent);
-        painter->setBrush(Qt::black);
+        painter->setBrush(tmp.palette.windowText());
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(0.1*percent);
         auto grooveRect = option->rect;
@@ -561,17 +563,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             grooveRect.setX(qMax(grooveRect.width() - currentWidth*2, 0));
         }
         painter->drawRect(grooveRect);
-
-        const QStyleOptionSlider opt = *qstyleoption_cast<const QStyleOptionSlider*>(option);
-        QStyleOption tmp = opt;
-        auto subLineRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSubLine);
-        tmp.rect = subLineRect;
-        drawControl(CE_ScrollBarSubLine, &tmp, painter, widget);
-
-        auto addLineRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarAddLine);
-        tmp.rect = addLineRect;
-        drawControl(CE_ScrollBarAddLine, &tmp, painter, widget);
-
         painter->restore();
 
         return QCommonStyle::drawComplexControl(control, option, painter, widget);
@@ -770,7 +761,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setPen(Qt::transparent);
-            painter->setBrush(Qt::black);
+            painter->setBrush(option->palette.windowText());
             painter->setOpacity(0.2);
             auto sliderRect = option->rect;
             if (is_horizontal) {
@@ -808,7 +799,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setPen(Qt::transparent);
-            painter->setBrush(Qt::black);
+            painter->setBrush(option->palette.windowText());
             painter->setOpacity(animator->value("slider_opacity").toDouble());
             auto sliderRect = option->rect;
             if (is_horizontal) {
