@@ -99,6 +99,8 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return int(true);
     case SH_UnderlineShortcut:
         return true;
+    case  SH_ComboBox_Popup:
+        return false;
     default:
         break;
     }
@@ -407,13 +409,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_PanelLineEdit://UKUI Text edit style
     {
         // Conflict with qspinbox and so on, The widget text cannot use this style
-	if (widget) {
+        if (widget) {
             if (widget->parentWidget()) {
                 if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")) {
                     return;
                 }
             }
-	}
+        }
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
