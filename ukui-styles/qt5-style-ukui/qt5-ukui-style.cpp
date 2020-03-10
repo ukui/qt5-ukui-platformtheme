@@ -1115,6 +1115,12 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_SliderControlThickness:{
         return 20;
     }
+    case PM_MenuHMargin:{
+        return 5;
+    }
+    case PM_MenuVMargin:{
+        return 5;
+    }
     default:
         break;
     }
