@@ -677,7 +677,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 pen.setStyle(Qt::SolidLine);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->drawRoundedRect(rectHandle,5,5);
+                painter->drawEllipse(rectHandle);
+
             }
 
             //Drawing scale
@@ -715,8 +716,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     v = nextInterval;
                 }
             }
-
-            return;  }
+            return;}
 
     default:        return QFusionStyle::drawComplexControl(control, option, painter, widget);
     }
@@ -1109,6 +1109,12 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ScrollView_ScrollBarOverlap: {
         return -12;
     }
+    case PM_SliderThickness:{
+        return 20;
+    }
+    case PM_SliderControlThickness:{
+        return 20;
+    }
     default:
         break;
     }
@@ -1121,6 +1127,18 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     case CC_ScrollBar: {
         return scrollBarSubControlRect(control, option, subControl, widget);
     }
+    case CC_Slider:
+        switch( subControl )
+        {
+        case SC_SliderHandle:
+        {
+            QRect handleRect( QFusionStyle::subControlRect( CC_Slider, option, subControl, widget ) );
+            handleRect = centerRect( handleRect, PM_SliderThickness+4, PM_SliderControlThickness+3);
+            return handleRect;
+        }
+        default:return QFusionStyle::subControlRect(control, option, subControl, widget);
+        }
+
     default:
         break;
     }
@@ -1268,3 +1286,7 @@ void Qt5UKUIStyle::drawComBoxIndicator(SubControl which, const QStyleOptionCompl
         drawPrimitive(arrow,&arrowOpt,painter);
     painter->restore();
 }
+
+
+QRect  Qt5UKUIStyle::centerRect(const QRect &rect, int width, int height) const
+{ return QRect(rect.left() + (rect.width() - width)/2, rect.top() + (rect.height() - height)/2, width, height); }
