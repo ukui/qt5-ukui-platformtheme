@@ -36,6 +36,8 @@ public:
 
     QStyle *create(const QString &key) override;
 
+    const QStringList blackList();
+
 signals:
 
 public slots:

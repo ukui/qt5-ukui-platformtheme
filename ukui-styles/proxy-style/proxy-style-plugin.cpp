@@ -83,6 +83,8 @@ ProxyStylePlugin::ProxyStylePlugin()
 
 QStyle *ProxyStylePlugin::create(const QString &key)
 {
+    if (blackList().contains(qAppName()))
+        return new QProxyStyle("fusion");
     qDebug()<<"create"<<key;
     if (key == "ukui") {
         //FIXME:
@@ -96,4 +98,12 @@ QStyle *ProxyStylePlugin::create(const QString &key)
     }
     qDebug()<<"ukui create proxy style: null";
     return nullptr;
+}
+
+const QStringList ProxyStylePlugin::blackList()
+{
+    QStringList l;
+    l<<"kylin-assistant";
+    l<<"kylin-video";
+    return l;
 }

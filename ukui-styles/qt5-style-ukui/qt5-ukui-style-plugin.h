@@ -36,6 +36,8 @@ public:
     Qt5UKUIStylePlugin(QObject *parent = 0);
 
     QStyle *create(const QString &key) override;
+
+    const QStringList blackList();
 };
 
 #endif // QT5UKUISTYLEPLUGIN_H

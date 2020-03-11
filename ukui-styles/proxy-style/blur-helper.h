@@ -36,6 +36,9 @@ public:
     void registerWidget(QWidget *widget);
     void unregisterWidget(QWidget *widget);
 
+    bool isApplicationInBlackList();
+    const QStringList blackList();
+
 signals:
 
 public slots:

@@ -29,6 +29,8 @@
 #include <QEvent>
 #include <QIcon>
 
+#include <QApplication>
+
 #include <QDebug>
 
 BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
@@ -83,6 +85,10 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
  */
 void BlurHelper::registerWidget(QWidget *widget)
 {
+    if (isApplicationInBlackList())
+        return;
+    if (widget->property("doNotBlur").toBool())
+        return;
     if (!m_blur_widgets.contains(widget)) {
         m_blur_widgets<<widget;
         //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
@@ -108,9 +114,26 @@ void BlurHelper::registerWidget(QWidget *widget)
 
 void BlurHelper::unregisterWidget(QWidget *widget)
 {
+    if (isApplicationInBlackList())
+        return;
+    if (widget->property("doNotBlur").toBool())
+        return;
     m_blur_widgets.removeOne(widget);
     widget->removeEventFilter(this);
     KWindowEffects::enableBlurBehind(widget->effectiveWinId(), false);
+}
+
+bool BlurHelper::isApplicationInBlackList()
+{
+    return blackList().contains(qAppName());
+}
+
+const QStringList BlurHelper::blackList()
+{
+    QStringList blackList;
+    blackList.append("kylin-assistant");
+    blackList.append("kylin-vedio");
+    return blackList;
 }
 
 void BlurHelper::onBlurEnableChanged(bool enable)

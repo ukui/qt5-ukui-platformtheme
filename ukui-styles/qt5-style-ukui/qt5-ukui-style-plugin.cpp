@@ -22,7 +22,10 @@
 
 #include "qt5-ukui-style-plugin.h"
 #include "qt5-ukui-style.h"
-#include <QProxyStyle>
+#include <private/qfusionstyle_p.h>
+
+#include <QApplication>
+
 #include <QDebug>
 
 Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
@@ -32,6 +35,8 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
 
 QStyle *Qt5UKUIStylePlugin::create(const QString &key)
 {
+    if (blackList().contains(qAppName()))
+        return new QFusionStyle;
     //FIXME:
     bool dark = false;
     if (key == "ukui-black") {
@@ -41,6 +46,14 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
         qDebug()<<"use ukui-white";
     }
     return new Qt5UKUIStyle(dark);
+}
+
+const QStringList Qt5UKUIStylePlugin::blackList()
+{
+    QStringList l;
+    l<<"kylin-assistant";
+    l<<"kylin-video";
+    return l;
 }
 
 #if QT_VERSION < 0x050000
