@@ -26,6 +26,7 @@
 #include "qt5-ukui-platformtheme_global.h"
 #include <QObject>
 #include <qpa/qplatformtheme.h>
+#include <QFont>
 
 #if !defined(QT_NO_DBUS) && defined(QT_DBUS_LIB)
 
@@ -83,6 +84,9 @@ public:
     virtual QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const;
 #endif
 
+private:
+    QFont m_system_font;
+    QFont m_fixed_font;
 };
 
 #endif // QT5UKUIPLATFORMTHEME_H

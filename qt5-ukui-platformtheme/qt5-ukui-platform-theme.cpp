@@ -43,12 +43,13 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         auto settings = UKUIStyleSettings::globalInstance();
 
         //set font
-        auto font = QApplication::font();
         auto fontName = settings->get("systemFont").toString();
         auto fontSize = settings->get("systemFontSize").toInt();
-        font.setFamily(fontName);
-        font.setPixelSize(fontSize);
-        QApplication::setFont(font);
+        m_system_font.setFamily(fontName);
+        m_system_font.setPixelSize(fontSize);
+
+        m_fixed_font.setFamily(fontName);
+        m_fixed_font.setPixelSize(fontSize*1.2);
 
         //QIcon::setThemeName(settings->get("icon-theme-name").toString());
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
@@ -61,7 +62,9 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 QString font = settings->get("system-font").toString();
                 QFontDatabase db;
                 if (db.families().contains(font)) {
-                    auto oldFont = QApplication::font();
+                    QFont oldFont = QApplication::font();
+                    m_system_font.setFamily(font);
+                    m_fixed_font.setFamily(font);
                     oldFont.setFamily(font);
                     QApplication::setFont(oldFont);
                 }
@@ -70,9 +73,9 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 int fontSize = settings->get("system-font-size").toInt();
                 QFontDatabase db;
                 if (fontSize > 0) {
-                    auto oldFont = QApplication::font();
-                    qDebug()<<"set"<<fontSize;
-                    //oldFont.setWeight(fontSize);
+                    QFont oldFont = QApplication::font();
+                    m_system_font.setPixelSize(fontSize);
+                    m_fixed_font.setPixelSize(fontSize*1.2);
                     oldFont.setPixelSize(fontSize);
                     QApplication::setFont(oldFont);
                 }
@@ -94,6 +97,17 @@ const QPalette *Qt5UKUIPlatformTheme::palette(Palette type) const
 const QFont *Qt5UKUIPlatformTheme::font(Font type) const
 {
     //FIXME:
+    qDebug()<<type;
+    switch (type) {
+    case SystemFont:
+        return &m_system_font;
+    case TitleBarFont:
+    case FixedFont:
+    case GroupBoxTitleFont:
+        return &m_fixed_font;
+    default:
+        return &m_system_font;
+    }
     return QPlatformTheme::font(type);
 }
 
