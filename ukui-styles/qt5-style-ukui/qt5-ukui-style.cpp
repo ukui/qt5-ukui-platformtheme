@@ -42,7 +42,7 @@
 #include <QScrollBar>
 #include <QTreeView>
 #include <QMenu>
-
+#include <QToolButton>
 #include <QtPlatformHeaders/QXcbWindowFunctions>
 
 #include <QEvent>
@@ -352,6 +352,22 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
+    case PE_IndicatorButtonDropDown: //UKUI IndicatorButton  style
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(Qt::NoPen);
+        if(widget->isEnabled()){
+            if (option->state & State_MouseOver) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->drawRoundedRect(option->rect.adjusted(+0,+0,-4,+0),0,0);
+                painter->drawRoundedRect(option->rect.adjusted(+1,+0,+0,+0),4,4);
+            }
+        }
+        painter->restore();
+        return;
+    }
+
     case PE_PanelButtonTool://UKUI ToolBar  item style
     {
         painter->save();
@@ -367,7 +383,19 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setBrush(option->palette.color(QPalette::Highlight));
             }
         }
-        painter->drawRoundedRect(option->rect,4,4);
+
+        /*To determine whether the pop-up menu is in progress,
+        it is a combination button, and the shape needs to be changed*/
+        const QToolButton* toolButton = qobject_cast<const QToolButton*>( widget );
+        const bool hasPopupMenu( toolButton && toolButton->popupMode() == QToolButton::MenuButtonPopup );
+        if( hasPopupMenu )
+        {
+            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect.adjusted(+4,+0,+0,+0),0,0);
+        }
+        else {
+            painter->drawRoundedRect(option->rect,4,4);
+        }
         painter->restore();
         return;
     }
