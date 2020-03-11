@@ -374,12 +374,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::NoBrush);
-        if (option->state & State_MouseOver) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::Highlight));
+
+        if (widget->isEnabled()) {
+            if (option->state & State_MouseOver) {
                 painter->setBrush(option->palette.color(QPalette::Highlight));
-            } else {
-                painter->setPen(option->palette.color(QPalette::Highlight));
+            }
+            if (option->state & State_Sunken) {
                 painter->setBrush(option->palette.color(QPalette::Highlight));
             }
         }
