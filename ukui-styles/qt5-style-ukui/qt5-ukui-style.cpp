@@ -645,32 +645,41 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         */
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),option->palette.color(QPalette::Button));
-        if (option->state & State_Enabled) {
-            painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
-            painter->setBrush(Qt::NoBrush);
-        } else {
-            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-            painter->setBrush(Qt::NoBrush);
+        painter->setBrush(Qt::NoBrush);
+        if(option->state & State_Enabled){
+            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+            if (option->state & State_MouseOver) {
+                painter->restore();
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+            }
         }
+        else {
+            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+        }
+        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),Qt::NoBrush);
+
+        int w = 8;
+        int h =  4;
+
         QPolygon points(4);
-        int x = int(r1.x());
-        int y = int(r1.y());
-        int w=int(r1.width()/2);
-        int h=int(r1.height()/2);
-        points[0] = QPoint(x+w-3, y+h+2);
-        points[1] = QPoint(x+w,y+h-1);
-        points[2] = QPoint(x+w,y+h-1);
-        points[3] = QPoint(x+w+3,y+h+2);
+        int x = int(r1.x())+2;
+        int y = int(r1.y())+2;
+        points[0] = QPoint(x, y + h);
+        points[1] = QPoint(x + w / 2, y);
+        points[2] = QPoint(x + w / 2, y);
+        points[3] = QPoint(x + w, y + h);
         painter->drawLine(points[0],  points[1] );
         painter->drawLine(points[2],  points[3] );
 
-        int x2 = int(r2.x());
-        int y2 = int(r2.y());
-        points[0] = QPoint(x2+w-3, y2+h-2);
-        points[1] = QPoint(x2+w,y2+h+1);
-        points[2] = QPoint(x2+w,y2+h+1);
-        points[3] = QPoint(x2+w+3,y2+h-2);
+        int x2 = int(r2.x())+2;
+        int y2 = int(r2.y())+2;
+        points[0] = QPoint(x2, y2);
+        points[1] = QPoint(x2 + w / 2, y2 + h);
+        points[2] = QPoint(x2 + w / 2, y2 + h);
+        points[3] = QPoint(x2 + w, y2);
         painter->drawLine(points[0],  points[1] );
         painter->drawLine(points[2],  points[3] );
         painter->restore();
