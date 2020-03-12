@@ -474,6 +474,20 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setBrush(Qt::NoBrush);
                 painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+
+                //If the type is toolbar button, change the color when hover
+                const QToolButton* toolButton = qobject_cast<const QToolButton*>( widget );
+                const bool hasPopupMenu( toolButton && toolButton->popupMode() == QToolButton::MenuButtonPopup );
+                if( hasPopupMenu )
+                {
+                    if (option->state & State_MouseOver|State_Sunken) {
+                        painter->restore();
+                        painter->save();
+                        painter->setRenderHint(QPainter::Antialiasing,true);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->setPen(QPen(option->palette.color(QPalette::Light), 1.1));
+                    }
+                }
             }
         }
         else {
