@@ -465,47 +465,69 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_IndicatorArrowDown:case PE_IndicatorArrowUp:case PE_IndicatorArrowLeft:case PE_IndicatorArrowRight:{
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
+        painter->setBrush(Qt::NoBrush);
+        if(option->state & State_Enabled){
+            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+            if (option->state & State_MouseOver) {
+                painter->restore();
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+            }
+        }
+        else {
+            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+        }
+
         QPolygon points(4);
         int x = option->rect.x();
         int y = option->rect.y();
-        int w = 7;
-        int h = 2;
+        //If the height is too high, the arrow will be very ugly. If the height is too small, the arrow will not be painted
+        // int w = option->rect.width() / 3;
+        // int h =  option->rect.height() / 4;
+        int w = 8;
+        int h =  4;
         x += (option->rect.width() - w) / 2;
         y += (option->rect.height() - h) / 2;
-        if (option->state & State_Enabled) {
-            painter->setPen(QPen(option->palette.color(QPalette::ToolTipText), 1.1));
-            painter->setBrush(Qt::NoBrush);
-        } else {
-            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-            painter->setBrush(Qt::NoBrush);
+
+        //When the arrow is too small, you can not draw
+        if(option->rect.width() - w < 1 || option->rect.height() - h < 1){
+            return;
         }
+        else if (option->rect.width() - w <= 2 || option->rect.height() - h <= 2){
+            w = 5;
+            h =  3;
+        }
+
         if (element == PE_IndicatorArrowDown) {
-            points[0] = QPoint(x, y-1);
-            points[1] = QPoint(x + w+1, y-1);
-            points[2] = QPoint(x + w / 2, y + h+1);
-            points[3] = QPoint(x + w / 2+1, y + h+1);
+            points[0] = QPoint(x, y);
+            points[1] = QPoint(x + w / 2, y + h);
+            points[2] = QPoint(x + w / 2, y + h);
+            points[3] = QPoint(x + w, y);
         }
+
+        //When left and right, "W" and "H" are interchanged so that the arrow does not deform
         else if (element == PE_IndicatorArrowUp) {
-            points[0] = QPoint(x, y+3);
-            points[1] = QPoint(x + w+1, y+3);
-            points[2] = QPoint(x + w / 2, y - h+1);
-            points[3] = QPoint(x + w / 2+1, y - h+1);
+            points[0] = QPoint(x, y + h);
+            points[1] = QPoint(x + w / 2, y);
+            points[2] = QPoint(x + w / 2, y);
+            points[3] = QPoint(x + w, y + h);
         }
         else if (element == PE_IndicatorArrowLeft) {
-            points[0] = QPoint(x , y+h/2);
-            points[1] = QPoint(x + w / 2, y +h+2);
-            points[2] = QPoint(x + w / 2, y -h);
-            points[3] = QPoint(x, y+h/2);
+            points[0] = QPoint(x + h , y);
+            points[1] = QPoint(x, y+w/2);
+            points[2] = QPoint(x, y+w/2);
+            points[3] = QPoint(x + w , y + w);
         }
         else if (element == PE_IndicatorArrowRight) {
-            points[0] = QPoint(x+w/2, y-h-1);
-            points[1] = QPoint(x+w/2 , y+h+2);
-            points[2] = QPoint(x+w, y+h/2-1);
-            points[3] = QPoint(x+w, y+h/2);
+            points[0] = QPoint(x , y);
+            points[1] = QPoint(x+h, y+w/2);
+            points[2] = QPoint(x+h , y+w/2);
+            points[3] = QPoint(x, y+w);
         }
-        painter->drawLine(points[0],  points[2] );
-        painter->drawLine(points[3],  points[1] );
+        painter->drawLine(points[0],  points[1] );
+        painter->drawLine(points[2],  points[3] );
         painter->restore();
         return;
     }
