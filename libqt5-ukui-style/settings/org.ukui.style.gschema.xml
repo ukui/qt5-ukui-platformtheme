@@ -43,5 +43,17 @@
             <summary>a list of QWidget based classes do not blur.</summary>
             <description>Example: [QWidget, QWidget1, QWidget2]</description>
         </key>
+        <key type="b" name="use-system-palette">
+            <default>false</default>
+            <summary>Use system palette.</summary>
+            <description>
+                Globally enable or disable system palette provided by ukui platform.
+            </description>
+        </key>
+        <key type="s" name="system-palette">
+            <default>""</default>
+            <summary>System Palette</summary>
+            <description>Set default system palette for UKUI desktop environment.</description>
+        </key>
     </schema>
 </schemalist>

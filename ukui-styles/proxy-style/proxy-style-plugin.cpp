@@ -77,6 +77,13 @@ ProxyStylePlugin::ProxyStylePlugin()
                 }
                 QApplication::setPalette(palette);
             }
+
+            if (key == "systemPalette") {
+                onSystemPaletteChanged();
+            }
+            if (key == "useSystemPalette") {
+                onSystemPaletteChanged();
+            }
         });
     }
 }
@@ -106,4 +113,19 @@ const QStringList ProxyStylePlugin::blackList()
     l<<"kylin-assistant";
     l<<"kylin-video";
     return l;
+}
+
+void ProxyStylePlugin::onSystemPaletteChanged()
+{
+    bool useSystemPalette = UKUIStyleSettings::globalInstance()->get("useSystemPalette").toBool();
+    if (useSystemPalette) {
+        auto data = UKUIStyleSettings::globalInstance()->get("systemPalette");
+        if (data.isNull())
+            return;
+        auto palette = qvariant_cast<QPalette>(data);
+        QApplication::setPalette(palette);
+    } else {
+        auto palette = QApplication::style()->standardPalette();
+        QApplication::setPalette(palette);
+    }
 }

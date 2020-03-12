@@ -38,6 +38,9 @@ public:
 
     const QStringList blackList();
 
+protected:
+    void onSystemPaletteChanged();
+
 signals:
 
 public slots:
