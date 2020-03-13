@@ -1238,7 +1238,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_IndicatorHeight:{
         return 16;
     }
-    case PM_SubMenuOverlap:return 5;
+    case PM_SubMenuOverlap:return 7;
     default:
         break;
     }
