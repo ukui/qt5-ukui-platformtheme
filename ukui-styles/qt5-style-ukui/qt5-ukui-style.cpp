@@ -438,26 +438,31 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     {
         // Conflict with qspinbox and so on, The widget text cannot use this style
         if (widget) {
-            if (widget->parentWidget()) {
+            if (widget->parentWidget())
                 if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")) {
+                    painter->restore();
                     return;
                 }
-            }
         }
         painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(option->palette.color(QPalette::Base));
-        if (widget->isEnabled()) {
-            if (option->state &State_MouseOver) {
-                painter->setBrush(option->palette.color(QPalette::Mid));
+        if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            //Setpen is set to avoid a bug that collides with a white background
+            painter->setPen(option->palette.color(QPalette::Window));
+            painter->setBrush(option->palette.color(QPalette::Base));
+            // if (panel->lineWidth > 0)
+            // proxy()->drawPrimitive(PE_FrameLineEdit, panel, painter, widget);
+            if (widget->isEnabled()) {
+                if (option->state &State_MouseOver) {
+                    painter->setBrush(option->palette.button().color().lighter());
+                }
+                if(option->state &State_HasFocus) {
+                    painter->setPen(option->palette.color(QPalette::Highlight));
+                    painter->setBrush(option->palette.color(QPalette::Base));
+                }
             }
-            if(option->state &State_HasFocus) {
-                painter->setPen(option->palette.color(QPalette::Highlight));
-                painter->setBrush(option->palette.color(QPalette::Base));
-            }
+            painter->drawRoundedRect(panel->rect,4,4);
         }
-        painter->drawRoundedRect(option->rect,4,4);
         painter->restore();
         return;
     }
