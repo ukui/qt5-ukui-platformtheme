@@ -766,7 +766,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 // dashes << -0.1 << space;
                 pen.setDashPattern(dashes);
                 pen.setWidthF(3);
-                pen.setColor(option->palette.color(QPalette::Highlight));
+                pen.setColor(option->palette.highlight().color().lighter());
                 painter->setPen(pen);
                 painter->setRenderHint(QPainter::Antialiasing);
 
@@ -789,7 +789,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Highlight));
                 painter->drawEllipse(rectHandle);
-
             }
 
             //Drawing scale
@@ -1221,9 +1220,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return -12;
     }
     case PM_SliderThickness:{
-        return 20;
+        return 40;
     }
-    case PM_SliderControlThickness:{
+    case PM_SliderLength:{
         return 20;
     }
     case PM_MenuHMargin:{
@@ -1258,7 +1257,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         case SC_SliderHandle:
         {
             QRect handleRect( QFusionStyle::subControlRect( CC_Slider, option, subControl, widget ) );
-            handleRect = centerRect( handleRect, PM_SliderThickness+4, PM_SliderControlThickness+3);
+            handleRect = centerRect( handleRect, PM_SliderThickness+9, PM_SliderControlThickness+8);
             return handleRect;
         }
         default:return QFusionStyle::subControlRect(control, option, subControl, widget);
