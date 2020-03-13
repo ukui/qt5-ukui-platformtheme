@@ -440,7 +440,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (widget) {
             if (widget->parentWidget())
                 if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")) {
-                    painter->restore();
                     return;
                 }
         }
