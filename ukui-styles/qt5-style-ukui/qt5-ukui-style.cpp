@@ -1239,6 +1239,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
     }
     case PM_SubMenuOverlap:return 7;
+    case PM_ButtonMargin:return  9;
     default:
         break;
     }
