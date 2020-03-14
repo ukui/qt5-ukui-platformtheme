@@ -304,6 +304,45 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
+    case PE_IndicatorHeaderArrow: //Here is the arrow drawing of the table box
+
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(Qt::NoBrush);
+            if(option->state & State_Enabled){
+                painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+                if (option->state & State_MouseOver) {
+                    painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+                }
+            }
+            else {
+                painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+            }
+            QPolygon points(4);
+            int x = option->rect.x();
+            int y = option->rect.y();
+            int w = 8;
+            int h =  4;
+            x += (option->rect.width() - w) / 2;
+            y += (option->rect.height() - h) / 2;
+            if (header->sortIndicator & QStyleOptionHeader::SortUp) {
+                points[0] = QPoint(x, y);
+                points[1] = QPoint(x + w / 2, y + h);
+                points[2] = QPoint(x + w / 2, y + h);
+                points[3] = QPoint(x + w, y);
+            } else if (header->sortIndicator & QStyleOptionHeader::SortDown) {
+                points[0] = QPoint(x, y + h);
+                points[1] = QPoint(x + w / 2, y);
+                points[2] = QPoint(x + w / 2, y);
+                points[3] = QPoint(x + w, y + h);
+            }
+            painter->drawLine(points[0],  points[1] );
+            painter->drawLine(points[2],  points[3] );
+            painter->restore();
+            return;
+        }
+
     case PE_PanelButtonCommand://UKUI PushButton style
     {
         painter->save();
