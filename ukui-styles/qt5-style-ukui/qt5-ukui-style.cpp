@@ -293,6 +293,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
+
+    case PE_Frame:{
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setPen(QPen(option->palette.color(QPalette::Normal, QPalette::Dark), 1));
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRoundedRect(option->rect,6,6);
+        painter->restore();
+        return;
+    }
+
     case PE_PanelButtonCommand://UKUI PushButton style
     {
         painter->save();
@@ -1239,6 +1250,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     }
     case PM_SubMenuOverlap:return 7;
     case PM_ButtonMargin:return  9;
+    case PM_DefaultFrameWidth:return 2;
     default:
         break;
     }
