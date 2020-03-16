@@ -763,6 +763,12 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         } else {
             grooveRect.setX(qMax(grooveRect.width() - currentWidth*2, 0));
         }
+        if (widget->property("drawScrollBarGroove").isValid()) {
+            if (!widget->property("drawScrollBarGroove").toBool()) {
+                painter->restore();
+                return QCommonStyle::drawComplexControl(control, option, painter, widget);
+            }
+        }
         painter->drawRect(grooveRect);
         painter->restore();
 
@@ -964,6 +970,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         bool enable = option->state.testFlag(QStyle::State_Enabled);
         bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
         bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
+        bool is_sunken = option->state.testFlag(QStyle::State_Sunken);
 
         //draw slider
         if (!enable) {
@@ -985,51 +992,76 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         } else {
             auto sliderWidth = 0;
             if (is_horizontal) {
-                sliderWidth = qMin(animator->value("groove_width").toInt() + 2, option->rect.height());
+                sliderWidth = qMin(animator->value("groove_width").toInt() + 4, option->rect.height());
             } else {
-                sliderWidth = qMin(animator->value("groove_width").toInt() + 2, option->rect.width());
+                sliderWidth = qMin(animator->value("groove_width").toInt() + 4, option->rect.width());
             }
 
             animator->setAnimatorDirectionForward("slider_opacity", mouse_over);
             if (mouse_over) {
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") == 0) {
                     animator->startAnimator("slider_opacity");
-                }
+                }  
             } else {
+                animator->setAnimatorDirectionForward("additional_opacity", false);
+//                if (animator->currentAnimatorTime("slider_opacity") > 0)
+//                    animator->startAnimator("additional_opacity");
+
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") > 0) {
                     animator->startAnimator("slider_opacity");
                 }
             }
 
-            if (animator->isRunning("slider_opacity")) {
-                const_cast<QWidget *>(widget)->update();
+            //sunken additional opacity
+
+            if (is_sunken) {
+                if (animator->currentAnimatorTime("additional_opacity") == 0) {
+                    animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
+                    animator->startAnimator("additional_opacity");
+                    qDebug()<<"start is_sunken";
+                }
+            } else {
+                if (animator->currentAnimatorTime("additional_opacity") > 0) {
+                    animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
+                    animator->startAnimator("additional_opacity");
+                    qDebug()<<"start not_is_sunken";
+                }
             }
 
+            if (animator->isRunning("additional_opacity") || animator->isRunning("slider_opacity")) {
+                const_cast<QWidget *>(widget)->update();
+                //qDebug()<<"sunken"<<is_sunken<<animator->value("additional_opacity").toDouble();
+            }
+
+            //draw slider
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setPen(Qt::transparent);
             painter->setBrush(option->palette.windowText());
-            painter->setOpacity(animator->value("slider_opacity").toDouble());
+            double slider_opacity = animator->value("slider_opacity").toDouble();
+            double additional_opacity = animator->value("additional_opacity").toDouble();
+            painter->setOpacity(slider_opacity + additional_opacity);
             auto sliderRect = option->rect;
             if (is_horizontal) {
                 sliderRect.setY(sliderRect.height() - sliderWidth);
             } else {
                 sliderRect.setX(sliderRect.width() - sliderWidth);
             }
-            if (sliderWidth > 3) {
+            if (sliderWidth > 4) {
                 if (is_horizontal) {
                     sliderRect.adjust(0, 1, 0, -1);
                 } else {
                     sliderRect.adjust(1, 0, -1, 0);
                 }
             } else {
-                if (is_horizontal) {
-                    sliderRect.adjust(0, -2, 0, -2);
-                } else {
-                    sliderRect.adjust(-2, 0, -2, 0);
-                }
+//                if (is_horizontal) {
+//                    sliderRect.adjust(0, -1, 0, -1);
+//                } else {
+//                    sliderRect.adjust(-1, 0, -1, 0);
+//                }
             }
-            painter->drawRoundedRect(sliderRect, 6, 6);
+            int rectMin = qMin(sliderRect.width(), sliderRect.height());
+            painter->drawRoundedRect(sliderRect, rectMin/2, rectMin/2);
             painter->restore();
         }
         return;
@@ -1386,10 +1418,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 {
     switch (metric) {
     case PM_ScrollBarExtent: {
-        return 12;
+        return 10;
     }
     case PM_ScrollView_ScrollBarOverlap: {
-        return -12;
+        return -10;
     }
     case PM_SliderThickness:{
         return 40;
@@ -1423,6 +1455,17 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 {
     switch (control) {
     case CC_ScrollBar: {
+        auto rect = QFusionStyle::subControlRect(control, option, subControl, widget);
+        if (subControl == SC_ScrollBarSlider) {
+            rect.adjust(1, 1, -1, -1);
+            if (option->state.testFlag(QStyle::State_Horizontal)) {
+                rect.adjust(1, 0, -1, 0);
+            } else {
+                rect.adjust(0, 1, 0, -1);
+            }
+            return rect;
+        }
+        return rect;
         return scrollBarSubControlRect(control, option, subControl, widget);
     }
     case CC_Slider:

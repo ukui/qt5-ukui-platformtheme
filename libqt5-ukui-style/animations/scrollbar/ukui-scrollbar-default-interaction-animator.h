@@ -60,6 +60,7 @@ private:
     QVariantAnimation *m_bg_opacity;
     QVariantAnimation *m_groove_width;
     QVariantAnimation *m_slider_opacity;
+    QVariantAnimation *m_sunken_silder_additional_opacity;
 };
 
 }

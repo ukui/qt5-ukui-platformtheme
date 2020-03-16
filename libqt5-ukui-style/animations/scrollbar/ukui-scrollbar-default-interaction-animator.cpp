@@ -39,15 +39,21 @@ DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParal
 
     m_groove_width = new QVariantAnimation(this);
     m_groove_width->setStartValue(0);
-    m_groove_width->setEndValue(12);
-    m_bg_opacity->setDuration(250);
+    m_groove_width->setEndValue(10);
+    m_bg_opacity->setDuration(150);
     addAnimation(m_groove_width);
 
     m_slider_opacity = new QVariantAnimation(this);
     m_slider_opacity->setStartValue(0.2);
-    m_slider_opacity->setEndValue(0.4);
+    m_slider_opacity->setEndValue(0.35);
     m_bg_opacity->setDuration(250);
     addAnimation(m_slider_opacity);
+
+    m_sunken_silder_additional_opacity = new QVariantAnimation(this);
+    m_sunken_silder_additional_opacity->setStartValue(double(0));
+    m_sunken_silder_additional_opacity->setEndValue(0.15);
+    m_sunken_silder_additional_opacity->setDuration(150);
+    addAnimation(m_sunken_silder_additional_opacity);
 
     setObjectName("ukui_scrollbar_default_interaction_animator");
 }
@@ -75,6 +81,8 @@ bool DefaultInteractionAnimator::bindWidget(QWidget *w)
 {
     //qDebug()<<w->objectName()<<w->topLevelWidget()->metaObject()->className();
     if (qobject_cast<QScrollBar*>(w)) {
+        if (w->property("doNotAnimate").toBool())
+            return false;
         m_widget = w;
         return true;
     }
@@ -100,6 +108,8 @@ QVariant DefaultInteractionAnimator::value(const QString &property)
         return m_groove_width->currentValue();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->currentValue();
+    } else if (property == "additional_opacity") {
+        return m_sunken_silder_additional_opacity->currentValue();
     } else {
         return QVariant();
     }
@@ -115,6 +125,10 @@ bool DefaultInteractionAnimator::setAnimatorStartValue(const QString &property, 
         return true;
     } else if (property == "slider_opacity") {
         m_slider_opacity->setStartValue(value);
+        return true;
+    } else if (property == "additional_opacity")
+    {
+        m_sunken_silder_additional_opacity->setStartValue(value);
         return true;
     } else {
         return false;
@@ -132,6 +146,9 @@ bool DefaultInteractionAnimator::setAnimatorEndValue(const QString &property, co
     } else if (property == "slider_opacity") {
         m_slider_opacity->setEndValue(value);
         return true;
+    } else if (property == "additional_opacity") {
+        m_sunken_silder_additional_opacity->setEndValue(value);
+        return true;
     } else {
         return false;
     }
@@ -148,6 +165,9 @@ bool DefaultInteractionAnimator::setAnimatorDuration(const QString &property, in
     } else if (property == "slider_opacity") {
         m_groove_width->setDuration(duration);
         return true;
+    } else if (property == "additional_opacity") {
+        m_sunken_silder_additional_opacity->setDuration(duration);
+        return true;
     } else {
         return false;
     }
@@ -162,6 +182,8 @@ void DefaultInteractionAnimator::setAnimatorDirectionForward(const QString &prop
         m_groove_width->setDirection(d);
     } else if (property == "slider_opacity") {
         m_slider_opacity->setDirection(d);
+    } else if (property == "additional_opacity") {
+        m_sunken_silder_additional_opacity->setDirection(d);
     } else {
         return;
     }
@@ -175,6 +197,8 @@ bool DefaultInteractionAnimator::isRunning(const QString &property)
         return m_groove_width->state() == Running;
     } else if (property == "slider_opacity") {
         return m_slider_opacity->state() == Running;
+    } else if (property == "additional_opacity") {
+        return m_sunken_silder_additional_opacity->state() == Running;
     } else {
         return this->state() == Running;
     }
@@ -188,6 +212,8 @@ void DefaultInteractionAnimator::startAnimator(const QString &property)
         m_groove_width->start();
     } else if (property == "slider_opacity") {
         m_slider_opacity->start();
+    } else if (property == "additional_opacity") {
+        m_sunken_silder_additional_opacity->start();
     } else {
         this->start();
     }
@@ -201,6 +227,8 @@ void DefaultInteractionAnimator::stopAnimator(const QString &property)
         m_groove_width->stop();
     } else if (property == "slider_opacity") {
         m_slider_opacity->stop();
+    } else if (property == "additional_opacity") {
+        m_sunken_silder_additional_opacity->stop();
     } else {
         this->stop();
     }
@@ -214,6 +242,8 @@ int DefaultInteractionAnimator::currentAnimatorTime(const QString &property)
         return m_groove_width->currentTime();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->currentTime();
+    } else if (property == "additional_opacity") {
+        return m_sunken_silder_additional_opacity->currentTime();
     } else {
         return this->currentTime();
     }
@@ -227,6 +257,8 @@ int DefaultInteractionAnimator::totalAnimationDuration(const QString &property)
         return m_groove_width->duration();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->duration();
+    } else if (property == "additional_opacity") {
+        return m_sunken_silder_additional_opacity->duration();
     } else {
         return this->duration();
     }

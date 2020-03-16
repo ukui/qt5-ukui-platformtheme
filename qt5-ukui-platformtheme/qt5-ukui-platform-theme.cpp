@@ -97,6 +97,7 @@ const QPalette *Qt5UKUIPlatformTheme::palette(Palette type) const
 const QFont *Qt5UKUIPlatformTheme::font(Font type) const
 {
     //FIXME:
+    return &m_system_font;
     switch (type) {
     case SystemFont:
         return &m_system_font;
