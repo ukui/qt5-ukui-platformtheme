@@ -450,7 +450,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-   //Show this section when there are too many tabs
+        //Show this section when there are too many tabs
     case PE_IndicatorTabTear:
     {
         /*
@@ -461,7 +461,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
         break;
 
-    //This is rare. It's a line under the item
+        //This is rare. It's a line under the item
     case PE_FrameTabBarBase:
         if (const QStyleOptionTabBarBase *tbb
                 = qstyleoption_cast<const QStyleOptionTabBarBase *>(option)) {
@@ -584,27 +584,27 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
 
     case PE_IndicatorCheckBox: { //UKUI CheckBox style
-        painter->save();
+
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
+            painter->save();
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setPen(option->palette.color(QPalette::Mid));
-            painter->setBrush(option->palette.color(QPalette::Button));
-
+            //painter->setBrush(option->palette.color(QPalette::Base));
+            painter->setBrush(Qt::NoBrush);
             if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
                 painter->setPen(option->palette.color(QPalette::Highlight));
-
             if (option->state & State_MouseOver)
                 painter->setBrush(option->palette.color(QPalette::Highlight));
-
-            painter->drawRoundedRect(option->rect,3,3);
-
             if (option->state & State_NoChange){//Non optional status
-                painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::WindowText));
+                painter->setBrush(Qt::NoBrush);
                 painter->setPen(option->palette.color(QPalette::Disabled,QPalette::WindowText));
-                painter->drawRoundedRect(option->rect,3,3);
-
             }
-            else if (option->state & State_On) {
+            painter->drawRoundedRect(option->rect,3,3);
+            painter->restore();
+
+            if (option->state & State_On) {
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(option->palette.color(QPalette::Mid));
                 painter->setBrush(option->palette.color(QPalette::Highlight));
                 if(option->state & State_MouseOver){
@@ -615,8 +615,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush( option->palette.highlight().color().darker());
                 }
                 painter->drawRoundedRect(option->rect,3,3);
+                painter->restore();
 
                 // Draw checkmark
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(QPen(option->palette.color(QPalette::HighlightedText),1.1));
                 const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
                 QPainterPath path;
@@ -628,7 +631,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->restore();
             }
         }
-        painter->restore();
         return;
     }
 
