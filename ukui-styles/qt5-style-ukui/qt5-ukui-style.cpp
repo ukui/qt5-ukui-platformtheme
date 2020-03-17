@@ -450,28 +450,94 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-    case PE_FrameTabWidget://UKUI TabBar item style
+   //Show this section when there are too many tabs
+    case PE_IndicatorTabTear:
     {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setBrush(option->palette.color(QPalette::Base));
-        painter->setPen(option->palette.color(QPalette::Base));
-        painter->drawRect(option->rect.adjusted(+3,+2,+0,-10));
-        painter->drawRoundedRect(option->rect.adjusted(+3,+10,+0,+0),5,5);
-        painter->restore();
+        /*
+         * To Do
+         * Adjust to auto width instead of displaying this block
+         */
         return;
     }
+        break;
 
-    case PE_FrameTabBarBase://UKUI TabBar style
+    //This is rare. It's a line under the item
+    case PE_FrameTabBarBase:
+        if (const QStyleOptionTabBarBase *tbb
+                = qstyleoption_cast<const QStyleOptionTabBarBase *>(option)) {
+            painter->save();
+            painter->setPen(option->palette.base().color());
+
+            switch (tbb->shape) {
+            case QTabBar::RoundedNorth: {
+                QRegion region(tbb->rect);
+                region -= tbb->selectedTabRect;
+                painter->drawLine(tbb->rect.topLeft(), tbb->rect.topRight());
+                //No more second line
+                //  painter->setClipRegion(region);
+                //  painter->setPen(option->palette.base().color());
+                // painter->drawLine(tbb->rect.topLeft() + QPoint(0, 1), tbb->rect.topRight() + QPoint(0, 1));
+            }
+                break;
+            case QTabBar::RoundedWest:
+                painter->drawLine(tbb->rect.left(), tbb->rect.top(), tbb->rect.left(), tbb->rect.bottom());
+                break;
+            case QTabBar::RoundedSouth:
+                painter->drawLine(tbb->rect.left(), tbb->rect.bottom(),
+                                  tbb->rect.right(), tbb->rect.bottom());
+                break;
+            case QTabBar::RoundedEast:
+                painter->drawLine(tbb->rect.topRight(), tbb->rect.bottomRight());
+                break;
+            case QTabBar::TriangularNorth:
+            case QTabBar::TriangularEast:
+            case QTabBar::TriangularWest:
+            case QTabBar::TriangularSouth:
+                //painter->restore();
+                QFusionStyle::drawPrimitive(element, option, painter, widget);
+                return;
+            }
+            painter->restore();
+            return;
+        }
+
+
+    case PE_FrameTabWidget:
     {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::Button));
-        painter->setBrush(option->palette.color(QPalette::Button));
-        painter->drawRoundedRect(option->rect,0,0);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.color(QPalette::Base));
+        painter->drawRect(option->rect.x()+2,
+                          option->rect.y(),option->rect.width()/2,option->rect.height()/2);
+        painter->drawRoundedRect(option->rect.x()+5,
+                                 option->rect.y(),option->rect.width()-4,option->rect.height(),5,5);
+        painter->drawRoundedRect(option->rect.adjusted(+2,+10,0,+0),5,5);
+        if (const QStyleOptionTabWidgetFrame *twf = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
+            QColor borderColor = option->palette.color(QPalette::Light);
+            QRect rect = option->rect.adjusted(0, 0, -1, -1);
+
+            // Shadow outline
+            if (twf->shape != QTabBar::RoundedSouth) {
+                rect.adjust(0, 0, 0, -1);
+                QColor alphaShadow(Qt::Window);
+                alphaShadow.setAlpha(15);
+                painter->setPen(alphaShadow);
+                painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
+                painter->setPen(borderColor);
+            }
+
+            // outline
+            // painter->setPen( option->palette.color(QPalette::Light));
+            //painter->drawRect(rect);
+            // Inner frame highlight
+            //painter->setPen(  QColor(244,0,77));
+            //painter->drawRect(rect.adjusted(1, 1, -1, -1));
+        }
         painter->restore();
         return;
     }
+        break ;
 
     case PE_FrameGroupBox://UKUI GroupBox style
     {
@@ -1096,26 +1162,141 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
-    case CE_TabBarTabShape://UKUI TabBar item style
+
+        //Draw TabBar and every item style
+    case CE_TabBarTab:
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            proxy()->drawControl(CE_TabBarTabShape, tab, painter, widget);
+            proxy()->drawControl(CE_TabBarTabLabel, tab, painter, widget);
+            return;
+        }
+        break;
+
+    case CE_TabBarTabShape:
     {
+        QRect rect = option->rect;
+        int state = option->state;
+
+        QColor outline =option->palette.window().color();
+        QColor highlightedOutline =option->palette.window().color();
+        QColor tabFrameColor =option->palette.button().color();
+
         painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::Button));
-        painter->setBrush(option->palette.color(QPalette::Button));
-        if (option->state & State_Selected) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::Base));
-                painter->setBrush(option->palette.color(QPalette::Base));
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            bool rtlHorTabs = (tab->direction == Qt::RightToLeft
+                               && (tab->shape == QTabBar::RoundedNorth
+                                   || tab->shape == QTabBar::RoundedSouth));
+            bool selected = tab->state & State_Selected;
+            bool lastTab = ((!rtlHorTabs && tab->position == QStyleOptionTab::End)
+                            || (rtlHorTabs
+                                && tab->position == QStyleOptionTab::Beginning));
+            bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
+            int tabOverlap = pixelMetric(PM_TabBarTabOverlap, option, widget);
+            rect = option->rect.adjusted(0, 0, (onlyOne || lastTab) ? 0 : tabOverlap, 0);
+
+            QRect r2(rect);
+            int x1 = r2.left();
+            int x2 = r2.right();
+            int y1 = r2.top();
+            int y2 = r2.bottom();
+
+            //painter->setPen(d->innerContrastLine());
+            painter->setPen( Qt::NoPen);
+
+            QTransform rotMatrix;
+            bool flip = false;
+            //painter->setPen(shadow);
+            painter->setPen( Qt::NoPen);
+
+            switch (tab->shape) {
+            case QTabBar::RoundedNorth:
+                break;
+            case QTabBar::RoundedSouth:
+                rotMatrix.rotate(180);
+                rotMatrix.translate(0, -rect.height() + 1);
+                rotMatrix.scale(-1, 1);
+                painter->setTransform(rotMatrix, true);
+                break;
+            case QTabBar::RoundedWest:
+                rotMatrix.rotate(180 + 90);
+                rotMatrix.scale(-1, 1);
+                flip = true;
+                painter->setTransform(rotMatrix, true);
+                break;
+            case QTabBar::RoundedEast:
+                rotMatrix.rotate(90);
+                rotMatrix.translate(0, - rect.width() + 1);
+                flip = true;
+                painter->setTransform(rotMatrix, true);
+                break;
+            default:
+                painter->restore();
+                QCommonStyle::drawControl(element, tab, painter, widget);
+                return;
+            }
+
+            if (flip) {
+                QRect tmp = rect;
+                rect = QRect(tmp.y(), tmp.x(), tmp.height(), tmp.width());
+                int temp = x1;
+                x1 = y1;
+                y1 = temp;
+                temp = x2;
+                x2 = y2;
+                y2 = temp;
+            }
+
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->translate(0.5, 0.5);
+
+            /*
+             * The following color is determined as the background color of the outer box tab or
+             * the check box of the small pop-up box tab
+             */
+
+            QColor tabFrameColor = tab->features & QStyleOptionTab::HasFrame ?
+                        option->palette.base().color() :
+                        option->palette.base().color();
+
+            QLinearGradient fillGradient(rect.topLeft(), rect.bottomLeft());
+            QLinearGradient outlineGradient(rect.topLeft(), rect.bottomLeft());
+            QPen outlinePen =  Qt::NoPen;
+            if (selected) {
+                fillGradient.setColorAt(0, tabFrameColor.lighter(104));
+                fillGradient.setColorAt(1, tabFrameColor);
+                outlineGradient.setColorAt(1, outline);
+                outlinePen =  Qt::NoPen;
             } else {
-                painter->setPen(option->palette.color(QPalette::Base));
-                painter->setBrush(option->palette.color(QPalette::Base));
+                fillGradient.setColorAt(0, option->palette.button().color());
+                fillGradient.setColorAt(0.85,option->palette.button().color());
+                fillGradient.setColorAt(1, option->palette.button().color());
+            }
+            QRect drawRect = rect.adjusted(0, selected ? 0 : 2, 0, 3);
+            painter->setPen(Qt::NoPen);
+            painter->save();
+            painter->setClipRect(rect.adjusted(+1, -1, 1, selected ? -2 : -3));
+            painter->setBrush(fillGradient);
+            painter->drawRoundedRect(drawRect.adjusted(+1, 0, -1, -1), 4.0, 4.0);
+            painter->restore();
+
+            if (selected) {
+                /*
+                 *  To Do Draw irregular shapes
+                 */
+                //  painter->setBrush(Qt::white);
+                //  painter->drawChord(option->rect.adjusted(-option->rect.width()*3.5,+20,+7,+20),800,-2000);
+                //  painter->setBrush(Qt::white);
+                // painter->drawChord(option->rect.adjusted(-80,+20,+7,+20),500,-800);
+                //painter->setBrush(option->palette.base().color());
+                // painter->drawEllipse(option->rect.x()-option->rect.width()/6,option->rect.y()+option->rect.height()-11,option->rect.width()+option->rect.width()/3,option->rect.height());
+
             }
         }
-        painter->drawRoundedRect(option->rect.adjusted(+3,+0,+0,-option->rect.height()/2),4,4);
-        painter->drawRect(option->rect.adjusted(+3,+option->rect.height()/2-4,+0,+0));
         painter->restore();
         return;
-    }
+
+    }break;
+
 
     case CE_ComboBoxLabel:
     {
@@ -1135,67 +1316,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
-        // It's not standard here. Remove it first
-        //    case CE_CheckBox:
-        //    {
-        //        auto checkbutton = qstyleoption_cast<const QStyleOptionButton*>(option);
-        //        painter->save();
-        //        painter->setRenderHint(QPainter::Antialiasing,true);
-        //        painter->setPen(option->palette.color(QPalette::Text));
-        //        painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
-        //        painter->restore();
-
-        //        painter->save();
-        //        //  if (option->state & State_None){//Non optional status
-        //        painter->save();
-        //        painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-        //        painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //        painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
-        //        painter->restore();
-        //        painter->save();
-        //        painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
-        //        painter->drawText(option->rect.adjusted(+20,+0,0,0),checkbutton->text);
-        //        painter->restore();
-        //        //} else
-        //        if (option->state & State_Off) {
-        //            painter->save();
-        //            painter->setRenderHint(QPainter::Antialiasing,true);
-        //            painter->setBrush(option->palette.color(QPalette::Button));
-        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-        //            if (option->state & State_Sunken) {
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //            }else if (option->state & State_MouseOver){
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //            }
-        //            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
-        //            painter->restore();
-        //        } else if (option->state & State_On) {
-        //            painter->save();
-        //            painter->setRenderHint(QPainter::Antialiasing,true);
-        //            painter->setBrush(option->palette.color(QPalette::Highlight));
-        //            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //            if (option->state & State_Sunken) {
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //            }else if(option->state & State_MouseOver){
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-        //            }
-        //            painter->drawRoundedRect(option->rect.x(),option->rect.y()+1,option->rect.x()+16,option->rect.x()+16,2,2);
-        //            painter->restore();
-
-        //            painter->save();
-        //            painter->setRenderHint(QPainter::Antialiasing,true);
-        //            painter->setPen(QPen(option->palette.color(QPalette::HighlightedText),1.3));
-        //            painter->drawLine(int(option->rect.x()+4.5),option->rect.y()+8,int(option->rect.x())+8,int(option->rect.y())+13);
-        //            painter->drawLine(int(option->rect.x())+9,option->rect.y()+12,int(option->rect.x()+13.5),option->rect.y()+6);
-        //            painter->restore();
-        //        }
-        //        painter->restore();
-        //        return;
-        //    }
 
     case CE_RadioButton:{
         auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
@@ -1290,6 +1410,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_SubMenuOverlap:return 7;
     case PM_ButtonMargin:return  9;
     case PM_DefaultFrameWidth:return 2;
+    case PM_TabBarTabVSpace:return 20;
     default:
         break;
     }
