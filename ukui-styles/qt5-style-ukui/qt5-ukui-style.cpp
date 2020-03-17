@@ -694,9 +694,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             points[3] = QPoint(x + w, y + h);
         }
         else if (element == PE_IndicatorArrowLeft) {
-            points[0] = QPoint(x + h , y);
-            points[1] = QPoint(x, y+w/2);
-            points[2] = QPoint(x, y+w/2);
+            points[0] = QPoint(x + w , y);
+            points[1] = QPoint(x+h, y+w/2);
+            points[2] = QPoint(x+h, y+w/2);
             points[3] = QPoint(x + w , y + w);
         }
         else if (element == PE_IndicatorArrowRight) {
