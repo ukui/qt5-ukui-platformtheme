@@ -11,7 +11,7 @@
             <description>Icon Theme for Qt Applications.</description>
         </key>
         <key type="s" name="system-font">
-            <default>""</default>
+            <default>"Noto Sans CJK SC"</default>
             <summary>System Font for Qt Applications.</summary>
             <description>System Font for Qt Applications.</description>
         </key>
