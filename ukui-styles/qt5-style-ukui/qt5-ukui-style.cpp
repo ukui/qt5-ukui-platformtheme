@@ -269,19 +269,37 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             return;
         break;
     }
-    case PE_PanelItemViewRow: {
-        return;
+    case PE_IndicatorBranch: {
+        if (qobject_cast<const QTreeView *>(widget)) {
+            bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
+            bool isSelected = option->state & State_Selected;
+            bool enable = option->state & State_Enabled;
+            QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
+                                                 QPalette::Highlight);
+
+            QColor color2 = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
+                                                  QPalette::HighlightedText);
+            if (isSelected) {
+                painter->fillRect(option->rect, color);
+                auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+                QStyleOptionViewItem tmp = *vopt;
+                tmp.palette.setColor(tmp.palette.currentColorGroup(), QPalette::Highlight, color2);
+                QFusionStyle::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
+                return;
+            } else if (isHover) {
+                color.setAlphaF(0.5);
+                painter->fillRect(option->rect, color);
+            }
+            break;
+        }
     }
     case PE_PanelItemViewItem: {
-        /*!
-         * \todo
-         * deal with custom/altenative background items.
-         */
         bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
         bool isSelected = option->state & State_Selected;
         bool enable = option->state & State_Enabled;
         QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
                                              QPalette::Highlight);
+
         color.setAlpha(0);
         if (isHover) {
             color.setAlpha(127);
