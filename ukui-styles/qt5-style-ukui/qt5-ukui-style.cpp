@@ -521,7 +521,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             return;
         }
 
-
+        //This is the content box style in the table control
     case PE_FrameTabWidget:
     {
         painter->save();
@@ -558,6 +558,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
         break ;
+
 
     case PE_FrameGroupBox://UKUI GroupBox style
     {
@@ -1233,10 +1234,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
         QColor outline =option->palette.window().color();
         QColor highlightedOutline =option->palette.window().color();
-        QColor tabFrameColor =option->palette.button().color();
+        QColor tabFrameColor =option->palette.window().color();
 
         painter->save();
         if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+
             bool rtlHorTabs = (tab->direction == Qt::RightToLeft
                                && (tab->shape == QTabBar::RoundedNorth
                                    || tab->shape == QTabBar::RoundedSouth));
@@ -1304,10 +1306,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->translate(0.5, 0.5);
 
             /*
-             * The following color is determined as the background color of the outer box tab or
-             * the check box of the small pop-up box tab
+             * The following colors are the check box background
+             *  colors of the outer box tab or the small pop-up box tab
              */
-
             QColor tabFrameColor = tab->features & QStyleOptionTab::HasFrame ?
                         option->palette.base().color() :
                         option->palette.base().color();
@@ -1321,31 +1322,43 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 outlineGradient.setColorAt(1, outline);
                 outlinePen =  Qt::NoPen;
             } else {
-                fillGradient.setColorAt(0, option->palette.button().color());
-                fillGradient.setColorAt(0.85,option->palette.button().color());
-                fillGradient.setColorAt(1, option->palette.button().color());
+                fillGradient.setColorAt(0, option->palette.window().color());
+                fillGradient.setColorAt(0.85,option->palette.window().color());
+                fillGradient.setColorAt(1, option->palette.window().color());
             }
+
             QRect drawRect = rect.adjusted(0, selected ? 0 : 2, 0, 3);
-            painter->setPen(Qt::NoPen);
+            painter->setPen( Qt::NoPen);
             painter->save();
-            painter->setClipRect(rect.adjusted(+1, -1, 1, selected ? -2 : -3));
+            painter->setClipRect(rect.adjusted(+1, -1, +0, selected ? -2 : -3));
             painter->setBrush(fillGradient);
-            painter->drawRoundedRect(drawRect.adjusted(+1, 0, -1, -1), 4.0, 4.0);
+            painter->drawRoundedRect(drawRect.adjusted(+1, 0, +0, -1), 4.0, 4.0);
             painter->restore();
 
             if (selected) {
-                /*
-                 *  To Do Draw irregular shapes
-                 */
-                //  painter->setBrush(Qt::white);
-                //  painter->drawChord(option->rect.adjusted(-option->rect.width()*3.5,+20,+7,+20),800,-2000);
-                //  painter->setBrush(Qt::white);
-                // painter->drawChord(option->rect.adjusted(-80,+20,+7,+20),500,-800);
-                //painter->setBrush(option->palette.base().color());
-                // painter->drawEllipse(option->rect.x()-option->rect.width()/6,option->rect.y()+option->rect.height()-11,option->rect.width()+option->rect.width()/3,option->rect.height());
-
+                painter->save();
+                painter->setBrush(option->palette.window().color());
+                painter->drawRoundedRect(QRect(option->rect.right()-5,option->rect.y(),20,option->rect.height()-3),6,6);
+                painter->drawRect(option->rect.right()-15,option->rect.y()-3,20,32);
+                if(option->rect.left()-15>0){
+                    painter->drawRoundedRect(QRect(option->rect.left()-13,option->rect.y(),20,option->rect.height()-3),6,6);
+                    painter->drawRect(option->rect.left()-10,option->rect.y()-1,25,10);
+                }
+                else{
+                    painter->drawRect(option->rect.x()+2,option->rect.y()-3,20,32);
+                    painter->restore();
+                    painter->save();
+                    painter->setBrush(option->palette.base().color());
+                    painter->drawRoundedRect(QRect(option->rect.x()+2,option->rect.y()-1,20,36),6,6);
+                }
+                painter->restore();
+                painter->save();
+                painter->setBrush(option->palette.base().color());
+                painter->drawRoundedRect(option->rect.adjusted(+7,-1,-6,-5),6,6);
+                painter->restore();
             }
         }
+
         painter->restore();
         return;
 
@@ -1441,13 +1454,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
 
     case CE_SizeGrip:
-        {
-            /*
+    {
+        /*
              * Style is not required here, as required by design
              */
-            return;
+        return;
 
-        }break;
+    }break;
 
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
@@ -1485,6 +1498,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ButtonMargin:return  9;
     case PM_DefaultFrameWidth:return 2;
     case PM_TabBarTabVSpace:return 20;
+    case PM_TabBarTabHSpace:return 40;
     case PM_HeaderMargin:return 9;
     default:
         break;
