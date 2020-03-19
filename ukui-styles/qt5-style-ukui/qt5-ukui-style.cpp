@@ -1439,6 +1439,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }break;
 
+
+    case CE_SizeGrip:
+        {
+            /*
+             * Style is not required here, as required by design
+             */
+            return;
+
+        }break;
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
