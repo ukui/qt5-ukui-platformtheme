@@ -1462,6 +1462,59 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     }break;
 
+
+        //Drawing of single menu item of menu bar
+    case CE_MenuBarItem:
+    {
+
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        if (const QStyleOptionMenuItem *mbi = qstyleoption_cast<const QStyleOptionMenuItem *>(option))
+        {
+            QStyleOptionMenuItem item = *mbi;
+            item.rect = mbi->rect.adjusted(0, 1, 0, -3);
+            painter->fillRect(option->rect, option->palette.window());
+
+            uint alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip| Qt::TextSingleLine;
+
+            if (!proxy()->styleHint(SH_UnderlineShortcut, mbi, widget))
+                alignment |= Qt::TextHideMnemonic;
+
+            QPixmap pix = mbi->icon.pixmap(proxy()->pixelMetric(PM_SmallIconSize, option, widget), QIcon::Normal);
+            if (!pix.isNull())
+                proxy()->drawItemPixmap(painter,mbi->rect, alignment, pix);
+            else
+                proxy()->drawItemText(painter, mbi->rect, alignment, mbi->palette, mbi->state & State_Enabled,
+                                      mbi->text, QPalette::ButtonText);
+
+            bool act = mbi->state & State_Selected && mbi->state & State_Sunken | mbi->state & State_HasFocus;
+            bool dis = !(mbi->state & State_Enabled);
+
+
+            QRect r = option->rect;
+            //when hover、click and other state, begin to draw style
+            if (act) {
+                painter->setBrush(option->palette.highlight().color());
+                painter->setPen(Qt::NoPen);
+                painter->drawRoundedRect(r.adjusted(0, 0, -1, -1),4,4);
+
+                QPalette::ColorRole textRole = dis ? QPalette::Text : QPalette::HighlightedText;
+                uint alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+                if (!QFusionStyle::styleHint(SH_UnderlineShortcut, mbi, widget))
+                    alignment |= Qt::TextHideMnemonic;
+                proxy()->drawItemText(painter, item.rect, alignment, mbi->palette, mbi->state & State_Enabled, mbi->text, textRole);
+            } else {
+
+            }
+        }
+        painter->restore();
+
+        return;
+        break;
+
+    }
+
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
@@ -1500,6 +1553,8 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_TabBarTabVSpace:return 20;
     case PM_TabBarTabHSpace:return 40;
     case PM_HeaderMargin:return 9;
+    case PM_MenuBarItemSpacing:return 20;
+    case PM_MenuBarVMargin:return 4;
     default:
         break;
     }
