@@ -338,8 +338,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
             }
             QPolygon points(4);
-            int x = option->rect.x();
-            int y = option->rect.y();
+            //Add 8 to center vertically
+            int x = option->rect.x()+8;
+            int y = option->rect.y()+8;
+
             int w = 8;
             int h =  4;
             x += (option->rect.width() - w) / 2;
@@ -1019,11 +1021,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (mouse_over) {
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") == 0) {
                     animator->startAnimator("slider_opacity");
-                }  
+                }
             } else {
                 animator->setAnimatorDirectionForward("additional_opacity", false);
-//                if (animator->currentAnimatorTime("slider_opacity") > 0)
-//                    animator->startAnimator("additional_opacity");
+                //                if (animator->currentAnimatorTime("slider_opacity") > 0)
+                //                    animator->startAnimator("additional_opacity");
 
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") > 0) {
                     animator->startAnimator("slider_opacity");
@@ -1072,11 +1074,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     sliderRect.adjust(1, 0, -1, 0);
                 }
             } else {
-//                if (is_horizontal) {
-//                    sliderRect.adjust(0, -1, 0, -1);
-//                } else {
-//                    sliderRect.adjust(-1, 0, -1, 0);
-//                }
+                //                if (is_horizontal) {
+                //                    sliderRect.adjust(0, -1, 0, -1);
+                //                } else {
+                //                    sliderRect.adjust(-1, 0, -1, 0);
+                //                }
             }
             int rectMin = qMin(sliderRect.width(), sliderRect.height());
             painter->drawRoundedRect(sliderRect, rectMin/2, rectMin/2);
@@ -1427,6 +1429,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
+        //Draw table header style
+    case CE_HeaderSection:
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->fillRect(option->rect, option->palette.button().color().lighter(101));
+        painter->restore();
+        return;
+    }break;
+
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
     }
@@ -1463,6 +1475,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ButtonMargin:return  9;
     case PM_DefaultFrameWidth:return 2;
     case PM_TabBarTabVSpace:return 20;
+    case PM_HeaderMargin:return 9;
     default:
         break;
     }
