@@ -185,7 +185,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
 
     palette.setBrush(QPalette::AlternateBase,button_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,button_ac_bg);
+    palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,button_bg);
     palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
 
     return palette;
