@@ -55,6 +55,19 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QFusionStyle ()
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
 }
 
+bool Qt5UKUIStyle::shouldBeTransparent(const QWidget *w) const
+{
+    bool should = false;
+
+    if (w->inherits("QComboBoxPrivateContainer"))
+        return true;
+
+    if (w->inherits("QTipLabel"))
+        return true;
+
+    return should;
+}
+
 bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
 {
     /*!
@@ -1697,6 +1710,9 @@ void Qt5UKUIStyle::realSetWindowSurfaceFormatAlpha(const QWidget *widget) const
     if (auto menu = qobject_cast<const QMenu *>(widget)) {
         const_cast<QWidget *>(widget)->setAttribute(Qt::WA_TranslucentBackground);
     }
+
+    if (shouldBeTransparent(widget))
+        const_cast<QWidget *>(widget)->setAttribute(Qt::WA_TranslucentBackground);
 }
 
 void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const

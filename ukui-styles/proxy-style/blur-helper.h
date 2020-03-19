@@ -39,6 +39,8 @@ public:
     bool isApplicationInBlackList();
     const QStringList blackList();
 
+    bool shouldSkip(QWidget *w);
+
 signals:
 
 public slots:

@@ -85,6 +85,8 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
  */
 void BlurHelper::registerWidget(QWidget *widget)
 {
+    if (shouldSkip(widget))
+        return;
     if (isApplicationInBlackList())
         return;
     if (widget->property("doNotBlur").toBool())
@@ -114,6 +116,8 @@ void BlurHelper::registerWidget(QWidget *widget)
 
 void BlurHelper::unregisterWidget(QWidget *widget)
 {
+    if (shouldSkip(widget))
+        return;
     if (isApplicationInBlackList())
         return;
     if (widget->property("doNotBlur").toBool())
@@ -134,6 +138,18 @@ const QStringList BlurHelper::blackList()
     blackList.append("kylin-assistant");
     blackList.append("kylin-vedio");
     return blackList;
+}
+
+bool BlurHelper::shouldSkip(QWidget *w)
+{
+    bool skip = false;
+    if (w->inherits("QComboBoxPrivateContainer"))
+        return true;
+
+    if (w->inherits("QTipLabel"))
+        return true;
+
+    return skip;
 }
 
 void BlurHelper::onBlurEnableChanged(bool enable)

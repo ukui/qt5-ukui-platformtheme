@@ -40,6 +40,8 @@ class Qt5UKUIStyle : public QFusionStyle
 public:
     explicit Qt5UKUIStyle(bool dark = false);
 
+    bool shouldBeTransparent(const QWidget *w) const;
+
     //debuger
     bool eventFilter(QObject *obj, QEvent *e);
 

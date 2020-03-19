@@ -112,6 +112,7 @@ const QStringList ProxyStylePlugin::blackList()
     QStringList l;
     l<<"kylin-assistant";
     l<<"kylin-video";
+    l<<"ukui-control-center";
     return l;
 }
 
