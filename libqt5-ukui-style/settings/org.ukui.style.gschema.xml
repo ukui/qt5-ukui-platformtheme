@@ -29,12 +29,12 @@
             </description>
         </key>
         <key type="i" name="menu-transparency">
-            <default>50</default>
+            <default>72</default>
             <summary>Menu's transparency.</summary>
             <description>The default transparency of menu.</description>
         </key>
         <key type="i" name="peony-side-bar-transparency">
-            <default>50</default>
+            <default>72</default>
             <summary>Peony::SideBar's transparency.</summary>
             <description>The default transparency of the peony side bar.</description>
         </key>
