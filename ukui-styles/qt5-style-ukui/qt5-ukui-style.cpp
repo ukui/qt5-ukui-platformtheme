@@ -139,7 +139,8 @@ QPalette Qt5UKUIStyle::standardPalette() const
             button_ac_bg(107,142,235),
             button_di_bg(233,233,233),
             highlight_bg(61,107,229),
-            tip_bg(248,248,248);
+            tip_bg(248,248,248),
+            tip_font(22,22,22);
 
     if (m_use_dark_palette) {
         //ukui-black
@@ -154,7 +155,8 @@ QPalette Qt5UKUIStyle::standardPalette() const
         button_ac_bg.setRgb(97,97,102);
         button_di_bg.setRgb(52,52,56);
         highlight_bg.setRgb(61,107,229);
-        tip_bg.setRgb(26,26,26);
+        tip_bg.setRgb(61,61,65);
+        tip_font.setRgb(232,232,232);
     }
 
     palette.setBrush(QPalette::Window,window_bg);
@@ -178,7 +180,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::PlaceholderText,font_di_bg);
 
     palette.setBrush(QPalette::ToolTipBase,tip_bg);
-    palette.setBrush(QPalette::ToolTipText,font_bg);
+    palette.setBrush(QPalette::ToolTipText,tip_font);
 
     palette.setBrush(QPalette::Highlight,highlight_bg);
     palette.setBrush(QPalette::Active,QPalette::Highlight,highlight_bg);
@@ -414,15 +416,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
     case PE_PanelTipLabel://UKUI Tip  style
-    {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::ToolTipText));
-        painter->setBrush(option->palette.color(QPalette::ToolTipBase));
-        painter->drawRoundedRect(option->rect,4,4);
-        painter->restore();
-        return;
-    }
+     {
+         painter->save();
+         painter->setRenderHint(QPainter::Antialiasing,true);
+         painter->setPen(option->palette.toolTipBase().color().darker(150));
+         painter->setBrush(option->palette.color(QPalette::ToolTipBase));
+         painter->drawRoundedRect(option->rect,4,4);
+         painter->restore();
+         return;
+     }
 
     case PE_FrameStatusBar://UKUI Status style
     {
