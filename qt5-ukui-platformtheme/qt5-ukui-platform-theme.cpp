@@ -33,6 +33,9 @@
 #include <QIcon>
 #endif
 
+#include <QApplication>
+#include <QWidget>
+
 #include <QDebug>
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
@@ -57,6 +60,10 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
             if (key == "iconThemeName") {
                 qDebug()<<"icon theme changed";
                 QIcon::setThemeName(settings->get("icon-theme-name").toString());
+                // update all widgets for repaint new themed icons.
+                for (auto widget : QApplication::allWidgets()) {
+                    widget->update();
+                }
             }
             if (key == "systemFont") {
                 QString font = settings->get("system-font").toString();
