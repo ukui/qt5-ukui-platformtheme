@@ -472,7 +472,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setBrush(Qt::NoBrush);
         if (widget->isEnabled())
         {
-            painter->setBrush(option->palette.color(QPalette::Highlight));
+            if(option->state & (State_MouseOver | State_Sunken))
+            {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+            }
+            else
+            {
+                painter->setBrush(option->palette.color(QPalette::Button));
+            }
             painter->drawRoundedRect(option->rect,4,4);
         }
         painter->restore();
@@ -1036,9 +1043,14 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
             QStyleOption tool = *toolbutton;
             if (toolbutton->subControls & SC_ToolButton) {
-                if (bflags & (State_Sunken | State_MouseOver) || mflags & (State_Sunken | State_MouseOver)) {
-                    tool.rect = button;
+                if (bflags & (State_Sunken | State_MouseOver ) || mflags & (State_Sunken | State_MouseOver) || !(bflags & State_AutoRaise))
+                {
                     tool.state = bflags;
+                    if(mflags & (State_Sunken | State_MouseOver))
+                    {
+                        tool.state = mflags;
+                    }
+                    tool.rect = button;
                     if(toolbutton->subControls & SC_ToolButtonMenu)
                     {
                         tool.rect.adjust(0,0,menuarea.width(),0);
