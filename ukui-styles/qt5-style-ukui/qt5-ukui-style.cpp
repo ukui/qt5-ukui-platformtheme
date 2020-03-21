@@ -540,12 +540,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.color(QPalette::Base));
-        painter->drawRect(option->rect.x()+2,
-                          option->rect.y(),option->rect.width()/2,option->rect.height()/2);
-        painter->drawRoundedRect(option->rect.x()+5,
-                                 option->rect.y(),option->rect.width()-4,option->rect.height(),5,5);
-        painter->drawRoundedRect(option->rect.adjusted(+2,+10,0,+0),5,5);
-        if (const QStyleOptionTabWidgetFrame *twf = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
+        //painter->drawRect(option->rect.x()+2,
+        //option->rect.y(),option->rect.width()/2,option->rect.height()/2);
+        //painter->drawRoundedRect(option->rect.x()+5,
+        //option->rect.y(),option->rect.width()-4,option->rect.height(),5,5);
+        painter->drawRoundedRect(option->rect.adjusted(+2,+0,-2,+0),5,5);
+        /*if (const QStyleOptionTabWidgetFrame *twf = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
             QColor borderColor = option->palette.color(QPalette::Light);
             QRect rect = option->rect.adjusted(0, 0, -1, -1);
 
@@ -557,7 +557,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(alphaShadow);
                 painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
                 painter->setPen(borderColor);
-            }
+            }*/
 
             // outline
             // painter->setPen( option->palette.color(QPalette::Light));
@@ -565,7 +565,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             // Inner frame highlight
             //painter->setPen(  QColor(244,0,77));
             //painter->drawRect(rect.adjusted(1, 1, -1, -1));
-        }
+       // }
         painter->restore();
         return;
     }
