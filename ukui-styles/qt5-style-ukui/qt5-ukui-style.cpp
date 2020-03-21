@@ -993,6 +993,77 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     switch (element) {
+    case CE_ProgressBarGroove:{
+               painter->save();
+               painter->setRenderHint(QPainter::Antialiasing, true);
+               painter->setPen(Qt::NoPen);
+               painter->setBrush(option->palette.base().color());
+               painter->drawRoundedRect(option->rect.x()+1,option->rect.y(),option->rect.width()-8,option->rect.height()-7, 5, 5);
+               painter->restore();
+               return;
+           }
+           case CE_ProgressBarContents:{
+               painter->save();
+               painter->setRenderHint(QPainter::Antialiasing, true);
+               if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+                   //Judgment status
+                   painter->setPen(Qt::NoPen);
+                   bool vertical = false;
+                   bool inverted = false;
+                   bool indeterminate = (bar->minimum == 0 && bar->maximum == 0);
+                   bool complete = bar->progress == bar->maximum;
+
+                   // Get extra style options if version 2
+                   vertical = (bar->orientation == Qt::Vertical);
+                   inverted = bar->invertedAppearance;
+
+                   // If the orientation is vertical, we use a transform to rotate
+                   // the progress bar 90 degrees clockwise.  This way we can use the
+                   // same rendering code for both orientations.
+                   int maxWidth = option->rect.width();
+                   const auto progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
+                   const auto totalSteps = qMax(Q_INT64_C(1), qint64(bar->maximum) - bar->minimum);
+                   const auto progressSteps = qint64(progress) - bar->minimum;
+                   const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
+                   int width = indeterminate ? maxWidth : progressBarWidth;
+                   bool reverse = (!vertical && (bar->direction == Qt::RightToLeft)) || vertical;
+                   if (inverted)
+                       reverse = !reverse;
+                   QRect progressBar;
+                   painter->setPen(Qt::NoPen);
+                   //Positioning
+                   if (!indeterminate) {
+                           progressBar.setRect(option->rect.left()-1, option->rect.top(), width-3,option->rect.height()-7);
+                   }
+
+                   //Brush color
+                   if (indeterminate || bar->progress > bar->minimum) {
+                       painter->setPen(Qt::NoPen);
+
+                       QColor startcolor = option->palette.highlight().color();
+                       QColor endcolor = option->palette.highlight().color().darker(200);
+                       QLinearGradient linearGradient(QPoint(option->rect.bottomRight().x(), option->rect.bottomRight().y()),
+                                                      QPoint(option->rect.bottomLeft().x(), option->rect.bottomLeft().y()));
+                       linearGradient.setColorAt(1,startcolor);
+                       linearGradient.setColorAt(0,endcolor);
+                       painter->setBrush(QBrush(linearGradient));
+
+                      // painter->setBrush(option->palette.highlight().color());
+                       painter->save();
+                       if (!complete && !indeterminate)
+                           painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
+                       QRect fillRect = progressBar.adjusted( !indeterminate && !complete && reverse ? 0 : 0, 0,
+                                                              indeterminate || complete || reverse ? 0 : 0, 0);
+                       painter->drawRoundedRect(fillRect, 4, 4);
+                       painter->restore();
+                   }
+
+               painter->restore();
+               }return;
+           }
+           case CE_ProgressBarLabel:{
+               return;
+           }
     case CE_ScrollBarSlider: {
         //qDebug()<<"draw slider";
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
