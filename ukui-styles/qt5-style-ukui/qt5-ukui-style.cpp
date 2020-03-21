@@ -47,6 +47,7 @@
 #include <QComboBox>
 #include <QEvent>
 #include <QDebug>
+#include <QPixmapCache>
 
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
 {
@@ -469,26 +470,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::NoBrush);
-
-        if (widget->isEnabled()) {
-            if (option->state & State_MouseOver) {
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-            }
-            if (option->state & State_Sunken) {
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-            }
-        }
-
-        /*To determine whether the pop-up menu is in progress,
-        it is a combination button, and the shape needs to be changed*/
-        const QToolButton* toolButton = qobject_cast<const QToolButton*>( widget );
-        const bool hasPopupMenu( toolButton && toolButton->popupMode() == QToolButton::MenuButtonPopup );
-        if( hasPopupMenu )
+        if (widget->isEnabled())
         {
-            painter->drawRoundedRect(option->rect,4,4);
-            painter->drawRoundedRect(option->rect.adjusted(+4,+0,+0,+0),0,0);
-        }
-        else {
+            painter->setBrush(option->palette.color(QPalette::Highlight));
             painter->drawRoundedRect(option->rect,4,4);
         }
         painter->restore();
@@ -685,82 +669,107 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-
-    case PE_IndicatorArrowDown:case PE_IndicatorArrowUp:case PE_IndicatorArrowLeft:case PE_IndicatorArrowRight:{
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setBrush(Qt::NoBrush);
-        if(option->state & State_Enabled){
-            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
-            if (option->state & State_MouseOver) {
-                painter->setPen(QPen(option->palette.highlight().color().lighter(200), 1.1));
-
-                //If the type is toolbar button, change the color when hover
-                const QToolButton* toolButton = qobject_cast<const QToolButton*>( widget );
-                const bool hasPopupMenu( toolButton && toolButton->popupMode() == QToolButton::MenuButtonPopup );
-                if( hasPopupMenu )
-                {
-                    if (option->state & State_MouseOver|State_Sunken) {
-                        painter->setPen(QPen(option->palette.color(QPalette::Light), 1.1));
-                    }
-                }
+    case PE_IndicatorArrowUp:
+    case PE_IndicatorArrowDown:
+    case PE_IndicatorArrowRight:
+    case PE_IndicatorArrowLeft:
+        {
+            if (option->rect.width() <= 1 || option->rect.height() <= 1)
+                break;
+            QRect r = option->rect;
+            int size = qMin(r.height(), r.width());
+            QPixmap pixmap;
+            QString key;
+            int width = option->rect.width();
+            int height = option->rect.height();
+            int state = option->state;
+            int direction = element;
+            while (width > 0) {
+                char a = width % 10 + 48;
+                key.insert(0,&a);
+                width /= 10;
             }
-        }
-        else {
-            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-        }
+            while (height > 0) {
+                char a = height % 10 + 48;
+                key.insert(0,&a);
+                height /= 10;
+            }
+            while (state > 0) {
+                char a = state % 10 + 48;
+                key.insert(0,&a);
+                state /= 10;
+            }
+            while (direction > 0)
+            {
+                char a = direction % 10 + 48;
+                key.insert(0,&a);
+                direction /= 10;
+            }
+            if (!QPixmapCache::find(key, pixmap)) {
+                qreal pixelRatio = painter->device()->devicePixelRatioF();
+                int border = qRound(pixelRatio*(size/5));
+                int sqsize = qRound(pixelRatio*(2*(size/2)));
+                QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
+                image.fill(0);
+                QPainter imagePainter(&image);
+                int sx = 0;
+                int sy = (sqsize/2 - border)/2 - 1;
+                QLineF lines[2];
+                switch (element) {
+                    case PE_IndicatorArrowUp:
+                        lines[0] = QLine(border, sqsize/2, sqsize/2, border);
+                        lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
+                        break;
+                    case PE_IndicatorArrowDown:
+                        lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+                        lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
+                        break;
+                    case PE_IndicatorArrowRight:
+                        lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+                        lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
+                        sx = (sqsize/2 - border)/2 - 1;
+                        sy = 0;
+                        break;
+                    case PE_IndicatorArrowLeft:
+                        lines[0] = QLine(sqsize/2, border, border, sqsize/2);
+                        lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
+                        sx = (sqsize/2 - border)/2 - 1;
+                        sy = 0;
+                        break;
+                    default:
+                        break;
+                }
+                imagePainter.translate(sx , sy);
+                imagePainter.setPen(Qt::NoPen);
+                imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+                if (option->state & (State_MouseOver|State_Sunken))
+                {
+                    imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
+                }
+                imagePainter.setBrush(Qt::NoBrush);
+                imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
+                imagePainter.setRenderHint(QPainter::Antialiasing);
 
-        QPolygon points(4);
-        int x = option->rect.x();
-        int y = option->rect.y();
-        //If the height is too high, the arrow will be very ugly. If the height is too small, the arrow will not be painted
-        // int w = option->rect.width() / 3;
-        // int h =  option->rect.height() / 4;
-        int w = 8;
-        int h =  4;
-        x += (option->rect.width() - w) / 2;
-        y += (option->rect.height() - h) / 2;
+                if (!(option->state & State_Enabled)) {
+                    imagePainter.translate(1, 1);
+                    imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+                    imagePainter.setBrush(Qt::NoBrush);
+                    imagePainter.drawLines(lines,2);
+                    imagePainter.translate(-1, -1);
+                }
 
-        //When the arrow is too small, you can not draw
-        if(option->rect.width() - w < 1 || option->rect.height() - h < 1){
+                //imagePainter.drawPolygon(a);
+                imagePainter.drawLines(lines,2);
+                imagePainter.end();
+                pixmap = QPixmap::fromImage(image);
+                pixmap.setDevicePixelRatio(pixelRatio);
+                QPixmapCache::insert(key, pixmap);
+            }
+            int xOffset = r.x() + (r.width() - size)/2;
+            int yOffset = r.y() + (r.height() - size)/2;
+            painter->drawPixmap(xOffset, yOffset, pixmap);
             return;
-        }
-        else if (option->rect.width() - w <= 2 || option->rect.height() - h <= 2){
-            w = 5;
-            h =  3;
-        }
-
-        if (element == PE_IndicatorArrowDown) {
-            points[0] = QPoint(x, y);
-            points[1] = QPoint(x + w / 2, y + h);
-            points[2] = QPoint(x + w / 2, y + h);
-            points[3] = QPoint(x + w, y);
-        }
-
-        //When left and right, "W" and "H" are interchanged so that the arrow does not deform
-        else if (element == PE_IndicatorArrowUp) {
-            points[0] = QPoint(x, y + h);
-            points[1] = QPoint(x + w / 2, y);
-            points[2] = QPoint(x + w / 2, y);
-            points[3] = QPoint(x + w, y + h);
-        }
-        else if (element == PE_IndicatorArrowLeft) {
-            points[0] = QPoint(x + w , y);
-            points[1] = QPoint(x+h, y+w/2);
-            points[2] = QPoint(x+h, y+w/2);
-            points[3] = QPoint(x + w , y + w);
-        }
-        else if (element == PE_IndicatorArrowRight) {
-            points[0] = QPoint(x , y);
-            points[1] = QPoint(x+h, y+w/2);
-            points[2] = QPoint(x+h , y+w/2);
-            points[3] = QPoint(x, y+w);
-        }
-        painter->drawLine(points[0],  points[1] );
-        painter->drawLine(points[2],  points[3] );
-        painter->restore();
-        return;
-    }
+     }
 
     default:   break;
     }
@@ -1001,7 +1010,78 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     v = nextInterval;
                 }
             }
-            return;}
+            return;
+        }
+    case CC_ToolButton:
+    {
+        if (const QStyleOptionToolButton *toolbutton
+            = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            QRect button, menuarea;
+            button = Qt5UKUIStyle::subControlRect(control, toolbutton, SC_ToolButton, widget);
+            menuarea = Qt5UKUIStyle::subControlRect(control, toolbutton, SC_ToolButtonMenu, widget);
+
+            State bflags = toolbutton->state & ~State_Sunken;
+
+            if (bflags & State_AutoRaise) {
+                if (!(bflags & State_MouseOver) || !(bflags & State_Enabled)) {
+                    bflags &= ~State_Raised;
+                }
+            }
+            State mflags = bflags;
+            if (toolbutton->state & State_Sunken) {
+                if (toolbutton->activeSubControls & SC_ToolButton)
+                    bflags |= State_Sunken;
+                mflags |= State_Sunken;
+            }
+
+            QStyleOption tool = *toolbutton;
+            if (toolbutton->subControls & SC_ToolButton) {
+                if (bflags & (State_Sunken | State_MouseOver) || mflags & (State_Sunken | State_MouseOver)) {
+                    tool.rect = button;
+                    tool.state = bflags;
+                    if(toolbutton->subControls & SC_ToolButtonMenu)
+                    {
+                        tool.rect.adjust(0,0,menuarea.width(),0);
+                    }
+                    Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
+                }
+            }
+
+            if (toolbutton->state & State_HasFocus) {
+                QStyleOptionFocusRect fr;
+                fr.QStyleOption::operator=(*toolbutton);
+                fr.rect.adjust(3, 3, -3, -3);
+                if (toolbutton->features & QStyleOptionToolButton::MenuButtonPopup)
+                    fr.rect.adjust(0, 0, -Qt5UKUIStyle::pixelMetric(QStyle::PM_MenuButtonIndicator,
+                                                      toolbutton, widget), 0);
+                Qt5UKUIStyle::drawPrimitive(PE_FrameFocusRect, &fr, painter, widget);
+            }
+            QStyleOptionToolButton label = *toolbutton;
+            label.state = bflags;
+            int fw = Qt5UKUIStyle::pixelMetric(PM_DefaultFrameWidth, option, widget);
+            label.rect = button.adjusted(fw, fw, -fw, -fw);
+            Qt5UKUIStyle::drawControl(CE_ToolButtonLabel, &label, painter, widget);
+
+            if (toolbutton->subControls & SC_ToolButtonMenu) {
+                tool.rect = menuarea;
+                tool.state = mflags;
+                Qt5UKUIStyle::drawPrimitive(PE_IndicatorArrowDown, &tool, painter, widget);
+            }
+/*
+            ToolButton has Menu and popupmode is DelayedPopup.
+            If you want to show the arrow, please remove the comment below
+*/
+//            else if (toolbutton->features & QStyleOptionToolButton::HasMenu) {
+//                int mbi = qMin(button.width(),button.height())/5;
+//                QRect ir = toolbutton->rect;
+//                QStyleOptionToolButton newBtn = *toolbutton;
+//                newBtn.rect = QRect(ir.right()  - mbi -1, ir.y() + ir.height() - mbi -1, mbi, mbi);
+//                newBtn.rect = visualRect(toolbutton->direction, button, newBtn.rect);
+//                Qt5UKUIStyle::drawPrimitive(PE_IndicatorArrowDown, &newBtn, painter, widget);
+//            }
+        }
+        break;
+    }
 
 
     case CC_GroupBox: //UKUI GroupBox style
@@ -2040,6 +2120,37 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             return handleRect;
         }
         default:return QFusionStyle::subControlRect(control, option, subControl, widget);
+        }
+    case QStyle::CC_ToolButton:
+        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
+        {
+                   QRect rect = tb->rect;
+                   qreal width=rect.width();
+                   int mbi= qRound(2*(width/7));
+//                   if (rect.width() > 84)
+//                   {
+//                       mbi = 24;
+//                   }
+                   switch (subControl) {
+                   case SC_ToolButton:
+                       if ((tb->features
+                            & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+                           == QStyleOptionToolButton::MenuButtonPopup)
+                       {
+                           rect.adjust(0, 0, -mbi, 0);
+                       }
+                       return rect;
+                   case SC_ToolButtonMenu:
+                       if ((tb->features
+                            & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+                           == QStyleOptionToolButton::MenuButtonPopup)
+                       {
+                           rect.adjust(rect.width() -mbi, 0, 0, 0);
+                       }
+                       return rect;
+                   default:
+                       break;
+                   }
         }
 
     default:
