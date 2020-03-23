@@ -1939,9 +1939,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_TabBarTabVSpace:return 20;
     case PM_TabBarTabHSpace:return 40;
     case PM_HeaderMargin:return 9;
-    case PM_MenuBarItemSpacing:return 20;
+    case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 0;
+    case PM_ToolBarItemSpacing:return 4;
     default:
         break;
     }
