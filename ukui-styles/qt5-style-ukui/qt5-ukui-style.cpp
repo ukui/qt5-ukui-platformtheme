@@ -585,14 +585,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         break ;
 
 
-    case PE_FrameGroupBox://UKUI GroupBox style
+    case PE_FrameGroupBox: //UKUI GroupBox style:
     {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::Base));
-        painter->setBrush(option->palette.color(QPalette::Base));
-        painter->drawRoundedRect(option->rect,4,4);
-        painter->restore();
+        /*
+        * Remove the style of the bounding box according to the design
+        */
+        //painter->save();
+        //painter->setRenderHint(QPainter::Antialiasing,true);
+        //painter->setPen(option->palette.color(QPalette::Base));
+        //painter->setBrush(option->palette.color(QPalette::Base));
+        //painter->drawRoundedRect(option->rect,4,4);
+        //painter->restore();
         return;
     }
 
@@ -999,6 +1002,67 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 }
             }
             return;}
+
+
+    case CC_GroupBox: //UKUI GroupBox style
+    {
+        painter->save();
+        if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option)) {
+            // Draw frame
+            QRect textRect = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxLabel, widget);
+            QRect checkBoxRect = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxCheckBox, widget);
+            //新加
+            QRect groupContents = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxContents, widget);
+
+            if (groupBox->subControls & QStyle::SC_GroupBoxFrame) {
+                QStyleOptionFrame frame;
+                frame.QStyleOption::operator=(*groupBox);
+                frame.features = groupBox->features;
+                frame.lineWidth = groupBox->lineWidth;
+                frame.midLineWidth = groupBox->midLineWidth;
+                frame.rect = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxFrame, widget);
+                proxy()->drawPrimitive(PE_FrameGroupBox, &frame, painter, widget);
+            }
+
+            // Draw title
+            if ((groupBox->subControls & QStyle::SC_GroupBoxLabel) && !groupBox->text.isEmpty()) {
+                // groupBox->textColor gets the incorrect palette here
+                painter->setPen(QPen(option->palette.windowText(), 1));
+                int alignment = int(groupBox->textAlignment);
+                if (!proxy()->styleHint(QStyle::SH_UnderlineShortcut, option, widget))
+                    alignment |= Qt::TextHideMnemonic;
+
+                proxy()->drawItemText(painter, textRect,  Qt::TextShowMnemonic | Qt::AlignLeft | alignment,
+                                      groupBox->palette, groupBox->state & State_Enabled, groupBox->text, QPalette::NoRole);
+
+                if (groupBox->state & State_HasFocus) {
+                    QStyleOptionFocusRect fropt;
+                    fropt.QStyleOption::operator=(*groupBox);
+                    fropt.rect = textRect.adjusted(-2, -1, 2, 1);
+                    proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+                }
+
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Base));
+                painter->drawRoundedRect(groupContents,4,4);
+                painter->restore();
+
+            }
+
+            // Draw checkbox
+            if (groupBox->subControls & SC_GroupBoxCheckBox) {
+                QStyleOptionButton box;
+                box.QStyleOption::operator=(*groupBox);
+                box.rect = checkBoxRect;
+                proxy()->drawPrimitive(PE_IndicatorCheckBox, &box, painter, widget);
+            }
+        }
+        painter->restore();
+        return;
+        break;
+
+    }
 
     default:        return QFusionStyle::drawComplexControl(control, option, painter, widget);
     }
