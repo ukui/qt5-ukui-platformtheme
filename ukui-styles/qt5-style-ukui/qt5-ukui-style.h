@@ -38,7 +38,9 @@ class Qt5UKUIStyle : public QFusionStyle
 {
     Q_OBJECT
 public:
-    explicit Qt5UKUIStyle(bool dark = false);
+    explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true);
+
+    const QStringList specialList() const;
 
     bool shouldBeTransparent(const QWidget *w) const;
 
@@ -96,6 +98,7 @@ private:
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;
 
     bool m_use_dark_palette = false;
+    bool m_is_default_style = true;
 };
 
 #endif // QT5UKUISTYLE_H

@@ -39,13 +39,16 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
         return new QFusionStyle;
     //FIXME:
     bool dark = false;
-    if (key == "ukui-black") {
+    bool useDefault = false;
+    if (key == "ukui-black" || key == "ukui-dark") {
         qDebug()<<"use ukui-black";
         dark = true;
-    } else {
+    } else if (key == "ukui-white" || key == "ukui-light") {
         qDebug()<<"use ukui-white";
+    } else {
+        useDefault = true;
     }
-    return new Qt5UKUIStyle(dark);
+    return new Qt5UKUIStyle(dark, useDefault);
 }
 
 const QStringList Qt5UKUIStylePlugin::blackList()

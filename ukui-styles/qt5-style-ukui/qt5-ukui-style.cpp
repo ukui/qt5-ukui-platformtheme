@@ -48,11 +48,22 @@
 #include <QEvent>
 #include <QDebug>
 
-Qt5UKUIStyle::Qt5UKUIStyle(bool dark) : QFusionStyle ()
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
 {
+    m_is_default_style = useDefault;
     m_use_dark_palette = dark;
     m_tab_animation_helper = new TabWidgetAnimationHelper(this);
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
+}
+
+const QStringList Qt5UKUIStyle::specialList() const
+{
+    //use dark palette in default style.
+    QStringList l;
+    l<<"ukui-menu";
+    l<<"ukui-panel";
+    l<<"ukui-sidebar";
+    return l;
 }
 
 bool Qt5UKUIStyle::shouldBeTransparent(const QWidget *w) const
@@ -142,7 +153,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             tip_bg(248,248,248),
             tip_font(22,22,22);
 
-    if (m_use_dark_palette) {
+    if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
         //ukui-black
         window_bg.setRgb(36,36,38);
         window_no_bg.setRgb(48,46,50);
