@@ -65,6 +65,8 @@ public:
     void polish(QWidget *widget);
     void unpolish(QWidget *widget);
 
+    void polish(QPalette &pal);
+
     void drawPrimitive(QStyle::PrimitiveElement element,
                        const QStyleOption *option,
                        QPainter *painter,
@@ -75,6 +77,9 @@ private:
     WindowManager *m_window_manager;
 
     ApplicationStyleSettings *m_app_style_settings;
+
+    bool m_use_custom_highlight_color = false;
+    QColor m_custom_highlight_color;
 };
 
 }

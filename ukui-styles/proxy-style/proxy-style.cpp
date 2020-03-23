@@ -26,6 +26,8 @@
 #include "window-manager.h"
 #include "application-style-settings.h"
 
+#include "ukui-style-settings.h"
+
 #include <QApplication>
 #include <QMenu>
 
@@ -37,6 +39,32 @@ using namespace UKUI;
 
 ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusion": key)
 {
+    auto settings = UKUIStyleSettings::globalInstance();
+    m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
+    m_custom_highlight_color = QColor(settings->get("customHighlightColor").toString());
+    connect(settings, &QGSettings::changed, this, [=](const QString &key){
+        if (key == "useCustomHighlightColor") {
+            m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
+        }
+        if (key == "customHighlightColor") {
+            m_custom_highlight_color = QColor(settings->get("customHighlightColor").toString());
+        }
+        if (m_use_custom_highlight_color) {
+            //qApp->setStyle(new ProxyStyle(key));
+            auto pal = QApplication::palette();
+            pal.setColor(QPalette::Active, QPalette::Highlight, m_custom_highlight_color);
+            pal.setColor(QPalette::Inactive, QPalette::Highlight, m_custom_highlight_color);
+            pal.setColor(QPalette::Disabled, QPalette::Highlight, Qt::transparent);
+
+            qApp->setPalette(pal);
+            qApp->paletteChanged(pal);
+        } else {
+            auto pal = qApp->style()->standardPalette();
+            qApp->setPalette(pal);
+            qApp->paletteChanged(pal);
+        }
+    });
+
     m_blur_helper = new BlurHelper(this);
     m_window_manager = new WindowManager(this);
 
@@ -155,6 +183,17 @@ void ProxyStyle::unpolish(QWidget *widget)
     }
 
     QProxyStyle::unpolish(widget);
+}
+
+void ProxyStyle::polish(QPalette &pal)
+{
+    QProxyStyle::polish(pal);
+
+    if (m_use_custom_highlight_color) {
+        pal.setColor(QPalette::Active, QPalette::Highlight, m_custom_highlight_color);
+        pal.setColor(QPalette::Inactive, QPalette::Highlight, m_custom_highlight_color);
+        pal.setColor(QPalette::Disabled, QPalette::Highlight, Qt::transparent);
+    }
 }
 
 void ProxyStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
