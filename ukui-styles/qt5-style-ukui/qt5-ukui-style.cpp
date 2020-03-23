@@ -427,15 +427,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
     case PE_PanelTipLabel://UKUI Tip  style
-     {
-         painter->save();
-         painter->setRenderHint(QPainter::Antialiasing,true);
-         painter->setPen(option->palette.toolTipBase().color().darker(150));
-         painter->setBrush(option->palette.color(QPalette::ToolTipBase));
-         painter->drawRoundedRect(option->rect,4,4);
-         painter->restore();
-         return;
-     }
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing,true);
+        painter->setPen(option->palette.toolTipBase().color().darker(150));
+        painter->setBrush(option->palette.color(QPalette::ToolTipBase));
+        painter->drawRoundedRect(option->rect,4,4);
+        painter->restore();
+        return;
+    }
 
     case PE_FrameStatusBar://UKUI Status style
     {
@@ -633,6 +633,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             painter->save();
+            painter->translate(0.5, 0.5);
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setPen(option->palette.color(QPalette::Mid));
             //painter->setBrush(option->palette.color(QPalette::Base));
@@ -650,6 +651,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             if (option->state & State_On) {
                 painter->save();
+                painter->translate(0.5, 0.5);
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(option->palette.color(QPalette::Mid));
                 painter->setBrush(option->palette.color(QPalette::Highlight));
