@@ -712,15 +712,20 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 key.insert(0,&a);
                 direction /= 10;
             }
+            qreal pixelRatio = painter->device()->devicePixelRatioF();
+            int border = qRound(pixelRatio*(size/4));
+            int sqsize = qRound(pixelRatio*(2*(size/2)));
+            if(size > 16)
+            {
+                border = pixelRatio*4;
+                sqsize = pixelRatio*16;
+            }
             if (!QPixmapCache::find(key, pixmap)) {
-                qreal pixelRatio = painter->device()->devicePixelRatioF();
-                int border = qRound(pixelRatio*(size/5));
-                int sqsize = qRound(pixelRatio*(2*(size/2)));
                 QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
                 image.fill(0);
                 QPainter imagePainter(&image);
                 int sx = 0;
-                int sy = (sqsize/2 - border)/2 - 1;
+                int sy = (sqsize/2 - border)/2;
                 QLineF lines[2];
                 switch (element) {
                     case PE_IndicatorArrowUp:
@@ -734,13 +739,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     case PE_IndicatorArrowRight:
                         lines[0] = QLine(border, border, sqsize/2, sqsize/2);
                         lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
-                        sx = (sqsize/2 - border)/2 - 1;
+                        sx = (sqsize/2 - border)/2;
                         sy = 0;
                         break;
                     case PE_IndicatorArrowLeft:
                         lines[0] = QLine(sqsize/2, border, border, sqsize/2);
                         lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
-                        sx = (sqsize/2 - border)/2 - 1;
+                        sx = (sqsize/2 - border)/2;
                         sy = 0;
                         break;
                     default:
@@ -772,8 +777,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 pixmap.setDevicePixelRatio(pixelRatio);
                 QPixmapCache::insert(key, pixmap);
             }
-            int xOffset = r.x() + (r.width() - size)/2;
-            int yOffset = r.y() + (r.height() - size)/2;
+            int xOffset = r.x() + (r.width() - sqsize)/2;
+            int yOffset = r.y() + (r.height() - sqsize)/2;
             painter->drawPixmap(xOffset, yOffset, pixmap);
             return;
      }
@@ -1042,21 +1047,19 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             }
 
             QStyleOption tool = *toolbutton;
-            if (toolbutton->subControls & SC_ToolButton) {
-                if (bflags & (State_Sunken | State_MouseOver ) || mflags & (State_Sunken | State_MouseOver) || !(bflags & State_AutoRaise))
+            if (bflags & (State_Sunken | State_MouseOver ) || mflags & (State_Sunken | State_MouseOver) || !(bflags & State_AutoRaise))
+            {
+                tool.state = bflags;
+                if(mflags & (State_Sunken | State_MouseOver))
                 {
-                    tool.state = bflags;
-                    if(mflags & (State_Sunken | State_MouseOver))
-                    {
-                        tool.state = mflags;
-                    }
-                    tool.rect = button;
-                    if(toolbutton->subControls & SC_ToolButtonMenu)
-                    {
-                        tool.rect.adjust(0,0,menuarea.width(),0);
-                    }
-                    Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
+                    tool.state = mflags;
                 }
+                tool.rect = button;
+                if(toolbutton->subControls & SC_ToolButtonMenu)
+                {
+                    tool.rect.adjust(0,0,menuarea.width(),0);
+                }
+                Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
             }
 
             if (toolbutton->state & State_HasFocus) {
@@ -2099,6 +2102,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 0;
     case PM_ToolBarItemSpacing:return 4;
+    case PM_MenuButtonIndicator:
+        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
+        {
+            if(tb->subControls & SC_ToolButtonMenu)
+                return 16;
+        }
+        return 12;
     default:
         break;
     }
@@ -2136,33 +2146,38 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     case QStyle::CC_ToolButton:
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
         {
-                   QRect rect = tb->rect;
-                   qreal width=rect.width();
-                   int mbi= qRound(2*(width/7));
-//                   if (rect.width() > 84)
-//                   {
-//                       mbi = 24;
-//                   }
-                   switch (subControl) {
-                   case SC_ToolButton:
-                       if ((tb->features
-                            & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
-                           == QStyleOptionToolButton::MenuButtonPopup)
-                       {
-                           rect.adjust(0, 0, -mbi, 0);
-                       }
-                       return rect;
-                   case SC_ToolButtonMenu:
-                       if ((tb->features
-                            & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
-                           == QStyleOptionToolButton::MenuButtonPopup)
-                       {
-                           rect.adjust(rect.width() -mbi, 0, 0, 0);
-                       }
-                       return rect;
-                   default:
-                       break;
-                   }
+            QRect rect = tb->rect;
+            qreal width=rect.width();
+            qreal mbi = pixelMetric(PM_MenuButtonIndicator, tb, widget);
+            qreal js = width - mbi - tb->iconSize.width();
+            if(js > 1)
+            {
+                mbi = qRound(js/2 + mbi);
+            }
+            if(width < 40)
+                mbi = 10;
+            if(mbi > 24)
+                mbi = 24;
+           switch (subControl) {
+           case SC_ToolButton:
+               if ((tb->features
+                    & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+                   == QStyleOptionToolButton::MenuButtonPopup)
+               {
+                   rect.adjust(0, 0, -mbi, 0);
+               }
+               return rect;
+           case SC_ToolButtonMenu:
+               if ((tb->features
+                    & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+                   == QStyleOptionToolButton::MenuButtonPopup)
+               {
+                   rect.adjust(rect.width() -mbi, 0, 0, 0);
+               }
+               return rect;
+           default:
+               break;
+           }
         }
 
     default:
