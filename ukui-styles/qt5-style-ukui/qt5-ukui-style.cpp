@@ -2061,6 +2061,87 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
+        // Draw UKUI ToolBoxTab Style
+    case CE_ToolBoxTab:
+        if (const QStyleOptionToolBox *tb = qstyleoption_cast<const QStyleOptionToolBox *>(option)) {
+            proxy()->drawControl(CE_ToolBoxTabShape, tb, painter, widget);
+            proxy()->drawControl(CE_ToolBoxTabLabel, tb, painter, widget);
+            return;
+        }
+        break;
+
+    case CE_ToolBoxTabShape:
+        if (const QStyleOptionToolBox *tb = qstyleoption_cast<const QStyleOptionToolBox *>(option)) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            if(widget->isEnabled()){
+                painter->setBrush(tb->palette.button().color());
+                if(option->state & State_MouseOver)
+                {
+                    painter->setBrush(tb->palette.button().color().darker(110));
+                    if(option->state & State_Sunken)
+                        painter->setBrush(tb->palette.button().color().darker(110));
+                }
+            }
+            else {
+                painter->setBrush(tb->palette.color(QPalette::Disabled,QPalette::Button));
+            }
+
+            if (tb->direction != Qt::RightToLeft|tb->direction != Qt::RightToLeft) {
+                painter->drawRoundedRect(option->rect,4,4);
+            }
+            painter->restore();
+            return;
+        } break;
+
+    case CE_ToolBoxTabLabel:
+        if (const QStyleOptionToolBox *tb = qstyleoption_cast<const QStyleOptionToolBox *>(option)) {
+            bool enabled = tb->state & State_Enabled;
+            bool selected = tb->state & State_Selected;
+            int iconExtent = proxy()->pixelMetric(QStyle::PM_SmallIconSize, tb, widget);
+            QPixmap pm = tb->icon.pixmap(widget ? widget->window()->windowHandle() : 0, QSize(iconExtent, iconExtent),enabled ? QIcon::Normal : QIcon::Disabled);
+
+            QRect cr = subElementRect(QStyle::SE_ToolBoxTabContents, tb, widget);
+            QRect tr, ir;
+            int ih = 0;
+            if (pm.isNull()) {
+                tr = cr;
+                tr.adjust(4, 0, -8, 0);
+            } else {
+                int iw = pm.width() / pm.devicePixelRatio() + 4;
+                ih = pm.height()/ pm.devicePixelRatio();
+                ir = QRect(cr.left() + 4, cr.top(), iw + 2, ih);
+                tr = QRect(ir.right(), cr.top(), cr.width() - ir.right() - 4, cr.height());
+            }
+
+            if (selected && proxy()->styleHint(QStyle::SH_ToolBox_SelectedPageTitleBold, tb, widget)) {
+                QFont f(painter->font());
+                f.setBold(true);
+                painter->setFont(f);
+            }
+
+            QString txt = tb->fontMetrics.elidedText(tb->text, Qt::ElideRight, tr.width());
+
+            if (ih)
+                painter->drawPixmap(ir.left(), (tb->rect.height() - ih) / 2, pm);
+
+            int alignment = Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic;
+            if (!proxy()->styleHint(QStyle::SH_UnderlineShortcut, tb, widget))
+                alignment |= Qt::TextHideMnemonic;
+
+            // painter->drawText(option->rect,tb->text, QTextOption(Qt::AlignCenter));
+            proxy()->drawItemText(painter, tr, alignment, tb->palette, enabled, txt, QPalette::ButtonText);
+
+            if (!txt.isEmpty() && option->state & State_HasFocus) {
+                QStyleOptionFocusRect opt;
+                opt.rect = tr;
+                opt.palette = tb->palette;
+                opt.state = QStyle::State_None;
+                proxy()->drawPrimitive(QStyle::PE_FrameFocusRect, &opt, painter, widget);
+            }
+            return;
+        } break;
+
 
     default:
         return QFusionStyle::drawControl(element, option, painter, widget);
