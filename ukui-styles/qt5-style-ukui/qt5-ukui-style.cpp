@@ -1138,7 +1138,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     fropt.rect = textRect.adjusted(-2, -1, 2, 1);
                     proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
                 }
-
+                painter->save();
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Base));
@@ -1299,9 +1299,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 //FIXME: implement waiting animation.
                 //painter->fillRect(option->rect, Qt::red);
             }
-
-            painter->restore();
-        }return;
+        }
+        painter->restore();
+        return;
     }
     case CE_ProgressBarLabel:{
         return;
@@ -1365,13 +1365,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 if (animator->currentAnimatorTime("additional_opacity") == 0) {
                     animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
                     animator->startAnimator("additional_opacity");
-                    qDebug()<<"start is_sunken";
+                    //qDebug()<<"start is_sunken";
                 }
             } else {
                 if (animator->currentAnimatorTime("additional_opacity") > 0) {
                     animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
                     animator->startAnimator("additional_opacity");
-                    qDebug()<<"start not_is_sunken";
+                    //qDebug()<<"start not_is_sunken";
                 }
             }
 
@@ -2238,7 +2238,13 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                 mbi = qRound(js/2 + mbi);
             }
             if(width < 40)
+            {
                 mbi = 10;
+            }
+            else if(width < 30)
+            {
+                mbi = 8;
+            }
             if(mbi > 24)
                 mbi = 24;
             switch (subControl) {
