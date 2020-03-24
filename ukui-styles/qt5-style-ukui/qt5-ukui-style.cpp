@@ -1761,8 +1761,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->setPen(option->palette.color(QPalette::HighlightedText));
             painter->setBrush(option->palette.color(QPalette::HighlightedText));
             painter->drawEllipse(option->rect.x()+6, option->rect.y()+6, 6.0, 6.0);
+            painter->restore();
         }
-        painter->restore();
         return;
     }
 
