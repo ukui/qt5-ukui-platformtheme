@@ -1773,7 +1773,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
-        painter->fillRect(option->rect, option->palette.button().color().lighter(101));
+        painter->fillRect(option->rect, option->palette.alternateBase().color());
         painter->restore();
         return;
     }break;
