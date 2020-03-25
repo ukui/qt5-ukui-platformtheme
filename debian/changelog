@@ -1,5 +1,5 @@
-qt5-ukui-platformtheme (0.9.0-1) unstable; urgency=low
+qt5-ukui-platformtheme (1.0.0-0ubuntu1) focal; urgency=medium
 
-  * Initial release. (Closes: 952944)
+  * Initial release. (LP: #1869007)
 
- -- handsome_feng <jianfengli@ubuntukylin.com>  Mon, 02 Mar 2020 15:42:00 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 25 Mar 2020 20:51:43 +0800

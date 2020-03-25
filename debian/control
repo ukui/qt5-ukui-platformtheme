@@ -1,7 +1,8 @@
 Source: qt5-ukui-platformtheme
 Section: libs
 Priority: optional
-Maintainer: Kylin Team <team+kylin@tracker.debian.org>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Kylin Team <team+kylin@tracker.debian.org>
 Uploaders: handsome_feng <jianfengli@ubuntukylin.com>
 Build-Depends: debhelper-compat (=12),
                pkg-kde-tools,
