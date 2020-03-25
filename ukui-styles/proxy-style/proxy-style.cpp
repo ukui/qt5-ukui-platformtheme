@@ -33,6 +33,9 @@
 
 #include <QWindow>
 
+#include <QLabel>
+#include <QWizardPage>
+
 #include <QDebug>
 
 using namespace UKUI;
@@ -119,6 +122,17 @@ void ProxyStyle::polish(QWidget *widget)
     //FIXME:
     if(!widget)
         return;
+
+    if (auto label = qobject_cast<QLabel *>(widget)) {
+        if (auto p = label->parent()) {
+            //trying fix QWizardPage's title problems
+            if (QString(p->metaObject()->className()) == "QWidget") {
+                auto font = QApplication::font();
+                font.setPixelSize(font.pixelSize());
+                label->setFont(font);
+            }
+        }
+    }
 
     //qDebug()<<"\n\n\n============widget mask"<<widget->metaObject()->className()<<widget->mask();
 

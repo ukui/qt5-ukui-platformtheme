@@ -54,6 +54,14 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         m_fixed_font.setFamily(fontName);
         m_fixed_font.setPixelSize(fontSize*1.2);
 
+        /*!
+         * \bug
+         * if we set app font, qwizard title's font will
+         * become very small. I handle the wizard title
+         * in ProxyStyle::polish().
+         */
+        QApplication::setFont(m_system_font);
+
         //QIcon::setThemeName(settings->get("icon-theme-name").toString());
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             qDebug()<<key<<"changed";
@@ -104,6 +112,8 @@ const QPalette *Qt5UKUIPlatformTheme::palette(Palette type) const
 const QFont *Qt5UKUIPlatformTheme::font(Font type) const
 {
     //FIXME:
+    if (type == FixedFont)
+        return &m_fixed_font;
     return &m_system_font;
     switch (type) {
     case SystemFont:
