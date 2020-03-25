@@ -766,14 +766,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             if (!(option->state & State_Enabled)) {
                 imagePainter.translate(1, 1);
-                imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+                imagePainter.setPen(QPen(option->palette.foreground().color(), 1.3));
                 imagePainter.setBrush(Qt::NoBrush);
                 imagePainter.drawLines(lines,2);
-                imagePainter.translate(-1, -1);
+//                imagePainter.translate(-1, -1);
+//                imagePainter.setBrush(option->palette.mid().color());
+//                imagePainter.setPen(option->palette.mid().color());
             }
-
-            //imagePainter.drawPolygon(a);
-            imagePainter.drawLines(lines,2);
+            else
+            {
+                imagePainter.drawLines(lines,2);
+            }
             imagePainter.end();
             pixmap = QPixmap::fromImage(image);
             pixmap.setDevicePixelRatio(pixelRatio);
