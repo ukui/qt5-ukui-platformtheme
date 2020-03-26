@@ -33,8 +33,11 @@
 
 #include "tab-widget-animation-helper.h"
 #include "scrollbar-animation-helper.h"
+#include "button-animation-helper.h"
+#include "button-animator.h"
 
 #include "animator-iface.h"
+#include "animation-helper.h"
 
 #include <QIcon>
 #include <QStyleOptionViewItem>
@@ -56,6 +59,7 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
     m_use_dark_palette = dark;
     m_tab_animation_helper = new TabWidgetAnimationHelper(this);
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
+    m_button_animation_helper = new ButtonAnimationHelper(this);
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -249,6 +253,16 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         v->viewport()->setAttribute(Qt::WA_Hover);
     }
 
+    if(widget->inherits("QToolButton"))
+    {
+        m_button_animation_helper->registerWidget(widget);
+    }
+
+    if(widget->inherits("QPushButton"))
+    {
+        m_button_animation_helper->registerWidget(widget);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -273,6 +287,16 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 
     if (auto v = qobject_cast<QAbstractItemView *>(widget)) {
         v->viewport()->setAttribute(Qt::WA_Hover);
+    }
+
+    if(widget->inherits("ToolButton"))
+    {
+        m_button_animation_helper->unregisterWidget(widget);
+    }
+
+    if(widget->inherits("PushButton"))
+    {
+        m_button_animation_helper->unregisterWidget(widget);
     }
 
     QFusionStyle::unpolish(widget);
@@ -444,6 +468,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
        */
 
         return;
+
     }
 
     case PE_PanelTipLabel://UKUI Tip  style
@@ -485,23 +510,93 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelButtonTool://UKUI ToolBar  item style
     {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::NoBrush);
         if (widget->isEnabled())
         {
-            if(option->state & (State_MouseOver | State_Sunken))
+            if(auto animator = m_button_animation_helper->animator(widget))
             {
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-            }
-            else
-            {
-                painter->setBrush(option->palette.color(QPalette::Button));
-            }
-            painter->drawRoundedRect(option->rect,4,4);
+                if(option->state & State_Sunken || animator->isRunning("SunKen")
+                        || animator->value("SunKen") == 1.0)
+                {
+                    double opacity = animator->value("SunKen").toDouble();
+                    if(option->state & State_Sunken)
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",true);
+                        if(opacity == 0.7)
+                        {
+                            animator->startAnimator("SunKen");
+                        }
+                    }
+                    else
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",false);
+                        if(opacity == 1.0)
+                        {
+                            animator->startAnimator("SunKen");
+                        }
+                    }
+
+                    if (animator->isRunning("SunKen"))
+                    {
+                        const_cast<QWidget *>(widget)->update();
+                    }
+                    painter->save();
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(option->palette.color(QPalette::Highlight));
+                    painter->setOpacity(opacity);
+                    painter->setRenderHint(QPainter::Antialiasing,true);
+                    painter->drawRoundedRect(option->rect,4,4);
+                    painter->restore();
+                    return;
+                }
+                if(option->state & State_MouseOver || animator->isRunning("MouseOver")
+                        || animator->value("MouseOver") == 0.7)
+                {
+                    double opacity = animator->value("MouseOver").toDouble();
+                    if(option->state & State_MouseOver)
+                    {
+                        animator->setAnimatorDirectionForward("MouseOver",true);
+                        if(opacity == 0.0)
+                        {
+                            animator->startAnimator("MouseOver");
+                        }
+                    }
+                    else
+                    {
+                        animator->setAnimatorDirectionForward("MouseOver",false);
+                        if(opacity == 0.7)
+                        {
+                            animator->startAnimator("MouseOver");
+                        }
+                    }
+
+                    if (animator->isRunning("MouseOver"))
+                    {
+                        const_cast<QWidget *>(widget)->update();
+                    }
+                    painter->save();
+                    painter->setOpacity(opacity);
+                    painter->setBrush(option->palette.color(QPalette::Highlight));
+                    painter->setPen(Qt::NoPen);
+                    painter->setRenderHint(QPainter::Antialiasing,true);
+                    painter->drawRoundedRect(option->rect,4,4);
+                    painter->restore();
+                    return;
+                }
+                else if(!(option->state & State_AutoRaise))
+               {
+                    painter->save();
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(option->palette.color(QPalette::Button));
+                    painter->setRenderHint(QPainter::Antialiasing,true);
+                    painter->drawRoundedRect(option->rect,4,4);
+                    painter->restore();
+               }
+           }
+        else
+        {
+            return QFusionStyle::drawPrimitive(element,option,painter,widget);
         }
-        painter->restore();
+      }
         return;
     }
 
@@ -1124,20 +1219,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             }
 
             QStyleOption tool = *toolbutton;
-            if (bflags & (State_Sunken | State_MouseOver ) || mflags & (State_Sunken | State_MouseOver) || !(bflags & State_AutoRaise))
+            tool.state = bflags;
+            if(mflags & (State_Sunken | State_MouseOver))
             {
-                tool.state = bflags;
-                if(mflags & (State_Sunken | State_MouseOver))
-                {
-                    tool.state = mflags;
-                }
-                tool.rect = button;
-                if(toolbutton->subControls & SC_ToolButtonMenu)
-                {
-                    tool.rect.adjust(0,0,menuarea.width(),0);
-                }
-                Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
+                tool.state = mflags;
             }
+            tool.rect = button;
+            if(toolbutton->subControls & SC_ToolButtonMenu)
+            {
+                tool.rect.adjust(0,0,menuarea.width(),0);
+            }
+            Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
 
             if (toolbutton->state & State_HasFocus) {
                 QStyleOptionFocusRect fr;

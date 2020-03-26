@@ -12,6 +12,7 @@ CONFIG += plugin c++11 link_pkgconfig
 PKGCONFIG += gsettings-qt
 
 include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
+include(animations/animations.pri)
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -26,6 +27,7 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    button-animation-helper.cpp \
         qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
     tab-widget-animation-helper.cpp \
@@ -33,6 +35,7 @@ SOURCES += \
     qt5-ukui-style-helper.cpp
 
 HEADERS += \
+    button-animation-helper.h \
         qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \
     tab-widget-animation-helper.h \

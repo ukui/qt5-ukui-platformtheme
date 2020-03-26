@@ -28,6 +28,7 @@
 
 class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
+class ButtonAnimationHelper;
 
 /*!
  * \brief The Qt5UKUIStyle class
@@ -96,6 +97,8 @@ protected:
 private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;
+    ButtonAnimationHelper*  m_button_animation_helper;
+
 
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
