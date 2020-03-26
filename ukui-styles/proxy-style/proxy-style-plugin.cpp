@@ -51,8 +51,17 @@ ProxyStylePlugin::ProxyStylePlugin()
                 auto styleName = settings->get("styleName").toString();
 
                 if (styleName == "ukui") {
-                    styleName = "ukui-white";
+                    styleName = "ukui-default";
                 }
+
+                if (styleName == "ukui-white") {
+                    styleName = "ukui-default";
+                }
+
+                if (styleName == "ukui-black") {
+                    styleName = "ukui-dark";
+                }
+
                 if (!QStyleFactory::keys().contains(styleName)) {
                     styleName = "fusion";
                 }
@@ -98,13 +107,19 @@ QStyle *ProxyStylePlugin::create(const QString &key)
         //get current style, fusion for invalid.
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
-            return new ProxyStyle(UKUIStyleSettings::globalInstance()->get("styleName").toString());
+            if (m_current_style_name == "ukui-white") {
+                m_current_style_name = "ukui-default";
+            } else if (m_current_style_name == "ukui-black") {
+                m_current_style_name = "ukui-dark";
+            }
+            if (QStyleFactory::keys().contains(m_current_style_name))
+                return new ProxyStyle(m_current_style_name);
         }
         qDebug()<<"ukui create proxy style";
         return new ProxyStyle(nullptr);
     }
     qDebug()<<"ukui create proxy style: null";
-    return nullptr;
+    return new ProxyStyle(nullptr);
 }
 
 const QStringList ProxyStylePlugin::blackList()
