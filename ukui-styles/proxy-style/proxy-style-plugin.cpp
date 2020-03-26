@@ -113,6 +113,8 @@ const QStringList ProxyStylePlugin::blackList()
     l<<"kylin-assistant";
     l<<"kylin-video";
     l<<"ukui-control-center";
+    l<<"ubuntu-kylin-software-center";
+    l<<"kylin-burner";
     return l;
 }
 
