@@ -41,6 +41,7 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 #include <QTreeView>
+#include <QListView>
 #include <QMenu>
 #include <QToolButton>
 #include <QtPlatformHeaders/QXcbWindowFunctions>
@@ -323,6 +324,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
     }
     case PE_PanelItemViewItem: {
+        bool isIconView = false;
+        auto opt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+        if (!opt)
+            return;
+        if (opt) {
+            isIconView = (opt->decorationPosition & QStyleOptionViewItem::Top);
+        }
         bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
         bool isSelected = option->state & State_Selected;
         bool enable = option->state & State_Enabled;
@@ -336,7 +344,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (isSelected) {
             color.setAlpha(255);
         }
-        painter->fillRect(option->rect, color);
+        if (!isIconView)
+            painter->fillRect(option->rect, color);
+        else {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->setPen(Qt::transparent);
+            painter->setBrush(color);
+            painter->drawRoundedRect(option->rect, 6, 6);
+            painter->restore();
+        }
         return;
     }
 

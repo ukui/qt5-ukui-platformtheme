@@ -62,7 +62,14 @@ ProxyStylePlugin::ProxyStylePlugin()
                     styleName = "ukui-dark";
                 }
 
-                if (!QStyleFactory::keys().contains(styleName)) {
+                bool isStyleValid = false;
+                for (auto key : QStyleFactory::keys()) {
+                    if (key.toLower() == styleName.toLower()) {
+                        isStyleValid = true;
+                    }
+                }
+
+                if (!isStyleValid) {
                     styleName = "fusion";
                 }
 
@@ -109,11 +116,15 @@ QStyle *ProxyStylePlugin::create(const QString &key)
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
             if (m_current_style_name == "ukui-white") {
                 m_current_style_name = "ukui-default";
-            } else if (m_current_style_name == "ukui-black") {
+            }
+            if (m_current_style_name == "ukui-black") {
                 m_current_style_name = "ukui-dark";
             }
-            if (QStyleFactory::keys().contains(m_current_style_name))
-                return new ProxyStyle(m_current_style_name);
+            for (auto styleName : QStyleFactory::keys()) {
+                if (styleName.toLower() == m_current_style_name.toLower()) {
+                    return new ProxyStyle(styleName);
+                }
+            }
         }
         qDebug()<<"ukui create proxy style";
         return new ProxyStyle(nullptr);
