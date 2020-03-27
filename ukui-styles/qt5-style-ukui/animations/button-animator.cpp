@@ -8,16 +8,16 @@ ButtonAnimator::ButtonAnimator(QObject *parent) : QParallelAnimationGroup (paren
 {
     m_mouseover = new QVariantAnimation(this);
     m_mouseover->setStartValue(0.0);
-    m_mouseover->setEndValue(0.7);
-    m_mouseover->setDuration(200);
+    m_mouseover->setEndValue(1.0);
+    m_mouseover->setDuration(100);
     m_mouseover->setEasingCurve(QEasingCurve::OutCubic);
     addAnimation(m_mouseover);
 
     m_sunken = new QVariantAnimation(this);
-    m_sunken->setStartValue(0.7);
+    m_sunken->setStartValue(0.0);
     m_sunken->setEndValue(1.0);
-    m_sunken->setDuration(100);
-    m_sunken->setEasingCurve(QEasingCurve::OutCubic);
+    m_sunken->setDuration(75);
+    m_sunken->setEasingCurve(QEasingCurve::InCubic);
     addAnimation(m_sunken);
 }
 
