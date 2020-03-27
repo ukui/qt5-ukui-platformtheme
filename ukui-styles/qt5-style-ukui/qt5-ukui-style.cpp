@@ -1673,7 +1673,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 fillGradient.setColorAt(1, option->palette.window().color());
             }
 
-            QRect drawRect = rect.adjusted(0, selected ? 0 : 2, 0, 3);
+            //No special height handling when selected
+            //QRect drawRect = rect.adjusted(0, selected ? 0 : 2, 0, 3);
+            QRect drawRect = rect.adjusted(0, 0, 0, 3);
             painter->setPen( Qt::NoPen);
             painter->save();
             painter->setClipRect(rect.adjusted(+1, -1, +0, selected ? -2 : -3));
