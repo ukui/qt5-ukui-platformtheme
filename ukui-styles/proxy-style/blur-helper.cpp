@@ -146,8 +146,8 @@ bool BlurHelper::shouldSkip(QWidget *w)
     if (w->inherits("QComboBoxPrivateContainer"))
         return true;
 
-    if (w->inherits("QTipLabel"))
-        return true;
+//    if (w->inherits("QTipLabel"))
+//        return true;
 
     return skip;
 }
@@ -187,6 +187,14 @@ void BlurHelper::delayUpdate(QWidget *w)
             if (widget->inherits("QMenu")) {
                 QPainterPath path;
                 path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1), 6, 6);
+                KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
+                widget->update();
+                break;
+            }
+
+            if (widget->inherits("QTipLabel")) {
+                QPainterPath path;
+                path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1),4, 4);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
                 widget->update();
                 break;

@@ -471,15 +471,37 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     }
 
-    case PE_PanelTipLabel://UKUI Tip  style
+    case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
     {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.toolTipBase().color().darker(150));
-        painter->setBrush(option->palette.color(QPalette::ToolTipBase));
-        painter->drawRoundedRect(option->rect,4,4);
-        painter->restore();
-        return;
+        if (widget->isEnabled()) {
+            QStyleOption opt = *option;
+            auto color = opt.palette.color(QPalette::ToolTipBase);
+            if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+                auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
+                    color.setAlphaF(opacity);
+            }
+            opt.palette.setColor(QPalette::ToolTipBase, color);
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            QPen pen(opt.palette.toolTipBase().color().darker(150), 1);
+            pen.setCapStyle(Qt::RoundCap);
+            pen.setJoinStyle(Qt::RoundJoin);
+            painter->setPen(pen);
+            painter->setBrush(color);
+
+            QPainterPath path;
+            auto region = widget->mask();
+            if (region.isEmpty()) {
+                path.addRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 4, 4);
+            } else {
+                path.addRegion(region);
+            }
+
+            painter->drawPath(path);
+            painter->restore();
+            return;
+        }
+        return QFusionStyle::drawPrimitive(element, option, painter, widget);
     }
 
     case PE_FrameStatusBar://UKUI Status style
