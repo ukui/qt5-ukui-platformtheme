@@ -786,9 +786,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 imagePainter.setPen(QPen(option->palette.foreground().color(), 1.3));
                 imagePainter.setBrush(Qt::NoBrush);
                 imagePainter.drawLines(lines,2);
-//                imagePainter.translate(-1, -1);
-//                imagePainter.setBrush(option->palette.mid().color());
-//                imagePainter.setPen(option->palette.mid().color());
+                //                imagePainter.translate(-1, -1);
+                //                imagePainter.setBrush(option->palette.mid().color());
+                //                imagePainter.setPen(option->palette.mid().color());
             }
             else
             {
@@ -804,6 +804,61 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->drawPixmap(xOffset, yOffset, pixmap);
         return;
     }
+
+
+
+    case PE_IndicatorRadioButton:{
+        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+
+        if (option->state & State_None){//Non optional status
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Mid));
+            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+            painter->restore();
+        }
+        else if (option->state & State_Off) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Button));
+            painter->setPen(option->palette.color(QPalette::Mid));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if (option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+            painter->restore();
+        }
+        else if (option->state & State_On) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setBrush(option->palette.color(QPalette::Highlight));
+            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            if (option->state & State_Sunken) {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }else if(option->state & State_MouseOver){
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            }
+            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+            painter->restore();
+
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setPen(option->palette.color(QPalette::HighlightedText));
+            painter->setBrush(option->palette.color(QPalette::HighlightedText));
+            painter->drawEllipse(option->rect.x()+6, option->rect.y()+5, 6.0, 6.0);
+            painter->restore();
+        }
+        return;
+    }
+
+
 
     default:   break;
     }
@@ -1732,63 +1787,48 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     }
 
 
-    case CE_RadioButton:{
-        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::Text));
-        painter->drawText(option->rect.adjusted(+20,+1,0,0),radiobutton->text);
-        painter->restore();
+    case CE_RadioButtonLabel:
+        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            uint alignment = visualAlignment(btn->direction, Qt::AlignLeft | Qt::AlignVCenter);
 
-        if (option->state & State_None){//Non optional status
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
-            painter->restore();
-            painter->save();
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Text));
-            painter->drawText(option->rect.adjusted(+20,+1,0,0),radiobutton->text);
-            painter->restore();
-        } else if (option->state & State_Off) {
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->setBrush(option->palette.color(QPalette::Button));
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-            if (option->state & State_Sunken) {
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-            }else if (option->state & State_MouseOver){
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            if (!proxy()->styleHint(SH_UnderlineShortcut, btn, widget))
+                alignment |= Qt::TextHideMnemonic;
+            QPixmap pix;
+            QRect textRect = btn->rect;
+            if (!btn->icon.isNull()) {
+                pix = btn->icon.pixmap(widget ? widget->window()->windowHandle() : 0, btn->iconSize, btn->state & State_Enabled ? QIcon::Normal : QIcon::Disabled);
+                proxy()->drawItemPixmap(painter, btn->rect, alignment, pix);
+                if (btn->direction == Qt::RightToLeft)
+                    textRect.setRight(textRect.right() - btn->iconSize.width() - 4);
+                else
+                    textRect.setLeft(textRect.left() + btn->iconSize.width() + 4);
             }
-            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
-            painter->restore();
-        } else if (option->state & State_On) {
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->setBrush(option->palette.color(QPalette::Highlight));
-            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-            if (option->state & State_Sunken) {
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-            }else if(option->state & State_MouseOver){
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+            if (!btn->text.isEmpty()){
+                proxy()->drawItemText(painter, textRect, alignment | Qt::TextShowMnemonic,
+                                      btn->palette, btn->state & State_Enabled, btn->text, QPalette::WindowText);
             }
-            painter->drawEllipse(option->rect.x()+1,option->rect.y()+1, 16.0, 16.0);
-            painter->restore();
-
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->setPen(option->palette.color(QPalette::HighlightedText));
-            painter->setBrush(option->palette.color(QPalette::HighlightedText));
-            painter->drawEllipse(option->rect.x()+6, option->rect.y()+6, 6.0, 6.0);
-            painter->restore();
+            return;
         }
-        return;
-    }
+        break;
+
+    case CE_RadioButton:
+        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            bool isRadio = (element == CE_RadioButton);
+            QStyleOptionButton subopt = *btn;
+            subopt.rect = subElementRect( SE_RadioButtonIndicator, btn, widget);
+            proxy()->drawPrimitive(PE_IndicatorRadioButton ,&subopt, painter, widget);
+            subopt.rect = subElementRect( SE_RadioButtonContents, btn, widget);
+            proxy()->drawControl( CE_RadioButtonLabel , &subopt, painter, widget);
+            if (btn->state & State_HasFocus) {
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*btn);
+                fropt.rect = subElementRect(SE_RadioButtonFocusRect, btn, widget);
+                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+            }
+            return;
+        }
+        break;
+
 
         //Draw table header style
     case CE_HeaderSection:
