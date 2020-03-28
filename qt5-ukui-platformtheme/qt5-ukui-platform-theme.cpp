@@ -49,10 +49,10 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         auto fontName = settings->get("systemFont").toString();
         auto fontSize = settings->get("systemFontSize").toInt();
         m_system_font.setFamily(fontName);
-        m_system_font.setPixelSize(fontSize);
+        m_system_font.setPointSize(fontSize);
 
         m_fixed_font.setFamily(fontName);
-        m_fixed_font.setPixelSize(fontSize*1.2);
+        m_fixed_font.setPointSize(fontSize*1.2);
 
         /*!
          * \bug
@@ -82,6 +82,9 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     m_fixed_font.setFamily(font);
                     oldFont.setFamily(font);
                     QApplication::setFont(oldFont);
+                    for (auto w : QApplication::allWidgets()) {
+                        w->setFont(font);
+                    }
                 }
             }
             if (key == "systemFontSize") {
@@ -89,10 +92,13 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 QFontDatabase db;
                 if (fontSize > 0) {
                     QFont oldFont = QApplication::font();
-                    m_system_font.setPixelSize(fontSize);
-                    m_fixed_font.setPixelSize(fontSize*1.2);
-                    oldFont.setPixelSize(fontSize);
+                    m_system_font.setPointSize(fontSize);
+                    m_fixed_font.setPointSize(fontSize*1.2);
+                    oldFont.setPointSize(fontSize);
                     QApplication::setFont(oldFont);
+                    for (auto w : QApplication::allWidgets()) {
+                        w->setFont(m_system_font);
+                    }
                 }
             }
         });
