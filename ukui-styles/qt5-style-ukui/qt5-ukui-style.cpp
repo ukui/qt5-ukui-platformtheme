@@ -39,6 +39,8 @@
 #include "animator-iface.h"
 #include "animation-helper.h"
 
+#include "highlight-effect.h"
+
 #include <QIcon>
 #include <QStyleOptionViewItem>
 #include <QAbstractItemView>
@@ -1774,6 +1776,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 state = QIcon::On;
 
             QPixmap pixmap = button->icon.pixmap(button->iconSize, mode, state);
+
             int labelWidth = pixmap.width();
             int labelHeight = pixmap.height();
             int iconSpacing = 4;//4 is currently hardcoded in QPushButton::sizeHint()
