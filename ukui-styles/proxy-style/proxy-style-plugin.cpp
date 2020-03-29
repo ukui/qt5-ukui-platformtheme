@@ -73,7 +73,9 @@ ProxyStylePlugin::ProxyStylePlugin()
                     styleName = "fusion";
                 }
 
-                QApplication::setStyle(new ProxyStyle(styleName));
+                if (!blackList().contains(qAppName()))
+                    QApplication::setStyle(new ProxyStyle(styleName));
+
                 QPalette palette = QApplication::palette();
                 /*!
                   \todo implemet palette switch.
