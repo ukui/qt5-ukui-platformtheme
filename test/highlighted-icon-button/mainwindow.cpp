@@ -18,4 +18,6 @@ void MainWindow::on_checkBox_toggled(bool checked)
 {
     ui->pushButton->setProperty("useIconHighlightEffect", checked);
     ui->pushButton->update();
+    ui->toolButton->setProperty("useIconHighlightEffect", checked);
+    ui->toolButton->update();
 }

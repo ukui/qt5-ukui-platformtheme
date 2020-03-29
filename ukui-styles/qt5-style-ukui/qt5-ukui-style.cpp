@@ -56,6 +56,167 @@
 #include <QPixmapCache>
 #include <QStyleOptionButton>
 
+//---copy from qcommonstyle
+#include <QTextLayout>
+
+#include <private/qtextengine_p.h>
+
+static QSizeF viewItemTextLayout(QTextLayout &textLayout, int lineWidth, int maxHeight = -1, int *lastVisibleLine = nullptr)
+{
+    if (lastVisibleLine)
+        *lastVisibleLine = -1;
+    qreal height = 0;
+    qreal widthUsed = 0;
+    textLayout.beginLayout();
+    int i = 0;
+    while (true) {
+        QTextLine line = textLayout.createLine();
+        if (!line.isValid())
+            break;
+        line.setLineWidth(lineWidth);
+        line.setPosition(QPointF(0, height));
+        height += line.height();
+        widthUsed = qMax(widthUsed, line.naturalTextWidth());
+        // we assume that the height of the next line is the same as the current one
+        if (maxHeight > 0 && lastVisibleLine && height + line.height() > maxHeight) {
+            const QTextLine nextLine = textLayout.createLine();
+            *lastVisibleLine = nextLine.isValid() ? i : -1;
+            break;
+        }
+        ++i;
+    }
+    textLayout.endLayout();
+    return QSizeF(widthUsed, height);
+}
+
+QString calculateElidedText(const QString &text, const QTextOption &textOption,
+                            const QFont &font, const QRect &textRect, const Qt::Alignment valign,
+                            Qt::TextElideMode textElideMode, int flags,
+                            bool lastVisibleLineShouldBeElided, QPointF *paintStartPosition)
+{
+    QTextLayout textLayout(text, font);
+    textLayout.setTextOption(textOption);
+
+    // In AlignVCenter mode when more than one line is displayed and the height only allows
+    // some of the lines it makes no sense to display those. From a users perspective it makes
+    // more sense to see the start of the text instead something inbetween.
+    const bool vAlignmentOptimization = paintStartPosition && valign.testFlag(Qt::AlignVCenter);
+
+    int lastVisibleLine = -1;
+    viewItemTextLayout(textLayout, textRect.width(), vAlignmentOptimization ? textRect.height() : -1, &lastVisibleLine);
+
+    const QRectF boundingRect = textLayout.boundingRect();
+    // don't care about LTR/RTL here, only need the height
+    const QRect layoutRect = QStyle::alignedRect(Qt::LayoutDirectionAuto, valign,
+                                                 boundingRect.size().toSize(), textRect);
+
+    if (paintStartPosition)
+        *paintStartPosition = QPointF(textRect.x(), layoutRect.top());
+
+    QString ret;
+    qreal height = 0;
+    const int lineCount = textLayout.lineCount();
+    for (int i = 0; i < lineCount; ++i) {
+        const QTextLine line = textLayout.lineAt(i);
+        height += line.height();
+
+        // above visible rect
+        if (height + layoutRect.top() <= textRect.top()) {
+            if (paintStartPosition)
+                paintStartPosition->ry() += line.height();
+            continue;
+        }
+
+        const int start = line.textStart();
+        const int length = line.textLength();
+        const bool drawElided = line.naturalTextWidth() > textRect.width();
+        bool elideLastVisibleLine = lastVisibleLine == i;
+        if (!drawElided && i + 1 < lineCount && lastVisibleLineShouldBeElided) {
+            const QTextLine nextLine = textLayout.lineAt(i + 1);
+            const int nextHeight = height + nextLine.height() / 2;
+            // elide when less than the next half line is visible
+            if (nextHeight + layoutRect.top() > textRect.height() + textRect.top())
+                elideLastVisibleLine = true;
+        }
+
+        QString text = textLayout.text().mid(start, length);
+        if (drawElided || elideLastVisibleLine) {
+            if (elideLastVisibleLine) {
+                if (text.endsWith(QChar::LineSeparator))
+                    text.chop(1);
+                text += QChar(0x2026);
+            }
+            const QStackTextEngine engine(text, font);
+            ret += engine.elidedText(textElideMode, textRect.width(), flags);
+
+            // no newline for the last line (last visible or real)
+            // sometimes drawElided is true but no eliding is done so the text ends
+            // with QChar::LineSeparator - don't add another one. This happened with
+            // arabic text in the testcase for QTBUG-72805
+            if (i < lineCount - 1 &&
+                    !ret.endsWith(QChar::LineSeparator))
+                ret += QChar::LineSeparator;
+        } else {
+            ret += text;
+        }
+
+        // below visible text, can stop
+        if ((height + layoutRect.top() >= textRect.bottom()) ||
+                (lastVisibleLine >= 0 && lastVisibleLine == i))
+            break;
+    }
+    return ret;
+}
+
+QString toolButtonElideText(const QStyleOptionToolButton *option,
+                            const QRect &textRect, int flags)
+{
+    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
+        return option->text;
+
+    QString text = option->text;
+    text.replace('\n', QChar::LineSeparator);
+    QTextOption textOption;
+    textOption.setWrapMode(QTextOption::ManualWrap);
+    textOption.setTextDirection(option->direction);
+
+    return calculateElidedText(text, textOption,
+                               option->font, textRect, Qt::AlignTop,
+                               Qt::ElideMiddle, flags,
+                               false, nullptr);
+}
+
+static QWindow *qt_getWindow(const QWidget *widget)
+{
+    return widget ? widget->window()->windowHandle() : 0;
+}
+
+static void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
+                      const QRect &rect, QPainter *painter, const QWidget *widget = 0)
+{
+    QStyle::PrimitiveElement pe;
+    switch (toolbutton->arrowType) {
+    case Qt::LeftArrow:
+        pe = QStyle::PE_IndicatorArrowLeft;
+        break;
+    case Qt::RightArrow:
+        pe = QStyle::PE_IndicatorArrowRight;
+        break;
+    case Qt::UpArrow:
+        pe = QStyle::PE_IndicatorArrowUp;
+        break;
+    case Qt::DownArrow:
+        pe = QStyle::PE_IndicatorArrowDown;
+        break;
+    default:
+        return;
+    }
+    QStyleOption arrowOpt = *toolbutton;
+    arrowOpt.rect = rect;
+    style->drawPrimitive(pe, &arrowOpt, painter, widget);
+}
+//---copy from qcommonstyle
+
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
 {
     m_is_default_style = useDefault;
@@ -1330,8 +1491,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (const QStyleOptionToolButton *toolbutton
                 = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             QRect button, menuarea;
-            button = Qt5UKUIStyle::subControlRect(control, toolbutton, SC_ToolButton, widget);
-            menuarea = Qt5UKUIStyle::subControlRect(control, toolbutton, SC_ToolButtonMenu, widget);
+            button = proxy()->subControlRect(control, toolbutton, SC_ToolButton, widget);
+            menuarea = proxy()->subControlRect(control, toolbutton, SC_ToolButtonMenu, widget);
 
             State bflags = toolbutton->state & ~State_Sunken;
 
@@ -1358,27 +1519,27 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             {
                 tool.rect.adjust(0,0,menuarea.width(),0);
             }
-            Qt5UKUIStyle::drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
+            proxy()->drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
 
             if (toolbutton->state & State_HasFocus) {
                 QStyleOptionFocusRect fr;
                 fr.QStyleOption::operator=(*toolbutton);
                 fr.rect.adjust(3, 3, -3, -3);
                 if (toolbutton->features & QStyleOptionToolButton::MenuButtonPopup)
-                    fr.rect.adjust(0, 0, -Qt5UKUIStyle::pixelMetric(QStyle::PM_MenuButtonIndicator,
+                    fr.rect.adjust(0, 0, -proxy()->pixelMetric(QStyle::PM_MenuButtonIndicator,
                                                                     toolbutton, widget), 0);
-                Qt5UKUIStyle::drawPrimitive(PE_FrameFocusRect, &fr, painter, widget);
+                proxy()->drawPrimitive(PE_FrameFocusRect, &fr, painter, widget);
             }
             QStyleOptionToolButton label = *toolbutton;
             label.state = bflags;
-            int fw = Qt5UKUIStyle::pixelMetric(PM_DefaultFrameWidth, option, widget);
+            int fw = proxy()->pixelMetric(PM_DefaultFrameWidth, option, widget);
             label.rect = button.adjusted(fw, fw, -fw, -fw);
-            Qt5UKUIStyle::drawControl(CE_ToolButtonLabel, &label, painter, widget);
+            proxy()->drawControl(CE_ToolButtonLabel, &label, painter, widget);
 
             if (toolbutton->subControls & SC_ToolButtonMenu) {
                 tool.rect = menuarea;
                 tool.state = mflags;
-                Qt5UKUIStyle::drawPrimitive(PE_IndicatorArrowDown, &tool, painter, widget);
+                proxy()->drawPrimitive(PE_IndicatorArrowDown, &tool, painter, widget);
             }
             /*
             ToolButton has Menu and popupmode is DelayedPopup.
@@ -1841,7 +2002,95 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->restore();
         return;
     }
+    case CE_ToolButtonLabel: {
+        if (const QStyleOptionToolButton *toolbutton
+                = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            QRect rect = toolbutton->rect;
+            int shiftX = 0;
+            int shiftY = 0;
+            if (toolbutton->state & (State_Sunken | State_On)) {
+                shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
+                shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
+            }
+            // Arrow type always overrules and is always shown
+            bool hasArrow = toolbutton->features & QStyleOptionToolButton::Arrow;
+            if (((!hasArrow && toolbutton->icon.isNull()) && !toolbutton->text.isEmpty())
+                    || toolbutton->toolButtonStyle == Qt::ToolButtonTextOnly) {
+                int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
+                if (!proxy()->styleHint(SH_UnderlineShortcut, option, widget))
+                    alignment |= Qt::TextHideMnemonic;
+                rect.translate(shiftX, shiftY);
+                painter->setFont(toolbutton->font);
+                proxy()->drawItemText(painter, rect, alignment, toolbutton->palette,
+                                      option->state & State_Enabled, toolbutton->text,
+                                      QPalette::ButtonText);
+            } else {
+                QPixmap pm;
+                QPixmap target;
+                QSize pmSize = toolbutton->iconSize;
+                if (!toolbutton->icon.isNull()) {
+                    QIcon::State state = toolbutton->state & State_On ? QIcon::On : QIcon::Off;
+                    QIcon::Mode mode;
+                    if (!(toolbutton->state & State_Enabled))
+                        mode = QIcon::Disabled;
+                    else if ((option->state & State_MouseOver) && (option->state & State_AutoRaise))
+                        mode = QIcon::Active;
+                    else
+                        mode = QIcon::Normal;
+                    pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize),
+                                                 mode, state);
 
+                    target = HighLightEffect::generatePixmap(pm, option, widget);
+
+                    pmSize = pm.size() / pm.devicePixelRatio();
+                }
+
+                if (toolbutton->toolButtonStyle != Qt::ToolButtonIconOnly) {
+                    painter->setFont(toolbutton->font);
+                    QRect pr = rect,
+                            tr = rect;
+                    int alignment = Qt::TextShowMnemonic;
+                    if (!proxy()->styleHint(SH_UnderlineShortcut, option, widget))
+                        alignment |= Qt::TextHideMnemonic;
+
+                    if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon) {
+                        pr.setHeight(pmSize.height() + 4); //### 4 is currently hardcoded in QToolButton::sizeHint()
+                        tr.adjust(0, pr.height() - 1, 0, -1);
+                        pr.translate(shiftX, shiftY);
+                        if (!hasArrow) {
+                            proxy()->drawItemPixmap(painter, pr, Qt::AlignCenter, pm);
+                        } else {
+                            drawArrow(proxy(), toolbutton, pr, painter, widget);
+                        }
+                        alignment |= Qt::AlignCenter;
+                    } else {
+                        pr.setWidth(pmSize.width() + 4); //### 4 is currently hardcoded in QToolButton::sizeHint()
+                        tr.adjust(pr.width(), 0, 0, 0);
+                        pr.translate(shiftX, shiftY);
+                        if (!hasArrow) {
+                            proxy()->drawItemPixmap(painter, QStyle::visualRect(option->direction, rect, pr), Qt::AlignCenter, pm);
+                        } else {
+                            drawArrow(proxy(), toolbutton, pr, painter, widget);
+                        }
+                        alignment |= Qt::AlignLeft | Qt::AlignVCenter;
+                    }
+                    tr.translate(shiftX, shiftY);
+                    const QString text = toolButtonElideText(toolbutton, tr, alignment);
+                    proxy()->drawItemText(painter, QStyle::visualRect(option->direction, rect, tr), alignment, toolbutton->palette,
+                                          toolbutton->state & State_Enabled, text,
+                                          QPalette::ButtonText);
+                } else {
+                    rect.translate(shiftX, shiftY);
+                    if (hasArrow) {
+                        drawArrow(proxy(), toolbutton, rect, painter, widget);
+                    } else {
+                        proxy()->drawItemPixmap(painter, rect, Qt::AlignCenter, target);
+                    }
+                }
+            }
+        }
+        return;
+    }
 
         //Draw TabBar and every item style
     case CE_TabBarTab:
