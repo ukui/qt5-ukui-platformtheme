@@ -185,7 +185,7 @@ void BlurHelper::delayUpdate(QWidget *w)
 
             if (widget->inherits("QMenu")) {
                 QPainterPath path;
-                path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1), 6, 6);
+                path.addRoundedRect(widget->rect(), 6, 6);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
                 widget->update();
                 break;

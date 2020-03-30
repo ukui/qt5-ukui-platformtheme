@@ -74,7 +74,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     QPainterPath path;
     auto region = widget->mask();
     if (region.isEmpty()) {
-        path.addRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 6, 6);
+        path.addRoundedRect(opt.rect, 6, 6);
     } else {
         path.addRegion(region);
     }
