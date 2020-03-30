@@ -36,9 +36,13 @@ bool ScrollBarAnimationHelper::registerWidget(QWidget *w)
     auto animator = new UKUI::ScrollBar::DefaultInteractionAnimator;
     bool result = animator->bindWidget(w);
     if (!result)
+    {
         animator->deleteLater();
-
-    m_animators->insert(w, animator);
+    }
+    else
+    {
+        m_animators->insert(w, animator);
+    }
     return result;
 }
 
