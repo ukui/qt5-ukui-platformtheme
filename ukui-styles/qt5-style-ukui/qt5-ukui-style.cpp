@@ -617,17 +617,25 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
         {
             if(!(button->state & State_Enabled))
-                return QFusionStyle::drawPrimitive(PE_PanelButtonCommand, option, painter, widget);
-            auto animator = m_button_animation_helper->animator(widget);
-            if(!(button->state & State_AutoRaise))
             {
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Button));
+                painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(option->rect,4,4);
                 painter->restore();
+                return;
             }
+             auto animator = m_button_animation_helper->animator(widget);
+             if(!(button->state & State_AutoRaise))
+             {
+                 painter->save();
+                 painter->setPen(Qt::NoPen);
+                 painter->setBrush(option->palette.color(QPalette::Button));
+                 painter->setRenderHint(QPainter::Antialiasing,true);
+                 painter->drawRoundedRect(option->rect,4,4);
+                 painter->restore();
+             }
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
@@ -670,7 +678,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 return;
             }
             if((button->state & State_MouseOver || animator->isRunning("MouseOver")
-                || animator->value("MouseOver") == 1.0) && !(animator->isRunning("SunKen")))
+                    || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
+                    && !(animator->isRunning("SunKen")))
             {
                 double opacity = animator->value("MouseOver").toDouble();
                 if(button->state & State_MouseOver)
