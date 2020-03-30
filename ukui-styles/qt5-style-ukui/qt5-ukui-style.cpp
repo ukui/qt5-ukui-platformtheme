@@ -54,6 +54,7 @@
 #include <QToolButton>
 #include <QtPlatformHeaders/QXcbWindowFunctions>
 #include <QComboBox>
+#include <QPushButton>
 #include <QEvent>
 #include <QDebug>
 #include <QPixmapCache>
@@ -398,8 +399,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
     QFusionStyle::polish(widget);
-
-    if (auto menu = qobject_cast<QMenu *>(widget)) {
+    if (qobject_cast<QMenu*>(widget)) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
         HighLightEffect::setMenuIconHighlightEffect(menu);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
@@ -410,12 +410,12 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         //qDebug()<<mask<<"menu mask"<<widget->mask();
     }
 
-    if (widget->inherits("QTabWidget")) {
+    if (qobject_cast<QTabWidget*>(widget)) {
         //FIXME: unpolish, extensiable.
         m_tab_animation_helper->registerWidget(widget);
     }
 
-    if (widget->inherits("QScrollBar")) {
+    if (qobject_cast<QScrollBar*>(widget)) {
         widget->setAttribute(Qt::WA_Hover);
         m_scrollbar_animation_helper->registerWidget(widget);
     }
@@ -424,12 +424,12 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         v->viewport()->setAttribute(Qt::WA_Hover);
     }
 
-    if(widget->inherits("QToolButton"))
+    if(qobject_cast<QToolButton*>(widget))
     {
         m_button_animation_helper->registerWidget(widget);
     }
 
-    if(widget->inherits("QPushButton"))
+    if(qobject_cast<QPushButton*>(widget))
     {
         m_button_animation_helper->registerWidget(widget);
     }
@@ -445,17 +445,17 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
     widget->removeEventFilter(this);
 
-    if (widget->inherits("QMenu")) {
+    if (qobject_cast<QMenu*>(widget)) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);
         //widget->setMask(QRegion());
         return;
     }
 
-    if (widget->inherits("QTabWidget")) {
+    if (qobject_cast<QTabWidget*>(widget)) {
         m_tab_animation_helper->unregisterWidget(widget);
     }
 
-    if (widget->inherits("QScrollBar")) {
+    if (qobject_cast<QScrollBar*>(widget)) {
         widget->setAttribute(Qt::WA_Hover, false);
         m_scrollbar_animation_helper->unregisterWidget(widget);
     }
@@ -464,12 +464,12 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         v->viewport()->setAttribute(Qt::WA_Hover);
     }
 
-    if(widget->inherits("QToolButton"))
+    if(qobject_cast<QToolButton*>(widget))
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
 
-    if(widget->inherits("QPushButton"))
+    if(qobject_cast<QPushButton*>(widget))
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
