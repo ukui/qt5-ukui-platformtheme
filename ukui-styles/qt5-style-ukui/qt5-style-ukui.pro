@@ -27,6 +27,7 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    box-animation-helper.cpp \
     button-animation-helper.cpp \
         qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
     qt5-ukui-style-helper.cpp
 
 HEADERS += \
+    box-animation-helper.h \
     button-animation-helper.h \
         qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \

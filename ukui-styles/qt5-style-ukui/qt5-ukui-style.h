@@ -29,6 +29,7 @@
 class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 class ButtonAnimationHelper;
+class BoxAnimationHelper;
 
 /*!
  * \brief The Qt5UKUIStyle class
@@ -98,6 +99,7 @@ private:
     TabWidgetAnimationHelper *m_tab_animation_helper;
     ScrollBarAnimationHelper *m_scrollbar_animation_helper;
     ButtonAnimationHelper*  m_button_animation_helper;
+    BoxAnimationHelper* m_combobox_animation_helper;
 
 
     bool m_use_dark_palette = false;
