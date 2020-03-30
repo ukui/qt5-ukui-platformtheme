@@ -32,7 +32,14 @@ class HighLightEffect : public QObject
 {
     Q_OBJECT
 public:
-    static bool setButtonIconHighlightEffect(QAbstractButton *button, bool set = true);
+    enum EffectMode {
+        HighlightOnly,
+        BothDefaultAndHighlit
+    };
+    Q_ENUM(EffectMode)
+
+    static bool isPixmapPureColor(const QPixmap &pixmap);
+    static bool setButtonIconHighlightEffect(QAbstractButton *button, bool set = true, EffectMode mode = HighlightOnly);
     static bool isWidgetIconUseHighlightEffect(const QWidget *w);
 
     static QPixmap generatePixmap(const QPixmap &pixmap,

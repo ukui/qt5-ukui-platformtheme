@@ -28,11 +28,56 @@
 #include <QPixmap>
 #include <QPainter>
 
-bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, bool set)
+#include <QImage>
+
+#include <QDebug>
+
+#define TORLERANCE 10
+
+bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
+{
+    QImage img = pixmap.toImage();
+    QColor tmp = Qt::transparent;
+    bool init = false;
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+    bool isPure = true;
+    for (int x = 0; x < img.width(); x++) {
+        for (int y = 0; y < img.height(); y++) {
+            auto color = img.pixelColor(x, y);
+            if (color.alpha() != 0) {
+                if (!init) {
+                    tmp = color;
+                    red = color.red();
+                    green = color.green();
+                    blue = color.blue();
+                    init = true;
+                } else {
+                    color.setAlpha(255);
+                    int r = color.red();
+                    int g = color.green();
+                    int b = color.blue();
+                    int dr = qAbs(r - red);
+                    int dg = qAbs(g - green);
+                    int db = qAbs(b - blue);
+                    bool same = dr < TORLERANCE && dg < TORLERANCE && db < TORLERANCE;
+                    if (!same) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return isPure;
+}
+
+bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, bool set, EffectMode mode)
 {
     if (!button)
         return false;
     button->setProperty("useIconHighlightEffect", set);
+    button->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
@@ -56,6 +101,12 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
         p.end();
         return target;
     }
+
+    if (!isPixmapPureColor(pixmap))
+        return pixmap;
+
+    EffectMode mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
+
     if (widget) {
         if (isWidgetIconUseHighlightEffect(widget)) {
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
@@ -69,17 +120,43 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 p.fillRect(target.rect(), option->palette.highlightedText());
                 p.end();
                 return target;
+            } else {
+                if (mode == BothDefaultAndHighlit) {
+                    QPixmap target = pixmap;
+                    QPainter p(&target);
+                    p.setRenderHint(QPainter::Antialiasing);
+                    p.setRenderHint(QPainter::SmoothPixmapTransform);
+                    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+                    p.fillRect(target.rect(), option->palette.shadow());
+                    p.end();
+                    return target;
+                }
             }
         }
     } else {
-        QPixmap target = pixmap;
-        QPainter p(&target);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setRenderHint(QPainter::SmoothPixmapTransform);
-        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        p.fillRect(target.rect(), option->palette.highlightedText());
-        p.end();
-        return target;
+        bool isEnable = option->state.testFlag(QStyle::State_Enabled);
+        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver)|option->state.testFlag(QStyle::State_Sunken);
+        if (isEnable && overOrDown) {
+            QPixmap target = pixmap;
+            QPainter p(&target);
+            p.setRenderHint(QPainter::Antialiasing);
+            p.setRenderHint(QPainter::SmoothPixmapTransform);
+            p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+            p.fillRect(target.rect(), option->palette.highlightedText());
+            p.end();
+            return target;
+        } else {
+            if (mode == BothDefaultAndHighlit) {
+                QPixmap target = pixmap;
+                QPainter p(&target);
+                p.setRenderHint(QPainter::Antialiasing);
+                p.setRenderHint(QPainter::SmoothPixmapTransform);
+                p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+                p.fillRect(target.rect(), option->palette.shadow());
+                p.end();
+                return target;
+            }
+        }
     }
 
     return pixmap;

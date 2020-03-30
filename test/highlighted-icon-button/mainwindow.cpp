@@ -42,4 +42,14 @@ void MainWindow::on_checkBox_toggled(bool checked)
     ui->pushButton->update();
     ui->toolButton->setProperty("useIconHighlightEffect", checked);
     ui->toolButton->update();
+    ui->comboBox->setEnabled(checked);
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    int mode = index;
+    ui->pushButton->setProperty("iconHighlightEffectMode", mode);
+    ui->pushButton->update();
+    ui->toolButton->setProperty("iconHighlightEffectMode", mode);
+    ui->toolButton->update();
 }

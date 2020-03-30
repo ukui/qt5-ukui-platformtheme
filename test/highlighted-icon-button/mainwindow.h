@@ -40,6 +40,8 @@ public:
 private slots:
     void on_checkBox_toggled(bool checked);
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 };
