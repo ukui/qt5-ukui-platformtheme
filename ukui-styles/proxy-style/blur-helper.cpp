@@ -193,7 +193,7 @@ void BlurHelper::delayUpdate(QWidget *w)
 
             if (widget->inherits("QTipLabel")) {
                 QPainterPath path;
-                path.addRoundedRect(widget->rect().adjusted(1, 1, -1, -1),4, 4);
+                path.addRoundedRect(widget->rect(),4, 4);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
                 widget->update();
                 break;

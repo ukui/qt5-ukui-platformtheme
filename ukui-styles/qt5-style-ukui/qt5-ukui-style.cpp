@@ -762,7 +762,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QPainterPath path;
             auto region = widget->mask();
             if (region.isEmpty()) {
-                path.addRoundedRect(opt.rect.adjusted(1, 1, -1, -1), 4, 4);
+                path.addRoundedRect(opt.rect, 4, 4);
             } else {
                 path.addRegion(region);
             }
