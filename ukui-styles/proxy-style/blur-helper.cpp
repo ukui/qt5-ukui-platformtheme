@@ -29,6 +29,8 @@
 #include <QEvent>
 #include <QIcon>
 
+#include "black-list.h"
+
 #include <QApplication>
 
 #include <QDebug>
@@ -134,10 +136,7 @@ bool BlurHelper::isApplicationInBlackList()
 
 const QStringList BlurHelper::blackList()
 {
-    QStringList blackList;
-    blackList.append("kylin-assistant");
-    blackList.append("kylin-vedio");
-    return blackList;
+    return blackAppList();
 }
 
 bool BlurHelper::shouldSkip(QWidget *w)

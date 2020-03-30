@@ -24,6 +24,8 @@
 #include "qt5-ukui-style.h"
 #include <private/qfusionstyle_p.h>
 
+#include "black-list.h"
+
 #include <QApplication>
 
 #include <QDebug>
@@ -53,10 +55,7 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
 
 const QStringList Qt5UKUIStylePlugin::blackList()
 {
-    QStringList l;
-    l<<"kylin-assistant";
-    l<<"kylin-video";
-    return l;
+    return blackAppList();
 }
 
 #if QT_VERSION < 0x050000

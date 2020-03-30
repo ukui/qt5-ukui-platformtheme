@@ -26,6 +26,8 @@
 
 #include "application-style-settings.h"
 
+#include "black-list.h"
+
 #include <QApplication>
 #include <QStyleFactory>
 
@@ -137,13 +139,7 @@ QStyle *ProxyStylePlugin::create(const QString &key)
 
 const QStringList ProxyStylePlugin::blackList()
 {
-    QStringList l;
-    l<<"kylin-assistant";
-    l<<"kylin-video";
-    l<<"ukui-control-center";
-    l<<"ubuntu-kylin-software-center";
-    l<<"kylin-burner";
-    return l;
+    return blackAppList();
 }
 
 void ProxyStylePlugin::onSystemPaletteChanged()
