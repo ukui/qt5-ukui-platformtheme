@@ -121,6 +121,7 @@ bool DefaultSlideAnimator::unboundTabWidget()
         m_tmp_page->deleteLater();
         m_tmp_page = nullptr;
         m_bound_widget = nullptr;
+        this->deleteLater();
         return true;
     }
     return false;

@@ -32,8 +32,8 @@ AnimationHelper::AnimationHelper(QObject *parent) : QObject(parent)
 
 AnimationHelper::~AnimationHelper()
 {
-    for (auto animator : *m_animators) {
-        delete animator;
-    }
+//    for (auto animator : *m_animators) {
+//        delete animator;
+//    }
     delete m_animators;
 }

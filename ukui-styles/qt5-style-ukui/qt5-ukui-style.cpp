@@ -453,12 +453,12 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         v->viewport()->setAttribute(Qt::WA_Hover);
     }
 
-    if(widget->inherits("ToolButton"))
+    if(widget->inherits("QToolButton"))
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
 
-    if(widget->inherits("PushButton"))
+    if(widget->inherits("QPushButton"))
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
@@ -599,102 +599,98 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelButtonCommand://UKUI PushButton style
     {
-        if(widget->inherits("QPushButton"))
+        if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
         {
-            if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
+            if(!(button->state & State_Enabled))
+                return QFusionStyle::drawPrimitive(PE_PanelButtonCommand, option, painter, widget);
+             auto animator = m_button_animation_helper->animator(widget);
+             if(!(button->state & State_AutoRaise))
+             {
+                 painter->save();
+                 painter->setPen(Qt::NoPen);
+                 painter->setBrush(option->palette.color(QPalette::Button));
+                 painter->setRenderHint(QPainter::Antialiasing,true);
+                 painter->drawRoundedRect(option->rect,4,4);
+                 painter->restore();
+             }
+            if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
+                    || animator->value("SunKen") == 1.0)
             {
-                 auto animator = m_button_animation_helper->animator(widget);
-                 if(!(button->state & State_AutoRaise))
-                 {
-                     painter->save();
-                     painter->setPen(Qt::NoPen);
-                     painter->setBrush(option->palette.color(QPalette::Button));
-                     painter->setRenderHint(QPainter::Antialiasing,true);
-                     painter->drawRoundedRect(option->rect,4,4);
-                     painter->restore();
+                double opacity = animator->value("SunKen").toDouble();
+                if(button->state & (State_Sunken | State_On))
+                {
+                    if(opacity == 0.0)
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",true);
+                        animator->startAnimator("SunKen");
+                    }
+                }
+                else
+                {
+                    if(opacity == 1.0)
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",false);
+                        animator->startAnimator("SunKen");
+                    }
                  }
-                if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
-                        || animator->value("SunKen") == 1.0)
+                if (animator->isRunning("SunKen"))
                 {
-                    double opacity = animator->value("SunKen").toDouble();
-                    if(button->state & (State_Sunken | State_On))
-                    {
-                        if(opacity == 0.0)
-                        {
-                            animator->setAnimatorDirectionForward("SunKen",true);
-                            animator->startAnimator("SunKen");
-                        }
-                    }
-                    else
-                    {
-                        if(opacity == 1.0)
-                        {
-                            animator->setAnimatorDirectionForward("SunKen",false);
-                            animator->startAnimator("SunKen");
-                        }
-                     }
-                    if (animator->isRunning("SunKen"))
-                    {
-                        const_cast<QWidget *>(widget)->update();
-                    }
-                    painter->save();
-                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                    painter->setBrush(color);
-                    painter->setPen(Qt::NoPen);
-                    painter->setRenderHint(QPainter::Antialiasing,true);
-                    painter->drawRoundedRect(button->rect,4,4);
-                    painter->restore();
+                    const_cast<QWidget *>(widget)->update();
+                }
+                painter->save();
+                auto color = button->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(color);
+                painter->setPen(Qt::NoPen);
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(button->rect,4,4);
+                painter->restore();
 
-                    painter->save();
-                    painter->setPen(Qt::NoPen);
-                    painter->setBrush(button->palette.color(QPalette::Highlight));
-                    painter->setOpacity(opacity);
-                    painter->setRenderHint(QPainter::Antialiasing,true);
-                    painter->drawRoundedRect(button->rect,4,4);
-                    painter->restore();
-                    return;
-                }
-                if((button->state & State_MouseOver || animator->isRunning("MouseOver")
-                        || animator->value("MouseOver") == 1.0) && !(animator->isRunning("SunKen")))
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(button->palette.color(QPalette::Highlight));
+                painter->setOpacity(opacity);
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(button->rect,4,4);
+                painter->restore();
+                return;
+            }
+            if((button->state & State_MouseOver || animator->isRunning("MouseOver")
+                    || animator->value("MouseOver") == 1.0) && !(animator->isRunning("SunKen")))
+            {
+                double opacity = animator->value("MouseOver").toDouble();
+                if(button->state & State_MouseOver)
                 {
-                    double opacity = animator->value("MouseOver").toDouble();
-                    if(button->state & State_MouseOver)
+                    animator->setAnimatorDirectionForward("MouseOver",true);
+                    if(opacity == 0.0)
                     {
-                        animator->setAnimatorDirectionForward("MouseOver",true);
-                        if(opacity == 0.0)
-                        {
-                            animator->startAnimator("MouseOver");
-                        }
+                        animator->startAnimator("MouseOver");
                     }
-                    else
-                    {
-                        animator->setAnimatorDirectionForward("MouseOver",false);
-                        if(opacity == 1.0)
-                        {
-                            animator->startAnimator("MouseOver");
-                        }
-                    }
-                    if (animator->isRunning("MouseOver"))
-                    {
-                        const_cast<QWidget *>(widget)->update();
-                    }
-                    painter->save();
-                    painter->setOpacity(opacity);
-                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                    painter->setBrush(color);
-                    painter->setPen(Qt::NoPen);
-                    painter->setRenderHint(QPainter::Antialiasing,true);
-                    painter->drawRoundedRect(button->rect,4,4);
-                    painter->restore();
-                    return;
                 }
+                else
+                {
+                    animator->setAnimatorDirectionForward("MouseOver",false);
+                    if(opacity == 1.0)
+                    {
+                        animator->startAnimator("MouseOver");
+                    }
+                }
+                if (animator->isRunning("MouseOver"))
+                {
+                    const_cast<QWidget *>(widget)->update();
+                }
+                painter->save();
+                painter->setOpacity(opacity);
+                auto color = button->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(color);
+                painter->setPen(Qt::NoPen);
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(button->rect,4,4);
+                painter->restore();
+                return;
             }
             return;
         }
-        else
-        {
-            break;
-        }
+        break;
     }
 //        painter->save();
 //        painter->setRenderHint(QPainter::Antialiasing,true);

@@ -21,11 +21,11 @@ bool ButtonAnimationHelper::registerWidget(QWidget *w)
 
 bool ButtonAnimationHelper::unregisterWidget(QWidget *w)
 {
-    auto animator = w->findChild<UKUI::Button::ButtonAnimator*>("ukui_scrollbar_default_interaction_animator", Qt::FindDirectChildrenOnly);
+   auto animator= m_animators->value(w);
     bool result = false;
     if (animator) {
         result = animator->unboundWidget();
-        animator->deleteLater();
+        delete animator;
     }
     m_animators->remove(w);
     return result;
