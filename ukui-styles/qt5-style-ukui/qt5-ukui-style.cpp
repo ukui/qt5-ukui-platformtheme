@@ -617,16 +617,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         {
             if(!(button->state & State_Enabled))
                 return QFusionStyle::drawPrimitive(PE_PanelButtonCommand, option, painter, widget);
-             auto animator = m_button_animation_helper->animator(widget);
-             if(!(button->state & State_AutoRaise))
-             {
-                 painter->save();
-                 painter->setPen(Qt::NoPen);
-                 painter->setBrush(option->palette.color(QPalette::Button));
-                 painter->setRenderHint(QPainter::Antialiasing,true);
-                 painter->drawRoundedRect(option->rect,4,4);
-                 painter->restore();
-             }
+            auto animator = m_button_animation_helper->animator(widget);
+            if(!(button->state & State_AutoRaise))
+            {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(option->rect,4,4);
+                painter->restore();
+            }
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
@@ -646,7 +646,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         animator->setAnimatorDirectionForward("SunKen",false);
                         animator->startAnimator("SunKen");
                     }
-                 }
+                }
                 if (animator->isRunning("SunKen"))
                 {
                     const_cast<QWidget *>(widget)->update();
@@ -669,7 +669,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 return;
             }
             if((button->state & State_MouseOver || animator->isRunning("MouseOver")
-                    || animator->value("MouseOver") == 1.0) && !(animator->isRunning("SunKen")))
+                || animator->value("MouseOver") == 1.0) && !(animator->isRunning("SunKen")))
             {
                 double opacity = animator->value("MouseOver").toDouble();
                 if(button->state & State_MouseOver)
@@ -706,40 +706,40 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         break;
     }
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing,true);
-//        /*!
-//       * \todo
-//       * It is selected by default and not done first,because it conflicts with the normal button.
-//       */
-//        //        if(option->state & State_HasFocus){
-//        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-//        //            painter->setBrush(option->palette.color(QPalette::Highlight));
-//        //        }
-//        //        else {
-//        painter->setPen(Qt::NoPen);
-//        painter->setBrush(option->palette.color(QPalette::Button));
-//        //        }
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing,true);
+        //        /*!
+        //       * \todo
+        //       * It is selected by default and not done first,because it conflicts with the normal button.
+        //       */
+        //        //        if(option->state & State_HasFocus){
+        //        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
+        //        //            painter->setBrush(option->palette.color(QPalette::Highlight));
+        //        //        }
+        //        //        else {
+        //        painter->setPen(Qt::NoPen);
+        //        painter->setBrush(option->palette.color(QPalette::Button));
+        //        //        }
 
-//        if (option->state & State_MouseOver) {
-//            if (option->state & State_Sunken) {
-//                painter->setPen(Qt::NoPen);
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//            } else {
-//                painter->setPen(Qt::NoPen);
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//            }
-//        }
-//        painter->drawRoundedRect(option->rect,4,4);
-//        painter->restore();
+        //        if (option->state & State_MouseOver) {
+        //            if (option->state & State_Sunken) {
+        //                painter->setPen(Qt::NoPen);
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //            } else {
+        //                painter->setPen(Qt::NoPen);
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //            }
+        //        }
+        //        painter->drawRoundedRect(option->rect,4,4);
+        //        painter->restore();
 
-//        /*!
-//       * \todo
-//       * Judge whether it is OK or other buttons
-//       */
+        //        /*!
+        //       * \todo
+        //       * Judge whether it is OK or other buttons
+        //       */
 
-//        return;
-//        }
+        //        return;
+        //        }
 
     case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
     {
@@ -748,7 +748,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             auto color = opt.palette.color(QPalette::ToolTipBase);
             if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
                 auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-                    color.setAlphaF(opacity);
+                color.setAlphaF(opacity);
             }
             opt.palette.setColor(QPalette::ToolTipBase, color);
             painter->save();
@@ -856,7 +856,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->drawRoundedRect(option->rect,4,4);
                     painter->restore();
                     return;
-                 }
+                }
                 if(option->state & State_MouseOver || animator->isRunning("MouseOver")
                         || animator->value("MouseOver") == 1.0)
                 {
@@ -1038,31 +1038,47 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
 
     case PE_IndicatorCheckBox: { //UKUI CheckBox style
-
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             painter->save();
             painter->translate(0.5, 0.5);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->setPen(option->palette.color(QPalette::Mid));
-            //painter->setBrush(option->palette.color(QPalette::Base));
+            QColor selectpen=option->palette.color(QPalette::Mid);
+            QColor selectbg;
+            QColor selectmark;
+            if (option->state&State_Enabled){
+                selectbg=option->palette.color(QPalette::Highlight);
+                selectmark=option->palette.color(QPalette::HighlightedText);
+            }
+            else{
+                selectbg=option->palette.button().color();
+                selectmark=option->palette.color(QPalette::Mid);
+            }
+
+            const int maxFactor = 120;
+            QColor tmp = option->palette.base().color();
+            tmp.setRed((tmp.red() * 85) / maxFactor + (option->palette.foreground().color().red() * (maxFactor - 85)) / maxFactor);
+            tmp.setGreen((tmp.green() * 85) / maxFactor + (option->palette.foreground().color().green() * (maxFactor - 85)) / maxFactor);
+            tmp.setBlue((tmp.blue() * 85) / maxFactor + (option->palette.foreground().color().blue() * (maxFactor - 85)) / maxFactor);
+
+            painter->setPen(tmp);
             painter->setBrush(Qt::NoBrush);
             if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
                 painter->setPen(option->palette.color(QPalette::Highlight));
-            if (option->state & State_MouseOver)
-                painter->setBrush(option->palette.color(QPalette::Highlight));
-            if (option->state & State_NoChange){//Non optional status
-                painter->setBrush(Qt::NoBrush);
-                painter->setPen(option->palette.color(QPalette::Disabled,QPalette::WindowText));
-            }
             painter->drawRoundedRect(option->rect,3,3);
             painter->restore();
-
-            if (option->state & State_On) {
+            // if (option->state & State_MouseOver)
+            // painter->setBrush(option->palette.color(QPalette::Highlight));
+            if (option->state & State_NoChange){//Non optional status
+                selectpen=tmp;
+                selectbg=Qt::NoBrush;
+                selectmark=tmp;
+            }
+            else if (option->state & State_On) {
                 painter->save();
                 painter->translate(0.5, 0.5);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(option->palette.color(QPalette::Mid));
-                painter->setBrush(option->palette.color(QPalette::Highlight));
+                painter->setPen(selectpen);
+                painter->setBrush(selectbg);
                 if(option->state & State_MouseOver){
                     painter->setPen(option->palette.midlight().color());
                     painter->setBrush( option->palette.highlight().color().lighter());
@@ -1076,7 +1092,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 // Draw checkmark
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(QPen(option->palette.color(QPalette::HighlightedText),1.1));
+                painter->setPen(QPen(selectmark,1.1));
                 const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
                 QPainterPath path;
                 const qreal rectHeight = option->rect.height(); // assuming height equals width
@@ -1321,129 +1337,129 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
     case CC_ComboBox:
     {
-      if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox *>(option))
-      {
-          if(!(option->state & State_Enabled))
-                  return QFusionStyle::drawComplexControl(CC_ComboBox, option, painter, widget);
+        if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox *>(option))
+        {
+            if(!(option->state & State_Enabled))
+                return QFusionStyle::drawComplexControl(CC_ComboBox, option, painter, widget);
 
-          auto animator = m_combobox_animation_helper->animator(widget);
-          if(animator == nullptr)
-              return;
+            auto animator = m_combobox_animation_helper->animator(widget);
+            if(animator == nullptr)
+                return;
 
-          QRectF rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
+            QRectF rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
 
-          painter->save();
-          painter->setPen(QPen(option->palette.color(QPalette::Button),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-          painter->setBrush(option->palette.color(QPalette::Button));
-          painter->setRenderHint(QPainter::Antialiasing,true);
-          painter->drawRoundedRect(rect,4,4);
-          painter->restore();
-          drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
-          //rect.adjust(1, 1, -1, -1);
+            painter->save();
+            painter->setPen(QPen(option->palette.color(QPalette::Button),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+            painter->setBrush(option->palette.color(QPalette::Button));
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->drawRoundedRect(rect,4,4);
+            painter->restore();
+            drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
+            //rect.adjust(1, 1, -1, -1);
 
-          if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
-                  || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
-          {
-              double opacity = animator->value("SunKen").toDouble();
-              if(combobox->state & (State_Sunken | State_On))
-              {
-                  if(opacity == 0.0)
-                  {
-                      animator->setAnimatorDirectionForward("SunKen",true);
-                      animator->startAnimator("SunKen");
-                  }
-              }
-              else
-              {
-                  if(animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
-                  {
-                      animator->setAnimatorDirectionForward("SunKen",false);
-                      animator->startAnimator("SunKen");
-                  }
-               }
-              if (animator->isRunning("SunKen"))
-              {
-                  const_cast<QWidget *>(widget)->update();
-              }
-              //rect.adjust(1.4, 1.4, -1.4, -1.4);
-              painter->save();
-              auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
+            if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
+                    || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
+            {
+                double opacity = animator->value("SunKen").toDouble();
+                if(combobox->state & (State_Sunken | State_On))
+                {
+                    if(opacity == 0.0)
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",true);
+                        animator->startAnimator("SunKen");
+                    }
+                }
+                else
+                {
+                    if(animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",false);
+                        animator->startAnimator("SunKen");
+                    }
+                }
+                if (animator->isRunning("SunKen"))
+                {
+                    const_cast<QWidget *>(widget)->update();
+                }
+                //rect.adjust(1.4, 1.4, -1.4, -1.4);
+                painter->save();
+                auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
 
-              painter->save();
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
-              return;
-          }
-          if((combobox->state & State_MouseOver || animator->isRunning("MouseOver")
-                  || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
-                  && !(animator->isRunning("SunKen")))
-          {
-              double opacity = animator->value("MouseOver").toDouble();
-              if(combobox->state & State_MouseOver)
-              {
-                  animator->setAnimatorDirectionForward("MouseOver",true);
-                  if(opacity == 0.0)
-                  {
-                      animator->startAnimator("MouseOver");
-                  }
-              }
-              else
-              {
-                  animator->setAnimatorDirectionForward("MouseOver",false);
-                  if(animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
-                  {
-                      animator->startAnimator("MouseOver");
-                  }
-              }
-              if (animator->isRunning("MouseOver"))
-              {
-                  const_cast<QWidget *>(widget)->update();
-              }
-              painter->save();
-              auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->setOpacity(opacity);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
-              return;
-          }
-          return;
-       }
-   }
-//        QRect rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
-//        rect.adjust(+1,+1,-1,-1);
-//        painter->save();
-//        painter->setPen(option->palette.color(QPalette::Button));
-//        painter->setBrush(option->palette.color(QPalette::Button));
-//        painter->setRenderHint(QPainter::Antialiasing,true);
-//        if (widget->isEnabled()) {
-//            if (option->state & State_MouseOver) {
-//                if (option->state & State_Sunken) {
-//                    painter->setPen(option->palette.color(QPalette::Highlight));
+                painter->save();
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
+                return;
+            }
+            if((combobox->state & State_MouseOver || animator->isRunning("MouseOver")
+                || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
+                    && !(animator->isRunning("SunKen")))
+            {
+                double opacity = animator->value("MouseOver").toDouble();
+                if(combobox->state & State_MouseOver)
+                {
+                    animator->setAnimatorDirectionForward("MouseOver",true);
+                    if(opacity == 0.0)
+                    {
+                        animator->startAnimator("MouseOver");
+                    }
+                }
+                else
+                {
+                    animator->setAnimatorDirectionForward("MouseOver",false);
+                    if(animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
+                    {
+                        animator->startAnimator("MouseOver");
+                    }
+                }
+                if (animator->isRunning("MouseOver"))
+                {
+                    const_cast<QWidget *>(widget)->update();
+                }
+                painter->save();
+                auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setOpacity(opacity);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
+                return;
+            }
+            return;
+        }
+    }
+        //        QRect rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
+        //        rect.adjust(+1,+1,-1,-1);
+        //        painter->save();
+        //        painter->setPen(option->palette.color(QPalette::Button));
+        //        painter->setBrush(option->palette.color(QPalette::Button));
+        //        painter->setRenderHint(QPainter::Antialiasing,true);
+        //        if (widget->isEnabled()) {
+        //            if (option->state & State_MouseOver) {
+        //                if (option->state & State_Sunken) {
+        //                    painter->setPen(option->palette.color(QPalette::Highlight));
 
-//                } else {
-//                    painter->setPen(option->palette.color(QPalette::Highlight));
-//                }
-//            }
-//            if (option->state & State_On) {
-//                painter->setPen(option->palette.color(QPalette::Highlight));
-//            }
-//        }
-//        painter->drawRoundedRect(rect,4,4);
-//        painter->restore();
-//        drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
-//        return;
-//    }
+        //                } else {
+        //                    painter->setPen(option->palette.color(QPalette::Highlight));
+        //                }
+        //            }
+        //            if (option->state & State_On) {
+        //                painter->setPen(option->palette.color(QPalette::Highlight));
+        //            }
+        //        }
+        //        painter->drawRoundedRect(rect,4,4);
+        //        painter->restore();
+        //        drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
+        //        return;
+        //    }
 
     case CC_SpinBox:
     {
@@ -1636,7 +1652,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 fr.rect.adjust(3, 3, -3, -3);
                 if (toolbutton->features & QStyleOptionToolButton::MenuButtonPopup)
                     fr.rect.adjust(0, 0, -proxy()->pixelMetric(QStyle::PM_MenuButtonIndicator,
-                                                                    toolbutton, widget), 0);
+                                                               toolbutton, widget), 0);
                 proxy()->drawPrimitive(PE_FrameFocusRect, &fr, painter, widget);
             }
             QStyleOptionToolButton label = *toolbutton;
