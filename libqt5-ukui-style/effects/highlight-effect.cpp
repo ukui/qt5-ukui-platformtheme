@@ -22,7 +22,9 @@
 
 #include "highlight-effect.h"
 
+#include <QAbstractItemView>
 #include <QAbstractButton>
+#include <QMenu>
 #include <QStyleOption>
 
 #include <QPixmap>
@@ -32,7 +34,12 @@
 
 #include <QDebug>
 
-#define TORLERANCE 10
+#define TORLERANCE 32
+
+void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
+{
+    w->setProperty("skipHighlightIconEffect", skip);
+}
 
 bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
 {
@@ -43,6 +50,7 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
     int green = 0;
     int blue = 0;
     bool isPure = true;
+    bool isFullyPure = true;
     for (int x = 0; x < img.width(); x++) {
         for (int y = 0; y < img.height(); y++) {
             auto color = img.pixelColor(x, y);
@@ -62,6 +70,11 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
                     int dg = qAbs(g - green);
                     int db = qAbs(b - blue);
                     bool same = dr < TORLERANCE && dg < TORLERANCE && db < TORLERANCE;
+                    if (isFullyPure) {
+                        if (dr > 0 || dg > 0 || db > 0) {
+                            isFullyPure = false;
+                        }
+                    }
                     if (!same) {
                         return false;
                     }
@@ -72,10 +85,31 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
     return isPure;
 }
 
+bool HighLightEffect::setMenuIconHighlightEffect(QMenu *menu, bool set, HighLightEffect::EffectMode mode)
+{
+    if (!menu)
+        return false;
+
+    menu->setProperty("useIconHighlightEffect", set);
+    menu->setProperty("iconHighlightEffectMode", mode);
+    return true;
+}
+
+bool HighLightEffect::setViewItemIconHighlightEffect(QAbstractItemView *view, bool set, HighLightEffect::EffectMode mode)
+{
+    if (!view)
+        return false;
+
+    view->setProperty("useIconHighlightEffect", set);
+    view->setProperty("iconHighlightEffectMode", mode);
+    return true;
+}
+
 bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, bool set, EffectMode mode)
 {
     if (!button)
         return false;
+
     button->setProperty("useIconHighlightEffect", set);
     button->setProperty("iconHighlightEffectMode", mode);
     return true;
@@ -91,6 +125,13 @@ bool HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
 
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force)
 {
+    if (widget) {
+        if (widget->property("skipHighlightIconEffect").isValid()) {
+            bool skipEffect = widget->property("skipHighlightIconEffect").toBool();
+            if (skipEffect)
+                return pixmap;
+        }
+    }
     if (force) {
         QPixmap target = pixmap;
         QPainter p(&target);
@@ -112,9 +153,10 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             if (widget->property("iconHighlightEffectMode").isValid()) {
                 mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
             }
+            bool selected = option->state.testFlag(QStyle::State_Selected);
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
             bool overOrDown = option->state.testFlag(QStyle::State_MouseOver)|option->state.testFlag(QStyle::State_Sunken);
-            if (isEnable && overOrDown) {
+            if (isEnable && (overOrDown||selected)) {
                 QPixmap target = pixmap;
                 QPainter p(&target);
                 p.setRenderHint(QPainter::Antialiasing);

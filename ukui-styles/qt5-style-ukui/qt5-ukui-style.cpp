@@ -399,8 +399,9 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 {
     QFusionStyle::polish(widget);
 
-    if (widget->inherits("QMenu")) {
+    if (auto menu = qobject_cast<QMenu *>(widget)) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
+        HighLightEffect::setMenuIconHighlightEffect(menu);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
 
         //widget->setMask(mask);
@@ -2632,7 +2633,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     opt.rect = vCheckRect;
                     proxy()->drawPrimitive(PE_PanelButtonCommand, &opt, painter, widget);
                 }
-                painter->drawPixmap(pmr.topLeft(), pixmap);
+                //FIXME: add highlight effect support.
+
+                QPixmap target = HighLightEffect::generatePixmap(pixmap, menuItem, widget);
+                painter->drawPixmap(pmr.topLeft(), target);
             }
             if (selected) {
                 painter->setPen(menuItem->palette.highlightedText().color());

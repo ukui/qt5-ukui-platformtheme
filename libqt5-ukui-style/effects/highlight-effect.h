@@ -26,7 +26,9 @@
 #include <QObject>
 #include <QStyleOption>
 
+class QAbstractItemView;
 class QAbstractButton;
+class QMenu;
 
 class HighLightEffect : public QObject
 {
@@ -38,7 +40,20 @@ public:
     };
     Q_ENUM(EffectMode)
 
+    /*!
+     * \brief setSkipEffect
+     * \param w
+     * \param skip
+     * \details
+     * in ukui-style, some widget such as menu will be set use highlight
+     * icon effect automaticlly,
+     * but we might not want to compose a special pure color image.
+     * This function is use to skip the effect.
+     */
+    static void setSkipEffect(QWidget *w, bool skip = true);
     static bool isPixmapPureColor(const QPixmap &pixmap);
+    static bool setMenuIconHighlightEffect(QMenu *menu, bool set = true, EffectMode mode = HighlightOnly);
+    static bool setViewItemIconHighlightEffect(QAbstractItemView *view, bool set = true, EffectMode mode = HighlightOnly);
     static bool setButtonIconHighlightEffect(QAbstractButton *button, bool set = true, EffectMode mode = HighlightOnly);
     static bool isWidgetIconUseHighlightEffect(const QWidget *w);
 
