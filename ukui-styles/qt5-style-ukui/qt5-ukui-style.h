@@ -84,6 +84,11 @@ public:
                          QStyle::SubControl subControl,
                          const QWidget *widget = nullptr) const;
 
+    void drawItemPixmap(QPainter *painter,
+                        const QRect &rect,
+                        int alignment,
+                        const QPixmap &pixmap) const;
+
 protected:
     QRect scrollBarSubControlRect(QStyle::ComplexControl control,
                                   const QStyleOptionComplex *option,

@@ -31,6 +31,8 @@
 #include <QWidget>
 #include <QPainter>
 
+#include <QPaintDevice>
+
 #include "tab-widget-animation-helper.h"
 #include "scrollbar-animation-helper.h"
 #include "button-animation-helper.h"
@@ -56,6 +58,8 @@
 #include <QDebug>
 #include <QPixmapCache>
 #include <QStyleOptionButton>
+
+#include <QApplication>
 
 //---copy from qcommonstyle
 #include <QTextLayout>
@@ -2131,7 +2135,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                                       QPalette::ButtonText);
             } else {
                 QPixmap pm;
-                QPixmap target;
                 QSize pmSize = toolbutton->iconSize;
                 if (!toolbutton->icon.isNull()) {
                     QIcon::State state = toolbutton->state & State_On ? QIcon::On : QIcon::Off;
@@ -2144,8 +2147,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         mode = QIcon::Normal;
                     pm = toolbutton->icon.pixmap(qt_getWindow(widget), toolbutton->rect.size().boundedTo(toolbutton->iconSize),
                                                  mode, state);
-
-                    target = HighLightEffect::generatePixmap(pm, option, widget);
 
                     pmSize = pm.size() / pm.devicePixelRatio();
                 }
@@ -2189,7 +2190,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     if (hasArrow) {
                         drawArrow(proxy(), toolbutton, rect, painter, widget);
                     } else {
-                        proxy()->drawItemPixmap(painter, rect, Qt::AlignCenter, target);
+                        proxy()->drawItemPixmap(painter, rect, Qt::AlignCenter, pm);
                     }
                 }
             }
@@ -2913,6 +2914,27 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         break;
     }
     return QFusionStyle::subControlRect(control, option, subControl, widget);
+}
+
+void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const
+{
+    qreal scale = pixmap.devicePixelRatio();
+    QRect aligned = alignedRect(QApplication::layoutDirection(), QFlag(alignment), pixmap.size() / scale, rect);
+    QRect inter = aligned.intersected(rect);
+
+    QPixmap target = pixmap;
+
+    auto device = painter->device();
+    auto widget = dynamic_cast<QWidget *>(device);
+    if (widget) {
+        if (HighLightEffect::isWidgetIconUseHighlightEffect(widget)) {
+            QStyleOption opt;
+            opt.initFrom(widget);
+            target = HighLightEffect::generatePixmap(pixmap, &opt, widget);
+        }
+    }
+
+    painter->drawPixmap(inter.x(), inter.y(), target, inter.x() - aligned.x(), inter.y() - aligned.y(), inter.width() * scale, inter.height() *scale);
 }
 
 // This fuction is copied from fusion style.

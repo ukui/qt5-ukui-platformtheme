@@ -105,10 +105,13 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
     if (!isPixmapPureColor(pixmap))
         return pixmap;
 
-    EffectMode mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
+    EffectMode mode = HighlightOnly;
 
     if (widget) {
         if (isWidgetIconUseHighlightEffect(widget)) {
+            if (widget->property("iconHighlightEffectMode").isValid()) {
+                mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
+            }
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
             bool overOrDown = option->state.testFlag(QStyle::State_MouseOver)|option->state.testFlag(QStyle::State_Sunken);
             if (isEnable && overOrDown) {
