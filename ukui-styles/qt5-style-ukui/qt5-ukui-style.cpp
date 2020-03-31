@@ -2102,8 +2102,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             QPixmap pixmap = button->icon.pixmap(button->iconSize, mode, state);
 
-            auto target = HighLightEffect::generatePixmap(pixmap, option, widget);
-
             int labelWidth = pixmap.width();
             int labelHeight = pixmap.height();
             int iconSpacing = 4;//4 is currently hardcoded in QPushButton::sizeHint()
@@ -2127,7 +2125,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (button->state & (State_On | State_Sunken))
                 iconRect.translate(proxy()->pixelMetric(PM_ButtonShiftHorizontal, option, widget),
                                    proxy()->pixelMetric(PM_ButtonShiftVertical, option, widget));
-            painter->drawPixmap(iconRect, target);
+
+            drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
         } else {
             tf |= Qt::AlignHCenter;
         }
@@ -2988,6 +2987,9 @@ void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alig
         if (HighLightEffect::isWidgetIconUseHighlightEffect(widget)) {
             QStyleOption opt;
             opt.initFrom(widget);
+            if (auto button = qobject_cast<QAbstractButton *>(widget)) {
+                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
+            }
             target = HighLightEffect::generatePixmap(pixmap, &opt, widget);
         }
     }

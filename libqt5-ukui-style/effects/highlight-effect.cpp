@@ -153,10 +153,12 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             if (widget->property("iconHighlightEffectMode").isValid()) {
                 mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
             }
-            bool selected = option->state.testFlag(QStyle::State_Selected);
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-            bool overOrDown = option->state.testFlag(QStyle::State_MouseOver)|option->state.testFlag(QStyle::State_Sunken);
-            if (isEnable && (overOrDown||selected)) {
+            bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) |
+                    option->state.testFlag(QStyle::State_Sunken) |
+                    option->state.testFlag(QStyle::State_On) |
+                    option->state.testFlag(QStyle::State_Selected);
+            if (isEnable && overOrDown) {
                 QPixmap target = pixmap;
                 QPainter p(&target);
                 p.setRenderHint(QPainter::Antialiasing);
@@ -180,7 +182,10 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
         }
     } else {
         bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver)|option->state.testFlag(QStyle::State_Sunken);
+        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) |
+                option->state.testFlag(QStyle::State_Sunken) |
+                option->state.testFlag(QStyle::State_Selected) |
+                option->state.testFlag(QStyle::State_On);
         if (isEnable && overOrDown) {
             QPixmap target = pixmap;
             QPainter p(&target);
