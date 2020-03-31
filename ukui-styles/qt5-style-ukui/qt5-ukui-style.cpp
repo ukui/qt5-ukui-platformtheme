@@ -2686,7 +2686,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + margin;
                 }
                 // painter->setPen(shadow.lighter(106));
-                painter->setPen(option->palette.button().color().lighter(106));
+                painter->setPen(option->palette.color(QPalette::Disabled,QPalette::WindowText));
+                painter->setOpacity(0.9);
                 bool reverse = menuItem->direction == Qt::RightToLeft;
                 painter->drawLine(menuItem->rect.left() + margin + (reverse ? 0 : w), menuItem->rect.center().y(),
                                   menuItem->rect.right() - margin - (reverse ? w : 0), menuItem->rect.center().y());
@@ -2698,7 +2699,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 QRect r = option->rect;
                 painter->setBrush(highlightOutline);
                 painter->setPen(Qt::NoPen);
-                painter->drawRoundedRect(r.adjusted(2, 0.5, -2, -0.5),2,2);
+                painter->drawRoundedRect(r.adjusted(2, 0.5, -2, -0.5),4,4);
             }
             bool checkable = menuItem->checkType != QStyleOptionMenuItem::NotCheckable;
             bool checked = menuItem->checked;
