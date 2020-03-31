@@ -30,6 +30,7 @@ class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 class ButtonAnimationHelper;
 class BoxAnimationHelper;
+
 class QStyleOptionViewItem;
 
 /*!

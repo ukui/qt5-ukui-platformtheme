@@ -62,6 +62,8 @@
 
 #include <QApplication>
 
+extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
+
 //---copy from qcommonstyle
 #include <QTextLayout>
 

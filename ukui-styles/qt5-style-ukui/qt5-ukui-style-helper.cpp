@@ -30,6 +30,8 @@
 
 #include <QDebug>
 
+extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
+
 void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
 {
     painter->save();
@@ -54,6 +56,38 @@ void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QW
 void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
 {
     //qDebug()<<"draw menu frame"<<option->styleObject<<option->palette;
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
+    QPainterPath rectPath;
+    rectPath.addRoundedRect(option->rect.adjusted(+5,+5,-5,-5), 6, 6);
+
+    // Draw a black floor
+    QPixmap pixmap(option->rect.size());
+    pixmap.fill(Qt::transparent);
+    QPainter pixmapPainter(&pixmap);
+    pixmapPainter.setRenderHint(QPainter::Antialiasing);
+    pixmapPainter.setPen(Qt::transparent);
+    pixmapPainter.setBrush(Qt::black);
+    pixmapPainter.drawPath(rectPath);
+    pixmapPainter.end();
+
+    // Blur the black background
+    QImage img = pixmap.toImage();
+    qt_blurImage(img, 6, false, false);
+
+    // Dig out the center part
+    pixmap = QPixmap::fromImage(img);
+    QPainter pixmapPainter2(&pixmap);
+    pixmapPainter2.setRenderHint(QPainter::Antialiasing);
+    pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
+    pixmapPainter2.setPen(Qt::transparent);
+    pixmapPainter2.setBrush(Qt::transparent);
+    pixmapPainter2.drawPath(rectPath);
+
+    // Shadow rendering
+    painter->drawPixmap(option->rect, pixmap, pixmap.rect());
+
+    //That's when I started drawing the frame floor
     QStyleOption opt = *option;
     auto color = opt.palette.color(QPalette::Base);
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
@@ -62,19 +96,17 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
         color.setAlphaF(opacity);
     }
     opt.palette.setColor(QPalette::Base, color);
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing);
+
     QPen pen(opt.palette.color(QPalette::Normal, QPalette::Dark), 1);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
-    painter->setPen(pen);
-    //painter->setPen(Qt::transparent);
+    painter->setPen(Qt::transparent);
     painter->setBrush(color);
 
     QPainterPath path;
     auto region = widget->mask();
     if (region.isEmpty()) {
-        path.addRoundedRect(opt.rect, 6, 6);
+        path.addRoundedRect(opt.rect.adjusted(+5,+5,-5,-5), 6, 6);
     } else {
         path.addRegion(region);
     }
@@ -84,6 +116,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     painter->restore();
     return;
 }
+
 
 const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radius_y)
 {
