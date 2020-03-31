@@ -60,7 +60,8 @@ public:
     static QPixmap generatePixmap(const QPixmap &pixmap,
                                   const QStyleOption *option,
                                   const QWidget *widget = nullptr,
-                                  bool force = false);
+                                  bool force = false,
+                                  EffectMode mode = HighlightOnly);
 
 private:
     explicit HighLightEffect(QObject *parent = nullptr);

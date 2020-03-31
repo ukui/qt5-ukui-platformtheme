@@ -100,8 +100,8 @@ bool HighLightEffect::setViewItemIconHighlightEffect(QAbstractItemView *view, bo
     if (!view)
         return false;
 
-    view->setProperty("useIconHighlightEffect", set);
-    view->setProperty("iconHighlightEffectMode", mode);
+    view->viewport()->setProperty("useIconHighlightEffect", set);
+    view->viewport()->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
@@ -123,7 +123,7 @@ bool HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
     return false;
 }
 
-QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force)
+QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
 {
     if (widget) {
         if (widget->property("skipHighlightIconEffect").isValid()) {
@@ -133,12 +133,23 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
         }
     }
     if (force) {
+        if (!isPixmapPureColor(pixmap))
+            return pixmap;
+
         QPixmap target = pixmap;
         QPainter p(&target);
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        p.fillRect(target.rect(), option->palette.highlightedText());
+        if (option->state & QStyle::State_MouseOver |
+                option->state & QStyle::State_Selected |
+                option->state & QStyle::State_On |
+                option->state & QStyle::State_Sunken) {
+            p.fillRect(target.rect(), option->palette.highlightedText());
+        } else {
+            if (mode == BothDefaultAndHighlit)
+                p.fillRect(target.rect(), option->palette.shadow());
+        }
         p.end();
         return target;
     }
@@ -146,18 +157,18 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
     if (!isPixmapPureColor(pixmap))
         return pixmap;
 
-    EffectMode mode = HighlightOnly;
-
     if (widget) {
         if (isWidgetIconUseHighlightEffect(widget)) {
             if (widget->property("iconHighlightEffectMode").isValid()) {
                 mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
             }
+
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-            bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) |
+            bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) |
                     option->state.testFlag(QStyle::State_Sunken) |
                     option->state.testFlag(QStyle::State_On) |
                     option->state.testFlag(QStyle::State_Selected);
+
             if (isEnable && overOrDown) {
                 QPixmap target = pixmap;
                 QPainter p(&target);

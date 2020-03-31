@@ -221,6 +221,30 @@ static void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbut
     arrowOpt.rect = rect;
     style->drawPrimitive(pe, &arrowOpt, painter, widget);
 }
+
+void Qt5UKUIStyle::viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const
+{
+    const QWidget *widget = option->widget;
+    const int textMargin = proxy()->pixelMetric(QStyle::PM_FocusFrameHMargin, 0, widget) + 1;
+
+    QRect textRect = rect.adjusted(textMargin, 0, -textMargin, 0); // remove width padding
+    const bool wrapText = option->features & QStyleOptionViewItem::WrapText;
+    QTextOption textOption;
+    textOption.setWrapMode(wrapText ? QTextOption::WordWrap : QTextOption::ManualWrap);
+    textOption.setTextDirection(option->direction);
+    textOption.setAlignment(QStyle::visualAlignment(option->direction, option->displayAlignment));
+
+    QPointF paintPosition;
+    const QString newText = calculateElidedText(option->text, textOption,
+                                                option->font, textRect, option->displayAlignment,
+                                                option->textElideMode, 0,
+                                                true, &paintPosition);
+
+    QTextLayout textLayout(newText, option->font);
+    textLayout.setTextOption(textOption);
+    viewItemTextLayout(textLayout, textRect.width());
+    textLayout.draw(p, paintPosition);
+}
 //---copy from qcommonstyle
 
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
@@ -1789,6 +1813,111 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     switch (element) {
+    case CE_ItemViewItem: {
+        auto p = painter;
+        auto opt = option;
+        if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(opt)) {
+            p->save();
+            p->setClipRect(opt->rect);
+
+            QRect checkRect = proxy()->subElementRect(SE_ItemViewItemCheckIndicator, vopt, widget);
+            QRect iconRect = proxy()->subElementRect(SE_ItemViewItemDecoration, vopt, widget);
+            QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, vopt, widget);
+
+            // draw the background
+            proxy()->drawPrimitive(PE_PanelItemViewItem, opt, p, widget);
+
+            // draw the check mark
+            if (vopt->features & QStyleOptionViewItem::HasCheckIndicator) {
+                QStyleOptionViewItem option(*vopt);
+                option.rect = checkRect;
+                option.state = option.state & ~QStyle::State_HasFocus;
+
+                switch (vopt->checkState) {
+                case Qt::Unchecked:
+                    option.state |= QStyle::State_Off;
+                    break;
+                case Qt::PartiallyChecked:
+                    option.state |= QStyle::State_NoChange;
+                    break;
+                case Qt::Checked:
+                    option.state |= QStyle::State_On;
+                    break;
+                }
+                proxy()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &option, p, widget);
+            }
+
+            // draw the icon
+            QIcon::Mode mode = QIcon::Normal;
+            if (!(vopt->state & QStyle::State_Enabled))
+                mode = QIcon::Disabled;
+            else if (vopt->state & QStyle::State_Selected)
+                mode = QIcon::Selected;
+            QIcon::State state = vopt->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+            //vopt->icon.paint(p, iconRect, vopt->decorationAlignment, mode, state);
+            auto pixmap = vopt->icon.pixmap(vopt->decorationSize,
+                                            mode,
+                                            state);
+
+            auto target = pixmap;
+
+            if (widget) {
+                if (widget->property("useIconHighlightEffect").isValid()) {
+                    bool needHandel = widget->property("useIconHighlightEffect").toBool();
+                    if (needHandel) {
+                        HighLightEffect::EffectMode mode = HighLightEffect::HighlightOnly;
+                        if (widget->property("iconHighlightEffectMode").isValid()) {
+                            auto var = widget->property("iconHighlightEffectMode");
+                            mode = qvariant_cast<HighLightEffect::EffectMode>(var);
+                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, true, mode);
+                        } else {
+                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, true);
+                        }
+                    }
+                }
+            }
+            QFusionStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
+
+            // draw the text
+            if (!vopt->text.isEmpty()) {
+                QPalette::ColorGroup cg = vopt->state & QStyle::State_Enabled
+                        ? QPalette::Normal : QPalette::Disabled;
+                if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active))
+                    cg = QPalette::Inactive;
+
+                if (vopt->state & QStyle::State_Selected) {
+                    p->setPen(vopt->palette.color(cg, QPalette::HighlightedText));
+                } else {
+                    p->setPen(vopt->palette.color(cg, QPalette::Text));
+                }
+                if (vopt->state & QStyle::State_Editing) {
+                    p->setPen(vopt->palette.color(cg, QPalette::Text));
+                    p->drawRect(textRect.adjusted(0, 0, -1, -1));
+                }
+
+                viewItemDrawText(p, vopt, textRect);
+            }
+
+            // draw the focus rect
+            /*
+            if (vopt->state & QStyle::State_HasFocus) {
+                QStyleOptionFocusRect o;
+                o.QStyleOption::operator=(*vopt);
+                o.rect = proxy()->subElementRect(SE_ItemViewItemFocusRect, vopt, widget);
+                o.state |= QStyle::State_KeyboardFocusChange;
+                o.state |= QStyle::State_Item;
+                QPalette::ColorGroup cg = (vopt->state & QStyle::State_Enabled)
+                        ? QPalette::Normal : QPalette::Disabled;
+                o.backgroundColor = vopt->palette.color(cg, (vopt->state & QStyle::State_Selected)
+                                                        ? QPalette::Highlight : QPalette::Window);
+                proxy()->drawPrimitive(QStyle::PE_FrameFocusRect, &o, p, widget);
+            }
+            */
+
+            p->restore();
+        }
+        break;
+    }
     case CE_ProgressBarGroove:{
         const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
         if (!bar)

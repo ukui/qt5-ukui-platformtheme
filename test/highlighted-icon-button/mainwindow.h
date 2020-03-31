@@ -29,6 +29,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class QListWidget;
+class QMenu;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,5 +47,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QListWidget *view;
+    QMenu *menu;
 };
 #endif // MAINWINDOW_H

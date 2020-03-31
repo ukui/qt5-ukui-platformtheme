@@ -30,6 +30,7 @@ class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 class ButtonAnimationHelper;
 class BoxAnimationHelper;
+class QStyleOptionViewItem;
 
 /*!
  * \brief The Qt5UKUIStyle class
@@ -90,6 +91,7 @@ public:
                         const QPixmap &pixmap) const;
 
 protected:
+    void viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const;
     QRect scrollBarSubControlRect(QStyle::ComplexControl control,
                                   const QStyleOptionComplex *option,
                                   QStyle::SubControl subControl,
