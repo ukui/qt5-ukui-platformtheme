@@ -25,7 +25,7 @@ bool ButtonAnimationHelper::registerWidget(QWidget *w)
 
 bool ButtonAnimationHelper::unregisterWidget(QWidget *w)
 {
-   auto animator= m_animators->value(w);
+    auto animator= m_animators->value(w);
     bool result = false;
     if (animator) {
         result = animator->unboundWidget();

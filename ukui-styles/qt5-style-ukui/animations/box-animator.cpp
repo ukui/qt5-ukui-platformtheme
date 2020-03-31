@@ -139,11 +139,20 @@ void BoxAnimator::startAnimator(const QString &property)
 void BoxAnimator::stopAnimator(const QString &property)
 {
     if(property == "MouseOver")
+    {
         m_mouseover->stop();
+        m_mouseover->setCurrentTime(0);
+    }
     else if(property == "SunKen")
+    {
         m_sunken->stop();
+        m_sunken->setCurrentTime(0);
+    }
     else
+    {
         this->stop();
+        this->setCurrentTime(0);
+    }
 }
 
 int BoxAnimator::currentAnimatorTime(const QString &property)
