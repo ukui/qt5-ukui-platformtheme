@@ -3029,7 +3029,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 5;
     }
     case PM_MenuVMargin:{
-        return 5;
+        return 10;
     }
     case PM_IndicatorWidth:{
         return 16;
@@ -3037,7 +3037,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_IndicatorHeight:{
         return 16;
     }
-    case PM_SubMenuOverlap:return 7;
+    case PM_SubMenuOverlap:return -2;
     case PM_ButtonMargin:return  9;
     case PM_DefaultFrameWidth:return 2;
     case PM_TabBarTabVSpace:return 20;
