@@ -399,7 +399,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
     QFusionStyle::polish(widget);
-    if (qobject_cast<QMenu*>(widget)) {
+    if (auto menu = qobject_cast<QMenu*>(widget)) {
         widget->setAttribute(Qt::WA_TranslucentBackground);
         HighLightEffect::setMenuIconHighlightEffect(menu);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
