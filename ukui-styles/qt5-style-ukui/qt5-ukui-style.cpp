@@ -2565,23 +2565,37 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
 
     case CE_ComboBoxLabel:
-    {
-        auto comboBoxOption = qstyleoption_cast<const QStyleOptionComboBox*>(option);
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::ButtonText));
-        if (option->state & State_Selected) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::ButtonText));
-            } else {
-                painter->setPen(option->palette.color(QPalette::ButtonText));
-            }
-        }
-        painter->drawText(option->rect.adjusted(+4,+0,+0,+0), comboBoxOption->currentText, QTextOption(Qt::AlignVCenter));
-        painter->restore();
-        return;
-    }
+        if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+            QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
+            painter->save();
+            painter->setClipRect(editRect);
+            if (!cb->currentIcon.isNull()) {
+                QIcon::Mode mode = cb->state & State_Enabled ? QIcon::Normal
+                                                             : QIcon::Disabled;
+                QPixmap pixmap = cb->currentIcon.pixmap(qt_getWindow(widget), cb->iconSize, mode);
+                QRect iconRect(editRect);
+                iconRect.setWidth(cb->iconSize.width() + 4);
+                iconRect = alignedRect(cb->direction,
+                                       Qt::AlignLeft | Qt::AlignVCenter,
+                                       iconRect.size(), editRect);
+                if (cb->editable)
+                    painter->fillRect(iconRect, option->palette.brush(QPalette::Base));
+                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
 
+                if (cb->direction == Qt::RightToLeft)
+                    editRect.translate(-4 - cb->iconSize.width(), 0);
+                else
+                    editRect.translate(cb->iconSize.width() + 4, 0);
+            }
+            if (!cb->currentText.isEmpty() && !cb->editable) {
+                proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),
+                             visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
+                             cb->palette, cb->state & State_Enabled, cb->currentText);
+            }
+            painter->restore();
+            return;
+        }
+        break;
 
     case CE_RadioButtonLabel:
         if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
