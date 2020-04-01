@@ -96,6 +96,7 @@ bool BoxAnimator::setAnimatorStartValue(const QString &property, const QVariant 
     else if(property == "SunKen")
     {
         m_sunken->setStartValue(value);
+        return true;
     }
     else
     {
@@ -113,6 +114,7 @@ bool BoxAnimator::setAnimatorEndValue(const QString &property, const QVariant &v
     else if(property == "SunKen")
     {
         m_sunken->setEndValue(value);
+        return true;
     }
     else
     {
@@ -130,12 +132,12 @@ bool BoxAnimator::setAnimatorDuration(const QString &property, int duration)
     else if(property == "SunKen")
     {
         m_sunken->setDuration(duration);
+        return true;
     }
     else
     {
         return false;
     }
-
 }
 
 void BoxAnimator::setAnimatorDirectionForward(const QString &property, bool forward)
@@ -180,20 +182,20 @@ void BoxAnimator::stopAnimator(const QString &property)
 int BoxAnimator::currentAnimatorTime(const QString &property)
 {
     if(property == "MouseOver")
-        m_mouseover->currentTime();
+        return m_mouseover->currentTime();
     else if(property == "SunKen")
-        m_sunken->currentTime();
+        return m_sunken->currentTime();
     else
-        this->currentTime();
+        return this->currentTime();
 }
 
 int BoxAnimator::totalAnimationDuration(const QString &property)
 {
     if(property == "MouseOver")
-        m_mouseover->duration();
+        return m_mouseover->duration();
     else if(property == "SunKen")
-        m_sunken->duration();
+        return m_sunken->duration();
     else
-        this->duration();
+        return this->duration();
 }
 
