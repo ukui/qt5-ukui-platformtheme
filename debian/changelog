@@ -1,3 +1,11 @@
+qt5-ukui-platformtheme (1.0.2-0ubuntu1) focal; urgency=medium
+
+  [ Lan Yue ]
+  * Fix the invalid return value which cause some qt applications
+    crashed.
+
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 01 Apr 2020 14:07:58 +0800
+
 qt5-ukui-platformtheme (1.0.1-0ubuntu1) focal; urgency=medium
 
   * Initial release. (LP: #1869007)
