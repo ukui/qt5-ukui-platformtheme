@@ -10,6 +10,7 @@ static const QStringList blackAppList() {
     l<<"ukui-control-center";
     l<<"ubuntu-kylin-software-center.py";
     l<<"kylin-burner";
+    l<<"assistant";
     return l;
 }
 
