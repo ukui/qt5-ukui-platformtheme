@@ -668,7 +668,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 return;
             }
 
-             if(!(button->state & State_AutoRaise))
+             if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
              {
                  painter->save();
                  painter->setPen(Qt::NoPen);
@@ -2255,6 +2255,32 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
+    case CE_PushButtonBevel:
+    {
+        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            QRect br = btn->rect;
+            int dbi = proxy()->pixelMetric(PM_ButtonDefaultIndicator, btn, widget);
+            if (btn->features & QStyleOptionButton::DefaultButton)
+                proxy()->drawPrimitive(PE_FrameDefaultButton, option, painter, widget);
+            if (btn->features & QStyleOptionButton::AutoDefaultButton)
+                br.setCoords(br.left() + dbi, br.top() + dbi, br.right() - dbi, br.bottom() - dbi);
+//            if (!(btn->features & (QStyleOptionButton::Flat | QStyleOptionButton::CommandLinkButton))
+//                || btn->state & (State_Sunken | State_On)
+//                || (btn->features & QStyleOptionButton::CommandLinkButton && btn->state & State_MouseOver)) {
+                QStyleOptionButton tmpBtn = *btn;
+                tmpBtn.rect = br;
+                proxy()->drawPrimitive(PE_PanelButtonCommand, &tmpBtn, painter, widget);
+//            }
+            if (btn->features & QStyleOptionButton::HasMenu) {
+                int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, btn, widget);
+                QRect ir = btn->rect;
+                QStyleOptionButton newBtn = *btn;
+                newBtn.rect = QRect(ir.right() - mbi + 2, ir.height()/2 - mbi/2 + 3, mbi - 6, mbi - 6);
+                proxy()->drawPrimitive(PE_IndicatorArrowDown, &newBtn, painter, widget);
+            }
+        }
+        break;
+    }
     case CE_PushButtonLabel:
     {
         const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option);
