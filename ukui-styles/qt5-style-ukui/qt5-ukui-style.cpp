@@ -1903,9 +1903,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         if (widget->property("iconHighlightEffectMode").isValid()) {
                             auto var = widget->property("iconHighlightEffectMode");
                             mode = qvariant_cast<HighLightEffect::EffectMode>(var);
-                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, true, mode);
+                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false, mode);
                         } else {
-                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, true);
+                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false);
                         }
                     }
                 }
