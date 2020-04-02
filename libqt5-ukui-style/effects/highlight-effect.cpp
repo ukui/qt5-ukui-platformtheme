@@ -44,7 +44,6 @@ void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
 bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
 {
     QImage img = pixmap.toImage();
-    QColor tmp = Qt::transparent;
     bool init = false;
     int red = 0;
     int green = 0;
@@ -56,7 +55,6 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
             auto color = img.pixelColor(x, y);
             if (color.alpha() != 0) {
                 if (!init) {
-                    tmp = color;
                     red = color.red();
                     green = color.green();
                     blue = color.blue();
@@ -125,6 +123,9 @@ bool HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
 
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
+
     if (widget) {
         if (widget->property("skipHighlightIconEffect").isValid()) {
             bool skipEffect = widget->property("skipHighlightIconEffect").toBool();
@@ -138,19 +139,20 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
         QPixmap target = pixmap;
         QPainter p(&target);
+
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        if (option->state & QStyle::State_MouseOver |
-                option->state & QStyle::State_Selected |
-                option->state & QStyle::State_On |
+        if (option->state & QStyle::State_MouseOver ||
+                option->state & QStyle::State_Selected ||
+                option->state & QStyle::State_On ||
                 option->state & QStyle::State_Sunken) {
             p.fillRect(target.rect(), option->palette.highlightedText());
         } else {
             if (mode == BothDefaultAndHighlit)
                 p.fillRect(target.rect(), option->palette.shadow());
         }
-        p.end();
+        //p.end();
         return target;
     }
 
@@ -164,57 +166,71 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             }
 
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-            bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) |
-                    option->state.testFlag(QStyle::State_Sunken) |
-                    option->state.testFlag(QStyle::State_On) |
+            bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
+                    option->state.testFlag(QStyle::State_Sunken) ||
+                    option->state.testFlag(QStyle::State_On) ||
                     option->state.testFlag(QStyle::State_Selected);
+            if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
+                if (button->isDown() || button->isChecked()) {
+                    overOrDown = true;
+                }
+            }
+
+            if (qobject_cast<const QAbstractItemView *>(widget)) {
+                if (!option->state.testFlag(QStyle::State_Selected))
+                    overOrDown = false;
+            }
 
             if (isEnable && overOrDown) {
                 QPixmap target = pixmap;
                 QPainter p(&target);
+
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
                 p.fillRect(target.rect(), option->palette.highlightedText());
-                p.end();
+                //p.end();
                 return target;
             } else {
                 if (mode == BothDefaultAndHighlit) {
                     QPixmap target = pixmap;
                     QPainter p(&target);
+
                     p.setRenderHint(QPainter::Antialiasing);
                     p.setRenderHint(QPainter::SmoothPixmapTransform);
                     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
                     p.fillRect(target.rect(), option->palette.shadow());
-                    p.end();
+                    //p.end();
                     return target;
                 }
             }
         }
     } else {
         bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) |
-                option->state.testFlag(QStyle::State_Sunken) |
-                option->state.testFlag(QStyle::State_Selected) |
+        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) ||
+                option->state.testFlag(QStyle::State_Sunken) ||
+                option->state.testFlag(QStyle::State_Selected) ||
                 option->state.testFlag(QStyle::State_On);
         if (isEnable && overOrDown) {
             QPixmap target = pixmap;
             QPainter p(&target);
+
             p.setRenderHint(QPainter::Antialiasing);
             p.setRenderHint(QPainter::SmoothPixmapTransform);
             p.setCompositionMode(QPainter::CompositionMode_SourceIn);
             p.fillRect(target.rect(), option->palette.highlightedText());
-            p.end();
+            //p.end();
             return target;
         } else {
             if (mode == BothDefaultAndHighlit) {
                 QPixmap target = pixmap;
                 QPainter p(&target);
+
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
                 p.fillRect(target.rect(), option->palette.shadow());
-                p.end();
+                //p.end();
                 return target;
             }
         }
