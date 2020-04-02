@@ -538,19 +538,29 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             QColor color2 = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
                                                   QPalette::HighlightedText);
-            if (isSelected) {
+
+            if (isSelected || isHover) {
+                if (isHover) {
+                    color.setAlphaF(0.5);
+                }
                 painter->fillRect(option->rect, color);
                 auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
                 QStyleOptionViewItem tmp = *vopt;
+
+                // for now the style paint arrow with highlight text brush when hover
+                // we but don't want to highligh the indicator when hover a view item.
+                if (isSelected) {
+                    tmp.state.setFlag(QStyle::State_MouseOver);
+                } else {
+                    tmp.state.setFlag(QStyle::State_MouseOver, false);
+                }
+
                 tmp.palette.setColor(tmp.palette.currentColorGroup(), QPalette::Highlight, color2);
-                QFusionStyle::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
-                return;
-            } else if (isHover) {
-                color.setAlphaF(0.5);
-                painter->fillRect(option->rect, color);
+                return QFusionStyle::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
             }
             break;
         }
+        break;
     }
     case PE_PanelItemViewItem: {
         bool isIconView = false;
@@ -1237,73 +1247,72 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             border = pixelRatio*4;
             sqsize = pixelRatio*16;
         }
-        if (!QPixmapCache::find(key, pixmap)) {
-            QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
-            image.fill(0);
-            QPainter imagePainter(&image);
-            int sx = 0;
-            int sy = (sqsize/2 - border)/2;
-            QLineF lines[2];
-            switch (element) {
-            case PE_IndicatorArrowUp:
-                lines[0] = QLine(border, sqsize/2, sqsize/2, border);
-                lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
-                break;
-            case PE_IndicatorArrowDown:
-                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-                lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
-                break;
-            case PE_IndicatorArrowRight:
-                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-                lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
-                sx = (sqsize/2 - border)/2;
-                sy = 0;
-                break;
-            case PE_IndicatorArrowLeft:
-                lines[0] = QLine(sqsize/2, border, border, sqsize/2);
-                lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
-                sx = (sqsize/2 - border)/2;
-                sy = 0;
-                break;
-            default:
-                break;
-            }
-            imagePainter.translate(sx , sy);
-            imagePainter.setPen(Qt::NoPen);
-            imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
-            if (option->state & (State_MouseOver|State_Sunken))
-            {
-                imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
-            }
-            imagePainter.setBrush(Qt::NoBrush);
-            imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
-            imagePainter.setRenderHint(QPainter::Antialiasing);
+//        if (!QPixmapCache::find(key, pixmap)) {
 
-            if (!(option->state & State_Enabled)) {
-                imagePainter.translate(1, 1);
-                imagePainter.setPen(QPen(option->palette.foreground().color(), 1.3));
-                imagePainter.setBrush(Qt::NoBrush);
-                imagePainter.drawLines(lines,2);
-                //                imagePainter.translate(-1, -1);
-                //                imagePainter.setBrush(option->palette.mid().color());
-                //                imagePainter.setPen(option->palette.mid().color());
-            }
-            else
-            {
-                imagePainter.drawLines(lines,2);
-            }
-            imagePainter.end();
-            pixmap = QPixmap::fromImage(image);
-            pixmap.setDevicePixelRatio(pixelRatio);
-            QPixmapCache::insert(key, pixmap);
+//            QPixmapCache::insert(key, pixmap);
+//        }
+        QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
+        image.fill(0);
+        QPainter imagePainter(&image);
+        int sx = 0;
+        int sy = (sqsize/2 - border)/2;
+        QLineF lines[2];
+        switch (element) {
+        case PE_IndicatorArrowUp:
+            lines[0] = QLine(border, sqsize/2, sqsize/2, border);
+            lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
+            break;
+        case PE_IndicatorArrowDown:
+            lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+            lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
+            break;
+        case PE_IndicatorArrowRight:
+            lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+            lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
+            sx = (sqsize/2 - border)/2;
+            sy = 0;
+            break;
+        case PE_IndicatorArrowLeft:
+            lines[0] = QLine(sqsize/2, border, border, sqsize/2);
+            lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
+            sx = (sqsize/2 - border)/2;
+            sy = 0;
+            break;
+        default:
+            break;
         }
+        imagePainter.translate(sx , sy);
+        imagePainter.setPen(Qt::NoPen);
+        imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+        if (option->state & (State_MouseOver|State_Sunken))
+        {
+            imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
+        }
+        imagePainter.setBrush(Qt::NoBrush);
+        imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
+        imagePainter.setRenderHint(QPainter::Antialiasing);
+
+        if (!(option->state & State_Enabled)) {
+            imagePainter.translate(1, 1);
+            imagePainter.setPen(QPen(option->palette.windowText().color(), 1.3));
+            imagePainter.setBrush(Qt::NoBrush);
+            imagePainter.drawLines(lines,2);
+            //                imagePainter.translate(-1, -1);
+            //                imagePainter.setBrush(option->palette.mid().color());
+            //                imagePainter.setPen(option->palette.mid().color());
+        }
+        else
+        {
+            imagePainter.drawLines(lines,2);
+        }
+        imagePainter.end();
+        pixmap = QPixmap::fromImage(image);
+        pixmap.setDevicePixelRatio(pixelRatio);
         int xOffset = r.x() + (r.width() - sqsize)/2;
         int yOffset = r.y() + (r.height() - sqsize)/2;
         painter->drawPixmap(xOffset, yOffset, pixmap);
         return;
     }
-
-
 
     case PE_IndicatorRadioButton:{
         auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
