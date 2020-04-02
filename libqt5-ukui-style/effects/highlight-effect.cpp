@@ -150,7 +150,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             p.fillRect(target.rect(), option->palette.highlightedText());
         } else {
             if (mode == BothDefaultAndHighlit)
-                p.fillRect(target.rect(), option->palette.shadow());
+                p.fillRect(target.rect(), option->palette.dark());
         }
         //p.end();
         return target;
@@ -199,7 +199,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                     p.setRenderHint(QPainter::Antialiasing);
                     p.setRenderHint(QPainter::SmoothPixmapTransform);
                     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                    p.fillRect(target.rect(), option->palette.shadow());
+                    p.fillRect(target.rect(), option->palette.dark());
                     //p.end();
                     return target;
                 }
@@ -229,7 +229,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                p.fillRect(target.rect(), option->palette.shadow());
+                p.fillRect(target.rect(), option->palette.dark());
                 //p.end();
                 return target;
             }
