@@ -517,14 +517,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case QStyle::PE_PanelMenu:
     case QStyle::PE_FrameMenu:
     {
-        /*!
-          \bug
-          a "disabled" menu paint and blur in error, i have no idea about that.
-          */
-        if (widget->isEnabled()) {
-            return drawMenuPrimitive(option, painter, widget);
-        }
-        return QFusionStyle::drawPrimitive(element, option, painter, widget);
+        return drawMenuPrimitive(option, painter, widget);
     }
     case PE_FrameFocusRect: {
         if (qobject_cast<const QAbstractItemView *>(widget))

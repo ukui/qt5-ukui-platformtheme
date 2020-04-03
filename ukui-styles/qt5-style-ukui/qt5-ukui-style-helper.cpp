@@ -28,6 +28,8 @@
 #include <QWidget>
 #include <QPainterPath>
 
+#include <KWindowEffects>
+
 #include <QDebug>
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
@@ -95,6 +97,12 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
         //qDebug()<<opacity;
         color.setAlphaF(opacity);
     }
+
+    //if blur effect is not supported, do not use transparent color.
+    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind)) {
+        color.setAlphaF(1);
+    }
+
     opt.palette.setColor(QPalette::Base, color);
 
     QPen pen(opt.palette.color(QPalette::Normal, QPalette::Dark), 1);

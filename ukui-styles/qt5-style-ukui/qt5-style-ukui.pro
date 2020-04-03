@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets widgets-private
+QT       += widgets widgets-private KWindowSystem
 
 TARGET = qt5-style-ukui
 TEMPLATE = lib
