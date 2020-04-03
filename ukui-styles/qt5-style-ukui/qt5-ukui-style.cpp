@@ -2347,19 +2347,24 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //The following are text dynamic colors
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-        if(option->state & State_HasFocus){
+//        if(option->state & State_HasFocus){
+//            painter->setPen(option->palette.color(QPalette::HighlightedText));
+//        }
+//        else {
+//            painter->setPen(option->palette.color(QPalette::ButtonText));
+//        }
+//        if (option->state & State_MouseOver) {
+//            if (option->state & State_Sunken) {
+//                painter->setPen(option->palette.color(QPalette::HighlightedText));
+//            } else {
+//                painter->setPen(option->palette.color(QPalette::HighlightedText));
+//            }
+//        }
+        painter->setPen(option->palette.color(QPalette::ButtonText));
+        if(option->state & (State_Sunken | State_MouseOver))
             painter->setPen(option->palette.color(QPalette::HighlightedText));
-        }
-        else {
-            painter->setPen(option->palette.color(QPalette::ButtonText));
-        }
-        if (option->state & State_MouseOver) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::HighlightedText));
-            } else {
-                painter->setPen(option->palette.color(QPalette::HighlightedText));
-            }
-        }
+        if(!(option->state & State_Enabled))
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
         //painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
         proxy()->drawItemText(painter, textRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
         painter->restore();
