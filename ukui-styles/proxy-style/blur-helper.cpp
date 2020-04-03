@@ -56,7 +56,11 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
     //qDebug()<<e->type()<<obj;
     //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
     switch (e->type()) {
-    case QEvent::UpdateRequest:
+    case QEvent::UpdateRequest: {
+        QWidget* widget = qobject_cast<QWidget*>(obj);
+        delayUpdate(widget, true);
+        break;
+    }
     case QEvent::LayoutRequest:
     {
         QWidget* widget = qobject_cast<QWidget*>(obj);
@@ -76,14 +80,13 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 /*!
  * \brief BlurHelper::registerWidget
  * \param widget
- * \bug
- * I want to use mask for blur a specific region, but
- * it seems that when window update, mask will be cleared.
- * That makes event filter can not handle the right region to blur.
+ * \note
  *
- * \bug
- * When using a QGraphicsShadowEffects, the window paint uncorrectly.
- * I found that is this helper mainly cause the problem.
+ * we can't blur a widget before it shown, because some times
+ * there might be problems about window painting.
+ * this usually happend on a widget which has graphics effect.
+ *
+ * to avoid them, never try get winid and do a blur for that case.
  */
 void BlurHelper::registerWidget(QWidget *widget)
 {
@@ -96,11 +99,17 @@ void BlurHelper::registerWidget(QWidget *widget)
     if (!m_blur_widgets.contains(widget)) {
         m_blur_widgets<<widget;
         //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
-        if (!widget->mask().isEmpty()) {
-            KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
-        } else {
-            KWindowEffects::enableBlurBehind(widget->winId(), true);
-        }
+        /*!
+          \note
+          never try enableBlurBehind when register widget.
+          it might cause serious problems about paint.
+          usually it happend with a widget which has graphics effect.
+          */
+//        if (!widget->mask().isEmpty()) {
+//            KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
+//        } else {
+//            KWindowEffects::enableBlurBehind(widget->winId(), true);
+//        }
 
         connect(widget, &QWidget::destroyed, this, [=](){
             this->onWidgetDestroyed(widget);
@@ -136,7 +145,7 @@ bool BlurHelper::isApplicationInBlackList()
 
 const QStringList BlurHelper::blackList()
 {
-    return blackAppList();
+    return blackAppListWithBlurHelper();
 }
 
 bool BlurHelper::shouldSkip(QWidget *w)
@@ -165,7 +174,7 @@ void BlurHelper::onWidgetDestroyed(QWidget *widget)
     unregisterWidget(widget);
 }
 
-void BlurHelper::delayUpdate(QWidget *w)
+void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
 {
     m_update_list.append(w);
     if (!m_timer.isActive()) {
@@ -187,7 +196,8 @@ void BlurHelper::delayUpdate(QWidget *w)
                 QPainterPath path;
                 path.addRoundedRect(widget->rect().adjusted(+5,+5,-5,-5), 6, 6);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
-                widget->update();
+                if (!updateBlurRegionOnly)
+                    widget->update();
                 break;
             }
 
@@ -195,7 +205,8 @@ void BlurHelper::delayUpdate(QWidget *w)
                 QPainterPath path;
                 path.addRoundedRect(widget->rect().adjusted(+3,+3,-3,-3),4, 4);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
-                widget->update();
+                if (!updateBlurRegionOnly)
+                    widget->update();
                 break;
             }
 
@@ -207,11 +218,13 @@ void BlurHelper::delayUpdate(QWidget *w)
             if (!region.isEmpty()) {
                 //qDebug()<<"blur region"<<region;
                 KWindowEffects::enableBlurBehind(widget->winId(), true, region);
-                widget->update();
+                if (!updateBlurRegionOnly)
+                    widget->update();
             } else {
                 //qDebug()<<widget->mask();
                 KWindowEffects::enableBlurBehind(widget->winId(), true, widget->mask());
-                widget->update(widget->mask());
+                if (!updateBlurRegionOnly)
+                    widget->update(widget->mask());
             }
 
             //NOTE: we can not setAttribute Qt::WA_TranslucentBackground here,

@@ -46,7 +46,7 @@ signals:
 public slots:
     void onBlurEnableChanged(bool enable);
     void onWidgetDestroyed(QWidget *widget);
-    void delayUpdate(QWidget *w);
+    void delayUpdate(QWidget *w, bool updateBlurRegionOnly = false);
 
 private:
     QList<QWidget *> m_blur_widgets;

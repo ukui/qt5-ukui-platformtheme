@@ -426,7 +426,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 {
     QFusionStyle::polish(widget);
     if (auto menu = qobject_cast<QMenu*>(widget)) {
-        widget->setAttribute(Qt::WA_TranslucentBackground);
+        //widget->setAttribute(Qt::WA_TranslucentBackground);
         HighLightEffect::setMenuIconHighlightEffect(menu);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
 
@@ -3344,7 +3344,7 @@ void Qt5UKUIStyle::drawComBoxIndicator(SubControl which, const QStyleOptionCompl
     QStyleOption arrowOpt(buttonOpt);
     arrowOpt.rect=subControlRect(CC_ComboBox,option,which).adjusted(+0,+0,-0,+0);
     if(arrowOpt.rect.isValid())
-        drawPrimitive(arrow,&arrowOpt,painter);
+        proxy()->drawPrimitive(arrow,&arrowOpt,painter);
     painter->restore();
 }
 
