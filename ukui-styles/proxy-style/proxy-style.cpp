@@ -143,7 +143,7 @@ void ProxyStyle::polish(QWidget *widget)
       i have to avoid them by limitting widget's class name,
       but that is no my expected.
       */
-    if (widget->testAttribute(Qt::WA_TranslucentBackground) && QWindow::fromWinId(widget->winId())->isTopLevel()) {
+    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         //FIXME:
         m_blur_helper->registerWidget(widget);
 
@@ -180,7 +180,7 @@ void ProxyStyle::unpolish(QWidget *widget)
     widget->removeEventFilter(this);
 
     //FIXME:
-    if (widget->testAttribute(Qt::WA_TranslucentBackground) && QWindow::fromWinId(widget->winId())->isTopLevel()) {
+    if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         m_blur_helper->unregisterWidget(widget);
     }
 
