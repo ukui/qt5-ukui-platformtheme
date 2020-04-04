@@ -53,6 +53,8 @@ private:
 
     QList<QWidget *> m_update_list;
     QTimer m_timer;
+
+    bool m_blur_enable = true;
 };
 
 #endif // BLURHELPER_H

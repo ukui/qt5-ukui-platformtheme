@@ -40,11 +40,13 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
-            if (key == "enabled-global-blur") {
-                bool enable = settings->get("enable-global-blur").toBool();
+            if (key == "enabledGlobalBlur") {
+                bool enable = settings->get(key).toBool();
                 this->onBlurEnableChanged(enable);
             }
         });
+        bool enable = settings->get("enabledGlobalBlur").toBool();
+        this->onBlurEnableChanged(enable);
     }
     m_timer.setSingleShot(true);
     m_timer.setInterval(100);
@@ -52,6 +54,9 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 {
+    if (!m_blur_enable)
+        return false;
+
     //FIXME:
     //qDebug()<<e->type()<<obj;
     //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
@@ -162,11 +167,21 @@ bool BlurHelper::shouldSkip(QWidget *w)
 
 void BlurHelper::onBlurEnableChanged(bool enable)
 {
-    for (auto widget : m_blur_widgets) {
-        KWindowEffects::enableBlurBehind(widget->effectiveWinId(), enable);
-        if (widget->isVisible())
-            widget->update();
+    m_blur_enable = enable;
+
+    if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) && enable) {
+        qApp->setProperty("blurEnable", true);
+    } else {
+        qApp->setProperty("blurEnable", false);
     }
+    for (auto widget : qApp->allWidgets()) {
+        widget->update();
+    }
+    QTimer::singleShot(100, this, [=](){
+        for (auto widget : m_blur_widgets) {
+            KWindowEffects::enableBlurBehind(widget->effectiveWinId(), enable);
+        }
+    });
 }
 
 void BlurHelper::onWidgetDestroyed(QWidget *widget)

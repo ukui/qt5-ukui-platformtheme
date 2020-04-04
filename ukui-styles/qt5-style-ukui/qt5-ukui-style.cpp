@@ -829,6 +829,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
                     color.setAlphaF(opacity);
                 }
+
+                if (qApp->property("blurEnable").isValid()) {
+                    bool blurEnable = qApp->property("blurEnable").toBool();
+                    if (!blurEnable) {
+                        color.setAlphaF(1);
+                    }
+                }
+
                 opt.palette.setColor(QPalette::ToolTipBase, color);
                 painter->setRenderHint(QPainter::Antialiasing);
                 QPen pen(opt.palette.toolTipBase().color().darker(150), 1);

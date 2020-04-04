@@ -30,6 +30,8 @@
 
 #include <KWindowEffects>
 
+#include <QApplication>
+
 #include <QDebug>
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
@@ -96,6 +98,13 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
         auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
         //qDebug()<<opacity;
         color.setAlphaF(opacity);
+    }
+
+    if (qApp->property("blurEnable").isValid()) {
+        bool blurEnable = qApp->property("blurEnable").toBool();
+        if (!blurEnable) {
+            color.setAlphaF(1);
+        }
     }
 
     //if blur effect is not supported, do not use transparent color.
