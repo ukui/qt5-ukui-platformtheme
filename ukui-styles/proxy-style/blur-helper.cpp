@@ -52,23 +52,27 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 {
+    QWidget* widget = qobject_cast<QWidget*>(obj);
+    if (widget->winId() <= 0)
+        return false;
+
     //FIXME:
     //qDebug()<<e->type()<<obj;
     //qDebug()<<KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
     switch (e->type()) {
     case QEvent::UpdateRequest: {
-        QWidget* widget = qobject_cast<QWidget*>(obj);
+        //QWidget* widget = qobject_cast<QWidget*>(obj);
         delayUpdate(widget, true);
         break;
     }
     case QEvent::LayoutRequest:
     {
-        QWidget* widget = qobject_cast<QWidget*>(obj);
+        //QWidget* widget = qobject_cast<QWidget*>(obj);
         delayUpdate(widget);
         break;
     }
     case QEvent::Hide: {
-        QWidget* widget = qobject_cast<QWidget*>(obj);
+        //QWidget* widget = qobject_cast<QWidget*>(obj);
         KWindowEffects::enableBlurBehind(widget->winId(), false);
     }
 
@@ -135,7 +139,7 @@ void BlurHelper::unregisterWidget(QWidget *widget)
         return;
     m_blur_widgets.removeOne(widget);
     widget->removeEventFilter(this);
-    KWindowEffects::enableBlurBehind(widget->effectiveWinId(), false);
+    KWindowEffects::enableBlurBehind(widget->winId(), false);
 }
 
 bool BlurHelper::isApplicationInBlackList()
@@ -163,7 +167,13 @@ bool BlurHelper::shouldSkip(QWidget *w)
 void BlurHelper::onBlurEnableChanged(bool enable)
 {
     for (auto widget : m_blur_widgets) {
-        KWindowEffects::enableBlurBehind(widget->effectiveWinId(), enable);
+        if (!widget)
+            continue;
+
+        if (widget->winId() <= 0)
+            continue;
+
+        KWindowEffects::enableBlurBehind(widget->winId(), enable);
         if (widget->isVisible())
             widget->update();
     }
@@ -176,6 +186,9 @@ void BlurHelper::onWidgetDestroyed(QWidget *widget)
 
 void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
 {
+    if (w->winId() <= 0)
+        return;
+
     m_update_list.append(w);
     if (!m_timer.isActive()) {
         for (auto widget : m_update_list) {
@@ -183,7 +196,10 @@ void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
             //KWindowEffects::enableBlurBehind(widget->winId(), false);
 
             if (!widget)
-                break;
+                continue;
+
+            if (widget->winId() <= 0)
+                continue;
 
             bool hasMask = false;
             if (widget->mask().isNull())
