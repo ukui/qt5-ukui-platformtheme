@@ -466,6 +466,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
     if(qobject_cast<QComboBox*>(widget))
     {
         m_combobox_animation_helper->registerWidget(widget);
+        m_button_animation_helper->registerWidget(widget);
     }
     widget->installEventFilter(this);
 }
@@ -506,6 +507,7 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     if(qobject_cast<QComboBox*>(widget))
     {
         m_combobox_animation_helper->unregisterWidget(widget);
+        m_button_animation_helper->unregisterWidget(widget);
     }
     QFusionStyle::unpolish(widget);
 }
@@ -658,7 +660,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         {
             auto animator = m_button_animation_helper->animator(widget);
             if(animator == nullptr)
+            {
                 return QFusionStyle::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
+            }
             if(!(button->state & State_Enabled))
             {
                 animator->stopAnimator("SunKen");
@@ -1308,13 +1312,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         imagePainter.setRenderHint(QPainter::Antialiasing);
 
         if (!(option->state & State_Enabled)) {
-            imagePainter.translate(1, 1);
-            imagePainter.setPen(QPen(option->palette.windowText().color(), 1.3));
+            //imagePainter.translate(1, 1);
+            imagePainter.setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::WindowText), 1.3));
             imagePainter.setBrush(Qt::NoBrush);
             imagePainter.drawLines(lines,2);
-            //                imagePainter.translate(-1, -1);
-            //                imagePainter.setBrush(option->palette.mid().color());
-            //                imagePainter.setPen(option->palette.mid().color());
+            //imagePainter.translate(-1, -1);
+            //imagePainter.setBrush(option->palette.mid().color());
+            //imagePainter.setPen(option->palette.mid().color());
         }
         else
         {
@@ -1448,39 +1452,50 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
     case CC_ComboBox:
     {
-      if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox *>(option))
-      {
-          auto animator = m_combobox_animation_helper->animator(widget);
-          if(animator == nullptr)
+        if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox *>(option))
+        {
+            auto animator = m_combobox_animation_helper->animator(widget);
+            if(animator == nullptr)
               return QFusionStyle::drawComplexControl(CC_ComboBox,option,painter,widget);
 
-          if(!(option->state & State_Enabled))
-          {
+            QRect rect = subControlRect(CC_ComboBox,option,SC_ComboBoxFrame,widget);
+            QRect ArrowRect = subControlRect(CC_ComboBox,option,SC_ComboBoxArrow,widget);
+            QStyleOptionButton button;
+            button.state = combobox->state;
+            button.rect = ArrowRect;
+            if(combobox->editable)
+            {
+                proxy()->drawPrimitive(PE_PanelButtonCommand,&button,painter,widget);
+                QRect EditRect = subControlRect(CC_ComboBox,option,SC_ComboBoxEditField,widget);
+                rect = EditRect;
+            }
+
+            if(!(option->state & State_Enabled))
+            {
               animator->stopAnimator("SunKen");
               animator->stopAnimator("MouseOver");
               painter->save();
-              painter->setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::Button),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+              painter->setPen(Qt::NoPen);
               painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
               painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(option->rect,4,4);
+              painter->drawRoundedRect(rect,4,4);
               painter->restore();
+              proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
               return;
-          }
+            }
 
-          QRectF rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(option->palette.color(QPalette::Button));
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->drawRoundedRect(rect,4,4);
+            painter->restore();
+            proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
 
-          painter->save();
-          painter->setPen(QPen(option->palette.color(QPalette::Button),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-          painter->setBrush(option->palette.color(QPalette::Button));
-          painter->setRenderHint(QPainter::Antialiasing,true);
-          painter->drawRoundedRect(rect,4,4);
-          painter->restore();
-          drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
-          //rect.adjust(1, 1, -1, -1);
 
-          if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
+            if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                   || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
-          {
+            {
               double opacity = animator->value("SunKen").toDouble();
               if(combobox->state & (State_Sunken | State_On))
               {
@@ -1497,13 +1512,14 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                       animator->setAnimatorDirectionForward("SunKen",false);
                       animator->startAnimator("SunKen");
                   }
-               }
+              }
               if (animator->isRunning("SunKen"))
               {
                   const_cast<QWidget *>(widget)->update();
               }
-              //rect.adjust(1.4, 1.4, -1.4, -1.4);
+
               painter->save();
+              painter->setClipRect(rect);
               auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
               painter->setBrush(Qt::NoBrush);
               painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
@@ -1512,16 +1528,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
               painter->restore();
 
               painter->save();
+              painter->setClipRect(rect);
               painter->setBrush(Qt::NoBrush);
               painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
               painter->setRenderHint(QPainter::Antialiasing,true);
               painter->drawRoundedRect(rect,4,4);
               painter->restore();
               return;
-          }
-          if(combobox->state & State_MouseOver || animator->isRunning("MouseOver")
+            }
+            if(combobox->state & State_MouseOver || animator->isRunning("MouseOver")
                   || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
-          {
+            {
               double opacity = animator->value("MouseOver").toDouble();
               if(combobox->state & State_MouseOver)
               {
@@ -1544,6 +1561,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                   const_cast<QWidget *>(widget)->update();
               }
               painter->save();
+              painter->setClipRect(rect);
               auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
               painter->setBrush(Qt::NoBrush);
               painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
@@ -1552,34 +1570,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
               painter->drawRoundedRect(rect,4,4);
               painter->restore();
               return;
-          }
-          return;
-       }
-   }
-//        QRect rect=subControlRect(CC_ComboBox,option,SC_ComboBoxFrame);
-//        rect.adjust(+1,+1,-1,-1);
-//        painter->save();
-//        painter->setPen(option->palette.color(QPalette::Button));
-//        painter->setBrush(option->palette.color(QPalette::Button));
-//        painter->setRenderHint(QPainter::Antialiasing,true);
-//        if (widget->isEnabled()) {
-//            if (option->state & State_MouseOver) {
-//                if (option->state & State_Sunken) {
-//                    painter->setPen(option->palette.color(QPalette::Highlight));
-
-//                } else {
-//                    painter->setPen(option->palette.color(QPalette::Highlight));
-//                }
-//            }
-//            if (option->state & State_On) {
-//                painter->setPen(option->palette.color(QPalette::Highlight));
-//            }
-//        }
-//        painter->drawRoundedRect(rect,4,4);
-//        painter->restore();
-//        drawComBoxIndicator(SC_ComboBoxArrow,option,painter);
-//        return;
-//    }
+            }
+        }
+        break;
+    }
 
     case CC_SpinBox:
     {
@@ -2596,20 +2590,37 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_ComboBoxLabel:
     {
-        auto comboBoxOption = qstyleoption_cast<const QStyleOptionComboBox*>(option);
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::ButtonText));
-        if (option->state & State_Selected) {
-            if (option->state & State_Sunken) {
-                painter->setPen(option->palette.color(QPalette::ButtonText));
-            } else {
-                painter->setPen(option->palette.color(QPalette::ButtonText));
+        if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option))
+        {
+            bool enabled = cb->state & State_Enabled;
+            QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
+            painter->save();
+            painter->setClipRect(editRect);
+            if (!cb->currentIcon.isNull()) {
+               QIcon::Mode mode = cb->state & State_Enabled ? QIcon::Normal: QIcon::Disabled;
+               QPixmap pixmap = cb->currentIcon.pixmap(cb->iconSize, mode);
+               QRect iconRect(editRect);
+               iconRect.setWidth(cb->iconSize.width() + 4);
+               iconRect = alignedRect(cb->direction,Qt::AlignLeft | Qt::AlignVCenter,iconRect.size(), editRect);
+               iconRect.adjust(1,1,-1,-1);
+               if (cb->editable)
+                   painter->fillRect(iconRect,
+                                     cb->palette.brush(enabled ? QPalette::Active: QPalette::Disabled,QPalette::Button));
+               proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+
+               if (cb->direction == Qt::RightToLeft)
+                   editRect.translate(-4 - cb->iconSize.width(), 0);
+               else
+                   editRect.translate(cb->iconSize.width() + 4, 0);
             }
+            if (!cb->currentText.isEmpty() && !cb->editable)
+            {
+               proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
+                                     cb->palette, cb->state & State_Enabled, cb->currentText,QPalette::ButtonText);
+            }
+            painter->restore();
         }
-        painter->drawText(option->rect.adjusted(+4,+0,+0,+0), comboBoxOption->currentText, QTextOption(Qt::AlignVCenter));
-        painter->restore();
-        return;
+        break;
     }
 
 
@@ -3173,6 +3184,46 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                 return rect;
             }
         }
+
+    case CC_ComboBox:
+    {
+        if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox*>(option))
+        {
+            QRect rect = combobox -> rect;
+            const int margin = combobox->frame ? 3 : 0;
+            const int bmarg = combobox->frame ? 2 : 0;
+            int ArrowWidth = option->rect.height();
+            if(ArrowWidth > 24)
+                ArrowWidth = 24;
+            if(ArrowWidth > combobox->rect.width() * 4 / 9)
+                ArrowWidth = option->rect.width() * 4 / 9;
+            const int gap = combobox->editable ? 4 : 0;
+
+            switch (subControl)
+            {
+                case SC_ComboBoxFrame:
+                    return rect;
+                case SC_ComboBoxArrow:
+                    rect.setRect(rect.right() - ArrowWidth, rect.top(),ArrowWidth, rect.height());
+                    rect = visualRect(combobox->direction,combobox->rect,rect);
+                    return rect;
+                case SC_ComboBoxEditField:
+                    rect.setRect(rect.left(),rect.top(),rect.width() - ArrowWidth - gap,rect.height());
+                    rect = visualRect(combobox->direction,combobox->rect,rect);
+                    return rect;
+                case SC_ComboBoxListBoxPopup:
+                    rect.translate(0,2);
+                    rect.adjust(0,2,0,0);
+                    return combobox->rect;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
 
     default:
         break;

@@ -23,6 +23,7 @@
 #include "button-animator.h"
 #include <QToolButton>
 #include <QPushButton>
+#include <QComboBox>
 
 using namespace UKUI::Button;
 
@@ -52,6 +53,13 @@ bool ButtonAnimator::bindWidget(QWidget *w)
         return true;
     }
     else if(qobject_cast<QPushButton*>(w))
+    {
+        if(w->property("doNotAnimate").toBool())
+            return false;
+        m_widget = w;
+        return true;
+    }
+    else if(qobject_cast<QComboBox*>(w))
     {
         if(w->property("doNotAnimate").toBool())
             return false;
