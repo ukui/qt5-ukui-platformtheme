@@ -34,7 +34,7 @@
 
 #include <QDebug>
 
-#define TORLERANCE 32
+#define TORLERANCE 36
 
 void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
 {
