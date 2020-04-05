@@ -359,20 +359,23 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
     if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
         //ukui-dark
-        window_bg.setRgb(36,36,38);
+        window_bg.setRgb(45,46,50);
         window_no_bg.setRgb(48,46,50);
-        base_bg.setRgb(0,0,0);
+        base_bg.setRgb(31,32,34);
         base_no_bg.setRgb(28,28,30);
         font_bg.setRgb(255,255,255);
+        font_bg.setAlphaF(0.9);
         font_br_bg.setRgb(255,255,255);
-        font_di_bg.setRgb(28,28,30);
-        button_bg.setRgb(44,44,46);
-        button_ac_bg.setRgb(97,97,102);
-        button_di_bg.setRgb(52,52,56);
+        font_br_bg.setAlphaF(0.9);
+        font_di_bg.setRgb(255,255,255);
+        font_di_bg.setAlphaF(0.1);
+        button_bg.setRgb(61,61,65);
+        button_ac_bg.setRgb(48,48,51);
+        button_di_bg.setRgb(48,48,51);
         highlight_bg.setRgb(61,107,229);
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
-        alternateBase.setRgb(36,36,36);
+        alternateBase.setRgb(36,35,40);
     }
 
     palette.setBrush(QPalette::Window,window_bg);
