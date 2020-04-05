@@ -643,6 +643,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
         {
             auto animator = m_button_animation_helper->animator(widget);
+            if(animator == nullptr)
+                return QFusionStyle::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
             if(!(button->state & State_Enabled))
             {
                 animator->stopAnimator("SunKen");
@@ -706,9 +708,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->restore();
                 return;
             }
-            if((button->state & State_MouseOver || animator->isRunning("MouseOver")
+            if(button->state & State_MouseOver || animator->isRunning("MouseOver")
                     || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
-                    && !(animator->isRunning("SunKen")))
             {
                 double opacity = animator->value("MouseOver").toDouble();
                 if(button->state & State_MouseOver)
@@ -887,6 +888,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 //        }
 
         auto animator = m_button_animation_helper->animator(widget);
+        if(animator == nullptr)
+            return QFusionStyle::drawPrimitive(PE_PanelButtonTool,option,painter,widget);
         if(!(option->state & State_Enabled))
         {
             animator->stopAnimator("SunKen");
@@ -1428,7 +1431,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
       {
           auto animator = m_combobox_animation_helper->animator(widget);
           if(animator == nullptr)
-              return;
+              return QFusionStyle::drawComplexControl(CC_ComboBox,option,painter,widget);
 
           if(!(option->state & State_Enabled))
           {
@@ -1495,9 +1498,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
               painter->restore();
               return;
           }
-          if((combobox->state & State_MouseOver || animator->isRunning("MouseOver")
+          if(combobox->state & State_MouseOver || animator->isRunning("MouseOver")
                   || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
-                  && !(animator->isRunning("SunKen")))
           {
               double opacity = animator->value("MouseOver").toDouble();
               if(combobox->state & State_MouseOver)
