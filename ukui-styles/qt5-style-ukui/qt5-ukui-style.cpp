@@ -536,8 +536,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                                                   QPalette::HighlightedText);
 
             if (isSelected || isHover) {
-                if (isHover) {
-                    color.setAlphaF(0.5);
+                if (isHover && !isSelected) {
+                    int h = color.hsvHue();
+                    //int s = color.hsvSaturation();
+                    auto base = option->palette.base().color();
+                    int v = color.value();
+                    color.setHsv(h, base.lightness(), v, 64);
                 }
                 painter->fillRect(option->rect, color);
                 auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
@@ -573,8 +577,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                                              QPalette::Highlight);
 
         color.setAlpha(0);
-        if (isHover) {
-            color.setAlpha(127);
+        if (isHover && !isSelected) {
+            int h = color.hsvHue();
+            //int s = color.hsvSaturation();
+            auto base = option->palette.base().color();
+            int v = color.value();
+            color.setHsv(h, base.lightness(), v, 64);
         }
         if (isSelected) {
             color.setAlpha(255);
