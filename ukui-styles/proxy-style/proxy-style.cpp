@@ -71,6 +71,10 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
     m_blur_helper = new BlurHelper(this);
     m_window_manager = new WindowManager(this);
 
+    if (!baseStyle()->inherits("Qt5UKUIStyle")) {
+        m_blur_helper->onBlurEnableChanged(false);
+    }
+
     m_app_style_settings = ApplicationStyleSettings::getInstance();
     connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy){
         /*!
@@ -116,7 +120,9 @@ int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWid
 
 void ProxyStyle::polish(QWidget *widget)
 {
-    //return QProxyStyle::polish(widget);
+    if (!baseStyle()->inherits("Qt5UKUIStyle"))
+        return QProxyStyle::polish(widget);
+
     QProxyStyle::polish(widget);
 
     //FIXME:
@@ -176,6 +182,9 @@ void ProxyStyle::polish(QWidget *widget)
 
 void ProxyStyle::unpolish(QWidget *widget)
 {
+    if (!baseStyle()->inherits("Qt5UKUIStyle"))
+        return QProxyStyle::unpolish(widget);
+
     //return QProxyStyle::unpolish(widget);
     widget->removeEventFilter(this);
 
