@@ -1735,9 +1735,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     {
         if (const QStyleOptionToolButton *toolbutton
                 = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
-            QRect button, menuarea;
+            QRect button, menuarea,rect;
             button = proxy()->subControlRect(control, toolbutton, SC_ToolButton, widget);
             menuarea = proxy()->subControlRect(control, toolbutton, SC_ToolButtonMenu, widget);
+            rect = proxy()->subControlRect(CC_ToolButton,toolbutton,SC_None,widget);
 
             State bflags = toolbutton->state & ~State_Sunken;
 
@@ -1759,11 +1760,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             {
                 tool.state = mflags;
             }
-            tool.rect = button;
-            if(toolbutton->subControls & SC_ToolButtonMenu)
-            {
-                tool.rect.adjust(0,0,menuarea.width(),0);
-            }
+            tool.rect = rect;
             proxy()->drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
 
             if (toolbutton->state & State_HasFocus) {
@@ -3093,7 +3090,12 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     }
     case PM_SubMenuOverlap:return -2;
     case PM_ButtonMargin:return  9;
-    case PM_DefaultFrameWidth:return 2;
+    case PM_DefaultFrameWidth:
+        if(const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(option))
+        {
+            return 4;
+        }
+        return 2;
     case PM_TabBarTabVSpace:return 20;
     case PM_TabBarTabHSpace:return 40;
     case PM_HeaderMargin:return 9;
@@ -3148,7 +3150,8 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             QRect rect = tb->rect;
             qreal width=rect.width();
             qreal mbi = pixelMetric(PM_MenuButtonIndicator, tb, widget);
-            qreal js = width - mbi - tb->iconSize.width();
+            int fw = proxy()->pixelMetric(PM_DefaultFrameWidth, tb, widget);
+            qreal js = width - mbi - tb->iconSize.width() - fw*2;
             if(js > 1)
             {
                 mbi = qRound(js/2 + mbi);
@@ -3163,6 +3166,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             }
             if(mbi > 24)
                 mbi = 24;
+
             switch (subControl) {
             case SC_ToolButton:
                 if ((tb->features
@@ -3170,6 +3174,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                         == QStyleOptionToolButton::MenuButtonPopup)
                 {
                     rect.adjust(0, 0, -mbi, 0);
+                    rect = visualRect(tb->direction,tb->rect,rect);
                 }
                 return rect;
             case SC_ToolButtonMenu:
@@ -3178,10 +3183,11 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                         == QStyleOptionToolButton::MenuButtonPopup)
                 {
                     rect.adjust(rect.width() -mbi, 0, 0, 0);
+                    rect = visualRect(tb->direction,tb->rect,rect);
                 }
                 return rect;
             default:
-                break;
+                return rect;
             }
         }
 
