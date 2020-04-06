@@ -13,6 +13,7 @@ static const QStringList blackAppList() {
 
 static const QStringList blackAppListWithBlurHelper(){
     QStringList l;
+    l<<"youker-assistant";
     l<<"kylin-assistant";
     l<<"kylin-video";
     l<<"ukui-control-center";
