@@ -1,0 +1,2 @@
+usr/lib/*/*.so.*
+usr/share/glib-2.0/schemas/org.ukui.style.gschema.xml
