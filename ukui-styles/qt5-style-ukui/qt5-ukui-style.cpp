@@ -1774,8 +1774,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             }
             QStyleOptionToolButton label = *toolbutton;
             label.state = bflags;
-            int fw = proxy()->pixelMetric(PM_DefaultFrameWidth, option, widget);
-            label.rect = button.adjusted(fw, fw, -fw, -fw);
+            label.rect = button;
             proxy()->drawControl(CE_ToolButtonLabel, &label, painter, widget);
 
             if (toolbutton->subControls & SC_ToolButtonMenu) {
