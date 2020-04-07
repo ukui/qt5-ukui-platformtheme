@@ -2268,116 +2268,96 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             QRect br = btn->rect;
             int dbi = proxy()->pixelMetric(PM_ButtonDefaultIndicator, btn, widget);
-            if (btn->features & QStyleOptionButton::DefaultButton)
-                proxy()->drawPrimitive(PE_FrameDefaultButton, option, painter, widget);
             if (btn->features & QStyleOptionButton::AutoDefaultButton)
                 br.setCoords(br.left() + dbi, br.top() + dbi, br.right() - dbi, br.bottom() - dbi);
-//            if (!(btn->features & (QStyleOptionButton::Flat | QStyleOptionButton::CommandLinkButton))
-//                || btn->state & (State_Sunken | State_On)
-//                || (btn->features & QStyleOptionButton::CommandLinkButton && btn->state & State_MouseOver)) {
-                QStyleOptionButton tmpBtn = *btn;
-                tmpBtn.rect = br;
-                proxy()->drawPrimitive(PE_PanelButtonCommand, &tmpBtn, painter, widget);
-//            }
-            if (btn->features & QStyleOptionButton::HasMenu) {
-                int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, btn, widget);
-                QRect ir = btn->rect;
-                QStyleOptionButton newBtn = *btn;
-                newBtn.rect = QRect(ir.right() - mbi + 2, ir.height()/2 - mbi/2 + 3, mbi - 6, mbi - 6);
-                proxy()->drawPrimitive(PE_IndicatorArrowDown, &newBtn, painter, widget);
-            }
+
+            QStyleOptionButton tmpBtn = *btn;
+            tmpBtn.rect = br;
+            proxy()->drawPrimitive(PE_PanelButtonCommand, &tmpBtn, painter, widget);
         }
         break;
     }
+
     case CE_PushButtonLabel:
     {
         const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option);
-        QRect textRect = button->rect;
+        QRect rect = button->rect;
+        int bf = proxy()->pixelMetric(PM_DefaultFrameWidth,button,widget);//2
+        int bm = proxy()->pixelMetric(PM_ButtonMargin,button,widget);//9
+        QRect drawRect = rect.adjusted(bf,bf,-bf,-bf);
+        if (button->features & QStyleOptionButton::HasMenu)
+        {
+            QStyleOptionButton arrow = *button;
+            int indicatorSize = proxy()->pixelMetric(PM_MenuButtonIndicator, button, widget);//16
+            if (button->direction == Qt::RightToLeft)
+            {
+                arrow.rect.setRect(drawRect.left(),drawRect.top(),indicatorSize,drawRect.height());
+                drawRect = drawRect.adjusted(indicatorSize, 0, 0, 0);
+            }
+            else
+            {
+                drawRect = drawRect.adjusted(0, 0, -indicatorSize, 0);
+                arrow.rect.setRect(drawRect.right(),drawRect.top(),indicatorSize,drawRect.height());
+            }
+            proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
+        }
+
         //这是是否要绘制"&P" as P（带下划线）
         uint tf = Qt::AlignVCenter | Qt::TextShowMnemonic;
         if (!proxy()->styleHint(SH_UnderlineShortcut, button, widget))
             tf |= Qt::TextHideMnemonic;
 
-        if (!button->icon.isNull()) {
+        if (!button->icon.isNull())
+        {
             //Center both icon and text
-            QRect iconRect;
             QIcon::Mode mode = button->state & State_Enabled ? QIcon::Normal : QIcon::Disabled;
             if (mode == QIcon::Normal && button->state & State_HasFocus)
                 mode = QIcon::Active;
             QIcon::State state = QIcon::Off;
             if (button->state & State_On)
                 state = QIcon::On;
-
             QPixmap pixmap = button->icon.pixmap(button->iconSize, mode, state);
+            if(button->text.isEmpty())
+            {
+                proxy()->drawItemPixmap(painter, drawRect, Qt::AlignCenter, pixmap);
+                return;
+            }
 
-            int labelWidth = pixmap.width();
-            int labelHeight = pixmap.height();
-            int iconSpacing = 4;//4 is currently hardcoded in QPushButton::sizeHint()
-            int textWidth =button->fontMetrics.boundingRect(option->rect, int(tf), button->text).width();
-            if (!button->text.isEmpty())
-                labelWidth += (textWidth + iconSpacing);
+            QRect iconRect;
+            iconRect.setRect(drawRect.left(),drawRect.top(),button->iconSize.width(),button->iconSize.height());
 
-            iconRect = QRect(textRect.x() + (textRect.width() - labelWidth) / 2,
-                             textRect.y() + (textRect.height() - labelHeight) / 2,
-                             pixmap.width(), pixmap.height());
 
-            iconRect = visualRect(button->direction, textRect, iconRect);
+            QRect textRect = button->fontMetrics.boundingRect(option->rect, int(tf), button->text);
+            textRect.setRect(iconRect.right(),iconRect.top(),textRect.width(),textRect.height());
 
-            tf |= Qt::AlignLeft; //left align, we adjust the text-rect instead
+            QRect IconTextRect = iconRect.adjusted(0,0,textRect.width()+bm,0);
 
-            if (button->direction == Qt::RightToLeft)
-                textRect.setRight(iconRect.left() - iconSpacing);
-            else
-                textRect.setLeft(iconRect.left() + iconRect.width() + iconSpacing);
+            IconTextRect.moveCenter(drawRect.center());
 
-            if (button->state & (State_On | State_Sunken))
-                iconRect.translate(proxy()->pixelMetric(PM_ButtonShiftHorizontal, option, widget),
-                                   proxy()->pixelMetric(PM_ButtonShiftVertical, option, widget));
+            iconRect.moveCenter(IconTextRect.adjusted(0,0,-textRect.width()-bm,0).center());
+            textRect.moveCenter(IconTextRect.adjusted(iconRect.width(),0,0,0).center());
 
-            drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
-        } else {
+            iconRect = visualRect(button->direction, drawRect, iconRect);
+            textRect = visualRect(button->direction, drawRect, textRect);
+
+            proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+            drawRect = textRect;
+        }
+        else
+        {
             tf |= Qt::AlignHCenter;
         }
-        if (button->state & (State_On | State_Sunken))
-            textRect.translate(proxy()->pixelMetric(PM_ButtonShiftHorizontal, option, widget),
-                               proxy()->pixelMetric(PM_ButtonShiftVertical, option, widget));
 
-        if (button->features & QStyleOptionButton::HasMenu) {
-            int indicatorSize = proxy()->pixelMetric(PM_MenuButtonIndicator, button, widget);
-            if (button->direction == Qt::LeftToRight)
-                textRect = textRect.adjusted(0, 0, -indicatorSize, 0);
-            else
-                textRect = textRect.adjusted(indicatorSize, 0, 0, 0);
-        }
-        //You can also write static colors directly
-        //proxy()->drawItemText(painter, textRect, tf, button->palette, (button->state & State_Enabled),button->text, QPalette::HighlightedText);
-
-        //The following are text dynamic colors
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
-//        if(option->state & State_HasFocus){
-//            painter->setPen(option->palette.color(QPalette::HighlightedText));
-//        }
-//        else {
-//            painter->setPen(option->palette.color(QPalette::ButtonText));
-//        }
-//        if (option->state & State_MouseOver) {
-//            if (option->state & State_Sunken) {
-//                painter->setPen(option->palette.color(QPalette::HighlightedText));
-//            } else {
-//                painter->setPen(option->palette.color(QPalette::HighlightedText));
-//            }
-//        }
         painter->setPen(option->palette.color(QPalette::ButtonText));
         if(option->state & (State_Sunken | State_MouseOver))
             painter->setPen(option->palette.color(QPalette::HighlightedText));
-        if(!(option->state & State_Enabled))
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
-        //painter->drawText(option->rect,pushbutton->text, QTextOption(Qt::AlignCenter));
-        proxy()->drawItemText(painter, textRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
+        proxy()->drawItemText(painter, drawRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
         painter->restore();
         return;
     }
+
     case CE_ToolButtonLabel: {
         if (const QStyleOptionToolButton *toolbutton
                 = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
@@ -3107,6 +3087,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         {
             if(tb->subControls & SC_ToolButtonMenu)
                 return 16;
+        }
+        if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
+        {
+            return 16;
         }
         return 12;
     default:
