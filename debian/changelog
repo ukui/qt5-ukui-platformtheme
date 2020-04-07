@@ -1,0 +1,5 @@
+qt5-ukui-platformtheme (1.0.1-0ubuntu1) focal; urgency=medium
+
+  * Initial release. (LP: #1869007)
+
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 31 Mar 2020 22:18:05 +0800
