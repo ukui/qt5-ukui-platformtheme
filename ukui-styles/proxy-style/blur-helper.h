@@ -48,6 +48,17 @@ public slots:
     void onWidgetDestroyed(QWidget *widget);
     void delayUpdate(QWidget *w, bool updateBlurRegionOnly = false);
 
+protected:
+    /*!
+     * \brief confirmBlurEnableDelay
+     * \note
+     * some application start before kwin, such as peony-qt-desktop.
+     * we have to ensure that the blurEnable protocol not effected by
+     * the case. Delay a while and check it again is a normally way to
+     * confirm.
+     */
+    void confirmBlurEnableDelay();
+
 private:
     QList<QWidget *> m_blur_widgets;
 

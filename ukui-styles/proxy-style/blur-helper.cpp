@@ -47,6 +47,9 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
         });
         bool enable = settings->get("enabledGlobalBlur").toBool();
         this->onBlurEnableChanged(enable);
+
+        if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
+            confirmBlurEnableDelay();
     }
     m_timer.setSingleShot(true);
     m_timer.setInterval(100);
@@ -263,4 +266,25 @@ void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
     } else {
         m_timer.start();
     }
+}
+
+void BlurHelper::confirmBlurEnableDelay()
+{
+    QTimer::singleShot(3000, this, [=](){
+        bool enable = m_blur_enable;
+        if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) && enable) {
+            qApp->setProperty("blurEnable", true);
+        } else {
+            qApp->setProperty("blurEnable", false);
+        }
+        for (auto widget : qApp->allWidgets()) {
+            widget->update();
+        }
+        QTimer::singleShot(100, this, [=](){
+            for (auto widget : m_blur_widgets) {
+                if (widget->winId() > 0)
+                    KWindowEffects::enableBlurBehind(widget->winId(), enable);
+            }
+        });
+    });
 }
