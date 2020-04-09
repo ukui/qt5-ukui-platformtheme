@@ -1153,73 +1153,151 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
 
-    case PE_IndicatorCheckBox: { //UKUI CheckBox style
-        if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
+//    case PE_IndicatorCheckBox: { //UKUI CheckBox style
+//        if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
+//            painter->save();
+//            painter->translate(0.5, 0.5);
+//            painter->setRenderHint(QPainter::Antialiasing,true);
+//            QColor selectpen=option->palette.color(QPalette::Mid);
+//            QColor selectbg;
+//            QColor selectmark;
+//            if (option->state&State_Enabled){
+//                selectbg=option->palette.color(QPalette::Highlight);
+//                selectmark=option->palette.color(QPalette::HighlightedText);
+//            }
+//            else{
+//                selectbg=option->palette.button().color();
+//                selectmark=option->palette.color(QPalette::Mid);
+//            }
+
+//            const int maxFactor = 120;
+//            QColor tmp = option->palette.base().color();
+//            tmp.setRed((tmp.red() * 85) / maxFactor + (option->palette.foreground().color().red() * (maxFactor - 85)) / maxFactor);
+//            tmp.setGreen((tmp.green() * 85) / maxFactor + (option->palette.foreground().color().green() * (maxFactor - 85)) / maxFactor);
+//            tmp.setBlue((tmp.blue() * 85) / maxFactor + (option->palette.foreground().color().blue() * (maxFactor - 85)) / maxFactor);
+
+//            painter->setPen(tmp);
+//            painter->setBrush(Qt::NoBrush);
+//            if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
+//                painter->setPen(option->palette.color(QPalette::Highlight));
+//            painter->drawRoundedRect(option->rect,3,3);
+//            painter->restore();
+//            // if (option->state & State_MouseOver)
+//            // painter->setBrush(option->palette.color(QPalette::Highlight));
+//            if (option->state & State_NoChange){//Non optional status
+//                selectpen=tmp;
+//                selectbg=Qt::NoBrush;
+//                selectmark=tmp;
+//            }
+//            else if (option->state & State_On) {
+//                painter->save();
+//                painter->translate(0.5, 0.5);
+//                painter->setRenderHint(QPainter::Antialiasing,true);
+//                painter->setPen(selectpen);
+//                painter->setBrush(selectbg);
+//                if(option->state & State_MouseOver){
+//                    painter->setPen(option->palette.midlight().color());
+//                    painter->setBrush( option->palette.highlight().color().lighter());
+//                }
+//                else if (option->state & State_Sunken) {
+//                    painter->setBrush( option->palette.highlight().color().darker());
+//                }
+//                painter->drawRoundedRect(option->rect,3,3);
+//                painter->restore();
+
+//                // Draw checkmark
+//                painter->save();
+//                painter->setRenderHint(QPainter::Antialiasing,true);
+//                painter->setPen(QPen(selectmark,1.1));
+//                const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
+//                QPainterPath path;
+//                const qreal rectHeight = option->rect.height(); // assuming height equals width
+//                path.moveTo(checkMarkPadding + rectHeight * 0.11, rectHeight * 0.47);
+//                path.lineTo(rectHeight * 0.5, rectHeight - checkMarkPadding);
+//                path.lineTo(rectHeight - checkMarkPadding, checkMarkPadding);
+//                painter->drawPath(path.translated(option->rect.topLeft()));
+//                painter->restore();
+//            }
+//        }
+//        return;
+//    }
+
+    case PE_IndicatorCheckBox:
+    {
+        if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option))
+        {
+            QRect rect = checkbox->rect;
+            int width = rect.width();
+            int heigth = rect.height();
+            bool enable = checkbox->state & State_Enabled;
+            bool MouseOver = checkbox->state & State_MouseOver;
+            bool SunKen = checkbox->state & State_Sunken;
+            QColor box = option->palette.color(QPalette::Dark);
+            QColor light = option->palette.color(QPalette::Light);
+            if(!enable)
+            {
+                light = box = option->palette.color(QPalette::Disabled,QPalette::ButtonText);
+            }
+
             painter->save();
-            painter->translate(0.5, 0.5);
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            QColor selectpen=option->palette.color(QPalette::Mid);
-            QColor selectbg;
-            QColor selectmark;
-            if (option->state&State_Enabled){
-                selectbg=option->palette.color(QPalette::Highlight);
-                selectmark=option->palette.color(QPalette::HighlightedText);
-            }
-            else{
-                selectbg=option->palette.button().color();
-                selectmark=option->palette.color(QPalette::Mid);
-            }
+            painter->setClipRect(rect);
+            painter->setRenderHint(QPainter::Antialiasing);
 
-            const int maxFactor = 120;
-            QColor tmp = option->palette.base().color();
-            tmp.setRed((tmp.red() * 85) / maxFactor + (option->palette.foreground().color().red() * (maxFactor - 85)) / maxFactor);
-            tmp.setGreen((tmp.green() * 85) / maxFactor + (option->palette.foreground().color().green() * (maxFactor - 85)) / maxFactor);
-            tmp.setBlue((tmp.blue() * 85) / maxFactor + (option->palette.foreground().color().blue() * (maxFactor - 85)) / maxFactor);
-
-            painter->setPen(tmp);
+            painter->setPen(QPen(box,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
             painter->setBrush(Qt::NoBrush);
-            if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
-                painter->setPen(option->palette.color(QPalette::Highlight));
-            painter->drawRoundedRect(option->rect,3,3);
-            painter->restore();
-            // if (option->state & State_MouseOver)
-            // painter->setBrush(option->palette.color(QPalette::Highlight));
-            if (option->state & State_NoChange){//Non optional status
-                selectpen=tmp;
-                selectbg=Qt::NoBrush;
-                selectmark=tmp;
-            }
-            else if (option->state & State_On) {
-                painter->save();
-                painter->translate(0.5, 0.5);
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(selectpen);
-                painter->setBrush(selectbg);
-                if(option->state & State_MouseOver){
-                    painter->setPen(option->palette.midlight().color());
-                    painter->setBrush( option->palette.highlight().color().lighter());
-                }
-                else if (option->state & State_Sunken) {
-                    painter->setBrush( option->palette.highlight().color().darker());
-                }
-                painter->drawRoundedRect(option->rect,3,3);
-                painter->restore();
+            painter->drawRoundedRect(rect,4,4);
+            rect.adjusted(-1,-1,1,1);
 
-                // Draw checkmark
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(QPen(selectmark,1.1));
-                const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
-                QPainterPath path;
-                const qreal rectHeight = option->rect.height(); // assuming height equals width
-                path.moveTo(checkMarkPadding + rectHeight * 0.11, rectHeight * 0.47);
-                path.lineTo(rectHeight * 0.5, rectHeight - checkMarkPadding);
-                path.lineTo(rectHeight - checkMarkPadding, checkMarkPadding);
-                painter->drawPath(path.translated(option->rect.topLeft()));
-                painter->restore();
+            if(MouseOver)
+            {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Highlight).darker(125));
+                if(checkbox->state & (State_On | State_NoChange))
+                {
+                    painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
+                }
+                painter->drawRoundedRect(rect,4,4);
             }
+
+            if(SunKen)
+            {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Highlight).darker(150));
+                if(checkbox->state & (State_On | State_NoChange))
+                {
+                    painter->setBrush(option->palette.color(QPalette::Highlight));
+                }
+                painter->drawRoundedRect(rect,4,4);
+            }
+
+            if(checkbox->state & (State_On | State_NoChange))
+            {
+                if(enable && !MouseOver && !SunKen)
+                {
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
+                    painter->drawRoundedRect(rect,4,4);
+                }
+                QPainterPath path;
+                if(checkbox->state & State_On)
+                {
+                    path.moveTo(width/4 + rect.left(),heigth/2 + rect.top());
+                    path.lineTo(width*0.45 + rect.left(),heigth*3/4 + rect.top());
+                    path.lineTo(width*3/4 + rect.left(),heigth/4 + rect.top());
+                }
+                else if(checkbox->state & State_NoChange)
+                {
+                    path.moveTo(width/5 + rect.left(),heigth/2 + rect.top());
+                    path.lineTo(width*4/5 + rect.left(),heigth/2 + rect.top());
+                }
+                painter->setPen(QPen(light,1.5,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+                painter->setBrush(Qt::NoBrush);
+                painter->drawPath(path);
+            }
+            painter->restore();
+            return;
         }
-        return;
+        break;
     }
 
     case PE_IndicatorArrowUp:
@@ -1383,7 +1461,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         return;
     }
-
 
 
     default:   break;
@@ -2666,6 +2743,26 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         }
         break;
 
+    case CE_CheckBox:
+    {
+           if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option))
+           {
+
+               QStyleOptionButton subopt = *btn;
+               subopt.rect = subElementRect(SE_CheckBoxIndicator, btn, widget);
+               proxy()->drawPrimitive(PE_IndicatorCheckBox,&subopt, painter, widget);
+               subopt.rect = subElementRect(SE_CheckBoxContents, btn, widget);
+               proxy()->drawControl(CE_CheckBoxLabel, &subopt, painter, widget);
+//               if (btn->state & State_HasFocus)
+//               {
+//                   QStyleOptionFocusRect fropt;
+//                   fropt.QStyleOption::operator=(*btn);
+//                   fropt.rect = subElementRect(SE_CheckBoxFocusRect, btn, widget);
+//                   proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+//               }
+           }
+           break;
+    }
 
         //Draw table header style
     case CE_HeaderSection:
