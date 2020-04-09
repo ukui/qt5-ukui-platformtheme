@@ -2422,8 +2422,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(option->palette.color(QPalette::ButtonText));
-        if(option->state & (State_Sunken | State_MouseOver))
+        if(button->state & (State_Sunken | State_MouseOver | State_On))
             painter->setPen(option->palette.color(QPalette::HighlightedText));
+        if(!(button->state & State_Enabled))
+            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
         proxy()->drawItemText(painter, drawRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
         painter->restore();
         return;
@@ -2435,10 +2437,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QRect rect = toolbutton->rect;
             int shiftX = 0;
             int shiftY = 0;
-            if (toolbutton->state & (State_Sunken | State_On)) {
-                shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
-                shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
-            }
+//            if (toolbutton->state & (State_Sunken | State_On)) {
+//                shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
+//                shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
+//            }
             // Arrow type always overrules and is always shown
             bool hasArrow = toolbutton->features & QStyleOptionToolButton::Arrow;
             if (((!hasArrow && toolbutton->icon.isNull()) && !toolbutton->text.isEmpty())
@@ -2448,9 +2450,12 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     alignment |= Qt::TextHideMnemonic;
                 rect.translate(shiftX, shiftY);
                 painter->setFont(toolbutton->font);
+                if(toolbutton->state & (State_Sunken | State_MouseOver | State_On))
+                    painter->setPen(option->palette.color(QPalette::HighlightedText));
+                if(!(toolbutton->state & State_Enabled))
+                    painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
                 proxy()->drawItemText(painter, rect, alignment, toolbutton->palette,
-                                      option->state & State_Enabled, toolbutton->text,
-                                      QPalette::ButtonText);
+                                      option->state & State_Enabled, toolbutton->text);
             } else {
                 QPixmap pm;
                 QSize pmSize = toolbutton->iconSize;
@@ -2500,9 +2505,12 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     }
                     tr.translate(shiftX, shiftY);
                     const QString text = toolButtonElideText(toolbutton, tr, alignment);
+                    if(toolbutton->state & (State_Sunken | State_MouseOver | State_On))
+                        painter->setPen(option->palette.color(QPalette::HighlightedText));
+                    if(!(toolbutton->state & State_Enabled))
+                        painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
                     proxy()->drawItemText(painter, QStyle::visualRect(option->direction, rect, tr), alignment, toolbutton->palette,
-                                          toolbutton->state & State_Enabled, text,
-                                          QPalette::ButtonText);
+                                          toolbutton->state & State_Enabled, text);
                 } else {
                     rect.translate(shiftX, shiftY);
                     if (hasArrow) {
