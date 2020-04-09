@@ -1243,17 +1243,21 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setClipRect(rect);
             painter->setRenderHint(QPainter::Antialiasing);
 
-            painter->setPen(QPen(box,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+            painter->setPen(QPen(box,1));
             painter->setBrush(Qt::NoBrush);
             painter->drawRoundedRect(rect,4,4);
-            rect.adjusted(-1,-1,1,1);
 
+            QColor color = option->palette.color(QPalette::Highlight);
+            qreal h, s, v;
+            color.getHsvF(&h, &s, &v);
             if(MouseOver)
             {
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Highlight).darker(125));
+                color.setHsvF(h,s,v - 0.13);
+                painter->setPen(QPen(color,1));
+                painter->setBrush(color);
                 if(checkbox->state & (State_On | State_NoChange))
                 {
+                    painter->setPen(QPen(option->palette.color(QPalette::Highlight).lighter(150),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
                 }
                 painter->drawRoundedRect(rect,4,4);
@@ -1261,10 +1265,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             if(SunKen)
             {
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Highlight).darker(150));
+                color.setHsvF(h,s + 0.15,v - 0.2);
+                painter->setPen(QPen(color,1));
+                painter->setBrush(color);
                 if(checkbox->state & (State_On | State_NoChange))
                 {
+                    painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight));
                 }
                 painter->drawRoundedRect(rect,4,4);
@@ -1274,23 +1280,23 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             {
                 if(enable && !MouseOver && !SunKen)
                 {
-                    painter->setPen(Qt::NoPen);
+                    painter->setPen(QPen(option->palette.color(QPalette::Highlight).lighter(125),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
                     painter->drawRoundedRect(rect,4,4);
                 }
                 QPainterPath path;
                 if(checkbox->state & State_On)
                 {
-                    path.moveTo(width/4 + rect.left(),heigth/2 + rect.top());
-                    path.lineTo(width*0.45 + rect.left(),heigth*3/4 + rect.top());
-                    path.lineTo(width*3/4 + rect.left(),heigth/4 + rect.top());
+                    path.moveTo(width/4 + checkbox->rect.left(),heigth/2 + checkbox->rect.top());
+                    path.lineTo(width*0.45 + checkbox->rect.left(),heigth*3/4 + checkbox->rect.top());
+                    path.lineTo(width*3/4 + checkbox->rect.left(),heigth/4 + checkbox->rect.top());
                 }
                 else if(checkbox->state & State_NoChange)
                 {
-                    path.moveTo(width/5 + rect.left(),heigth/2 + rect.top());
-                    path.lineTo(width*4/5 + rect.left(),heigth/2 + rect.top());
+                    path.moveTo(width/5 + checkbox->rect.left(),heigth/2 + checkbox->rect.top());
+                    path.lineTo(width*4/5 + checkbox->rect.left(),heigth/2 + checkbox->rect.top());
                 }
-                painter->setPen(QPen(light,1.5,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+                painter->setPen(QPen(light,2,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
                 painter->setBrush(Qt::NoBrush);
                 painter->drawPath(path);
             }
