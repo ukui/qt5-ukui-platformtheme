@@ -2588,62 +2588,61 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     }break;
 
     case CE_ComboBoxLabel:
-                if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
-                    QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
+        if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+            QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
 
-                    painter->save();
-                    QString text = cb->currentText;
-                    QFontMetrics fontMetrics = cb->fontMetrics;
-                    QTextLayout textLayout(text);
-                    QTextOption opt;
-                    opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-                    opt.setAlignment(Qt::AlignHCenter);
+            painter->save();
+            QString text = cb->currentText;
+            QFontMetrics fontMetrics = cb->fontMetrics;
+            QTextLayout textLayout(text);
+            QTextOption opt;
+            opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+            opt.setAlignment(Qt::AlignHCenter);
 
-                    textLayout.setTextOption(opt);
-                    textLayout.beginLayout();
+            textLayout.setTextOption(opt);
+            textLayout.beginLayout();
 
-                    int width = editRect.width();
+            int width = editRect.width();
 
-//
-                    painter->setClipRect(editRect);
-                    if (!cb->currentIcon.isNull()) {
-                        QIcon::Mode mode = cb->state & State_Enabled ? QIcon::Normal
-                                                                     : QIcon::Disabled;
-                        QPixmap pixmap = cb->currentIcon.pixmap(qt_getWindow(widget), cb->iconSize, mode);
-                        QRect iconRect(editRect);
-                        iconRect.setWidth(cb->iconSize.width() + 4);
+            //
+            painter->setClipRect(editRect);
+            if (!cb->currentIcon.isNull()) {
+                QIcon::Mode mode = cb->state & State_Enabled ? QIcon::Normal
+                                                             : QIcon::Disabled;
+                QPixmap pixmap = cb->currentIcon.pixmap(qt_getWindow(widget), cb->iconSize, mode);
+                QRect iconRect(editRect);
+                iconRect.setWidth(cb->iconSize.width() + 4);
 
-                        iconRect = alignedRect(cb->direction,
-                                               Qt::AlignLeft | Qt::AlignVCenter,
-                                               iconRect.size(), editRect);
-                        if (cb->editable)
-                            painter->fillRect(iconRect, option->palette.brush(QPalette::Base));
-                            proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                iconRect = alignedRect(cb->direction,
+                                       Qt::AlignLeft | Qt::AlignVCenter,
+                                       iconRect.size(), editRect);
+                if (cb->editable)
+                    painter->fillRect(iconRect, option->palette.brush(QPalette::Base));
+                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
 
-                        if (cb->direction == Qt::RightToLeft)
-                            editRect.translate(-4 - cb->iconSize.width(), 0);
-                        else
-                            editRect.translate(cb->iconSize.width() + 4, 0);
-                    }
-                    if (!cb->currentText.isEmpty() && !cb->editable) {
-                        if (fontMetrics.width(text) < width) {
-                            proxy()->drawItemText(painter, editRect.adjusted(1, 0, 0, 0),
-                                         visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
-                                         cb->palette, cb->state & State_Enabled, cb->currentText);
+                if (cb->direction == Qt::RightToLeft)
+                    editRect.translate(-4 - cb->iconSize.width(), 0);
+                else
+                    editRect.translate(cb->iconSize.width() + 4, 0);
+            }
+            if (!cb->currentText.isEmpty() && !cb->editable) {
+                if (fontMetrics.width(text) < width) {
+                    proxy()->drawItemText(painter, editRect.adjusted(3, 0, 0, 0),
+                                          visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
+                                          cb->palette, cb->state & State_Enabled, cb->currentText);
 
-                        }else{
-                            QString elidedLastLine = fontMetrics.elidedText(text, Qt::ElideRight, width - 15);
-                            proxy()->drawItemText(painter, editRect.adjusted(1, 0, 0, 0),
-                                                 visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
-                                                 cb->palette, cb->state & State_Enabled, elidedLastLine);
-                        }
-                        break;
-                   }
-                    textLayout.endLayout();
-                    painter->restore();
-                    return;
+                }else{
+                    QString elidedLastLine = fontMetrics.elidedText(text, Qt::ElideRight, width - 15);
+                    proxy()->drawItemText(painter, editRect.adjusted(3, 0, 0, 0),
+                                          visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
+                                          cb->palette, cb->state & State_Enabled, elidedLastLine);
                 }
-                break;
+            }
+            textLayout.endLayout();
+            painter->restore();
+            return;
+        }
+        break;
 
 
     case CE_RadioButtonLabel:
