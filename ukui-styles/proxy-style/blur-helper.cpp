@@ -57,10 +57,15 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 {
+    return false;
     if (!m_blur_enable)
         return false;
 
     QWidget* widget = qobject_cast<QWidget*>(obj);
+
+    if (!widget)
+        return false;
+
     if (widget->winId() <= 0)
         return false;
 
@@ -102,6 +107,9 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
  */
 void BlurHelper::registerWidget(QWidget *widget)
 {
+    if (!widget)
+        return;
+
     if (shouldSkip(widget))
         return;
     if (isApplicationInBlackList())
@@ -139,6 +147,9 @@ void BlurHelper::registerWidget(QWidget *widget)
 
 void BlurHelper::unregisterWidget(QWidget *widget)
 {
+    if (!widget)
+        return;
+
     if (shouldSkip(widget))
         return;
     if (isApplicationInBlackList())
@@ -147,7 +158,8 @@ void BlurHelper::unregisterWidget(QWidget *widget)
         return;
     m_blur_widgets.removeOne(widget);
     widget->removeEventFilter(this);
-    KWindowEffects::enableBlurBehind(widget->winId(), false);
+    if (widget->winId() > 0)
+        KWindowEffects::enableBlurBehind(widget->winId(), false);
 }
 
 bool BlurHelper::isApplicationInBlackList()
@@ -194,7 +206,8 @@ void BlurHelper::onBlurEnableChanged(bool enable)
 
 void BlurHelper::onWidgetDestroyed(QWidget *widget)
 {
-    unregisterWidget(widget);
+    widget->removeEventFilter(this);
+    //unregisterWidget(widget);
 }
 
 void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
@@ -282,6 +295,8 @@ void BlurHelper::confirmBlurEnableDelay()
         }
         QTimer::singleShot(100, this, [=](){
             for (auto widget : m_blur_widgets) {
+                if (!widget)
+                    continue;
                 if (widget->winId() > 0)
                     KWindowEffects::enableBlurBehind(widget->winId(), enable);
             }
