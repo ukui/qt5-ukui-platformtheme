@@ -1645,9 +1645,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             button.rect = ArrowRect;
             if(combobox->editable)
             {
-                proxy()->drawPrimitive(PE_PanelButtonCommand,&button,painter,widget);
+                int fw = combobox->frame ? proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget) : 0;
                 QRect EditRect = subControlRect(CC_ComboBox,option,SC_ComboBoxEditField,widget);
-                rect = EditRect;
+                rect = EditRect.adjusted(-fw,-fw,fw,fw);
+                proxy()->drawPrimitive(PE_PanelButtonCommand,&button,painter,widget);
             }
 
             if(!(option->state & State_Enabled))
@@ -1670,8 +1671,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(rect,4,4);
             painter->restore();
-            proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
-
+            QStyleOption arrow;
+            arrow.state = State_Enabled;
+            arrow.rect = ArrowRect;
+            proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
 
             if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                   || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
@@ -1831,8 +1834,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         {
             bool enable = spinbox->state & State_Enabled;
             painter->save();
-            painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Base));
-            painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Base));
+            painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
+            painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
             painter->drawRoundedRect(spinbox->rect,4,4);
             painter->restore();
             if(spinbox->state & State_HasFocus)
@@ -1865,7 +1868,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         uparrow.state |= State_Enabled;
                         if(spinbox->activeSubControls == SC_SpinBoxUp)
                         {
-                            proxy()->drawControl(CE_PushButton,&upbutton,painter,widget);
+                            proxy()->drawPrimitive(PE_PanelButtonCommand,&upbutton,painter,widget);
                             if(spinbox->state & State_MouseOver)
                                 uparrow.state |= State_MouseOver;
                             if(spinbox->state & State_Sunken)
@@ -1885,7 +1888,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         downarrow.state |= State_Enabled;
                         if(spinbox->activeSubControls == SC_SpinBoxDown)
                         {
-                            proxy()->drawControl(CE_PushButton,&downbutton,painter,widget);
+                            proxy()->drawPrimitive(PE_PanelButtonCommand,&downbutton,painter,widget);
                             if(spinbox->state & State_MouseOver)
                                 downarrow.state |= State_MouseOver;
                             if(spinbox->state & State_Sunken)
@@ -2858,7 +2861,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     case CE_ComboBoxLabel:
         if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             QRect editRect = proxy()->subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, widget);
-
             painter->save();
             QString text = cb->currentText;
             QFontMetrics fontMetrics = cb->fontMetrics;
@@ -2895,13 +2897,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
             if (!cb->currentText.isEmpty() && !cb->editable) {
                 if (fontMetrics.width(text) < width) {
-                    proxy()->drawItemText(painter, editRect.adjusted(3, 0, 0, 0),
+                    proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),
                                           visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
                                           cb->palette, cb->state & State_Enabled, cb->currentText);
 
                 }else{
                     QString elidedLastLine = fontMetrics.elidedText(text, Qt::ElideRight, width - 15);
-                    proxy()->drawItemText(painter, editRect.adjusted(3, 0, 0, 0),
+                    proxy()->drawItemText(painter, editRect.adjusted(1, 0, -1, 0),
                                           visualAlignment(cb->direction, Qt::AlignLeft | Qt::AlignVCenter),
                                           cb->palette, cb->state & State_Enabled, elidedLastLine);
                 }
@@ -3498,13 +3500,9 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox*>(option))
         {
             QRect rect = combobox -> rect;
-            const int margin = combobox->frame ? 3 : 0;
-            const int bmarg = combobox->frame ? 2 : 0;
-            int ArrowWidth = option->rect.height();
-            if(ArrowWidth > 24)
-                ArrowWidth = 24;
-            if(ArrowWidth > combobox->rect.width() * 4 / 9)
-                ArrowWidth = option->rect.width() * 4 / 9;
+            int fw = combobox->frame ? proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget) : 0;
+            const int textMargins = 2*(proxy()->pixelMetric(PM_FocusFrameHMargin) + 1);
+            int ArrowWidth = qMax(23, 2*textMargins + proxy()->pixelMetric(QStyle::PM_ScrollBarExtent, option, widget));
             const int gap = combobox->editable ? 4 : 0;
 
             switch (subControl)
@@ -3516,7 +3514,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                     rect = visualRect(combobox->direction,combobox->rect,rect);
                     return rect;
                 case SC_ComboBoxEditField:
-                    rect.setRect(rect.left(),rect.top(),rect.width() - ArrowWidth - gap,rect.height());
+                    rect.setRect(rect.left()+fw,rect.top()+fw,rect.width() - ArrowWidth - gap - 2*fw,rect.height() - 2*fw);
                     rect = visualRect(combobox->direction,combobox->rect,rect);
                     return rect;
                 case SC_ComboBoxListBoxPopup:
