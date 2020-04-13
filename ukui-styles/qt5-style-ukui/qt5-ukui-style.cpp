@@ -55,6 +55,8 @@
 #include <QtPlatformHeaders/QXcbWindowFunctions>
 #include <QComboBox>
 #include <QPushButton>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QEvent>
 #include <QDebug>
 #include <QPixmapCache>
@@ -468,6 +470,12 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_combobox_animation_helper->registerWidget(widget);
         m_button_animation_helper->registerWidget(widget);
     }
+
+    if(qobject_cast<QSpinBox*>(widget) || qobject_cast<QDoubleSpinBox*>(widget))
+    {
+        m_button_animation_helper->registerWidget(widget);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -509,6 +517,12 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         m_combobox_animation_helper->unregisterWidget(widget);
         m_button_animation_helper->unregisterWidget(widget);
     }
+
+    if(qobject_cast<QSpinBox*>(widget) || qobject_cast<QDoubleSpinBox*>(widget))
+    {
+        m_button_animation_helper->unregisterWidget(widget);
+    }
+
     QFusionStyle::unpolish(widget);
 }
 
@@ -1741,74 +1755,154 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         break;
     }
 
+//    case CC_SpinBox:
+//    {
+//        const QStyleOptionSpinBox *pb=qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+//        QRectF r1=subControlRect(control,option,QStyle::SC_SpinBoxUp,widget);
+//        QRectF r2=subControlRect(control,option,QStyle::SC_SpinBoxDown,widget);
+//        // QRect r3=subControlRect(control,option,QStyle::SC_SpinBoxEditField,widget);
+
+//        painter->save();
+//        painter->setRenderHint(QPainter::Antialiasing,true);
+//        painter->setPen(QPen(option->palette.color(QPalette::Button),1));
+//        painter->setBrush(option->palette.color(QPalette::Button));
+//        if (widget->isEnabled()) {
+//            if(pb->state&QStyle::State_HasFocus){
+//                painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
+//            }
+
+//            if(pb->state&State_MouseOver){
+//                painter->setPen(option->palette.color(QPalette::Highlight));
+//            }
+//        }
+//        painter->drawRoundedRect(option->rect,4,4);
+//        painter->restore();
+
+//        /*
+//         * There's no PE_IndicatorSpinUp and PE_IndicatorSpinDown here, and it's drawn directly.
+//        */
+//        painter->save();
+//        painter->setRenderHint(QPainter::Antialiasing,true);
+//        painter->setBrush(Qt::NoBrush);
+//        if(option->state & State_Enabled){
+//            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+//            if (option->state & State_MouseOver) {
+//                painter->restore();
+//                painter->save();
+//                painter->setRenderHint(QPainter::Antialiasing,true);
+//                painter->setBrush(Qt::NoBrush);
+//                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+//            }
+//        }
+//        else {
+//            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+//        }
+//        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),Qt::NoBrush);
+
+//        int w = 8;
+//        int h =  4;
+
+//        QPolygon points(4);
+//        int x = int(r1.x())+2;
+//        int y = int(r1.y())+2;
+//        points[0] = QPoint(x, y + h);
+//        points[1] = QPoint(x + w / 2, y);
+//        points[2] = QPoint(x + w / 2, y);
+//        points[3] = QPoint(x + w, y + h);
+//        painter->drawLine(points[0],  points[1] );
+//        painter->drawLine(points[2],  points[3] );
+
+//        int x2 = int(r2.x())+2;
+//        int y2 = int(r2.y())+2;
+//        points[0] = QPoint(x2, y2);
+//        points[1] = QPoint(x2 + w / 2, y2 + h);
+//        points[2] = QPoint(x2 + w / 2, y2 + h);
+//        points[3] = QPoint(x2 + w, y2);
+//        painter->drawLine(points[0],  points[1] );
+//        painter->drawLine(points[2],  points[3] );
+//        painter->restore();
+
+//        return ;
+//    }
+
     case CC_SpinBox:
     {
-        const QStyleOptionSpinBox *pb=qstyleoption_cast<const QStyleOptionSpinBox*>(option);
-        QRectF r1=subControlRect(control,option,QStyle::SC_SpinBoxUp,widget);
-        QRectF r2=subControlRect(control,option,QStyle::SC_SpinBoxDown,widget);
-        // QRect r3=subControlRect(control,option,QStyle::SC_SpinBoxEditField,widget);
-
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(QPen(option->palette.color(QPalette::Button),1));
-        painter->setBrush(option->palette.color(QPalette::Button));
-        if (widget->isEnabled()) {
-            if(pb->state&QStyle::State_HasFocus){
-                painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
-            }
-
-            if(pb->state&State_MouseOver){
-                painter->setPen(option->palette.color(QPalette::Highlight));
-            }
-        }
-        painter->drawRoundedRect(option->rect,4,4);
-        painter->restore();
-
-        /*
-         * There's no PE_IndicatorSpinUp and PE_IndicatorSpinDown here, and it's drawn directly.
-        */
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setBrush(Qt::NoBrush);
-        if(option->state & State_Enabled){
-            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
-            if (option->state & State_MouseOver) {
-                painter->restore();
+        if(const QStyleOptionSpinBox* spinbox = qstyleoption_cast<const QStyleOptionSpinBox*>(option))
+        {
+            bool enable = spinbox->state & State_Enabled;
+            painter->save();
+            painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Base));
+            painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Base));
+            painter->drawRoundedRect(spinbox->rect,4,4);
+            painter->restore();
+            if(spinbox->state & State_HasFocus)
+            {
                 painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(spinbox->palette.color(QPalette::Highlight));
                 painter->setBrush(Qt::NoBrush);
-                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(spinbox->rect,4,4);
+                painter->restore();
             }
+            if(spinbox->buttonSymbols != QAbstractSpinBox::NoButtons)
+            {
+                QStyleOptionButton upbutton, downbutton;
+                upbutton.state = spinbox->state;
+                downbutton.state = spinbox->state;
+                QRect uprect = proxy()->subControlRect(CC_SpinBox,spinbox,SC_SpinBoxUp,widget);
+                QRect downrect = proxy()->subControlRect(CC_SpinBox,spinbox,SC_SpinBoxDown,widget);
+                upbutton.rect = uprect;
+                downbutton.rect = downrect;
+                QStyleOption uparrow, downarrow;
+                uparrow.state = State_None;
+                downarrow.state = State_None;
+                uparrow.rect = uprect;
+                downarrow.rect = downrect;
+                if(spinbox->stepEnabled & QAbstractSpinBox::StepUpEnabled)
+                {
+                    if(upbutton.state & State_Enabled)
+                    {
+                        uparrow.state |= State_Enabled;
+                        if(spinbox->activeSubControls == SC_SpinBoxUp)
+                        {
+                            proxy()->drawControl(CE_PushButton,&upbutton,painter,widget);
+                            if(spinbox->state & State_MouseOver)
+                                uparrow.state |= State_MouseOver;
+                            if(spinbox->state & State_Sunken)
+                                uparrow.state |= State_Sunken;
+                        }
+                    }
+                }
+                else
+                {
+                    uparrow.state &= ~State_Enabled;
+                }
+
+                if(spinbox->stepEnabled & QAbstractSpinBox::StepDownEnabled)
+                {
+                    if(downbutton.state & State_Enabled)
+                    {
+                        downarrow.state |= State_Enabled;
+                        if(spinbox->activeSubControls == SC_SpinBoxDown)
+                        {
+                            proxy()->drawControl(CE_PushButton,&downbutton,painter,widget);
+                            if(spinbox->state & State_MouseOver)
+                                downarrow.state |= State_MouseOver;
+                            if(spinbox->state & State_Sunken)
+                                downarrow.state |= State_Sunken;
+                        }
+                    }
+                }
+                else
+                {
+                    downarrow.state &= ~State_Enabled;
+                }
+                proxy()->drawPrimitive(PE_IndicatorArrowUp,&uparrow,painter,widget);
+                proxy()->drawPrimitive(PE_IndicatorArrowDown,&downarrow,painter,widget);
+            }
+            return;
         }
-        else {
-            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-        }
-        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),Qt::NoBrush);
-
-        int w = 8;
-        int h =  4;
-
-        QPolygon points(4);
-        int x = int(r1.x())+2;
-        int y = int(r1.y())+2;
-        points[0] = QPoint(x, y + h);
-        points[1] = QPoint(x + w / 2, y);
-        points[2] = QPoint(x + w / 2, y);
-        points[3] = QPoint(x + w, y + h);
-        painter->drawLine(points[0],  points[1] );
-        painter->drawLine(points[2],  points[3] );
-
-        int x2 = int(r2.x())+2;
-        int y2 = int(r2.y())+2;
-        points[0] = QPoint(x2, y2);
-        points[1] = QPoint(x2 + w / 2, y2 + h);
-        points[2] = QPoint(x2 + w / 2, y2 + h);
-        points[3] = QPoint(x2 + w, y2);
-        painter->drawLine(points[0],  points[1] );
-        painter->drawLine(points[2],  points[3] );
-        painter->restore();
-
-        return ;
+        break;
     }
 
     case CC_Slider :
@@ -1909,7 +2003,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             }
             State mflags = bflags;
             if (toolbutton->state & State_Sunken) {
-                if (toolbutton->activeSubControls & SC_ToolButton)
+                //if (toolbutton->activeSubControls & SC_ToolButton)
                     bflags |= State_Sunken;
                 mflags |= State_Sunken;
             }
@@ -3439,6 +3533,57 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         }
     }
 
+    case CC_SpinBox:
+    {
+        QSize bs;
+        if(const QStyleOptionSpinBox* spinbox = qstyleoption_cast<const QStyleOptionSpinBox*>(option))
+        {
+            QRect rect;
+            int fw = spinbox->frame ? proxy()->pixelMetric(PM_SpinBoxFrameWidth, spinbox, widget) : 0;
+            //bs.setHeight(spinbox->rect.height() /2 - fw);
+            //bs.setWidth(qMax(20, qMin(bs.height() * 8 / 5, spinbox->rect.width() / 4)));
+            bs.setHeight(spinbox->rect.height() /2);
+            bs.setWidth(20);
+            bs = bs.expandedTo(QApplication::globalStrut());
+            //int y = fw + spinbox->rect.y();
+            int y = spinbox->rect.y();
+            int x, lx, rx;
+            //x = spinbox->rect.right() - fw - bs.width();
+            x = spinbox->rect.right() - bs.width() + 1;
+            lx = fw;
+            rx = x - fw;
+            switch (subControl)
+            {
+                case SC_SpinBoxUp:
+                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                        return QRect();
+                    rect = QRect(x, y, bs.width(), bs.height());
+                    break;
+                case SC_SpinBoxDown:
+                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                        return QRect();
+                    rect = QRect(x, y + bs.height(), bs.width(), bs.height());
+                    break;
+                case SC_SpinBoxEditField:
+                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                    {
+                        rect = QRect(lx, fw, spinbox->rect.width() - 2*fw, spinbox->rect.height() - 2*fw);
+                    }
+                    else
+                    {
+                        rect = QRect(lx, fw, rx, spinbox->rect.height() - 2*fw);
+                    }
+                    break;
+                case SC_SpinBoxFrame:
+                    rect = spinbox->rect;
+                default:
+                    break;
+            }
+            rect = visualRect(spinbox->direction, spinbox->rect, rect);
+            return rect;
+        }
+        break;
+    }
     default:
         break;
     }

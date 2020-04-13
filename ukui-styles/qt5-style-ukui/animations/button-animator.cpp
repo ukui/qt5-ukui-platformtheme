@@ -24,6 +24,8 @@
 #include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 using namespace UKUI::Button;
 
@@ -60,6 +62,13 @@ bool ButtonAnimator::bindWidget(QWidget *w)
         return true;
     }
     else if(qobject_cast<QComboBox*>(w))
+    {
+        if(w->property("doNotAnimate").toBool())
+            return false;
+        m_widget = w;
+        return true;
+    }
+    else if(qobject_cast<QSpinBox*>(w) || qobject_cast<QDoubleSpinBox*>(w) )
     {
         if(w->property("doNotAnimate").toBool())
             return false;
