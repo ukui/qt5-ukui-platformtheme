@@ -57,7 +57,6 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 
 bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 {
-    return false;
     if (!m_blur_enable)
         return false;
 
