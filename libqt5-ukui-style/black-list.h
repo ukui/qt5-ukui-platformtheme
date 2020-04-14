@@ -5,7 +5,7 @@
 
 static const QStringList blackAppList() {
     QStringList l;
-    l<<"ukui-control-center";
+    //l<<"ukui-control-center";
     l<<"kylin-burner";
     l<<"assistant";
     return l;
