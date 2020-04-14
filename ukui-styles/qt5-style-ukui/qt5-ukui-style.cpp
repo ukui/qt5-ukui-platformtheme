@@ -1359,75 +1359,73 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             key.insert(0,&a);
             direction /= 10;
         }
-        qreal pixelRatio = painter->device()->devicePixelRatioF();
-        int border = qRound(pixelRatio*(size/4));
-        int sqsize = qRound(pixelRatio*(2*(size/2)));
+        int border = size/4;
+        int sqsize = size;
         if(size > 16)
         {
-            border = pixelRatio*4;
-            sqsize = pixelRatio*16;
+            border = 4;
+            sqsize = 16;
         }
-//        if (!QPixmapCache::find(key, pixmap)) {
-
-//            QPixmapCache::insert(key, pixmap);
-//        }
-        QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
-        image.fill(0);
-        QPainter imagePainter(&image);
-        int sx = 0;
-        int sy = (sqsize/2 - border)/2;
-        QLineF lines[2];
-        switch (element) {
-        case PE_IndicatorArrowUp:
-            lines[0] = QLine(border, sqsize/2, sqsize/2, border);
-            lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
-            break;
-        case PE_IndicatorArrowDown:
-            lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-            lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
-            break;
-        case PE_IndicatorArrowRight:
-            lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-            lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
-            sx = (sqsize/2 - border)/2;
-            sy = 0;
-            break;
-        case PE_IndicatorArrowLeft:
-            lines[0] = QLine(sqsize/2, border, border, sqsize/2);
-            lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
-            sx = (sqsize/2 - border)/2;
-            sy = 0;
-            break;
-        default:
-            break;
-        }
-        imagePainter.translate(sx , sy);
-        imagePainter.setPen(Qt::NoPen);
-        imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
-        if (option->state & (State_MouseOver|State_Sunken))
+        if (!QPixmapCache::find(key, pixmap))
         {
-            imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
-        }
-        imagePainter.setBrush(Qt::NoBrush);
-        imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
-        imagePainter.setRenderHint(QPainter::Antialiasing);
-
-        if (!(option->state & State_Enabled)) {
-            //imagePainter.translate(1, 1);
-            imagePainter.setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::WindowText), 1.3));
+            QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
+            image.fill(0);
+            QPainter imagePainter(&image);
+            int sx = 0;
+            int sy = (sqsize/2 - border)/2;
+            QLineF lines[2];
+            switch (element) {
+            case PE_IndicatorArrowUp:
+                lines[0] = QLine(border, sqsize/2, sqsize/2, border);
+                lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
+                break;
+            case PE_IndicatorArrowDown:
+                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+                lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
+                break;
+            case PE_IndicatorArrowRight:
+                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+                lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
+                sx = (sqsize/2 - border)/2;
+                sy = 0;
+                break;
+            case PE_IndicatorArrowLeft:
+                lines[0] = QLine(sqsize/2, border, border, sqsize/2);
+                lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
+                sx = (sqsize/2 - border)/2;
+                sy = 0;
+                break;
+            default:
+                break;
+            }
+            imagePainter.translate(sx , sy);
+            imagePainter.setPen(Qt::NoPen);
+            imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+            if (option->state & (State_MouseOver|State_Sunken))
+            {
+                imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
+            }
             imagePainter.setBrush(Qt::NoBrush);
-            imagePainter.drawLines(lines,2);
-            //imagePainter.translate(-1, -1);
-            //imagePainter.setBrush(option->palette.mid().color());
-            //imagePainter.setPen(option->palette.mid().color());
+            imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
+            imagePainter.setRenderHint(QPainter::Antialiasing);
+
+            if (!(option->state & State_Enabled)) {
+                //imagePainter.translate(1, 1);
+                imagePainter.setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::WindowText), 1.3));
+                imagePainter.setBrush(Qt::NoBrush);
+                imagePainter.drawLines(lines,2);
+                //imagePainter.translate(-1, -1);
+                //imagePainter.setBrush(option->palette.mid().color());
+                //imagePainter.setPen(option->palette.mid().color());
+            }
+            else
+            {
+                imagePainter.drawLines(lines,2);
+            }
+            imagePainter.end();
+            pixmap = QPixmap::fromImage(image);
+            QPixmapCache::insert(key, pixmap);
         }
-        else
-        {
-            imagePainter.drawLines(lines,2);
-        }
-        imagePainter.end();
-        pixmap = QPixmap::fromImage(image);
-        pixmap.setDevicePixelRatio(pixelRatio);
         int xOffset = r.x() + (r.width() - sqsize)/2;
         int yOffset = r.y() + (r.height() - sqsize)/2;
         painter->drawPixmap(xOffset, yOffset, pixmap);
@@ -1646,12 +1644,16 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             QStyleOptionButton button;
             button.state = combobox->state;
             button.rect = ArrowRect;
+            QStyleOption arrow;
+            arrow.state = State_Enabled;
+            arrow.rect = ArrowRect;
             if(combobox->editable)
             {
                 int fw = combobox->frame ? proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget) : 0;
                 QRect EditRect = subControlRect(CC_ComboBox,option,SC_ComboBoxEditField,widget);
                 rect = EditRect.adjusted(-fw,-fw,fw,fw);
                 proxy()->drawPrimitive(PE_PanelButtonCommand,&button,painter,widget);
+                arrow.state = combobox->state;
             }
 
             if(!(option->state & State_Enabled))
@@ -1674,9 +1676,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(rect,4,4);
             painter->restore();
-            QStyleOption arrow;
-            arrow.state = State_Enabled;
-            arrow.rect = ArrowRect;
             proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
 
             if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
