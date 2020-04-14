@@ -268,6 +268,9 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"ukui-menu";
     l<<"ukui-panel";
     l<<"ukui-sidebar";
+    l<<"ukui-volume-control-applet-qt";
+    l<<"ukui-power-manager-tray";
+    l<<"kylin-nm";
     return l;
 }
 
