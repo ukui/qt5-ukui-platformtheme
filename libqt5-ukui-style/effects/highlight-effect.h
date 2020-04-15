@@ -57,6 +57,11 @@ public:
     static bool setButtonIconHighlightEffect(QAbstractButton *button, bool set = true, EffectMode mode = HighlightOnly);
     static bool isWidgetIconUseHighlightEffect(const QWidget *w);
 
+    static void setSymoblicColor(const QColor &color);
+    static void setWidgetIconFillSymbolicColor(QWidget *widget, bool fill);
+
+    static const QColor getCurrentSymbolicColor();
+
     static QPixmap generatePixmap(const QPixmap &pixmap,
                                   const QStyleOption *option,
                                   const QWidget *widget = nullptr,
@@ -65,6 +70,8 @@ public:
 
 private:
     explicit HighLightEffect(QObject *parent = nullptr);
+
+    static QPixmap filledSymbolicColoredPixmap(const QPixmap &source, const QColor &baseColor);
 };
 
 #endif // HIGHLIGHTEFFECT_H

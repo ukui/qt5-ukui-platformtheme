@@ -24,9 +24,11 @@
 #include <QStandardPaths>
 #include "qt5-ukui-platform-theme.h"
 #include "ukui-style-settings.h"
+#include "highlight-effect.h"
 
 #include <QFontDatabase>
 #include <QApplication>
+#include <QTimer>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QFileInfo>
@@ -44,6 +46,11 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
     Q_UNUSED(args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
+
+        QTimer::singleShot(1000, this, [=](){
+            QIcon::setThemeName(settings->get("icon-theme-name").toString());
+            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
+        });
 
         //set font
         auto fontName = settings->get("systemFont").toString();
@@ -68,6 +75,7 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
             if (key == "iconThemeName") {
                 qDebug()<<"icon theme changed";
                 QIcon::setThemeName(settings->get("icon-theme-name").toString());
+                HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
                 // update all widgets for repaint new themed icons.
                 for (auto widget : QApplication::allWidgets()) {
                     widget->update();

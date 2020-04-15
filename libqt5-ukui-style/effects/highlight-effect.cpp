@@ -33,9 +33,13 @@
 #include <QImage>
 #include <QtMath>
 
+#include <QApplication>
+
 #include <QDebug>
 
 #define TORLERANCE 36
+
+static QColor symbolic_color = Qt::gray;
 
 void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
 {
@@ -147,6 +151,34 @@ bool HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
     return false;
 }
 
+void HighLightEffect::setSymoblicColor(const QColor &color)
+{
+    qApp->setProperty("symbolicColor", color);
+    symbolic_color = color;
+}
+
+void HighLightEffect::setWidgetIconFillSymbolicColor(QWidget *widget, bool fill)
+{
+    widget->setProperty("fillIconSymbolicColor", fill);
+}
+
+const QColor HighLightEffect::getCurrentSymbolicColor()
+{
+    QIcon symbolic = QIcon::fromTheme("window-new-symbolic");
+    QPixmap pix = symbolic.pixmap(QSize(16, 16));
+    QImage img = pix.toImage();
+    for (int x = 0; x < img.width(); x++) {
+        for (int y = 0; y < img.height(); y++) {
+            QColor color = img.pixelColor(x, y);
+            if (color.alpha() > 0) {
+                symbolic_color = color;
+                return color;
+            }
+        }
+    }
+    return symbolic_color;
+}
+
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
 {
     if (pixmap.isNull())
@@ -159,8 +191,11 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 return pixmap;
         }
     }
+
+    bool isPurePixmap = isPixmapPureColor(pixmap);
+
     if (force) {
-        if (!isPixmapPureColor(pixmap))
+        if (!isPurePixmap)
             return pixmap;
 
         QPixmap target = pixmap;
@@ -182,11 +217,13 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
         return target;
     }
 
-    if (!isPixmapPureColor(pixmap))
-        return pixmap;
-
     if (widget) {
         if (isWidgetIconUseHighlightEffect(widget)) {
+            bool fillIconSymbolicColor = false;
+            if (widget->property("fillIconSymbolicColor").isValid()) {
+                fillIconSymbolicColor = widget->property("fillIconSymbolicColor").toBool();
+            }
+
             if (widget->property("iconHighlightEffectMode").isValid()) {
                 mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
             }
@@ -209,8 +246,14 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
             if (isEnable && overOrDown) {
                 QPixmap target = pixmap;
-                QPainter p(&target);
+                if (fillIconSymbolicColor) {
+                    target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
+                }
 
+                if (!isPurePixmap)
+                    return target;
+
+                QPainter p(&target);
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
@@ -220,6 +263,14 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             } else {
                 if (mode == BothDefaultAndHighlit) {
                     QPixmap target = pixmap;
+
+                    if (fillIconSymbolicColor) {
+                        target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
+                    }
+
+                    if (!isPurePixmap)
+                        return target;
+
                     QPainter p(&target);
 
                     p.setRenderHint(QPainter::Antialiasing);
@@ -232,6 +283,9 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             }
         }
     } else {
+        if (!isPurePixmap)
+            return pixmap;
+
         bool isEnable = option->state.testFlag(QStyle::State_Enabled);
         bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) ||
                 option->state.testFlag(QStyle::State_Sunken) ||
@@ -268,4 +322,24 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 HighLightEffect::HighLightEffect(QObject *parent) : QObject(parent)
 {
 
+}
+
+QPixmap HighLightEffect::filledSymbolicColoredPixmap(const QPixmap &source, const QColor &baseColor)
+{
+    QImage img = source.toImage();
+    for (int x = 0; x < img.width(); x++) {
+        for (int y = 0; y < img.height(); y++) {
+            auto color = img.pixelColor(x, y);
+            if (color.alpha() > 0) {
+                int hue = color.hue();
+                if (qAbs(hue - symbolic_color.hue()) < 10) {
+                    color.setRed(baseColor.red());
+                    color.setGreen(baseColor.green());
+                    color.setBlue(baseColor.blue());
+                    img.setPixelColor(x, y, color);
+                }
+            }
+        }
+    }
+    return QPixmap::fromImage(img);
 }
