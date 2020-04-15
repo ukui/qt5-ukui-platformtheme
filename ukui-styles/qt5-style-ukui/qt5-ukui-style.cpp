@@ -468,6 +468,10 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_button_animation_helper->registerWidget(widget);
     }
 
+    /*!
+      \todo QDateTimeEdit widget affected with calendarPopup() draw QComboBox style or QSpinBox style.
+       So temporarily haven't added the QDateTimeEdit animation and style.
+      */
     if(qobject_cast<QComboBox*>(widget))
     {
         m_combobox_animation_helper->registerWidget(widget);
@@ -1142,7 +1146,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         // Conflict with qspinbox and so on, The widget text cannot use this style
         if (widget) {
             if (widget->parentWidget())
-                if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")) {
+                if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")
+                    | widget->parentWidget()->inherits("QDateTimeEdit"))
+                {
                     return;
                 }
         }
