@@ -90,9 +90,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     m_fixed_font.setFamily(font);
                     oldFont.setFamily(font);
                     QApplication::setFont(oldFont);
-                    for (auto w : QApplication::allWidgets()) {
-                        w->setFont(font);
-                    }
                 }
             }
             if (key == "systemFontSize") {
@@ -104,9 +101,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     m_fixed_font.setPointSize(fontSize*1.2);
                     oldFont.setPointSizeF(fontSize);
                     QApplication::setFont(oldFont);
-                    for (auto w : QApplication::allWidgets()) {
-                        w->setFont(m_system_font);
-                    }
                 }
             }
         });
