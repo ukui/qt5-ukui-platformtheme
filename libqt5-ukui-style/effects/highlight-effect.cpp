@@ -31,6 +31,7 @@
 #include <QPainter>
 
 #include <QImage>
+#include <QtMath>
 
 #include <QDebug>
 
@@ -48,12 +49,19 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
     int red = 0;
     int green = 0;
     int blue = 0;
+    qreal variance = 0;
+    qreal mean = 0;
+    qreal standardDeviation = 0;
+    QVector<int> pixels;
     bool isPure = true;
     bool isFullyPure = true;
     for (int x = 0; x < img.width(); x++) {
         for (int y = 0; y < img.height(); y++) {
             auto color = img.pixelColor(x, y);
             if (color.alpha() != 0) {
+                int hue = color.hue();
+                pixels<<hue;
+                mean += hue;
                 if (!init) {
                     red = color.red();
                     green = color.green();
@@ -74,12 +82,30 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
                         }
                     }
                     if (!same) {
-                        return false;
+                        if (isPure || isFullyPure) {
+                            isPure = false;
+                            isFullyPure = false;
+                            break;
+                        }
                     }
                 }
             }
         }
     }
+
+    if (isPure)
+        return true;
+
+    mean = mean/pixels.count();
+    for (auto hue : pixels) {
+        variance += (hue - mean)*(hue - mean);
+    }
+
+    standardDeviation = qSqrt(variance/pixels.count());
+
+    isFullyPure = standardDeviation == 0 || variance == 0;
+    isPure = standardDeviation < 1 || variance == 0;
+
     return isPure;
 }
 
