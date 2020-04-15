@@ -234,6 +234,10 @@ void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
             QRegion region = qvariant_cast<QRegion>(regionValue);
 
             if (widget->inherits("QMenu")) {
+                //skip menu which has style sheet.
+                if (!widget->styleSheet().isEmpty() || qApp->styleSheet().contains("QMenu")) {
+                    break;
+                }
                 QPainterPath path;
                 path.addRoundedRect(widget->rect().adjusted(+5,+5,-5,-5), 6, 6);
                 KWindowEffects::enableBlurBehind(widget->winId(), true, path.toFillPolygon().toPolygon());
