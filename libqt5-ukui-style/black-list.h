@@ -8,6 +8,8 @@ static const QStringList blackAppList() {
     //l<<"ukui-control-center";
     l<<"kylin-burner";
     l<<"assistant";
+    l<<"sogouIme-configtool";
+    l<<"Ime Setting";
     return l;
 }
 
