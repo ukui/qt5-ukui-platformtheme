@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets dbus gui-private
+QT       += widgets dbus gui-private widgets-private
 
 TARGET = qt5-ukui-platformtheme
 TEMPLATE = lib
