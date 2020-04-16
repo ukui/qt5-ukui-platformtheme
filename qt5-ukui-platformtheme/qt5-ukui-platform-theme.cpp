@@ -47,11 +47,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
 
-        QTimer::singleShot(1000, this, [=](){
-            QIcon::setThemeName(settings->get("icon-theme-name").toString());
-            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
-        });
-
         //set font
         auto fontName = settings->get("systemFont").toString();
         auto fontSize = settings->get("systemFontSize").toString().toDouble();

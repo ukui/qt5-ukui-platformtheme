@@ -172,6 +172,7 @@ const QColor HighLightEffect::getCurrentSymbolicColor()
             QColor color = img.pixelColor(x, y);
             if (color.alpha() > 0) {
                 symbolic_color = color;
+                qDebug()<<"current symbol color:"<<color.name()<<QColor(Qt::gray).name();
                 return color;
             }
         }
@@ -337,6 +338,7 @@ QPixmap HighLightEffect::filledSymbolicColoredPixmap(const QPixmap &source, cons
                     color.setGreen(baseColor.green());
                     color.setBlue(baseColor.blue());
                     img.setPixelColor(x, y, color);
+                    qDebug()<<"fill"<<color<<baseColor;
                 }
             }
         }

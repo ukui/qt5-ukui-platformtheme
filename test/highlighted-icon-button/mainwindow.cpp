@@ -35,10 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox->setEnabled(false);
 
     menu = new QMenu(ui->pushButton);
+    menu->setProperty("fillIconSymbolicColor", true);
     menu->addAction(QIcon::fromTheme("edit-find-symbolic"), "edit-find-symbolic");
     menu->addAction(QIcon::fromTheme("edit-cut-symbolic"), "edit-cut-symbolic");
     menu->addAction(QIcon::fromTheme("user-trash"), "user-trash");
     menu->addAction(QIcon::fromTheme("open-menu-symbolic"), "open-menu-symbolic");
+    menu->addAction(QIcon::fromTheme("pane-hide-symbolic"), "pane-hide-symbolic");
     ui->pushButton->setMenu(menu);
 
     view = new QListWidget(this);

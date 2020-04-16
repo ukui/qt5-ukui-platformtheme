@@ -25,14 +25,31 @@
 #include <private/qfusionstyle_p.h>
 
 #include "black-list.h"
+#include "ukui-style-settings.h"
+#include "highlight-effect.h"
 
 #include <QApplication>
+#include <QTimer>
 
 #include <QDebug>
 
 Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
     QStylePlugin(parent)
 {
+    if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+        auto settings = UKUIStyleSettings::globalInstance();
+        QTimer::singleShot(1000, this, [=](){
+            qDebug()<<"update symbolic color";
+            QIcon::setThemeName(settings->get("iconThemeName").toString());
+            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
+        });
+
+        connect(settings, &QGSettings::changed, this, [=](){
+            qDebug()<<"update symbolic color";
+            QIcon::setThemeName(settings->get("iconThemeName").toString());
+            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
+        });
+    }
 }
 
 QStyle *Qt5UKUIStylePlugin::create(const QString &key)
