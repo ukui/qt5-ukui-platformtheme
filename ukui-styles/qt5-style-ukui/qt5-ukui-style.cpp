@@ -1257,6 +1257,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             bool SunKen = checkbox->state & State_Sunken;
             QColor box = option->palette.color(QPalette::Dark);
             QColor light = option->palette.color(QPalette::Light);
+
+            if(checkbox->state & State_Selected)
+            {
+                box = option->palette.color(QPalette::HighlightedText);
+            }
             if(!enable)
             {
                 light = box = option->palette.color(QPalette::Disabled,QPalette::ButtonText);
