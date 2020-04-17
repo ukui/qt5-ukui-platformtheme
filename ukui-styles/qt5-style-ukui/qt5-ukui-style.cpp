@@ -3411,6 +3411,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 0;
     case PM_ToolBarItemSpacing:return 4;
+    case PM_ToolTipLabelFrameWidth:return 7;
     case PM_MenuButtonIndicator:
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
         {
