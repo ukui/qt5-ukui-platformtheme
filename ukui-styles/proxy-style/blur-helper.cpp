@@ -39,7 +39,7 @@ BlurHelper::BlurHelper(QObject *parent) : QObject(parent)
 {
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
-        connect(settings, &QGSettings::changed, this, [=](const QString &key){
+        connect(settings, &QGSettings::changed, this, [=](const QString &key) {
             if (key == "enabledGlobalBlur") {
                 bool enable = settings->get(key).toBool();
                 this->onBlurEnableChanged(enable);
@@ -88,7 +88,8 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
         KWindowEffects::enableBlurBehind(widget->winId(), false);
     }
 
-    default: break;
+    default:
+        break;
     }
     return false;
 }
@@ -130,7 +131,7 @@ void BlurHelper::registerWidget(QWidget *widget)
 //            KWindowEffects::enableBlurBehind(widget->winId(), true);
 //        }
 
-        connect(widget, &QWidget::destroyed, this, [=](){
+        connect(widget, &QWidget::destroyed, this, [=]() {
             this->onWidgetDestroyed(widget);
         });
     }
@@ -194,15 +195,19 @@ void BlurHelper::onBlurEnableChanged(bool enable)
     }
     for (auto widget : qApp->allWidgets()) {
         widget->update();
-    }
-    QTimer::singleShot(100, this, [=](){
-        for (auto widget : m_blur_widgets) {
-            if (!widget)
-                continue;
+        if (m_blur_widgets.contains(widget)) {
             if (widget->winId() > 0)
                 KWindowEffects::enableBlurBehind(widget->winId(), enable);
         }
-    });
+    }
+//    QTimer::singleShot(100, this, [=](){
+//        for (auto widget : m_blur_widgets) {
+//            if (!widget)
+//                continue;
+//            if (widget->winId() > 0)
+//                KWindowEffects::enableBlurBehind(widget->winId(), enable);
+//        }
+//    });
 }
 
 void BlurHelper::onWidgetDestroyed(QWidget *widget)
@@ -289,7 +294,7 @@ void BlurHelper::delayUpdate(QWidget *w, bool updateBlurRegionOnly)
 
 void BlurHelper::confirmBlurEnableDelay()
 {
-    QTimer::singleShot(3000, this, [=](){
+    QTimer::singleShot(3000, this, [=]() {
         bool enable = m_blur_enable;
         if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) && enable) {
             qApp->setProperty("blurEnable", true);
@@ -298,14 +303,18 @@ void BlurHelper::confirmBlurEnableDelay()
         }
         for (auto widget : qApp->allWidgets()) {
             widget->update();
-        }
-        QTimer::singleShot(100, this, [=](){
-            for (auto widget : m_blur_widgets) {
-                if (!widget)
-                    continue;
+            if (m_blur_widgets.contains(widget)) {
                 if (widget->winId() > 0)
                     KWindowEffects::enableBlurBehind(widget->winId(), enable);
             }
-        });
+        }
+//        QTimer::singleShot(100, this, [=](){
+//            for (auto widget : m_blur_widgets) {
+//                if (!widget)
+//                    continue;
+//                if (widget->winId() > 0)
+//                    KWindowEffects::enableBlurBehind(widget->winId(), enable);
+//            }
+//        });
     });
 }
