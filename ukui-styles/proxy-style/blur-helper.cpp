@@ -197,6 +197,8 @@ void BlurHelper::onBlurEnableChanged(bool enable)
     }
     QTimer::singleShot(100, this, [=](){
         for (auto widget : m_blur_widgets) {
+            if (!widget)
+                continue;
             if (widget->winId() > 0)
                 KWindowEffects::enableBlurBehind(widget->winId(), enable);
         }
@@ -206,6 +208,7 @@ void BlurHelper::onBlurEnableChanged(bool enable)
 void BlurHelper::onWidgetDestroyed(QWidget *widget)
 {
     widget->removeEventFilter(this);
+    m_blur_widgets.removeOne(widget);
     //unregisterWidget(widget);
 }
 
