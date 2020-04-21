@@ -1370,6 +1370,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             key.insert(0,&a);
             direction /= 10;
         }
+        key += proxy()->objectName();
         int border = size/4;
         int sqsize = size;
         if(size > 16)
@@ -1410,14 +1411,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 break;
             }
             imagePainter.translate(sx , sy);
-            imagePainter.setPen(Qt::NoPen);
-            imagePainter.setPen(QPen(option->palette.foreground().color(), 1.1));
+            imagePainter.setPen(QPen(option->palette.color(QPalette::QPalette::WindowText), 1.1));
             if (option->state & (State_MouseOver|State_Sunken))
             {
                 imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
             }
-            imagePainter.setBrush(Qt::NoBrush);
-            imagePainter.setRenderHint(QPainter::Qt4CompatiblePainting);
+            imagePainter.setBrush(Qt::NoBrush);;
             imagePainter.setRenderHint(QPainter::Antialiasing);
 
             if (!(option->state & State_Enabled)) {
