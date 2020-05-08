@@ -157,7 +157,9 @@ ApplicationStyleSettings::ApplicationStyleSettings(QObject *parent) : QSettings(
 //    setPath(QSettings::IniFormat, QSettings::UserScope, configPath);
 //    setDefaultFormat(QSettings::IniFormat);
     setDefaultFormat(QSettings::IniFormat);
+#if (QT_VERSION >= QT_VERSION_CHECK(5,10,0))
     setAtomicSyncRequired(true);
+#endif
 
     m_color_stretagy = qvariant_cast<ColorStretagy>(value("color-stretagy"));
     m_style_stretagy = qvariant_cast<StyleStretagy>(value("style-stretagy"));

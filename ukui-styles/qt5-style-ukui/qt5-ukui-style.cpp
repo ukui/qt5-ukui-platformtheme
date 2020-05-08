@@ -181,7 +181,8 @@ QString calculateElidedText(const QString &text, const QTextOption &textOption,
 QString toolButtonElideText(const QStyleOptionToolButton *option,
                             const QRect &textRect, int flags)
 {
-    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
+//    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
+    if (option->fontMetrics.width(option->text, -1) <= textRect.width())
         return option->text;
 
     QString text = option->text;
@@ -251,7 +252,11 @@ void Qt5UKUIStyle::viewItemDrawText(QPainter *p, const QStyleOptionViewItem *opt
 }
 //---copy from qcommonstyle
 
-Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle ()
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle()
+#else
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
+#endif
 {
     m_is_default_style = useDefault;
     m_use_dark_palette = dark;
@@ -336,16 +341,16 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     default:
         break;
     }
-    return QFusionStyle::styleHint(hint, option, widget, returnData);
+    return Style::styleHint(hint, option, widget, returnData);
 }
 void Qt5UKUIStyle::polish(QPalette &palette){
     palette = standardPalette();
-    return QFusionStyle::polish(palette);
+    return Style::polish(palette);
 }
 
 QPalette Qt5UKUIStyle::standardPalette() const
 {
-    auto palette = QFusionStyle::standardPalette();
+    auto palette = Style::standardPalette();
     //ukui-light
     QColor  window_bg(231,231,231),
             window_no_bg(233,233,233),
@@ -401,7 +406,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
 
     //Cursor placeholder
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
     palette.setBrush(QPalette::PlaceholderText,font_di_bg);
+#endif
 
     palette.setBrush(QPalette::ToolTipBase,tip_bg);
     palette.setBrush(QPalette::ToolTipText,tip_font);
@@ -432,7 +439,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
-    QFusionStyle::polish(widget);
+    Style::polish(widget);
     if (auto menu = qobject_cast<QMenu*>(widget)) {
         //widget->setAttribute(Qt::WA_TranslucentBackground);
         HighLightEffect::setMenuIconHighlightEffect(menu);
@@ -530,7 +537,7 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         m_button_animation_helper->unregisterWidget(widget);
     }
 
-    QFusionStyle::unpolish(widget);
+    Style::unpolish(widget);
 }
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
@@ -573,13 +580,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 // for now the style paint arrow with highlight text brush when hover
                 // we but don't want to highligh the indicator when hover a view item.
                 if (isSelected) {
-                    tmp.state.setFlag(QStyle::State_MouseOver);
+//                    tmp.state.setFlag(QStyle::State_MouseOver);
+                    tmp.state |= QStyle::State_MouseOver;
                 } else {
-                    tmp.state.setFlag(QStyle::State_MouseOver, false);
+//                    tmp.state.setFlag(QStyle::State_MouseOver, false);
+                    tmp.state &= ~QStyle::State_MouseOver;
                 }
 
                 tmp.palette.setColor(tmp.palette.currentColorGroup(), QPalette::Highlight, color2);
-                return QFusionStyle::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
+                return Style::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
             }
             break;
         }
@@ -682,7 +691,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             auto animator = m_button_animation_helper->animator(widget);
             if(animator == nullptr)
             {
-                return QFusionStyle::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
+                return Style::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
             }
             if(!(button->state & State_Enabled))
             {
@@ -890,7 +899,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->restore();
                 return;
             }
-            return QFusionStyle::drawPrimitive(element, option, painter, widget);
+            return Style::drawPrimitive(element, option, painter, widget);
         }
 
     case PE_FrameStatusBar://UKUI Status style
@@ -936,7 +945,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
         auto animator = m_button_animation_helper->animator(widget);
         if(animator == nullptr)
-            return QFusionStyle::drawPrimitive(PE_PanelButtonTool,option,painter,widget);
+            return Style::drawPrimitive(PE_PanelButtonTool,option,painter,widget);
         if(!(option->state & State_Enabled))
         {
             animator->stopAnimator("SunKen");
@@ -1081,7 +1090,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             case QTabBar::TriangularWest:
             case QTabBar::TriangularSouth:
                 //painter->restore();
-                QFusionStyle::drawPrimitive(element, option, painter, widget);
+                Style::drawPrimitive(element, option, painter, widget);
                 return;
             }
             painter->restore();
@@ -1579,7 +1588,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     default:   break;
     }
-    return QFusionStyle::drawPrimitive(element, option, painter, widget);
+    return Style::drawPrimitive(element, option, painter, widget);
 }
 
 void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
@@ -1594,7 +1603,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
         bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
         if (!animator) {
-            return QFusionStyle::drawComplexControl(control, option, painter, widget);
+            return Style::drawComplexControl(control, option, painter, widget);
         }
 
         animator->setAnimatorDirectionForward("bg_opacity", mouse_over);
@@ -1647,7 +1656,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         {
             auto animator = m_combobox_animation_helper->animator(widget);
             if(animator == nullptr)
-              return QFusionStyle::drawComplexControl(CC_ComboBox,option,painter,widget);
+              return Style::drawComplexControl(CC_ComboBox,option,painter,widget);
 
             QRect rect = subControlRect(CC_ComboBox,option,SC_ComboBoxFrame,widget);
             QRect ArrowRect = subControlRect(CC_ComboBox,option,SC_ComboBoxArrow,widget);
@@ -2269,7 +2278,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
     }
 
-    default:        return QFusionStyle::drawComplexControl(control, option, painter, widget);
+    default:        return Style::drawComplexControl(control, option, painter, widget);
     }
 }
 
@@ -2339,7 +2348,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     }
                 }
             }
-            QFusionStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
+            Style::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
 
             // draw the text
             if (!vopt->text.isEmpty()) {
@@ -2616,7 +2625,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QFusionStyle::drawControl(element, option, painter, widget);
+            return Style::drawControl(element, option, painter, widget);
         }
 
         bool enable = option->state.testFlag(QStyle::State_Enabled);
@@ -2722,13 +2731,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QFusionStyle::drawControl(element, option, painter, widget);
+            return Style::drawControl(element, option, painter, widget);
         }
 
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        //QFusionStyle::drawControl(element, option, painter, widget);
+        //Style::drawControl(element, option, painter, widget);
 
         QIcon icon;
         if (option->state.testFlag(State_Horizontal)) {
@@ -2745,13 +2754,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
-            return QFusionStyle::drawControl(element, option, painter, widget);
+            return Style::drawControl(element, option, painter, widget);
         }
 
         painter->save();
         auto percent = animator->value("groove_width").toInt()*1.0/12;
         painter->setOpacity(percent);
-        //QFusionStyle::drawControl(element, option, painter, widget);
+        //Style::drawControl(element, option, painter, widget);
 
         QIcon icon;
         if (option->state.testFlag(State_Horizontal)) {
@@ -3280,7 +3289,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
                 QPalette::ColorRole textRole = dis ? QPalette::Text : QPalette::HighlightedText;
                 uint alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
-                if (!QFusionStyle::styleHint(SH_UnderlineShortcut, mbi, widget))
+                if (!Style::styleHint(SH_UnderlineShortcut, mbi, widget))
                     alignment |= Qt::TextHideMnemonic;
                 proxy()->drawItemText(painter, item.rect, alignment, mbi->palette, mbi->state & State_Enabled, mbi->text, textRole);
             } else {
@@ -3313,7 +3322,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     proxy()->drawItemText(painter, menuItem->rect.adjusted(margin, 0, -margin, 0), Qt::AlignLeft | Qt::AlignVCenter,
                                           menuItem->palette, menuItem->state & State_Enabled, menuItem->text,
                                           QPalette::Text);
-                    w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + margin;
+//                    w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + margin;
+                    w = menuItem->fontMetrics.width(menuItem->text,-1) + margin;
                 }
                 // painter->setPen(shadow.lighter(106));
                 painter->setPen(option->palette.color(QPalette::Disabled,QPalette::WindowText));
@@ -3461,7 +3471,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 p->save();
                 int t = s.indexOf(QLatin1Char('\t'));
                 int text_flags = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
-                if (!QFusionStyle::styleHint(SH_UnderlineShortcut, menuitem, widget))
+                if (!Style::styleHint(SH_UnderlineShortcut, menuitem, widget))
                     text_flags |= Qt::TextHideMnemonic;
                 text_flags |= Qt::AlignLeft;
                 if (t >= 0) {
@@ -3602,7 +3612,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
 
     default:
-        return QFusionStyle::drawControl(element, option, painter, widget);
+        return Style::drawControl(element, option, painter, widget);
     }
 }
 
@@ -3676,14 +3686,14 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     default:
         break;
     }
-    return QFusionStyle::pixelMetric(metric, option, widget);
+    return Style::pixelMetric(metric, option, widget);
 }
 
 QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleOptionComplex *option, QStyle::SubControl subControl, const QWidget *widget) const
 {
     switch (control) {
     case CC_ScrollBar: {
-        auto rect = QFusionStyle::subControlRect(control, option, subControl, widget);
+        auto rect = Style::subControlRect(control, option, subControl, widget);
         if (subControl == SC_ScrollBarSlider) {
             rect.adjust(1, 1, -1, -1);
             if (option->state.testFlag(QStyle::State_Horizontal)) {
@@ -3701,11 +3711,11 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 //        {
 //        case SC_SliderHandle:
 //        {
-//            QRect handleRect( QFusionStyle::subControlRect( CC_Slider, option, subControl, widget ) );
+//            QRect handleRect( Style::subControlRect( CC_Slider, option, subControl, widget ) );
 //            handleRect = centerRect( handleRect, PM_SliderThickness+9, PM_SliderControlThickness+8);
 //            return handleRect;
 //        }
-//        default:return QFusionStyle::subControlRect(control, option, subControl, widget);
+//        default:return Style::subControlRect(control, option, subControl, widget);
 //        }
 
     case CC_Slider:
@@ -3918,7 +3928,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     default:
         break;
     }
-    return QFusionStyle::subControlRect(control, option, subControl, widget);
+    return Style::subControlRect(control, option, subControl, widget);
 }
 
 void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const
@@ -3936,7 +3946,15 @@ void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alig
             QStyleOption opt;
             opt.initFrom(widget);
             if (auto button = qobject_cast<QAbstractButton *>(widget)) {
-                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
+//                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
+                if(button->isDown())
+                {
+                    opt.state |= QStyle::State_Sunken;
+                }
+                else
+                {
+                    opt.state &= ~QStyle::State_Sunken;
+                }
             }
             target = HighLightEffect::generatePixmap(pixmap, &opt, widget);
         }

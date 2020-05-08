@@ -25,6 +25,13 @@
 
 #include <QStylePlugin>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
+#include<private/qfusionstyle_p.h>
+#define Style QFusionStyle
+#else
+#define Style QProxyStyle
+#endif
+
 class Qt5UKUIStylePlugin : public QStylePlugin
 {
     Q_OBJECT

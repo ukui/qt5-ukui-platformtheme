@@ -22,7 +22,6 @@
 
 #include "qt5-ukui-style-plugin.h"
 #include "qt5-ukui-style.h"
-#include <private/qfusionstyle_p.h>
 
 #include "black-list.h"
 #include "ukui-style-settings.h"
@@ -55,7 +54,7 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
 QStyle *Qt5UKUIStylePlugin::create(const QString &key)
 {
     if (blackList().contains(qAppName()))
-        return new QFusionStyle;
+        return new Style;
     //FIXME:
     bool dark = false;
     bool useDefault = false;

@@ -23,7 +23,6 @@
 #ifndef QT5UKUISTYLE_H
 #define QT5UKUISTYLE_H
 
-#include <private/qfusionstyle_p.h>
 #include <QProxyStyle>
 
 class TabWidgetAnimationHelper;
@@ -33,12 +32,19 @@ class BoxAnimationHelper;
 
 class QStyleOptionViewItem;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
+#include<private/qfusionstyle_p.h>
+#define Style QFusionStyle
+#else
+#define Style QProxyStyle
+#endif
+
 /*!
  * \brief The Qt5UKUIStyle class
  * \details
  * This class provide the default ukui style in UKUI desktop enviroment.
  */
-class Qt5UKUIStyle : public QFusionStyle
+class Qt5UKUIStyle : public Style
 {
     Q_OBJECT
 public:
