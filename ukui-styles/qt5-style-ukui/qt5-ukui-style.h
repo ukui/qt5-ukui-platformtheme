@@ -97,6 +97,10 @@ public:
                         int alignment,
                         const QPixmap &pixmap) const;
 
+    QRect subElementRect(SubElement element,
+                                 const QStyleOption *option,
+                                 const QWidget *widget = nullptr) const;
+
 protected:
     void viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const;
     QRect scrollBarSubControlRect(QStyle::ComplexControl control,
