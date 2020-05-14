@@ -2604,11 +2604,12 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     case CE_ProgressBarGroove:
     {
         const bool enable = option->state &State_Enabled;
+        QRect rect = proxy()->subElementRect(SE_ProgressBarGroove,option,widget);
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
         painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-        painter->drawRoundedRect(option->rect,4,4);
+        painter->drawRoundedRect(rect,4,4);
         painter->restore();
         return;
     }
@@ -3810,7 +3811,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
-    case PM_ProgressBarChunkWidth: return 0;
+    case PM_ProgressBarChunkWidth: return 9;
     case PM_ToolBarItemSpacing:return 4;
     case PM_ToolTipLabelFrameWidth:return 7;
     case PM_MenuButtonIndicator:
@@ -4112,8 +4113,29 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         }
         rect = visualRect(option->direction,option->rect,rect);
         return rect;
+    }
+
+    case SE_ProgressBarGroove:
+    case SE_ProgressBarContents:
+    case SE_ProgressBarLabel:
+    {
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            QRect rect = pb->rect;
+            int cw = proxy()->pixelMetric(QStyle::PM_ProgressBarChunkWidth, option, widget);
+            if(pb->orientation == Qt::Vertical)
+            {
+                rect.setRect(pb->rect.left(), pb->rect.top(), cw * 2, rect.height());
+            }
+            else
+            {
+                rect.setRect(pb->rect.left(), pb->rect.top(), rect.width(), cw * 2);
+            }
+            rect = visualRect(pb->direction, pb->rect, rect);
+            return rect;
+        }
         break;
     }
+
     default:
         break;
     }
