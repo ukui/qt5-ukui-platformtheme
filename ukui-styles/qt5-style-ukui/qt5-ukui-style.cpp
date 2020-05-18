@@ -4173,6 +4173,7 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
             {
                 rect.setRect(pb->rect.left(), pb->rect.top(), rect.width(), cw * 2);
             }
+            rect.moveCenter(pb->rect.center());
             rect = visualRect(pb->direction, pb->rect, rect);
             return rect;
         }
