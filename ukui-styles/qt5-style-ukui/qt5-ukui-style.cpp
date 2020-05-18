@@ -4182,7 +4182,7 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     default:
         break;
     }
-    return QFusionStyle::subElementRect(element,option,widget);
+    return Style::subElementRect(element,option,widget);
 }
 
 void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const
