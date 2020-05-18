@@ -141,3 +141,56 @@ const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radi
     path.addRoundedRect(rect, radius_x, radius_y);
     return path.toFillPolygon().toPolygon();
 }
+
+qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
+{
+    const int currentSliderPosition = dial->upsideDown ? postion : (dial->maximum - postion);
+    qreal a = 0;
+    if (dial->maximum == dial->minimum)
+        a = M_PI / 2;
+    else if (dial->dialWrapping)
+        a = M_PI * 3 / 2 - (currentSliderPosition - dial->minimum) * 2 * M_PI / (dial->maximum - dial->minimum);
+    else
+        a = (M_PI * 8 - (currentSliderPosition - dial->minimum) * 10 * M_PI / (dial->maximum - dial->minimum)) / 6;
+    return a;
+}
+
+QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
+{
+    QPolygonF poly;
+    int width = dial->rect.width();
+    int height = dial->rect.height();
+    qreal r = qMin(width, height) / 2;
+
+    qreal xc = width / 2;
+    qreal yc = height / 2;
+    const int ns = dial->tickInterval;
+    if (!ns) // Invalid values may be set by Qt Designer.
+        return poly;
+    int notches = (dial->maximum + ns - 1 - dial->minimum) / ns;
+    if (notches <= 0)
+        return poly;
+    if (dial->maximum < dial->minimum || dial->maximum - dial->minimum > 1000) {
+        int maximum = dial->minimum + 1000;
+        notches = (maximum + ns - 1 - dial->minimum) / ns;
+    }
+
+    poly.resize(2 + 2 * notches);
+    int smallLineSize = offset / 2;
+    for (int i = 0; i <= notches; ++i) {
+        qreal angle = dial->dialWrapping ? M_PI * 3 / 2 - i * 2 * M_PI / notches
+                                         : (M_PI * 8 - i * 10 * M_PI / notches) / 6;
+        qreal s = qSin(angle);
+        qreal c = qCos(angle);
+        if (i == 0 || (((ns * i) % (dial->pageStep ? dial->pageStep : 1)) == 0)) {
+            poly[2 * i] = QPointF(xc + (r + 1 - offset) * c,
+                                  yc - (r + 1 - offset) * s);
+            poly[2 * i + 1] = QPointF(xc + r * c, yc - r * s);
+        } else {
+            poly[2 * i] = QPointF(xc + (r + 1 - smallLineSize) * c,
+                                  yc - (r + 1 - smallLineSize) * s);
+            poly[2 * i + 1] = QPointF(xc + r * c, yc -r * s);
+        }
+    }
+    return poly;
+}

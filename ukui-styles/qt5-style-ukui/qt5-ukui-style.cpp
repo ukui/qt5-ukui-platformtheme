@@ -2225,6 +2225,60 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         break;
     }
 
+    case CC_Dial:
+    {
+        if(const QStyleOptionSlider* dial = qstyleoption_cast<const QStyleOptionSlider*>(option))
+        {
+            const bool enable = dial->state & State_Enabled;
+            int tickOffset = proxy()->pixelMetric(PM_SliderTickmarkOffset, option, widget);
+            int r = qMin(dial->rect.width(), dial->rect.height())/2;
+            int r_ = r - tickOffset*2;
+            QRect br(dial->rect.topLeft(), QSize(r_*2, r_*2));
+            br.moveCenter(dial->rect.center());
+            QColor highlight = enable ? dial->palette.color(QPalette::Highlight) : dial->palette.color(QPalette::Disabled, QPalette::Button).darker(120);
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setPen(dial->palette.color(enable ? QPalette::Active : QPalette::Disabled, QPalette::Button));
+            painter->setBrush(dial->palette.color(enable ? QPalette::Active : QPalette::Disabled, QPalette::Button));
+            painter->drawEllipse(br);
+
+            int tickHandle = proxy()->pixelMetric(PM_SliderControlThickness, option, widget);
+            int handle_r = tickHandle < r_/2 ? tickHandle : r_/2;
+            int Circle_r = (r_ + handle_r)/2;
+            qreal fist = QT5UKUISTYLE_H::calcRadialPos(dial, dial->minimum);
+            qreal dp = QT5UKUISTYLE_H::calcRadialPos(dial, dial->sliderPosition);
+            qreal end = QT5UKUISTYLE_H::calcRadialPos(dial, dial->maximum);
+            QRectF dialRect(dial->rect.topLeft(), QSizeF(handle_r, handle_r));
+            dialRect.moveCenter(dial->rect.center() + QPointF(Circle_r * qCos(dp),-Circle_r * qSin(dp)));
+            QRectF GrooveRect(dial->rect.topLeft(), QSizeF(Circle_r*2, Circle_r*2));
+            GrooveRect.moveCenter(dial->rect.center());
+
+            painter->setPen(QPen(dial->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Base),
+                                 handle_r/4, Qt::SolidLine, Qt::RoundCap));
+            painter->setBrush(Qt::NoBrush);
+            painter->drawArc(GrooveRect, fist * 16 * 180 / M_PI, (end - fist) * 16 * 180 / M_PI);
+            painter->setPen(QPen(highlight,handle_r/4, Qt::SolidLine, Qt::RoundCap));
+            painter->drawArc(GrooveRect, fist * 16 * 180 / M_PI, (dp - fist) * 16 * 180 / M_PI);
+
+            painter->setPen(highlight);
+            painter->setBrush(highlight);
+            painter->drawEllipse(dialRect);
+
+            if(dial->subControls & SC_DialTickmarks)
+            {
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(dial->palette.color(enable ? QPalette::Active : QPalette::Disabled, QPalette::WindowText));
+                painter->setBrush(dial->palette.color(enable ? QPalette::Active : QPalette::Disabled, QPalette::WindowText));
+                painter->drawLines(QT5UKUISTYLE_H::calcLines(dial, tickOffset*2));
+                painter->restore();
+            }
+            painter->restore();
+            return;
+        }
+        break;
+    }
+
     case CC_ToolButton:
     {
         if (const QStyleOptionToolButton *toolbutton

@@ -24,10 +24,14 @@
 #define QT5UKUISTYLEHELPER_H
 
 #include "qt5-ukui-style.h"
+#include<QStyleOption>
+#include <qmath.h>
 
 void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget);
 void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget);
 const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radius_y);
+qreal calcRadialPos(const QStyleOptionSlider *dial, int postion);
+QPolygonF calcLines(const QStyleOptionSlider *dial, int offset);
 
 
 #endif // QT5UKUISTYLEHELPER_H
