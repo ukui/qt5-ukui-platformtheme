@@ -276,6 +276,8 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"ukui-volume-control-applet-qt";
     l<<"ukui-power-manager-tray";
     l<<"kylin-nm";
+    l<<"ukui-flash-disk";
+    l<<"indicator-china-weather";
     return l;
 }
 
