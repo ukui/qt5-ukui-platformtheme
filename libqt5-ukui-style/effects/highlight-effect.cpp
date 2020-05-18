@@ -180,8 +180,22 @@ const QColor HighLightEffect::getCurrentSymbolicColor()
     return symbolic_color;
 }
 
+const QColor HighLightEffect::defaultStyleDark()
+{
+    auto windowText = qApp->palette().windowText().color();
+    qreal h, s, v;
+    windowText.getHsvF(&h, &s, &v);
+    return QColor::fromHsvF(h, s*0.85, v, 0.7);
+}
+
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
 {
+    if (!(option->state & QStyle::State_Enabled))
+        return pixmap;
+
+    if (widget && !widget->isEnabled())
+        return pixmap;
+
     if (pixmap.isNull())
         return pixmap;
 
@@ -212,7 +226,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             p.fillRect(target.rect(), option->palette.highlightedText());
         } else {
             if (mode == BothDefaultAndHighlit)
-                p.fillRect(target.rect(), option->palette.dark());
+                p.fillRect(target.rect(), defaultStyleDark());
         }
         //p.end();
         return target;
@@ -277,7 +291,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                     p.setRenderHint(QPainter::Antialiasing);
                     p.setRenderHint(QPainter::SmoothPixmapTransform);
                     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                    p.fillRect(target.rect(), option->palette.dark());
+                    p.fillRect(target.rect(), defaultStyleDark());
                     //p.end();
                     return target;
                 }
@@ -310,7 +324,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                p.fillRect(target.rect(), option->palette.dark());
+                p.fillRect(target.rect(), defaultStyleDark());
                 //p.end();
                 return target;
             }

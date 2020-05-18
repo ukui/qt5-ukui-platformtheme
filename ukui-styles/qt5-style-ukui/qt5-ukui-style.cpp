@@ -442,7 +442,8 @@ void Qt5UKUIStyle::polish(QWidget *widget)
     Style::polish(widget);
     if (auto menu = qobject_cast<QMenu*>(widget)) {
         //widget->setAttribute(Qt::WA_TranslucentBackground);
-        HighLightEffect::setMenuIconHighlightEffect(menu);
+        HighLightEffect::setMenuIconHighlightEffect(menu, true, HighLightEffect::BothDefaultAndHighlit);
+        //HighLightEffect::setWidgetIconFillSymbolicColor(menu, true);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
 
         //widget->setMask(mask);
@@ -631,7 +632,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         return;
     }
-
 
     case PE_Frame:{
         painter->save();
