@@ -28,6 +28,7 @@
 #include <QVariant>
 #include <QEvent>
 #include <QIcon>
+#include <QPainterPath>
 
 #include "black-list.h"
 

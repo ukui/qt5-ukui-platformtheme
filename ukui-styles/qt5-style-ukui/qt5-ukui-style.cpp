@@ -30,6 +30,7 @@
 #include <QStyleOption>
 #include <QWidget>
 #include <QPainter>
+#include <QPainterPath>
 
 #include <QPaintDevice>
 
