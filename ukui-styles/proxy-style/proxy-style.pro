@@ -28,12 +28,14 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    gesture-helper.cpp \
         proxy-style.cpp \
     proxy-style-plugin.cpp \
     blur-helper.cpp \
     window-manager.cpp
 
 HEADERS += \
+        gesture-helper.h \
         proxy-style.h \
         proxy-style_global.h \ 
     proxy-style-plugin.h \

@@ -68,6 +68,8 @@
 #include <QPixmapCache>
 #include <QStyleOptionButton>
 
+#include <QLabel>
+
 #include <QApplication>
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
@@ -507,12 +509,23 @@ void Qt5UKUIStyle::polish(QWidget *widget)
        tv->setAlternatingRowColors(true);
     }
 
+    if (widget->inherits("QTipLabel")) {
+        auto label = qobject_cast<QLabel *>(widget);
+        label->setWordWrap(true);
+        label->setScaledContents(true);
+    }
+
     widget->installEventFilter(this);
 }
 
 void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
     widget->removeEventFilter(this);
+
+    if (widget->inherits("QTipLabel")) {
+        auto label = qobject_cast<QLabel *>(widget);
+        label->setWordWrap(false);
+    }
 
     if (qobject_cast<QMenu*>(widget)) {
         widget->setAttribute(Qt::WA_TranslucentBackground, false);

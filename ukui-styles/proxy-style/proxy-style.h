@@ -27,6 +27,7 @@
 #include <QProxyStyle>
 
 class BlurHelper;
+class GestureHelper;
 class WindowManager;
 
 class ApplicationStyleSettings;
@@ -74,6 +75,7 @@ public:
 
 private:
     BlurHelper *m_blur_helper;
+    GestureHelper *m_gesture_helper;
     WindowManager *m_window_manager;
 
     ApplicationStyleSettings *m_app_style_settings;

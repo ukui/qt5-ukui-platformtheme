@@ -23,6 +23,7 @@
 #include "proxy-style.h"
 #include <QWidget>
 #include "blur-helper.h"
+#include "gesture-helper.h"
 #include "window-manager.h"
 #include "application-style-settings.h"
 
@@ -69,6 +70,7 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
     });
 
     m_blur_helper = new BlurHelper(this);
+    m_gesture_helper = new GestureHelper(this);
     m_window_manager = new WindowManager(this);
 
     if (!baseStyle()->inherits("Qt5UKUIStyle")) {
@@ -124,6 +126,8 @@ void ProxyStyle::polish(QWidget *widget)
         return QProxyStyle::polish(widget);
 
     QProxyStyle::polish(widget);
+
+    m_gesture_helper->registerWidget(widget);
 
     //FIXME:
     if(!widget)
@@ -184,6 +188,8 @@ void ProxyStyle::unpolish(QWidget *widget)
 {
     if (!baseStyle()->inherits("Qt5UKUIStyle"))
         return QProxyStyle::unpolish(widget);
+
+    m_gesture_helper->unregisterWidget(widget);
 
     //return QProxyStyle::unpolish(widget);
     widget->removeEventFilter(this);
