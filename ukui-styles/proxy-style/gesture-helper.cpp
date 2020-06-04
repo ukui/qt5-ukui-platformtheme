@@ -23,6 +23,12 @@
 #include "gesture-helper.h"
 
 #include <QWidget>
+#include <QGestureEvent>
+#include <QTapAndHoldGesture>
+
+#include <QContextMenuEvent>
+
+#include <QApplication>
 
 GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
 {
@@ -33,20 +39,39 @@ void GestureHelper::registerWidget(QWidget *widget)
 {
     if (!widget)
         return;
+
     widget->grabGesture(Qt::TapGesture);
     widget->grabGesture(Qt::TapAndHoldGesture);
     widget->grabGesture(Qt::PinchGesture);
     widget->grabGesture(Qt::PinchGesture);
     widget->grabGesture(Qt::SwipeGesture);
+
+    widget->installEventFilter(this);
 }
 
 void GestureHelper::unregisterWidget(QWidget *widget)
 {
     if (!widget)
         return;
+
+    widget->removeEventFilter(this);
+
     widget->ungrabGesture(Qt::TapGesture);
     widget->ungrabGesture(Qt::TapAndHoldGesture);
     widget->ungrabGesture(Qt::PinchGesture);
     widget->ungrabGesture(Qt::PinchGesture);
     widget->ungrabGesture(Qt::SwipeGesture);
+}
+
+bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::Gesture) {
+        auto e = static_cast<QGestureEvent *>(event);
+        auto widget = qobject_cast<QWidget *>(watched);
+        if (auto hg = static_cast<QTapAndHoldGesture*>(e->gesture(Qt::TapAndHoldGesture))) {
+            QContextMenuEvent ce(QContextMenuEvent::Other, hg->position().toPoint(), widget->pos(), Qt::NoModifier);
+            qApp->sendEvent(widget, &ce);
+        }
+    }
+    return false;
 }

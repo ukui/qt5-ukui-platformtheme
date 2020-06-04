@@ -33,6 +33,8 @@ public:
 
     void registerWidget(QWidget *widget);
     void unregisterWidget(QWidget *widget);
+
+    bool eventFilter(QObject *watched, QEvent *event) override;
 };
 
 #endif // GESTUREHELPER_H
