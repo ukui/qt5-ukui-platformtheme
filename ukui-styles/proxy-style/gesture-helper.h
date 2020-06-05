@@ -24,6 +24,7 @@
 #define GESTUREHELPER_H
 
 #include <QObject>
+#include <QTimer>
 
 class GestureHelper : public QObject
 {
@@ -35,6 +36,10 @@ public:
     void unregisterWidget(QWidget *widget);
 
     bool eventFilter(QObject *watched, QEvent *event) override;
+
+private:
+    bool menu_popped = false;
+    QTimer m_timer;
 };
 
 #endif // GESTUREHELPER_H

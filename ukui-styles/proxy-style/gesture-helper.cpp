@@ -29,16 +29,20 @@
 #include <QContextMenuEvent>
 
 #include <QApplication>
+#include <QMenu>
 
 GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
 {
-
+    m_timer.setInterval(500);
+    m_timer.setSingleShot(true);
 }
 
 void GestureHelper::registerWidget(QWidget *widget)
 {
     if (!widget)
         return;
+
+    widget->removeEventFilter(this);
 
     widget->grabGesture(Qt::TapGesture);
     widget->grabGesture(Qt::TapAndHoldGesture);
@@ -68,9 +72,34 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
     if (event->type() == QEvent::Gesture) {
         auto e = static_cast<QGestureEvent *>(event);
         auto widget = qobject_cast<QWidget *>(watched);
+        if (!widget->isActiveWindow())
+            return false;
+
+        if (m_timer.isActive())
+            return false;
         if (auto hg = static_cast<QTapAndHoldGesture*>(e->gesture(Qt::TapAndHoldGesture))) {
-            QContextMenuEvent ce(QContextMenuEvent::Other, hg->position().toPoint(), widget->pos(), Qt::NoModifier);
-            qApp->sendEvent(widget, &ce);
+            switch (hg->state()) {
+            case Qt::GestureStarted: {
+                if (menu_popped) {
+                    return false;
+                } else {
+                    menu_popped = true;
+                    m_timer.start();
+                    auto pos = widget->mapFromGlobal(hg->position().toPoint());
+                    auto gpos = hg->position().toPoint();
+                    QContextMenuEvent ce(QContextMenuEvent::Other, pos, gpos, Qt::NoModifier);
+                    qApp->sendEvent(widget, &ce);
+                }
+                break;
+            }
+            case Qt::GestureCanceled:
+            case Qt::GestureFinished: {
+                menu_popped = false;
+                break;
+            }
+            default:
+                break;
+            }
         }
     }
     return false;
