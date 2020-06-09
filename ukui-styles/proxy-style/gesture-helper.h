@@ -25,11 +25,13 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QPointF>
 
 class GestureHelper : public QObject
 {
     Q_OBJECT
 public:
+
     explicit GestureHelper(QObject *parent = nullptr);
 
     void registerWidget(QWidget *widget);
@@ -38,8 +40,16 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-    bool menu_popped = false;
-    QTimer m_timer;
+    bool m_is_touching = false;
+    int m_finger_count = 0;
+
+    // hold and tap gesture
+    bool m_menu_popped = false;
+    QTimer m_menu_popped_timer;
+    QPointF m_hold_and_tap_pos;
+
+    // pan gesture
+    bool m_is_paning = false;
 };
 
 #endif // GESTUREHELPER_H

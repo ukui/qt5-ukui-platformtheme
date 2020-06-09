@@ -31,16 +31,34 @@
 #include <QApplication>
 #include <QMenu>
 
+#include <QTouchEvent>
+
+#include <QScroller>
+#include <QMouseEvent>
+
+#include <QAbstractItemView>
+#include <QItemSelectionModel>
+
+#include <QScroller>
+
+#include <QDebug>
+
 GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
 {
-    m_timer.setInterval(500);
-    m_timer.setSingleShot(true);
+    // we translate event by ourselves
+    //qApp->setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
+    //qApp->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
+
+    m_menu_popped_timer.setInterval(500);
+    m_menu_popped_timer.setSingleShot(true);
 }
 
 void GestureHelper::registerWidget(QWidget *widget)
 {
     if (!widget)
         return;
+
+    //widget->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     widget->removeEventFilter(this);
 
@@ -58,6 +76,8 @@ void GestureHelper::unregisterWidget(QWidget *widget)
     if (!widget)
         return;
 
+    //widget->setAttribute(Qt::WA_AcceptTouchEvents, true);
+
     widget->removeEventFilter(this);
 
     widget->ungrabGesture(Qt::TapGesture);
@@ -69,24 +89,79 @@ void GestureHelper::unregisterWidget(QWidget *widget)
 
 bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::Gesture) {
+    switch (event->type()) {
+    case QEvent::TouchBegin: {
+        m_is_touching = true;
+        auto te = static_cast<QTouchEvent *>(event);
+        m_finger_count = te->touchPoints().count();
+        if (m_finger_count == 1)
+            m_hold_and_tap_pos = te->touchPoints().first().pos();
+        else
+            m_hold_and_tap_pos = QPointF();
+        break;
+    }
+
+    case QEvent::TouchUpdate: {
+        auto te = static_cast<QTouchEvent *>(event);
+        m_finger_count = te->touchPoints().count();
+        break;
+    }
+
+    case QEvent::TouchCancel:
+    case QEvent::TouchEnd: {
+        m_is_touching = false;
+        m_finger_count = 0;
+        break;
+    }
+
+    case QEvent::Gesture: {
         auto e = static_cast<QGestureEvent *>(event);
         auto widget = qobject_cast<QWidget *>(watched);
         if (!widget->isActiveWindow())
             return false;
 
-        if (m_timer.isActive())
-            return false;
-        if (auto hg = static_cast<QTapAndHoldGesture*>(e->gesture(Qt::TapAndHoldGesture))) {
-            switch (hg->state()) {
+        if (auto tapGesture = static_cast<QTapGesture *>(e->gesture(Qt::TapGesture))) {
+            qDebug()<<tapGesture->gestureType()<<tapGesture->position()<<tapGesture->state();
+            switch (tapGesture->state()) {
+            case Qt::GestureStarted:
+                //mouse press event
+                break;
+            case Qt::GestureCanceled:
+            case Qt::GestureFinished: {
+                //mouse release event
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
+        if (auto tapAndHoldGesture = static_cast<QTapAndHoldGesture*>(e->gesture(Qt::TapAndHoldGesture))) {
+            qDebug()<<tapAndHoldGesture->gestureType()<<tapAndHoldGesture->position()<<tapAndHoldGesture->state();
+            if (m_menu_popped_timer.isActive())
+                return false;
+
+            m_hold_and_tap_pos = QPoint();
+
+            // check if there is a menu popped.
+            // note that the right click in a widget which has context menu
+            // will trigger the tap and hold gesture. I have no idea to deal
+            // with this case, because i didn't find how to recognize if this
+            // event is translated from mouse event.
+            if (qobject_cast<QMenu *>(watched)) {
+                qDebug()<<"menu popped, may be right click";
+                m_menu_popped = true;
+            }
+
+            switch (tapAndHoldGesture->state()) {
             case Qt::GestureStarted: {
-                if (menu_popped) {
+                if (m_menu_popped) {
                     return false;
                 } else {
-                    menu_popped = true;
-                    m_timer.start();
-                    auto pos = widget->mapFromGlobal(hg->position().toPoint());
-                    auto gpos = hg->position().toPoint();
+                    m_menu_popped = true;
+                    m_menu_popped_timer.start();
+                    auto pos = widget->mapFromGlobal(tapAndHoldGesture->position().toPoint());
+                    auto gpos = tapAndHoldGesture->position().toPoint();
                     QContextMenuEvent ce(QContextMenuEvent::Other, pos, gpos, Qt::NoModifier);
                     qApp->sendEvent(widget, &ce);
                 }
@@ -94,13 +169,78 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             }
             case Qt::GestureCanceled:
             case Qt::GestureFinished: {
-                menu_popped = false;
+                m_menu_popped = false;
                 break;
             }
             default:
                 break;
             }
         }
+
+        if (auto panGesture = static_cast<QPanGesture*>(e->gesture(Qt::PanGesture))) {
+            qDebug()<<panGesture->gestureType()<<panGesture->acceleration()<<panGesture->delta()<<panGesture->hotSpot();
+            switch (panGesture->state()) {
+            case Qt::GestureStarted: {
+                if (m_is_paning) {
+                    return false;
+                } else {
+                    m_is_paning = true;
+                }
+                break;
+            }
+            case Qt::GestureCanceled:
+            case Qt::GestureFinished: {
+                m_is_paning = false;
+                break;
+            }
+            default:
+                break;
+            }
+            return false;
+        }
+        break;
     }
+
+    case QEvent::MouseMove: {
+        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        auto widget = static_cast<QWidget *>(watched);
+        if (!widget)
+            return false;
+
+        qDebug()<<me->type()<<me->pos();
+
+        bool isTranslatedFromTouch = me->source() == Qt::MouseEventSynthesizedByQt;
+        if (!isTranslatedFromTouch)
+            return false;
+
+        // if we do a hold and tap gesture, we should not trigger mouse move event.
+        // so we have to ignore the small offset of finger move.
+        auto lastTapPoint = m_hold_and_tap_pos.toPoint();
+        auto currentPoint = widget->mapTo(widget->topLevelWidget(), me->pos());
+
+        if (!lastTapPoint.isNull()) {
+            int lenthSquared = QPoint::dotProduct(lastTapPoint, currentPoint);
+            qDebug()<<lastTapPoint<<currentPoint<<lenthSquared;
+            if (QRect(-50, -50, 100, 100).contains(lastTapPoint - currentPoint)) {
+                me->ignore();
+                return true;
+            }
+        }
+
+        if (m_is_paning) {
+            auto scroller = QScroller::scroller(watched);
+            if (QScroller::hasScroller(watched)) {
+                scroller->handleInput(QScroller::InputMove, me->pos(), me->timestamp());
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    default:
+        break;
+    }
+
     return false;
 }
