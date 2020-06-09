@@ -222,8 +222,8 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             int lenthSquared = QPoint::dotProduct(lastTapPoint, currentPoint);
             qDebug()<<lastTapPoint<<currentPoint<<lenthSquared;
             if (QRect(-50, -50, 100, 100).contains(lastTapPoint - currentPoint)) {
-                me->ignore();
-                return true;
+                if (qobject_cast<QAbstractScrollArea *>(widget))
+                    return true;
             }
         }
 
