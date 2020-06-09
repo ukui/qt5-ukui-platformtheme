@@ -47,6 +47,7 @@ private:
     bool m_menu_popped = false;
     QTimer m_menu_popped_timer;
     QPointF m_hold_and_tap_pos;
+    bool m_is_native_mouse_move = false;
 
     // pan gesture
     bool m_is_paning = false;
