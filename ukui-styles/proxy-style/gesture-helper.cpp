@@ -121,7 +121,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             return false;
 
         if (auto tapGesture = static_cast<QTapGesture *>(e->gesture(Qt::TapGesture))) {
-            qDebug()<<tapGesture->gestureType()<<tapGesture->position()<<tapGesture->state();
+            //qDebug()<<tapGesture->gestureType()<<tapGesture->position()<<tapGesture->state();
             switch (tapGesture->state()) {
             case Qt::GestureStarted:
                 //mouse press event
@@ -137,7 +137,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         }
 
         if (auto tapAndHoldGesture = static_cast<QTapAndHoldGesture*>(e->gesture(Qt::TapAndHoldGesture))) {
-            qDebug()<<tapAndHoldGesture->gestureType()<<tapAndHoldGesture->position()<<tapAndHoldGesture->state();
+            //qDebug()<<tapAndHoldGesture->gestureType()<<tapAndHoldGesture->position()<<tapAndHoldGesture->state();
             if (m_menu_popped_timer.isActive())
                 return false;
 
@@ -148,7 +148,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             // will trigger the tap and hold gesture. I have no idea to deal
             // with this case, because i didn't find how to recognize if this
             // event is translated from mouse event.
-            if (qobject_cast<QMenu *>(watched)) {
+            if (qobject_cast<QMenu *>(watched) || qobject_cast<QMenu *>(qApp->activePopupWidget())) {
                 qDebug()<<"menu popped, may be right click";
                 m_menu_popped = true;
             }
@@ -162,6 +162,12 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
                     m_menu_popped_timer.start();
                     auto pos = widget->mapFromGlobal(tapAndHoldGesture->position().toPoint());
                     auto gpos = tapAndHoldGesture->position().toPoint();
+
+                    if (m_is_native_mouse_move)
+                        return false;
+
+                    QMouseEvent me(QMouseEvent::MouseButtonRelease, pos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+                    qApp->sendEvent(widget, &me);
                     QContextMenuEvent ce(QContextMenuEvent::Other, pos, gpos, Qt::NoModifier);
                     qApp->sendEvent(widget, &ce);
                 }
@@ -178,13 +184,17 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         }
 
         if (auto panGesture = static_cast<QPanGesture*>(e->gesture(Qt::PanGesture))) {
-            qDebug()<<panGesture->gestureType()<<panGesture->acceleration()<<panGesture->delta()<<panGesture->hotSpot();
+            //qDebug()<<panGesture->gestureType()<<panGesture->acceleration()<<panGesture->delta()<<panGesture->hotSpot();
             switch (panGesture->state()) {
             case Qt::GestureStarted: {
                 if (m_is_paning) {
                     return false;
                 } else {
                     m_is_paning = true;
+                    auto widget = qobject_cast<QWidget *>(watched);
+                    auto pos = widget->mapFromGlobal(QCursor::pos());
+                    QMouseEvent me(QMouseEvent::MouseButtonRelease, pos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+                    qApp->sendEvent(widget, &me);
                 }
                 break;
             }
@@ -207,11 +217,15 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         if (!widget)
             return false;
 
-        qDebug()<<me->type()<<me->pos();
+        //qDebug()<<me->type()<<me->pos();
 
         bool isTranslatedFromTouch = me->source() == Qt::MouseEventSynthesizedByQt;
-        if (!isTranslatedFromTouch)
+        if (!isTranslatedFromTouch) {
+            // do not trigger tap and hold gesture handler
+            m_is_native_mouse_move = true;
             return false;
+        }
+        m_is_native_mouse_move = false;
 
         // if we do a hold and tap gesture, we should not trigger mouse move event.
         // so we have to ignore the small offset of finger move.
@@ -220,9 +234,9 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 
         if (!lastTapPoint.isNull()) {
             int lenthSquared = QPoint::dotProduct(lastTapPoint, currentPoint);
-            qDebug()<<lastTapPoint<<currentPoint<<lenthSquared;
+            //qDebug()<<lastTapPoint<<currentPoint<<lenthSquared;
             if (QRect(-50, -50, 100, 100).contains(lastTapPoint - currentPoint)) {
-                if (qobject_cast<QAbstractScrollArea *>(widget))
+                if (qobject_cast<QAbstractScrollArea *>(widget) || qobject_cast<QAbstractScrollArea *>(widget->parent()))
                     return true;
             }
         }
