@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QPointF>
+#include <QTouchEvent>
 
 class GestureHelper : public QObject
 {
@@ -43,6 +44,8 @@ private:
     bool m_is_touching = false;
     int m_finger_count = 0;
 
+    QList<QTouchEvent::TouchPoint> m_touch_points;
+
     // hold and tap gesture
     bool m_menu_popped = false;
     QTimer m_menu_popped_timer;
@@ -55,6 +58,7 @@ private:
 
     // pinch gesture
     bool m_is_pinching = false;
+    QTimer m_pinch_operation_delayer;
 };
 
 #endif // GESTUREHELPER_H
