@@ -51,6 +51,10 @@ private:
 
     // pan gesture
     bool m_is_paning = false;
+    QTimer m_disable_paning_flag_delayer;
+
+    // pinch gesture
+    bool m_is_pinching = false;
 };
 
 #endif // GESTUREHELPER_H

@@ -41,6 +41,8 @@
 
 #include <QScroller>
 
+#include <QWheelEvent>
+
 #include <QDebug>
 
 GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
@@ -64,7 +66,7 @@ void GestureHelper::registerWidget(QWidget *widget)
 
     widget->grabGesture(Qt::TapGesture);
     widget->grabGesture(Qt::TapAndHoldGesture);
-    widget->grabGesture(Qt::PinchGesture);
+    widget->grabGesture(Qt::PanGesture);
     widget->grabGesture(Qt::PinchGesture);
     widget->grabGesture(Qt::SwipeGesture);
 
@@ -82,7 +84,7 @@ void GestureHelper::unregisterWidget(QWidget *widget)
 
     widget->ungrabGesture(Qt::TapGesture);
     widget->ungrabGesture(Qt::TapAndHoldGesture);
-    widget->ungrabGesture(Qt::PinchGesture);
+    widget->ungrabGesture(Qt::PanGesture);
     widget->ungrabGesture(Qt::PinchGesture);
     widget->ungrabGesture(Qt::SwipeGesture);
 }
@@ -208,6 +210,32 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             }
             return false;
         }
+
+        if (auto pinchGesture = static_cast<QPinchGesture *>(e->gesture(Qt::PinchGesture))) {
+            switch (pinchGesture->state()) {
+            case Qt::GestureStarted:
+                m_is_pinching = true;
+                break;
+            case Qt::GestureCanceled:
+            case Qt::GestureFinished:
+                m_is_pinching = false;
+                break;
+            default:
+                break;
+            }
+
+            if (pinchGesture->changeFlags() & QPinchGesture::ScaleFactorChanged) {
+                //if (pinchGesture->scaleFactor() > 0.90 && pinchGesture->scaleFactor() < 1.1)
+                    //return false;
+
+                QWheelEvent we(pinchGesture->lastCenterPoint(), pinchGesture->scaleFactor() < 1? -100: 100, Qt::NoButton, Qt::ControlModifier);
+                qApp->sendEvent(watched, &we);
+                //qApp->sendEvent(watched, &we);
+                //qApp->sendEvent(watched, &we);
+                return false;
+            }
+        }
+
         break;
     }
 
@@ -233,7 +261,6 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         auto currentPoint = widget->mapTo(widget->topLevelWidget(), me->pos());
 
         if (!lastTapPoint.isNull()) {
-            int lenthSquared = QPoint::dotProduct(lastTapPoint, currentPoint);
             //qDebug()<<lastTapPoint<<currentPoint<<lenthSquared;
             if (QRect(-50, -50, 100, 100).contains(lastTapPoint - currentPoint)) {
                 if (qobject_cast<QAbstractScrollArea *>(widget) || qobject_cast<QAbstractScrollArea *>(widget->parent()))
@@ -250,6 +277,12 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         }
 
         return false;
+    }
+
+    case QEvent::DragEnter:
+    case QEvent::DragMove: {
+        if (m_is_paning || m_is_pinching)
+            return true;
     }
 
     default:
