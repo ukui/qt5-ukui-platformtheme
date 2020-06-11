@@ -1,7 +1,11 @@
 #include "ukui-two-finger-slide-gesture.h"
 
+#include <QWidget>
+
 #include <QTouchEvent>
 #include <QtMath>
+
+#include <QDebug>
 
 using namespace UKUI;
 
@@ -41,7 +45,10 @@ TwoFingerSlideGestureRecognizer::TwoFingerSlideGestureRecognizer() : QGestureRec
 
 QGesture *TwoFingerSlideGestureRecognizer::create(QObject *target)
 {
-    return new TwoFingerSlideGesture(target);
+    //qDebug()<<"create";
+    if (target && target->isWidgetType())
+        static_cast<QWidget *>(target)->setAttribute(Qt::WA_AcceptTouchEvents);
+    return new TwoFingerSlideGesture;
 }
 
 QGestureRecognizer::Result TwoFingerSlideGestureRecognizer::recognize(QGesture *gesture, QObject *watched, QEvent *event)
@@ -54,6 +61,7 @@ QGestureRecognizer::Result TwoFingerSlideGestureRecognizer::recognize(QGesture *
             slideGesture->m_start_pos = touchEvent->touchPoints().first().pos().toPoint();
             slideGesture->m_current_pos = touchEvent->touchPoints().first().pos().toPoint();
             slideGesture->m_last_pos = touchEvent->touchPoints().first().pos().toPoint();
+            gesture->setHotSpot(touchEvent->touchPoints().first().screenPos());
             return QGestureRecognizer::Ignore;
             break;
         }
@@ -115,9 +123,11 @@ QGestureRecognizer::Result TwoFingerSlideGestureRecognizer::recognize(QGesture *
 
 void TwoFingerSlideGestureRecognizer::reset(QGesture *gesture)
 {
+    //qDebug()<<"reset";
     auto slideGesture = static_cast<TwoFingerSlideGesture *>(gesture);
     slideGesture->m_current_pos = QPoint();
     slideGesture->m_last_pos = QPoint();
     slideGesture->m_start_pos = QPoint();
     slideGesture->m_direction = TwoFingerSlideGesture::Invalid;
+    QGestureRecognizer::reset(gesture);
 }

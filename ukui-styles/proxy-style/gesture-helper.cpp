@@ -21,6 +21,8 @@
  */
 
 #include "gesture-helper.h"
+#include "ukui-two-finger-slide-gesture.h"
+#include "ukui-two-finger-zoom-gesture.h"
 
 #include <QWidget>
 #include <QGestureEvent>
@@ -58,6 +60,26 @@ GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
 
     m_pinch_operation_delayer.setInterval(200);
     m_pinch_operation_delayer.setSingleShot(true);
+
+    m_slider = new UKUI::TwoFingerSlideGestureRecognizer;
+    m_zoomer = new UKUI::TwoFingerZoomGestureRecognizer;
+
+    m_slide_type = QGestureRecognizer::registerRecognizer(m_slider);
+    m_zoom_type = QGestureRecognizer::registerRecognizer(m_zoomer);
+
+    qDebug()<<"gesture helper";
+
+    qDebug()<<m_slide_type<<"ttt";
+    qDebug()<<m_zoom_type<<"sss";
+}
+
+GestureHelper::~GestureHelper()
+{
+    QGestureRecognizer::unregisterRecognizer(m_slide_type);
+    QGestureRecognizer::unregisterRecognizer(m_zoom_type);
+
+    delete m_slider;
+    delete m_zoomer;
 }
 
 void GestureHelper::registerWidget(QWidget *widget)
@@ -74,6 +96,8 @@ void GestureHelper::registerWidget(QWidget *widget)
     widget->grabGesture(Qt::PanGesture);
     widget->grabGesture(Qt::PinchGesture);
     widget->grabGesture(Qt::SwipeGesture);
+    widget->grabGesture(m_slide_type);
+    widget->grabGesture(m_zoom_type);
 
     widget->installEventFilter(this);
 }
@@ -92,6 +116,8 @@ void GestureHelper::unregisterWidget(QWidget *widget)
     widget->ungrabGesture(Qt::PanGesture);
     widget->ungrabGesture(Qt::PinchGesture);
     widget->ungrabGesture(Qt::SwipeGesture);
+    widget->ungrabGesture(m_slide_type);
+    widget->ungrabGesture(m_zoom_type);
 }
 
 bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
@@ -126,21 +152,31 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 
     case QEvent::Gesture: {
         auto e = static_cast<QGestureEvent *>(event);
-        bool isPan = false;
-        bool isPinch = false;
-        for (auto gesture : e->gestures()) {
-            if (gesture->gestureType() == Qt::PanGesture)
-                isPan = true;
-
-            if (gesture->gestureType() == Qt::PinchGesture)
-                isPinch = true;
-        }
-
-        //qDebug()<<"pan and pinch=========="<<isPan<<isPinch;
-
         auto widget = qobject_cast<QWidget *>(watched);
         if (!widget->isActiveWindow())
             return false;
+
+        if (auto twoFingerSlideGesture = static_cast<UKUI::TwoFingerSlideGesture *>(e->gesture(m_slide_type))) {
+            //qDebug()<<"has slide gesture";
+        }
+
+        if (auto twoFingerZoomGesture = static_cast<UKUI::TwoFingerZoomGesture *>(e->gesture(m_zoom_type))) {
+            //qDebug()<<"has zoom gesture"<<twoFingerZoomGesture->state()<<twoFingerZoomGesture->zoomDirection()<<twoFingerZoomGesture->startPoints()<<twoFingerZoomGesture->lastPoints()<<twoFingerZoomGesture->currentPoints();
+            switch (twoFingerZoomGesture->zoomDirection()) {
+            case UKUI::TwoFingerZoomGesture::ZoomIn: {
+                QWheelEvent we(twoFingerZoomGesture->hotSpot(), 100, Qt::NoButton, Qt::ControlModifier);
+                qApp->sendEvent(watched, &we);
+                break;
+            }
+            case UKUI::TwoFingerZoomGesture::ZoomOut: {
+                QWheelEvent we(twoFingerZoomGesture->hotSpot(), -100, Qt::NoButton, Qt::ControlModifier);
+                qApp->sendEvent(watched, &we);
+                break;
+            }
+            default:
+                break;
+            }
+        }
 
         if (auto tapGesture = static_cast<QTapGesture *>(e->gesture(Qt::TapGesture))) {
             //qDebug()<<tapGesture->gestureType()<<tapGesture->position()<<tapGesture->state();
@@ -235,43 +271,6 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             return false;
         }
 
-        if (auto pinchGesture = static_cast<QPinchGesture *>(e->gesture(Qt::PinchGesture))) {
-            //qDebug()<<pinchGesture->gestureType()<<pinchGesture->state()<<pinchGesture->centerPoint()<<pinchGesture->scaleFactor()<<pinchGesture->rotationAngle();
-            switch (pinchGesture->state()) {
-            case Qt::GestureStarted: {
-                auto widget = qobject_cast<QWidget *>(watched);
-                auto pos = widget->mapFromGlobal(QCursor::pos());
-                QMouseEvent me(QMouseEvent::MouseButtonRelease, pos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-                qApp->sendEvent(widget, &me);
-                m_is_pinching = true;
-                m_is_paning = false;
-                m_pinch_operation_delayer.start();
-                break;
-            }
-            case Qt::GestureUpdated: {
-                if (m_pinch_operation_delayer.isActive())
-                    break;
-                if (pinchGesture->changeFlags() & QPinchGesture::ScaleFactorChanged) {
-                    //if (pinchGesture->totalScaleFactor() < 1.5 && pinchGesture->totalScaleFactor() > 0.75)
-                        //return false;
-
-                    QWheelEvent we(pinchGesture->lastCenterPoint(), pinchGesture->scaleFactor() < 1? -100: 100, Qt::NoButton, Qt::ControlModifier);
-                    qApp->sendEvent(watched, &we);
-                    //qApp->sendEvent(watched, &we);
-                    //qApp->sendEvent(watched, &we);
-                    return false;
-                }
-            }
-            case Qt::GestureCanceled:
-            case Qt::GestureFinished:
-                m_is_pinching = false;
-                m_pinch_operation_delayer.stop();
-                break;
-            default:
-                break;
-            }
-        }
-
         break;
     }
 
@@ -305,16 +304,6 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         }
 
         if (m_is_paning) {
-            QTimer::singleShot(100, watched, [=](){
-                if (m_is_pinching)
-                    return;
-
-                auto scroller = QScroller::scroller(watched);
-                if (QScroller::hasScroller(watched)) {
-                    scroller->handleInput(QScroller::InputMove, me->pos(), me->timestamp());
-                }
-            });
-
             return true;
         }
 
@@ -323,7 +312,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 
     case QEvent::DragEnter:
     case QEvent::DragMove: {
-        if (m_is_paning || m_is_pinching)
+        if (m_is_paning)
             return true;
     }
 

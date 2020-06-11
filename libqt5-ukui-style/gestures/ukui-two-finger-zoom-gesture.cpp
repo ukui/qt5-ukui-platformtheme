@@ -3,6 +3,8 @@
 #include <QTouchEvent>
 #include <QtMath>
 
+#include <QDebug>
+
 using namespace UKUI;
 
 TwoFingerZoomGesture::TwoFingerZoomGesture(QObject *parent) : QGesture(parent)
@@ -27,6 +29,8 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
 
         switch (touchEvent->type()) {
         case QEvent::TouchBegin:
+            gesture->setHotSpot(touchEvent->touchPoints().first().screenPos());
+            return QGestureRecognizer::MayBeGesture;
             break;
         case QEvent::TouchUpdate: {
             if (touchEvent->touchPoints().count() != 2)
@@ -39,29 +43,31 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
                 zoomGesture->m_last_points = zoomGesture->m_start_points;
                 zoomGesture->m_current_points = zoomGesture->m_start_points;
 
-                zoomGesture->m_start_points_distance = qSqrt(QPoint::dotProduct(zoomGesture->m_start_points.first, zoomGesture->m_start_points.second));
+                zoomGesture->m_start_points_distance = (zoomGesture->m_start_points.first - zoomGesture->m_start_points.second).manhattanLength();
                 zoomGesture->m_last_points_distance = zoomGesture->m_start_points_distance;
 
                 zoomGesture->m_zoom_direction = TwoFingerZoomGesture::Unkown;
-                return QGestureRecognizer::MayBeGesture;
+                return QGestureRecognizer::TriggerGesture;
             }
             case TwoFingerZoomGesture::Unkown: {
                 zoomGesture->m_last_points = zoomGesture->m_current_points;
                 zoomGesture->m_current_points.first = touchEvent->touchPoints().first().pos().toPoint();
                 zoomGesture->m_current_points.second = touchEvent->touchPoints().last().pos().toPoint();
 
-                qreal currentPointsDistance = qSqrt(QPoint::dotProduct(zoomGesture->m_current_points.first, zoomGesture->m_current_points.second));
+                qreal currentPointsDistance = (zoomGesture->m_current_points.first - zoomGesture->m_current_points.second).manhattanLength();
                 qreal totalDelta = currentPointsDistance - zoomGesture->m_start_points_distance;
+
+                //qDebug()<<zoomGesture->m_start_points_distance<<currentPointsDistance<<totalDelta;
 
                 // only total delta is enough the gesture would be triggered.
                 // note that once zoom direction ensured, it won't change until
                 // the gesture cancelled.
                 if (qAbs(totalDelta) > 100) {
                     zoomGesture->m_last_points_distance = currentPointsDistance;
-                    if (totalDelta < 0) {
-                        zoomGesture->m_zoom_direction = TwoFingerZoomGesture::ZoomOut;
-                    } else {
+                    if (totalDelta > 0) {
                         zoomGesture->m_zoom_direction = TwoFingerZoomGesture::ZoomIn;
+                    } else {
+                        zoomGesture->m_zoom_direction = TwoFingerZoomGesture::ZoomOut;
                     }
                     return QGestureRecognizer::TriggerGesture;
                 } else {
@@ -75,7 +81,7 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
                 auto tmp = zoomGesture->m_current_points;
                 zoomGesture->m_current_points.first = touchEvent->touchPoints().first().pos().toPoint();
                 zoomGesture->m_current_points.second = touchEvent->touchPoints().last().pos().toPoint();
-                qreal currentPointsDistance = qSqrt(QPoint::dotProduct(zoomGesture->m_current_points.first, zoomGesture->m_current_points.second));
+                qreal currentPointsDistance = (zoomGesture->m_current_points.first - zoomGesture->m_current_points.second).manhattanLength();
                 qreal distanceOffset = currentPointsDistance - zoomGesture->m_last_points_distance;
                 if (distanceOffset > 0) {
                     // trigger zoom in
@@ -94,7 +100,7 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
                 auto tmp = zoomGesture->m_current_points;
                 zoomGesture->m_current_points.first = touchEvent->touchPoints().first().pos().toPoint();
                 zoomGesture->m_current_points.second = touchEvent->touchPoints().last().pos().toPoint();
-                qreal currentPointsDistance = qSqrt(QPoint::dotProduct(zoomGesture->m_current_points.first, zoomGesture->m_current_points.second));
+                qreal currentPointsDistance = (zoomGesture->m_current_points.first - zoomGesture->m_current_points.second).manhattanLength();
                 qreal distanceOffset = currentPointsDistance - zoomGesture->m_last_points_distance;
                 if (distanceOffset < 0) {
                     // trigger zoom out
@@ -136,4 +142,5 @@ void TwoFingerZoomGestureRecognizer::reset(QGesture *gesture)
     zoomGesture->m_current_points.first = QPoint();
     zoomGesture->m_current_points.second = QPoint();
     zoomGesture->m_zoom_direction = TwoFingerZoomGesture::Invaild;
+    QGestureRecognizer::reset(gesture);
 }

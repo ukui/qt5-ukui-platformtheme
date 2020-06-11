@@ -28,12 +28,18 @@
 #include <QPointF>
 #include <QTouchEvent>
 
+namespace UKUI {
+class TwoFingerSlideGestureRecognizer;
+class TwoFingerZoomGestureRecognizer;
+}
+
 class GestureHelper : public QObject
 {
     Q_OBJECT
 public:
 
     explicit GestureHelper(QObject *parent = nullptr);
+    ~GestureHelper();
 
     void registerWidget(QWidget *widget);
     void unregisterWidget(QWidget *widget);
@@ -59,6 +65,12 @@ private:
     // pinch gesture
     bool m_is_pinching = false;
     QTimer m_pinch_operation_delayer;
+
+    UKUI::TwoFingerSlideGestureRecognizer *m_slider;
+    UKUI::TwoFingerZoomGestureRecognizer *m_zoomer;
+
+    Qt::GestureType m_slide_type;
+    Qt::GestureType m_zoom_type;
 };
 
 #endif // GESTUREHELPER_H
