@@ -11,7 +11,8 @@ TEMPLATE = lib
 CONFIG += plugin c++11 link_pkgconfig
 PKGCONFIG += gsettings-qt
 
-include(../../libqt5-ukui-style/settings/settings.pri)
+#include(../../libqt5-ukui-style/settings/settings.pri)
+include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
 
 DEFINES += PROXYSTYLE_LIBRARY
 
