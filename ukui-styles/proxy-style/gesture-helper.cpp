@@ -158,6 +158,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 
         if (auto twoFingerSlideGesture = static_cast<UKUI::TwoFingerSlideGesture *>(e->gesture(m_slide_type))) {
             //qDebug()<<"has slide gesture";
+            //qDebug()<<"slide"<<twoFingerSlideGesture->state()<<twoFingerSlideGesture->direction()<<twoFingerSlideGesture->totalDelta();
         }
 
         if (auto twoFingerZoomGesture = static_cast<UKUI::TwoFingerZoomGesture *>(e->gesture(m_zoom_type))) {
