@@ -77,9 +77,6 @@ GestureHelper::~GestureHelper()
 {
     QGestureRecognizer::unregisterRecognizer(m_slide_type);
     QGestureRecognizer::unregisterRecognizer(m_zoom_type);
-
-    delete m_slider;
-    delete m_zoomer;
 }
 
 void GestureHelper::registerWidget(QWidget *widget)

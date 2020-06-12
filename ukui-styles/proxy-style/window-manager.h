@@ -63,6 +63,8 @@ private:
     bool m_is_dragging = false;
     QTimer m_timer;
     QPoint m_start_point;
+
+    bool m_prepared_to_drag = false;
 };
 
 class AppEventFilter : public QObject
