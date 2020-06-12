@@ -149,6 +149,10 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
     } else {
         auto widget = qobject_cast<QWidget *>(obj);
         auto topLevel = widget->topLevelWidget();
+
+        if (topLevel->windowFlags() & ~Qt::Window || topLevel->windowFlags() & Qt::Desktop)
+            return;
+
         auto globalPos = QCursor::pos();
         //auto offset = globalPos - m_press_pos;
         topLevel->move(globalPos - topLevel->mapFrom(widget, m_start_point));
