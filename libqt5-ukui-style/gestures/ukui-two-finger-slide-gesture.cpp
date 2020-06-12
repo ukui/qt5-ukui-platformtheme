@@ -62,7 +62,7 @@ QGestureRecognizer::Result TwoFingerSlideGestureRecognizer::recognize(QGesture *
             slideGesture->m_current_pos = touchEvent->touchPoints().first().pos().toPoint();
             slideGesture->m_last_pos = touchEvent->touchPoints().first().pos().toPoint();
             gesture->setHotSpot(touchEvent->touchPoints().first().screenPos());
-            return QGestureRecognizer::Ignore;
+            return QGestureRecognizer::MayBeGesture;
             break;
         }
         case QEvent::TouchUpdate: {
@@ -70,19 +70,27 @@ QGestureRecognizer::Result TwoFingerSlideGestureRecognizer::recognize(QGesture *
             if (touchEvent->touchPoints().count() != 2)
                 return QGestureRecognizer::Ignore;
 
-            if (touchEvent->touchPointStates() == Qt::TouchPointMoved) {
+            if (touchEvent->touchPointStates() & Qt::TouchPointPressed) {
+                if (touchEvent->touchPoints().count() == 2) {
+                    // update start point center
+                    slideGesture->m_start_pos = (touchEvent->touchPoints().first().pos().toPoint() + touchEvent->touchPoints().last().pos().toPoint())/2;
+                    //qDebug()<<"update start point"<<slideGesture->startPos();
+                    return QGestureRecognizer::MayBeGesture;
+                }
+            }
+
+            if (touchEvent->touchPointStates() & Qt::TouchPointMoved) {
                 // initial slide gesture direction, note that
                 // once direction ensured, it will not be changed
                 // untill the gesture finished or cancelled.
                 if (slideGesture->direction() == TwoFingerSlideGesture::Invalid) {
-                    qreal lenthSquare = QPoint::dotProduct(touchEvent->touchPoints().first().pos().toPoint(), touchEvent->touchPoints().last().pos().toPoint());
-                    qreal distance = qSqrt(lenthSquare);
-
+                    qreal distance = (touchEvent->touchPoints().first().pos().toPoint() - touchEvent->touchPoints().last().pos().toPoint()).manhattanLength();
                     // we should distinguish slide and pinch zoom gesture.
-                    if (distance > 100)
+                    if (distance > 200)
                         return QGestureRecognizer::Ignore;
 
-                    QPoint offset = touchEvent->touchPoints().first().pos().toPoint() - slideGesture->startPos();
+                    QPoint offset = (touchEvent->touchPoints().first().pos().toPoint() + touchEvent->touchPoints().last().pos().toPoint())/2 - slideGesture->startPos();
+                    //qDebug()<<offset;
                     if (qAbs(offset.y()) > 50) {
                         slideGesture->m_direction = TwoFingerSlideGesture::Vertical;
                         slideGesture->m_current_pos = touchEvent->touchPoints().first().pos().toPoint();
