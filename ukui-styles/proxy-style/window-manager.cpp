@@ -130,9 +130,12 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 
     QWidget *w = qobject_cast<QWidget*>(obj);
     const QPoint native = e->globalPos();
-    if (e->source() != Qt::MouseEventSynthesizedByQt && KWindowSystem::isPlatformX11()) {
+    if (QX11Info::isPlatformX11()) {
         if (m_is_dragging)
             return;
+
+        QMouseEvent me(QMouseEvent::MouseButtonRelease, e->localPos(), e->button(), e->buttons(), e->modifiers());
+        qApp->sendEvent(obj, &me);
 
         qDebug()<<"x11 move start";
         auto connection = QX11Info::connection();
@@ -140,8 +143,11 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x(), native.y(), NET::Move);
         qDebug()<<"x11 move end";
 
-        QMouseEvent me(QMouseEvent::MouseButtonRelease, e->localPos(), e->button(), e->buttons(), e->modifiers());
-        qApp->sendEvent(obj, &me);
+        // balance xcb_ungrab_pointer
+        if (!w->mouseGrabber()) {
+            w->grabMouse();
+            w->releaseMouse();
+        }
 
         m_is_dragging = true;
 
