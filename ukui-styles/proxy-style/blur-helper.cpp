@@ -33,6 +33,7 @@
 #include "black-list.h"
 
 #include <QApplication>
+#include <QX11Info>
 
 #include <QDebug>
 
@@ -108,6 +109,10 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
  */
 void BlurHelper::registerWidget(QWidget *widget)
 {
+    // FIXME: how to blur window on wayland?
+    if (!QX11Info::isPlatformX11())
+        return;
+
     if (!widget)
         return;
 
@@ -148,6 +153,9 @@ void BlurHelper::registerWidget(QWidget *widget)
 
 void BlurHelper::unregisterWidget(QWidget *widget)
 {
+    if (!QX11Info::isPlatformX11())
+        return;
+
     if (!widget)
         return;
 
