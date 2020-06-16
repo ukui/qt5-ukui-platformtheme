@@ -138,7 +138,7 @@ void ProxyStyle::polish(QWidget *widget)
             //trying fix QWizardPage's title problems
             if (QString(p->metaObject()->className()) == "QWidget") {
                 auto font = QApplication::font();
-                font.setPixelSize(font.pixelSize());
+                font.setPointSize(font.pointSize());
                 label->setFont(font);
             }
         }

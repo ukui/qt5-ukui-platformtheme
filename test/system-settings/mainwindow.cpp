@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->comboBox_3->setModel(fonts_model);
     ui->comboBox_3->setCurrentText(settings.get("systemFont").toString());
 
-    ui->spinBox->setValue(settings.get("systemFontSize").toInt());
+    ui->spinBox->setValue(settings.get("systemFontSize").toString().toDouble());
 }
 
 MainWindow::~MainWindow()
