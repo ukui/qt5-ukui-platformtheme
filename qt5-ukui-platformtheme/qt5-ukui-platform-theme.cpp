@@ -146,10 +146,10 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
         return "hicolor";
     }
     case QPlatformTheme::SystemIconFallbackThemeName:
-        return "ukui-icon-theme-default";
+        return "hicolor";
     case QPlatformTheme::IconThemeSearchPaths:
         //FIXME:
-        return QStringList()<<"/usr/share/icons";
+        return QStringList()<<".local/share/icons"<<"/usr/share/icons"<<"/usr/local/share/icons";
     default:
         break;
     }
