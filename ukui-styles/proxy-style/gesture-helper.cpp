@@ -156,6 +156,21 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
         if (auto twoFingerSlideGesture = static_cast<UKUI::TwoFingerSlideGesture *>(e->gesture(m_slide_type))) {
             //qDebug()<<"has slide gesture";
             //qDebug()<<"slide"<<twoFingerSlideGesture->state()<<twoFingerSlideGesture->direction()<<twoFingerSlideGesture->totalDelta();
+            if (twoFingerSlideGesture->state() == Qt::GestureUpdated) {
+                // some view doesn't have scroller but also can scroll, such as process list view in ukui-system-monitor.
+                // we send the wheel event to trigger the scroll when slide gesture updated.
+                if (!QScroller::hasScroller(widget)) {
+                    bool isHorizal = twoFingerSlideGesture->direction() == UKUI::TwoFingerSlideGesture::Horizal;
+                    bool isVertical = twoFingerSlideGesture->direction() == UKUI::TwoFingerSlideGesture::Vertical;
+                    if (isVertical) {
+                        QWheelEvent we(twoFingerSlideGesture->hotSpot(), twoFingerSlideGesture->delta() * 10, Qt::NoButton, Qt::NoModifier, Qt::Vertical);
+                        qApp->sendEvent(widget, &we);
+                    } else if (isHorizal) {
+                        QWheelEvent we(twoFingerSlideGesture->hotSpot(), twoFingerSlideGesture->delta() * 10, Qt::NoButton, Qt::NoModifier, Qt::Horizontal);
+                        qApp->sendEvent(widget, &we);
+                    }
+                }
+            }
         }
 
         if (auto twoFingerZoomGesture = static_cast<UKUI::TwoFingerZoomGesture *>(e->gesture(m_zoom_type))) {
