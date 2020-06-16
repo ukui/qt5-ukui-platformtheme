@@ -2,6 +2,7 @@
 
 #include <QTouchEvent>
 #include <QtMath>
+#include <QWidget>
 
 #include <QDebug>
 
@@ -19,7 +20,9 @@ UKUI::TwoFingerZoomGestureRecognizer::TwoFingerZoomGestureRecognizer() : QGestur
 
 QGesture *TwoFingerZoomGestureRecognizer::create(QObject *target)
 {
-    return new TwoFingerZoomGesture(target);
+    if (target && target->isWidgetType())
+        static_cast<QWidget *>(target)->setAttribute(Qt::WA_AcceptTouchEvents);
+    return new TwoFingerZoomGesture;
 }
 
 QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *gesture, QObject *watched, QEvent *event)
