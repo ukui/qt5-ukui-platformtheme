@@ -10,6 +10,7 @@ Files: CONTRIBUTING.md
        libqt5-ukui-style/animations/animations.pri
        libqt5-ukui-style/animations/scrollbar/scrollbar.pri
        libqt5-ukui-style/animations/tabwidget/tabwidget.pri
+       libqt5-ukui-style/gestures/gestures.pri
        libqt5-ukui-style/development-files/qt5-ukui.pc
        libqt5-ukui-style/libqt5-ukui-style.pri
        libqt5-ukui-style/libqt5-ukui-style.pro
@@ -36,6 +37,12 @@ Files: CONTRIBUTING.md
        ukui-styles/qt5-style-ukui/qt5-style-ukui.json
        ukui-styles/qt5-style-ukui/qt5-style-ukui.pro
        ukui-styles/ukui-styles.pro
+       libqt5-ukui-style/gestures/ukui-two-finger-slide-gesture.cpp
+       libqt5-ukui-style/gestures/ukui-two-finger-slide-gesture.h
+       libqt5-ukui-style/gestures/ukui-two-finger-zoom-gesture.cpp
+       libqt5-ukui-style/gestures/ukui-two-finger-zoom-gesture.h
+       ukui-styles/proxy-style/gesture-helper.cpp
+       ukui-styles/proxy-style/gesture-helper.h
 Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
 License: LGPL-3.0+
 

@@ -1,4 +1,4 @@
-# SymbolsHelper-Confirmed: 1.0.0 amd64
+# SymbolsHelper-Confirmed: 1.0.4 amd64
 libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
 * Build-Depends-Package: libqt5-ukui-style-dev
  _ZN10QByteArrayD1Ev@Base 0.9.0
@@ -44,12 +44,17 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZN15HighLightEffect11qt_metacastEPKc@Base 1.0.0
  _ZN15HighLightEffect13setSkipEffectEP7QWidgetb@Base 1.0.0
  _ZN15HighLightEffect14generatePixmapERK7QPixmapPK12QStyleOptionPK7QWidgetbNS_10EffectModeE@Base 1.0.0
+ _ZN15HighLightEffect16defaultStyleDarkEv@Base 1.0.4
+ _ZN15HighLightEffect16setSymoblicColorERK6QColor@Base 1.0.4
  _ZN15HighLightEffect16staticMetaObjectE@Base 1.0.0
  _ZN15HighLightEffect17isPixmapPureColorERK7QPixmap@Base 1.0.0
+ _ZN15HighLightEffect23getCurrentSymbolicColorEv@Base 1.0.4
  _ZN15HighLightEffect26setMenuIconHighlightEffectEP5QMenubNS_10EffectModeE@Base 1.0.0
+ _ZN15HighLightEffect27filledSymbolicColoredPixmapERK7QPixmapRK6QColor@Base 1.0.4
  _ZN15HighLightEffect28setButtonIconHighlightEffectEP15QAbstractButtonbNS_10EffectModeE@Base 1.0.0
  _ZN15HighLightEffect30isWidgetIconUseHighlightEffectEPK7QWidget@Base 1.0.0
  _ZN15HighLightEffect30setViewItemIconHighlightEffectEP17QAbstractItemViewbNS_10EffectModeE@Base 1.0.0
+ _ZN15HighLightEffect30setWidgetIconFillSymbolicColorEP7QWidgetb@Base 1.0.4
  _ZN15HighLightEffectC1EP7QObject@Base 1.0.0
  _ZN15HighLightEffectC2EP7QObject@Base 1.0.0
  _ZN15HighLightEffectD0Ev@Base 1.0.0
@@ -94,6 +99,40 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZN24ApplicationStyleSettingsD2Ev@Base 0.9.0
  _ZN26UKUITabWidgetAnimatorIface10bindWidgetEP7QWidget@Base 0.9.0
  _ZN26UKUITabWidgetAnimatorIface13unboundWidgetEv@Base 0.9.0
+ _ZN4UKUI20TwoFingerZoomGesture11qt_metacallEN11QMetaObject4CallEiPPv@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGesture11qt_metacastEPKc@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGesture16staticMetaObjectE@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGestureC1EP7QObject@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGestureC2EP7QObject@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGestureD0Ev@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGestureD1Ev@Base 1.0.4
+ _ZN4UKUI20TwoFingerZoomGestureD2Ev@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGesture10totalDeltaEv@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGesture11qt_metacallEN11QMetaObject4CallEiPPv@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGesture11qt_metacastEPKc@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGesture16staticMetaObjectE@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGesture5deltaEv@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGestureC1EP7QObject@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGestureC2EP7QObject@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGestureD0Ev@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGestureD1Ev@Base 1.0.4
+ _ZN4UKUI21TwoFingerSlideGestureD2Ev@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizer5resetEP8QGesture@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizer6createEP7QObject@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizer9recognizeEP8QGestureP7QObjectP6QEvent@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizerC1Ev@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizerC2Ev@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizerD0Ev@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizerD1Ev@Base 1.0.4
+ _ZN4UKUI30TwoFingerZoomGestureRecognizerD2Ev@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizer5resetEP8QGesture@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizer6createEP7QObject@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizer9recognizeEP8QGestureP7QObjectP6QEvent@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizerC1Ev@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizerC2Ev@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizerD0Ev@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizerD1Ev@Base 1.0.4
+ _ZN4UKUI31TwoFingerSlideGestureRecognizerD2Ev@Base 1.0.4
  _ZN4UKUI9ScrollBar26DefaultInteractionAnimator10bindWidgetEP7QWidget@Base 0.9.0
  _ZN4UKUI9ScrollBar26DefaultInteractionAnimator11qt_metacallEN11QMetaObject4CallEiPPv@Base 0.9.0
  _ZN4UKUI9ScrollBar26DefaultInteractionAnimator11qt_metacastEPKc@Base 0.9.0
@@ -158,10 +197,11 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  (optional=templinst)_ZN5QListI7QStringEC2ERKS1_@Base 0.9.0
  (optional=templinst)_ZN5QListI7QStringED1Ev@Base 0.9.0
  (optional=templinst)_ZN5QListI7QStringED2Ev@Base 0.9.0
- (optional=templinst)_ZN5QListIP7QWidgetED1Ev@Base 1.0.0
- (optional=templinst)_ZN5QListIP7QWidgetED2Ev@Base 1.0.0
+#MISSING: 1.0.4# (optional=templinst)_ZN5QListIP7QWidgetED1Ev@Base 1.0.0
+#MISSING: 1.0.4# (optional=templinst)_ZN5QListIP7QWidgetED2Ev@Base 1.0.0
  _ZN7QStringD1Ev@Base 0.9.0
  _ZN7QStringD2Ev@Base 0.9.0
+ (optional=templinst)_ZN7QVectorIiE11reallocDataEii6QFlagsIN10QArrayData16AllocationOptionEE@Base 1.0.4
  _ZN8MPSStyle11qt_metacallEN11QMetaObject4CallEiPPv@Base 0.9.0
  _ZN8MPSStyle11qt_metacastEPKc@Base 0.9.0
  _ZN8MPSStyle16staticMetaObjectE@Base 0.9.0
@@ -180,9 +220,12 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZNK15HighLightEffect10metaObjectEv@Base 1.0.0
  _ZNK17UKUIStyleSettings10metaObjectEv@Base 0.9.0
  _ZNK24ApplicationStyleSettings10metaObjectEv@Base 0.9.0
+ _ZNK4UKUI20TwoFingerZoomGesture10metaObjectEv@Base 1.0.4
+ _ZNK4UKUI21TwoFingerSlideGesture10metaObjectEv@Base 1.0.4
  _ZNK4UKUI9ScrollBar26DefaultInteractionAnimator10metaObjectEv@Base 0.9.0
  _ZNK4UKUI9TabWidget20DefaultSlideAnimator10metaObjectEv@Base 0.9.0
  _ZNK4UKUI9TabWidget27DefaultSlideAnimatorFactory10metaObjectEv@Base 0.9.0
+ _ZNK7QPointF7toPointEv@Base 1.0.4
  _ZNK8MPSStyle10metaObjectEv@Base 0.9.0
  _ZNK8MPSStyle11drawControlEN6QStyle14ControlElementEPK12QStyleOptionP8QPainterPK7QWidget@Base 0.9.0
  _ZNK8MPSStyle11pixelMetricEN6QStyle11PixelMetricEPK12QStyleOptionPK7QWidget@Base 0.9.0
@@ -213,6 +256,10 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZTI8MPSStyle@Base 0.9.0
  _ZTIN12QtConcurrent15RunFunctionTaskIvEE@Base 0.9.0
  _ZTIN12QtConcurrent19RunFunctionTaskBaseIvEE@Base 0.9.0
+ _ZTIN4UKUI20TwoFingerZoomGestureE@Base 1.0.4
+ _ZTIN4UKUI21TwoFingerSlideGestureE@Base 1.0.4
+ _ZTIN4UKUI30TwoFingerZoomGestureRecognizerE@Base 1.0.4
+ _ZTIN4UKUI31TwoFingerSlideGestureRecognizerE@Base 1.0.4
  _ZTIN4UKUI9ScrollBar26DefaultInteractionAnimatorE@Base 0.9.0
  _ZTIN4UKUI9TabWidget20DefaultSlideAnimatorE@Base 0.9.0
  _ZTIN4UKUI9TabWidget27DefaultSlideAnimatorFactoryE@Base 0.9.0
@@ -229,6 +276,10 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZTS8MPSStyle@Base 0.9.0
  _ZTSN12QtConcurrent15RunFunctionTaskIvEE@Base 0.9.0
  _ZTSN12QtConcurrent19RunFunctionTaskBaseIvEE@Base 0.9.0
+ _ZTSN4UKUI20TwoFingerZoomGestureE@Base 1.0.4
+ _ZTSN4UKUI21TwoFingerSlideGestureE@Base 1.0.4
+ _ZTSN4UKUI30TwoFingerZoomGestureRecognizerE@Base 1.0.4
+ _ZTSN4UKUI31TwoFingerSlideGestureRecognizerE@Base 1.0.4
  _ZTSN4UKUI9ScrollBar26DefaultInteractionAnimatorE@Base 0.9.0
  _ZTSN4UKUI9TabWidget20DefaultSlideAnimatorE@Base 0.9.0
  _ZTSN4UKUI9TabWidget27DefaultSlideAnimatorFactoryE@Base 0.9.0
@@ -240,6 +291,10 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZTV24ApplicationStyleSettings@Base 0.9.0
  _ZTV8MPSStyle@Base 0.9.0
  _ZTVN12QtConcurrent19RunFunctionTaskBaseIvEE@Base 0.9.0
+ _ZTVN4UKUI20TwoFingerZoomGestureE@Base 1.0.4
+ _ZTVN4UKUI21TwoFingerSlideGestureE@Base 1.0.4
+ _ZTVN4UKUI30TwoFingerZoomGestureRecognizerE@Base 1.0.4
+ _ZTVN4UKUI31TwoFingerSlideGestureRecognizerE@Base 1.0.4
  _ZTVN4UKUI9ScrollBar26DefaultInteractionAnimatorE@Base 0.9.0
  _ZTVN4UKUI9TabWidget20DefaultSlideAnimatorE@Base 0.9.0
  _ZTVN4UKUI9TabWidget27DefaultSlideAnimatorFactoryE@Base 0.9.0
