@@ -37,7 +37,7 @@
 
 #include <QDebug>
 
-#define TORLERANCE 36
+#define TORLERANCE 40
 
 static QColor symbolic_color = Qt::gray;
 
@@ -240,7 +240,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             }
 
             if (widget->property("iconHighlightEffectMode").isValid()) {
-                mode = qvariant_cast<EffectMode>(widget->property("iconHighlightEffectMode"));
+                mode = EffectMode(widget->property("iconHighlightEffectMode").toInt());
             }
 
             bool isEnable = option->state.testFlag(QStyle::State_Enabled);
