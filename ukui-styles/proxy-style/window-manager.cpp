@@ -77,7 +77,7 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
         return false;
     }
     case QEvent::MouseMove: {
-        if (QWidget::mouseGrabber()) return false;
+        //if (QWidget::mouseGrabber()) return false;
         QMouseEvent *event = static_cast<QMouseEvent*>(e);
         //move request
         mouseMoveEvent(obj, event);
@@ -134,20 +134,31 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         if (m_is_dragging)
             return;
 
-        QMouseEvent me(QMouseEvent::MouseButtonRelease, e->localPos(), e->button(), e->buttons(), e->modifiers());
-        qApp->sendEvent(obj, &me);
-
         qDebug()<<"x11 move start";
         auto connection = QX11Info::connection();
         xcb_ungrab_pointer(connection, XCB_TIME_CURRENT_TIME);
         NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x(), native.y(), NET::Move);
         qDebug()<<"x11 move end";
 
-        // balance xcb_ungrab_pointer
-        if (!w->mouseGrabber()) {
-            w->grabMouse();
-            w->releaseMouse();
-        }
+        xcb_button_release_event_t* event = new xcb_button_release_event_t;
+        memset(event, 0x00, sizeof(xcb_button_release_event_t));
+        event->response_type = XCB_BUTTON_RELEASE;
+        event->event = w->winId();
+        event->time = QX11Info::getTimestamp();
+        event->same_screen = 1;
+        event->root = QX11Info::appRootWindow();
+        event->root_x = native.x();
+        event->root_y = native.y();
+        event->event_x = 0;
+        event->event_y = 0;
+        event->child = 0;
+        event->state = 0;
+        event->detail = XCB_BUTTON_INDEX_1;
+
+        xcb_send_event(connection, false, w->winId(), XCB_EVENT_MASK_BUTTON_RELEASE, (char *) event);
+        delete event;
+
+        xcb_flush(connection);
 
         m_is_dragging = true;
 
