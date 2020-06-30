@@ -140,6 +140,13 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x(), native.y(), NET::Move);
         qDebug()<<"x11 move end";
 
+        if (e->source() == Qt::MouseEventSynthesizedByQt) {
+            if (!w->mouseGrabber()) {
+                w->grabMouse();
+                w->releaseMouse();
+            }
+        }
+
         xcb_button_release_event_t* event = new xcb_button_release_event_t;
         memset(event, 0x00, sizeof(xcb_button_release_event_t));
         event->response_type = XCB_BUTTON_RELEASE;
