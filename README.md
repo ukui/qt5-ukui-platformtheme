@@ -1,6 +1,6 @@
 # qt5-ukui-platformtheme
 
-![build](https://github.com/ukui/qt5-ukui-platformtheme/workflows/build/badge.svg?branch=master)
+![build](https://github.com/ukui/qt5-ukui-platformtheme/workflows/Check%20build/badge.svg?branch=master)
 
 The UKUI platform theme for qt5 QPA.
 
