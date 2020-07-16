@@ -93,8 +93,8 @@ void GestureHelper::registerWidget(QWidget *widget)
     widget->grabGesture(Qt::PanGesture);
     widget->grabGesture(Qt::PinchGesture);
     widget->grabGesture(Qt::SwipeGesture);
-    widget->grabGesture(m_slide_type);
-    widget->grabGesture(m_zoom_type);
+    //widget->grabGesture(m_slide_type);
+    //widget->grabGesture(m_zoom_type);
 
     widget->installEventFilter(this);
 }
@@ -113,8 +113,8 @@ void GestureHelper::unregisterWidget(QWidget *widget)
     widget->ungrabGesture(Qt::PanGesture);
     widget->ungrabGesture(Qt::PinchGesture);
     widget->ungrabGesture(Qt::SwipeGesture);
-    widget->ungrabGesture(m_slide_type);
-    widget->ungrabGesture(m_zoom_type);
+    //widget->ungrabGesture(m_slide_type);
+    //widget->ungrabGesture(m_zoom_type);
 }
 
 bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
@@ -129,6 +129,10 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
             m_hold_and_tap_pos = te->touchPoints().first().pos();
         else
             m_hold_and_tap_pos = QPointF();
+
+        if (m_touch_points.count() > 2) {
+            m_menu_popped_timer.stop();
+        }
         break;
     }
 
@@ -288,6 +292,9 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
     }
 
     case QEvent::MouseMove: {
+        if (m_finger_count > 1)
+            return true;
+
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         auto widget = static_cast<QWidget *>(watched);
         if (!widget)
