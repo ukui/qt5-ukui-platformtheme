@@ -107,6 +107,7 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
  *
  * to avoid them, never try get winid and do a blur for that case.
  */
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 void BlurHelper::registerWidget(QWidget *widget)
 {
     // FIXME: how to blur window on wayland?
@@ -170,6 +171,7 @@ void BlurHelper::unregisterWidget(QWidget *widget)
     if (widget->winId() > 0)
         KWindowEffects::enableBlurBehind(widget->winId(), false);
 }
+#endif
 
 bool BlurHelper::isApplicationInBlackList()
 {

@@ -155,7 +155,9 @@ void ProxyStyle::polish(QWidget *widget)
       */
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
         //FIXME:
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
         m_blur_helper->registerWidget(widget);
+#endif
 
         /*
         if (QString(widget->metaObject()->className())=="QMenu" ||
@@ -196,7 +198,9 @@ void ProxyStyle::unpolish(QWidget *widget)
 
     //FIXME:
     if (widget->testAttribute(Qt::WA_TranslucentBackground) && widget->isTopLevel()) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
         m_blur_helper->unregisterWidget(widget);
+#endif
     }
 
     if (widget->isWindow()) {
