@@ -63,8 +63,8 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  (optional=templinst)_ZN16QFutureInterfaceIvED0Ev@Base 0.9.0
  (optional=templinst)_ZN16QFutureInterfaceIvED1Ev@Base 0.9.0
  (optional=templinst)_ZN16QFutureInterfaceIvED2Ev@Base 0.9.0
- (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN15HighLightEffect10EffectModeELb1EE8DestructEPv@Base 1.0.0
- (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN15HighLightEffect10EffectModeELb1EE9ConstructEPvPKv@Base 1.0.0
+#MISSING: 1.0.4# (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN15HighLightEffect10EffectModeELb1EE8DestructEPv@Base 1.0.0
+#MISSING: 1.0.4# (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN15HighLightEffect10EffectModeELb1EE9ConstructEPvPKv@Base 1.0.0
  (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN24ApplicationStyleSettings13ColorStretagyELb1EE8DestructEPv@Base 0.9.0
  (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN24ApplicationStyleSettings13ColorStretagyELb1EE9ConstructEPvPKv@Base 0.9.0
  (optional=templinst)_ZN17QtMetaTypePrivate23QMetaTypeFunctionHelperIN24ApplicationStyleSettings13StyleStretagyELb1EE8DestructEPv@Base 0.9.0
@@ -298,7 +298,7 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZTVN4UKUI9ScrollBar26DefaultInteractionAnimatorE@Base 0.9.0
  _ZTVN4UKUI9TabWidget20DefaultSlideAnimatorE@Base 0.9.0
  _ZTVN4UKUI9TabWidget27DefaultSlideAnimatorFactoryE@Base 0.9.0
- (optional=templinst)_ZZN18QMetaTypeIdQObjectIN15HighLightEffect10EffectModeELi16EE14qt_metatype_idEvE11metatype_id@Base 1.0.0
+#MISSING: 1.0.4# (optional=templinst)_ZZN18QMetaTypeIdQObjectIN15HighLightEffect10EffectModeELi16EE14qt_metatype_idEvE11metatype_id@Base 1.0.0
  (optional=templinst)_ZZN18QMetaTypeIdQObjectIN24ApplicationStyleSettings13ColorStretagyELi16EE14qt_metatype_idEvE11metatype_id@Base 0.9.0
  (optional=templinst)_ZZN18QMetaTypeIdQObjectIN24ApplicationStyleSettings13StyleStretagyELi16EE14qt_metatype_idEvE11metatype_id@Base 0.9.0
  (c++)"non-virtual thunk to QtConcurrent::RunFunctionTask<void>::run()@Base" 0.9.0
