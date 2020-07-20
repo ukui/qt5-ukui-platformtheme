@@ -5,6 +5,7 @@ Source: <https://github.com/ukui/qt5-ukui-platformtheme>
 Files: CONTRIBUTING.md
        CONTRIBUTING_zh_CN.md
        README.md
+       .github/workflows/build.yml
        doxygen/Doxyfile.in
        doxygen/README.md
        libqt5-ukui-style/animations/animations.pri
