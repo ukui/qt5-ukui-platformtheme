@@ -1,4 +1,4 @@
-# SymbolsHelper-Confirmed: 1.0.4 amd64
+# SymbolsHelper-Confirmed: 1.0.4-1 amd64
 libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
 * Build-Depends-Package: libqt5-ukui-style-dev
  _ZN10QByteArrayD1Ev@Base 0.9.0
