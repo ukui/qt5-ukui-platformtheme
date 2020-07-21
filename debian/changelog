@@ -1,8 +1,17 @@
 qt5-ukui-platformtheme (1.0.4-1) unstable; urgency=medium
 
   * New upstream release.
+  * debian:
+    - Update symbols file.
+    - Remove 'Multi-Arch: same' from debian/control.
 
- -- leichen-kylin <leichen@kylinos.cn>  Tue, 23 Jun 2020 15:36:07 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 21 Jul 2020 08:28:53 +0000
+
+qt5-ukui-platformtheme (1.0.3-0ubuntu3) groovy; urgency=medium
+
+  * No-change rebuild against qtbase-abi-5-14-2.
+
+ -- Rik Mills <rikmills@kde.org>  Sat, 16 May 2020 09:00:12 +0000
 
 qt5-ukui-platformtheme (1.0.3-0ubuntu2) focal; urgency=medium
 

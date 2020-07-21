@@ -201,7 +201,8 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
 #MISSING: 1.0.4# (optional=templinst)_ZN5QListIP7QWidgetED2Ev@Base 1.0.0
  _ZN7QStringD1Ev@Base 0.9.0
  _ZN7QStringD2Ev@Base 0.9.0
- (optional=templinst)_ZN7QVectorIiE11reallocDataEii6QFlagsIN10QArrayData16AllocationOptionEE@Base 1.0.4
+#MISSING: 1.0.4# (optional=templinst)_ZN7QVectorIiE11reallocDataEii6QFlagsIN10QArrayData16AllocationOptionEE@Base 1.0.4
+ (optional=templinst)_ZN7QVectorIiE7reallocEi6QFlagsIN10QArrayData16AllocationOptionEE@Base 1.0.4
  _ZN8MPSStyle11qt_metacallEN11QMetaObject4CallEiPPv@Base 0.9.0
  _ZN8MPSStyle11qt_metacastEPKc@Base 0.9.0
  _ZN8MPSStyle16staticMetaObjectE@Base 0.9.0
