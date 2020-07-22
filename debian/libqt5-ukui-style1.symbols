@@ -1,4 +1,4 @@
-# SymbolsHelper-Confirmed: 1.0.4-1 amd64
+# SymbolsHelper-Confirmed: 1.0.4-1 amd64 arm64 armhf ppc64el s390x
 libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
 * Build-Depends-Package: libqt5-ukui-style-dev
  _ZN10QByteArrayD1Ev@Base 0.9.0
@@ -226,7 +226,7 @@ libqt5-ukui-style.so.1 libqt5-ukui-style1 #MINVER#
  _ZNK4UKUI9ScrollBar26DefaultInteractionAnimator10metaObjectEv@Base 0.9.0
  _ZNK4UKUI9TabWidget20DefaultSlideAnimator10metaObjectEv@Base 0.9.0
  _ZNK4UKUI9TabWidget27DefaultSlideAnimatorFactory10metaObjectEv@Base 0.9.0
- _ZNK7QPointF7toPointEv@Base 1.0.4
+ (arch=!s390x)_ZNK7QPointF7toPointEv@Base 1.0.4
  _ZNK8MPSStyle10metaObjectEv@Base 0.9.0
  _ZNK8MPSStyle11drawControlEN6QStyle14ControlElementEPK12QStyleOptionP8QPainterPK7QWidget@Base 0.9.0
  _ZNK8MPSStyle11pixelMetricEN6QStyle11PixelMetricEPK12QStyleOptionPK7QWidget@Base 0.9.0
