@@ -30,6 +30,8 @@
 #include <QIcon>
 #include <QPainterPath>
 
+#include <QMenu>
+
 #include "black-list.h"
 
 #include <QApplication>
@@ -185,9 +187,13 @@ const QStringList BlurHelper::blackList()
 
 bool BlurHelper::shouldSkip(QWidget *w)
 {
-    bool skip = false;
+    bool skip = true;
     if (w->inherits("QComboBoxPrivateContainer"))
         return true;
+
+    if (w->inherits("QMenu") || w->inherits("QTipLabel")) {
+        return false;
+    }
 
 //    if (w->inherits("QTipLabel"))
 //        return true;
