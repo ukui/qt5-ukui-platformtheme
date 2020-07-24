@@ -187,6 +187,10 @@ const QStringList BlurHelper::blackList()
 
 bool BlurHelper::shouldSkip(QWidget *w)
 {
+    if (w->property("useSystemStyleBlur").isValid()) {
+        return !w->property("useSystemStyleBlur").toBool();
+    }
+
     bool skip = true;
     if (w->inherits("QComboBoxPrivateContainer"))
         return true;

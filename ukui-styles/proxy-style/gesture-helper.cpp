@@ -52,7 +52,7 @@
 GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
 {
     // we translate event by ourselves
-    //qApp->setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
+    qApp->setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
     //qApp->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
 
     m_menu_popped_timer.setInterval(500);
