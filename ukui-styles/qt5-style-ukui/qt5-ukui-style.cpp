@@ -3678,7 +3678,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int tab = menuitem->tabWidth;
             QColor discol;
             if (dis) {
-                discol = menuitem->palette.text().color();
+                //discol = menuitem->palette.text().color();
+                discol = menuitem->palette.color(QPalette::Disabled, QPalette::Text);
                 p->setPen(discol);
             }
             //int xm = checkColHOffset + checkcol + windowsItemHMargin;
@@ -3702,11 +3703,15 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                                                      QRect(textRect.topRight(), QPoint(menuitem->rect.right(), textRect.bottom())));
                     const QString textToDraw = s.mid(t + 1).toString();
                     if (dis && !act && proxy()->styleHint(SH_EtchDisabledText, option, widget)) {
-                        p->setPen(menuitem->palette.light().color());
-                        p->drawText(vShortcutRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
+//                        p->setPen(menuitem->palette.light().color());
                         p->setPen(discol);
+                        p->drawText(vShortcutRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
+
                     }
-                    p->drawText(vShortcutRect, text_flags, textToDraw);
+                    else {
+                        p->drawText(vShortcutRect, text_flags, textToDraw);
+                    }
+
                     s = s.left(t);
                 }
                 QFont font = menuitem->font;
@@ -3723,11 +3728,15 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 p->setFont(font);
                 const QString textToDraw = s.left(t).toString();
                 if (dis && !act && proxy()->styleHint(SH_EtchDisabledText, option, widget)) {
-                    p->setPen(menuitem->palette.light().color());
-                    p->drawText(vTextRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
+//                    p->setPen(menuitem->palette.light().color());
                     p->setPen(discol);
+                    p->drawText(vTextRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
+
                 }
-                p->drawText(vTextRect, text_flags, textToDraw);
+                else {
+                    p->drawText(vTextRect, text_flags, textToDraw);
+                }
+
                 p->restore();
             }
 
