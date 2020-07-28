@@ -36,12 +36,14 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
         qt5-ukui-platform-theme.cpp \
     main.cpp \
-    ukui-platform-dialog.cpp
+    ukui-platform-dialog.cpp \
+    ukui-platform-dialoghelper.cpp
 
 HEADERS += \
         qt5-ukui-platform-theme.h \
         qt5-ukui-platformtheme_global.h \
-        ukui-platform-dialog.h
+        ukui-platform-dialog.h \
+        ukui-platform-dialoghelper.h
 
 unix {
     target.path = $$[QT_INSTALL_PLUGINS]/platformthemes
