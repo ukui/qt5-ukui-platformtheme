@@ -68,11 +68,11 @@ public:
 
     QPalette getCustomPalette() {return m_custom_palette;}
 
-signals:
+Q_SIGNALS:
     void colorStretageChanged(const ColorStretagy &stretagy);
     void styleStretageChanged(const StyleStretagy &stretagy);
 
-public slots:
+public Q_SLOTS:
     void setColorStretagy(ColorStretagy stretagy);
     void setStyleStretagy(StyleStretagy stretagy);
     void setCustomStyle(const QString &style);

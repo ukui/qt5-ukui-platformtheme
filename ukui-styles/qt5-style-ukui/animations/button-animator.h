@@ -55,7 +55,7 @@ public:
     int totalAnimationDuration(const QString &property = nullptr);
     QVariant endValue(const QString &property = nullptr);
 
-signals:
+Q_SIGNALS:
 
 private:
     QWidget* m_widget = nullptr;

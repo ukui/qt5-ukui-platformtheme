@@ -43,10 +43,10 @@ public:
     explicit InternalStyle(QStyle *parentStyle = nullptr);
     explicit InternalStyle(const QString parentStyleName);
 
-signals:
+Q_SIGNALS:
     void useSystemStylePolicyChanged(bool use);
 
-public slots:
+public Q_SLOTS:
     virtual void setUseSystemStyle(bool use);
 };
 

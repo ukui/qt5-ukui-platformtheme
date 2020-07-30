@@ -35,9 +35,9 @@ public:
     explicit AnimationHelper(QObject *parent = nullptr);
     virtual ~AnimationHelper();
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
     virtual bool registerWidget(QWidget *) {return false;}
     virtual bool unregisterWidget(QWidget *) {return false;}
 

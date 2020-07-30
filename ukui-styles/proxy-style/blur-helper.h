@@ -41,9 +41,9 @@ public:
 
     bool shouldSkip(QWidget *w);
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
     void onBlurEnableChanged(bool enable);
     void onWidgetDestroyed(QWidget *widget);
     void delayUpdate(QWidget *w, bool updateBlurRegionOnly = false);

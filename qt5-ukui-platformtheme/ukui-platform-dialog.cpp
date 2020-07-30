@@ -20,6 +20,6 @@ void UKUIPlatformFileDialog::discardDelayedShow()
 
 void UKUIPlatformFileDialog::closeEvent(QCloseEvent *e)
 {
-    emit closed();
+    Q_EMIT closed();
     QDialog::closeEvent(e);
 }

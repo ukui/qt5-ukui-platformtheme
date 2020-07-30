@@ -38,9 +38,9 @@ public:
 
     AnimatorIface *animator(const QWidget *w);
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 };
 
 #endif // BOXANIMATIONHELPER_H

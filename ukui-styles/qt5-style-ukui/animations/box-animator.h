@@ -52,7 +52,7 @@ public:
     int currentAnimatorTime(const QString &property = nullptr);
     int totalAnimationDuration(const QString &property = nullptr);
 
-signals:
+Q_SIGNALS:
 
 private:
     QWidget* m_widget = nullptr;

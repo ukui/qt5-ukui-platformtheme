@@ -1,3 +1,6 @@
+CONFIG += link_pkgconfig no_keywords
+PKGCONFIG += peony
+
 HEADERS += \
     $$PWD/ukui-action-collection.h \
     $$PWD/ukui-diroperator.h \

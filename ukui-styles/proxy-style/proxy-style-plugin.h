@@ -41,9 +41,9 @@ public:
 protected:
     void onSystemPaletteChanged();
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 private:
     QString m_current_style_name;
