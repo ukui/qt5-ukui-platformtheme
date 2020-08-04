@@ -31,6 +31,9 @@
 #include <QPainter>
 
 #include <QTimer>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QTabBar>
 
 #include <QDebug>
 
@@ -51,7 +54,8 @@ using namespace UKUI::TabWidget;
  */
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
-    setDuration(150);
+    setDuration(200);
+    setEasingCurve(QEasingCurve::InQuad);
     setStartValue(0.0);
     setEndValue(1.0);
 }
@@ -93,11 +97,14 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
         }
 
         connect(w, &QTabWidget::currentChanged, this, [=](int index){
-            qDebug()<<w->currentIndex();
-            qDebug()<<index;
-
+            this->stop();
+            m_tmp_page->hide();
             if (m_bound_widget->currentWidget()) {
-                m_next_pixmap = m_bound_widget->currentWidget()->grab();
+                left_right = m_bound_widget->currentIndex() > pervIndex;
+                pervIndex = m_bound_widget->currentIndex();
+                m_next_pixmap = m_bound_widget->grab(QRect(m_bound_widget->rect().x(), m_bound_widget->tabBar()->height(),
+                                                           m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
+                this->start();
                 m_tmp_page->raise();
                 m_tmp_page->show();
             }
@@ -184,10 +191,9 @@ bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
         /// This event is very suitable for the above two situations,
         /// both in terms of efficiency and trigger time.
         if (m_tab_resizing) {
-            qDebug()<<"ok";
             m_tmp_page->resize(m_stack->size());
-            if (m_bound_widget->currentWidget())
-                m_previous_pixmap = m_bound_widget->currentWidget()->grab();
+            if(m_next_pixmap.isNull())
+                pervIndex = m_bound_widget->currentIndex();
         }
         m_tab_resizing = false;
         return false;
@@ -202,12 +208,12 @@ bool DefaultSlideAnimator::filterSubPage(QObject *obj, QEvent *e)
 {
     switch (e->type()) {
     case QEvent::Show: {
-        this->start();
         return false;
     }
     case QEvent::Hide: {
-        if (!m_next_pixmap.isNull())
-            m_previous_pixmap = m_next_pixmap;
+        QScreen *screen = QGuiApplication::primaryScreen();
+        m_previous_pixmap = screen->grabWindow(m_bound_widget->winId(), m_bound_widget->tabBar()->rect().x(), m_bound_widget->tabBar()->rect().height(),
+                                               m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->rect().height());
         this->stop();
         return false;
     }
@@ -234,21 +240,32 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             p.setRenderHints(QPainter::Antialiasing);
 
             //do a horizon slide.
-
             auto prevSrcRect = QRectF(m_previous_pixmap.rect());
             auto prevTargetRect = QRectF(m_previous_pixmap.rect());
-            prevSrcRect.setX(m_previous_pixmap.width()*value);
-            prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
-            prevTargetRect.setX(0);
-            prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
-            p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
-
             auto nextSrcRect = QRectF(m_next_pixmap.rect());
             auto nextTargetRect = QRectF(m_next_pixmap.rect());
-            nextSrcRect.setWidth(m_next_pixmap.width() * value);
-            nextTargetRect.setX(m_next_pixmap.width() * (1 - value));
-            nextTargetRect.setWidth(m_next_pixmap.width() * value);
-            p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
+            if (left_right) {
+                prevSrcRect.setX(m_previous_pixmap.width() * value);
+                prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
+
+                nextSrcRect.setWidth(m_next_pixmap.width() * value);
+                nextTargetRect.setX(m_next_pixmap.width() * (1 - value));
+                nextTargetRect.setWidth(m_next_pixmap.width() * value);
+                p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
+            }
+            else {
+                nextSrcRect.setX(m_next_pixmap.width() * (1 - value));
+                nextSrcRect.setWidth(m_next_pixmap.width() * value);
+                nextTargetRect.setWidth(m_next_pixmap.width() * value);
+                p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
+
+                prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                prevTargetRect.setX(m_previous_pixmap.width() * value);
+                prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
+            }
 
             //continue paint until animate finished.
             w->raise();
@@ -259,10 +276,9 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             //our custom pixmap.
             return true;
         }
-        qDebug()<<"hide";
         m_tmp_page->hide();
-        m_stack->stackUnder(m_tmp_page);
-        m_previous_pixmap = m_next_pixmap;
+        if (!m_next_pixmap.isNull())
+            m_stack->stackUnder(m_tmp_page);
         return false;
     }
     default:

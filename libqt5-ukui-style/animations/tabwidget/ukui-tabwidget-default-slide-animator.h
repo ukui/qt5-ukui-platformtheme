@@ -101,6 +101,8 @@ private:
      * and template widget' states should be updated.
      */
     bool m_tab_resizing = false;
+    int pervIndex = -1;
+    bool left_right = true;
 };
 
 }
