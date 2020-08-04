@@ -34,10 +34,27 @@ public:
     explicit UKUIDirOperator(const QUrl &urlName  = QUrl(), QWidget *parent = nullptr);
     ~UKUIDirOperator();
 
+    void setCurrentItem(const QUrl &url);
+    //void setCurrentItem(const KFileItem &item);
+
+
+
+protected:
+    void setupActions();
+    void updateSortActions();
+    void setupMenu();
+
+protected Q_SLOTS:
+    void slotCompletionPath(const QString &path);
+
+
+
 private:
+    friend class UKUIDirOperatorPrivate;
     UKUIDirOperatorPrivate *const d;
 
     Q_PRIVATE_SLOT(d, void _u_slotSplitterMoved(int, int))
+    Q_PRIVATE_SLOT(d, void _u_slotShowProgress())
 };
 
 #endif // UKUIDIROPERATOR_H
