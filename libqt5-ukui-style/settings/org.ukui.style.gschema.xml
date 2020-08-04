@@ -67,5 +67,17 @@
             <summary>Custom highlight color</summary>
             <description>Set custom highlight color for UKUI desktop environment.</description>
         </key>
+        <key type="b" name="cursor-blink">
+            <default>true</default>
+            <summary>Blink text cursor.</summary>
+            <description>
+                Globally enable or disable blinking text cursor.
+            </description>
+        </key>
+        <key type="i" name="cursor-blink-time">
+            <default>1200</default>
+            <summary>Blink text cursor interval.</summary>
+            <description>The interval of text cursor blink.</description>
+        </key>
     </schema>
 </schemalist>
