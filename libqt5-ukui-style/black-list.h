@@ -45,6 +45,8 @@ static const QStringList blackAppListWithBlurHelper(){
     l<<"ubuntu-kylin-software-center.py";
     l<<"kylin-burner";
     l<<"ukui-clipboard";
+    l<<"kylin-user-guide";
+    l<<"biometric-authentication";
     return l;
 }
 
