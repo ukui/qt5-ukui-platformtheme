@@ -42,7 +42,6 @@ public:
 protected:
     void setupActions();
     void updateSortActions();
-    void setupMenu();
 
 protected Q_SLOTS:
     void slotCompletionPath(const QString &path);

@@ -9,6 +9,8 @@
 #include <QHeaderView>
 #include <QAction>
 #include <QMenu>
+#include <QIcon>
+#include <QList>
 
 
 
@@ -56,7 +58,6 @@ UKUIDirOperator::UKUIDirOperator(const QUrl &urlName, QWidget *parent)
     connect(d->progressDelayTimer, SIGNAL(timeout()), SLOT(_u_slotShowProgress()));
 
     setupActions();
-    setupMenu();
 
     d->sorting = QDir::NoSort;  //so updateSorting() doesn't think nothing has changed
     d->updateSorting(QDir::Name | QDir::DirsFirst);
@@ -79,7 +80,164 @@ void UKUIDirOperator::setCurrentItem(const QUrl &url)
 
 void UKUIDirOperator::setupActions()
 {
+    d->actionCollection = new UKUIActionCollection(this);
+    d->actionCollection->setObjectName(QStringLiteral("UKUIDirOperator::actionCollection"));
 
+    d->actionMenu = new QWidgetAction(this);
+    d->actionMenu->setText("Menu");
+    d->actionMenu->setProperty("isShortcutConfigurable", false);
+    d->actionCollection->addAction(QStringLiteral("popupMenu"), d->actionMenu);
+
+    QAction *upAction = new QAction(QIcon::fromTheme(QStringLiteral("parent-folder")), tr("Parent Folder"), this);
+    d->actionCollection->addAction(QStringLiteral("up"), upAction);
+    QAction *backAction = new QAction(QIcon::fromTheme(QStringLiteral("go-next")), tr("go back, &Back"), this);
+    backAction->setShortcut(Qt::Key_Backspace);
+    d->actionCollection->addAction(QStringLiteral("back"), backAction);
+    QAction *forwardAction = new QAction(QIcon::fromTheme(QStringLiteral("go-previous")), tr("go forward, &Forward"), this);
+    d->actionCollection->addAction(QStringLiteral("forward"), forwardAction);
+    QAction *reloadAction = new QAction(QIcon::fromTheme(QStringLiteral("reload")), tr("Reload"), this);
+    d->actionCollection->addAction(QStringLiteral("reload"), reloadAction);
+
+    QAction *rename = new QAction(tr("Rename"), this);
+    d->actionCollection->addAction(QStringLiteral("rename"), rename);
+    QAction *trash = new QAction(QIcon::fromTheme(QStringLiteral("user-trash")), tr("Move to Trash"), this);
+    trash->setShortcut(Qt::Key_Delete);
+    d->actionCollection->addAction(QStringLiteral("trash"), trash);
+    QAction *Delete = new QAction(QIcon::fromTheme(QStringLiteral("edit-delete")), tr("Delete"), this);
+    Delete->setShortcut(Qt::SHIFT + Qt::Key_Delete);
+    d->actionCollection->addAction(QStringLiteral("delete"), Delete);
+
+
+
+    QAction *byNameAction = new QAction(tr("Sort by Name"), this);
+    byNameAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("by name"), byNameAction);
+    QAction *bySizeAction = new QAction(tr("Sort by Size"), this);
+    bySizeAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("by size"), bySizeAction);
+    QAction *byDateAction = new QAction(tr("Sort by Date"), this);
+    byDateAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("by date"), byDateAction);
+    QAction *byTypeAction = new QAction(tr("Sort by Type"), this);
+    byTypeAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("by type"), byTypeAction);
+    QActionGroup *sortGroup = new QActionGroup(this);
+    byNameAction->setActionGroup(sortGroup);
+    bySizeAction->setActionGroup(sortGroup);
+    byDateAction->setActionGroup(sortGroup);
+    byTypeAction->setActionGroup(sortGroup);
+
+    QActionGroup *sortOrderGroup = new QActionGroup(this);
+    sortOrderGroup->setExclusive(true);
+    QAction *ascendingAction = new QAction(tr("Ascending"), this);
+    ascendingAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("ascending"), ascendingAction);
+    ascendingAction->setActionGroup(sortOrderGroup);
+    QAction *descendingAction = new QAction(tr("Descending"), this);
+    descendingAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("descending"), descendingAction);
+    descendingAction->setActionGroup(sortOrderGroup);
+    QAction *dirsFirstAction = new QAction(tr("Folders First"), this);
+    dirsFirstAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("dirs first"), dirsFirstAction);
+
+    QWidgetAction *sortMenu = new QWidgetAction(this);
+    sortMenu->setText("Sorting");
+    sortMenu->setIcon(QIcon::fromTheme(QStringLiteral("view-sort")));
+    sortMenu->setProperty("isShortcutConfigurable", false);
+    d->actionCollection->addAction(QStringLiteral("sorting menu"), sortMenu);
+    QMenu *sortMenu_menu = new QMenu();
+    sortMenu_menu->addAction(byNameAction);
+    sortMenu_menu->addAction(bySizeAction);
+    sortMenu_menu->addAction(byDateAction);
+    sortMenu_menu->addAction(byTypeAction);
+    sortMenu_menu->addSeparator();
+    sortMenu_menu->addAction(ascendingAction);
+    sortMenu_menu->addAction(descendingAction);
+    sortMenu_menu->addSeparator();
+    sortMenu_menu->addAction(dirsFirstAction);
+    sortMenu->setMenu(sortMenu_menu);
+
+
+
+    QAction *iconsViewAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-icons")), tr("Icons View"), this);
+    iconsViewAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("icons view"), iconsViewAction);
+    QAction *compactViewAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-details")), tr("Compact View"), this);
+    compactViewAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("compact view"), compactViewAction);
+    QAction *detailsViewAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-tree")), tr("Details View"), this);
+    detailsViewAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("details view"), detailsViewAction);
+
+    QActionGroup *viewModeGroup = new QActionGroup(this);
+    viewModeGroup->setExclusive(true);
+    iconsViewAction->setActionGroup(viewModeGroup);
+    compactViewAction->setActionGroup(viewModeGroup);
+    detailsViewAction->setActionGroup(viewModeGroup);
+
+
+
+    QAction *shortAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-icons")), tr("Short View"), this);
+    shortAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("short view"),  shortAction);
+    QAction *detailedAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-details")), tr("Detailed View"), this);
+    detailedAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("detailed view"), detailedAction);
+    QAction *treeAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-tree")), tr("Tree View"), this);
+    treeAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("tree view"), treeAction);
+    QAction *detailedTreeAction = new QAction(QIcon::fromTheme(QStringLiteral("view-list-tree")), tr("Detailed Tree View"), this);
+    detailedTreeAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("detailed tree view"), detailedTreeAction);
+
+    QActionGroup *viewGroup = new QActionGroup(this);
+    shortAction->setActionGroup(viewGroup);
+    detailedAction->setActionGroup(viewGroup);
+    treeAction->setActionGroup(viewGroup);
+    detailedTreeAction->setActionGroup(viewGroup);
+
+
+
+    QAction *allowExpansionAction = new QAction("Allow Expansion in Details View", this);
+    allowExpansionAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("allow expansion"), allowExpansionAction);
+    QAction *showHiddenAction = new QAction("Show Hidden Files", this);
+    showHiddenAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("show hidden"), showHiddenAction);
+    showHiddenAction->setShortcuts({Qt::ALT + Qt::Key_Period, Qt::CTRL + Qt::Key_H, Qt::Key_F8});
+    QAction *showSidebarAction = new QAction("Show Places Panel", this);
+    showSidebarAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("toggleSpeedbar"), showSidebarAction);
+    showSidebarAction->setShortcut(QKeySequence(Qt::Key_F9));
+    QAction *showBookmarksAction = new QAction("Show Bookmarks Button", this);
+    showBookmarksAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("toggleBookmarks"), showBookmarksAction);
+    QAction *previewAction = new QAction("Show Preview Panel", this);
+    previewAction->setCheckable(true);
+    d->actionCollection->addAction(QStringLiteral("preview"), previewAction);
+    previewAction->setShortcut(Qt::Key_F11);
+
+    QWidgetAction *optionMenu = new QWidgetAction(this);
+    optionMenu->setIcon(QIcon::fromTheme(QStringLiteral("configure")));
+    optionMenu->setText("Options");
+    optionMenu->setProperty("isShortcutConfigurable", false);
+    d->actionCollection->addAction(QStringLiteral("option menu"), optionMenu);
+    QMenu *settings_menu = new QMenu();
+    settings_menu->addAction(allowExpansionAction);
+    settings_menu->addSeparator();
+    settings_menu->addAction(showHiddenAction);
+    settings_menu->addAction(showSidebarAction);
+    settings_menu->addAction(showBookmarksAction);
+    settings_menu->addAction(previewAction);
+    optionMenu->setMenu(settings_menu);
+
+
+
+    d->actionCollection->addAssociatedWidget(this);
+    const QList<QAction *> list = d->actionCollection->allaction();
+    for (QAction *action : list)
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 }
 
 void UKUIDirOperator::updateSortActions()
@@ -109,32 +267,6 @@ void UKUIDirOperator::updateSortActions()
     d->actionCollection->action(QStringLiteral("dirs first"))->setChecked(d->sorting & QDir::DirsFirst);
 }
 
-void UKUIDirOperator::setupMenu()
-{
-    QWidgetAction *sortMenu = static_cast<QWidgetAction *>(d->actionCollection->action(QStringLiteral("sorting menu")));
-    sortMenu->setProperty("isShortcutConfigurable", false);
-    QMenu *sortMenu_menu = new QMenu();
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("by name")));
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("by size")));
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("by date")));
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("by type")));
-    sortMenu_menu->addSeparator();
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("ascending")));
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("descending")));
-    sortMenu_menu->addSeparator();
-    sortMenu_menu->addAction(d->actionCollection->action(QStringLiteral("dirs first")));
-    sortMenu->setMenu(sortMenu_menu);
-
-    QMenu *actionMenu_menu = new QMenu();
-    actionMenu_menu->addAction(sortMenu);
-    actionMenu_menu->addSeparator();
-    actionMenu_menu->addAction(d->actionCollection->action(QStringLiteral("view menu")));
-    actionMenu_menu->addAction(d->actionCollection->action(QStringLiteral("reload")));
-    actionMenu_menu->addSeparator();
-    actionMenu_menu->addAction(d->actionCollection->action(QStringLiteral("file manager")));
-    actionMenu_menu->addAction(d->actionCollection->action(QStringLiteral("properties")));
-    d->actionMenu->setMenu(actionMenu_menu);
-}
 
 
 

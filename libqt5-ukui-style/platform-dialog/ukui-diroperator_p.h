@@ -64,7 +64,6 @@ public:
     QTimer *progressDelayTimer;
 
     QWidgetAction *actionMenu;
-    QWidgetAction *decorationMenu;
     UKUIActionCollection *actionCollection;
 
     bool completeListDirty;
