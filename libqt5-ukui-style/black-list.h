@@ -33,6 +33,8 @@ static const QStringList blackAppList() {
     l<<"assistant";
     l<<"sogouIme-configtool";
     l<<"Ime Setting";
+    l<<"kylin-user-guide";
+    l<<"biometric-authentication";
     return l;
 }
 
