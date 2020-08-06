@@ -151,6 +151,10 @@ void ProxyStyle::polish(QWidget *widget)
 
     QProxyStyle::polish(widget);
 
+    if (qAppName() == "ukui-menu" && !widget->inherits("QMenu")) {
+        return;
+    }
+
     m_gesture_helper->registerWidget(widget);
 
     //FIXME:
@@ -214,6 +218,10 @@ void ProxyStyle::unpolish(QWidget *widget)
 {
     if (!baseStyle()->inherits("Qt5UKUIStyle"))
         return QProxyStyle::unpolish(widget);
+
+    if (qAppName() == "ukui-menu" && !widget->inherits("QMenu")) {
+        return;
+    }
 
     m_gesture_helper->unregisterWidget(widget);
 
