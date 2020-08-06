@@ -211,9 +211,14 @@ bool DefaultSlideAnimator::filterSubPage(QObject *obj, QEvent *e)
         return false;
     }
     case QEvent::Hide: {
+        if (m_bound_widget->currentWidget()) {
         QScreen *screen = QGuiApplication::primaryScreen();
-        m_previous_pixmap = screen->grabWindow(m_bound_widget->winId(), m_bound_widget->tabBar()->rect().x(), m_bound_widget->tabBar()->rect().height(),
-                                               m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->rect().height());
+        m_previous_pixmap = screen->grabWindow(m_bound_widget->winId(),
+                                               m_bound_widget->tabBar()->x() + 2,
+                                               m_bound_widget->tabBar()->height(),
+                                               m_bound_widget->currentWidget()->width(),
+                                               m_bound_widget->currentWidget()->height());
+        }
         this->stop();
         return false;
     }
