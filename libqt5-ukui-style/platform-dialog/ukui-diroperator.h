@@ -1,6 +1,8 @@
 #ifndef UKUIDIROPERATOR_H
 #define UKUIDIROPERATOR_H
 
+#include "ukui-action-collection.h"
+
 #include <QObject>
 #include <QWidget>
 #include <QUrl>
@@ -34,8 +36,11 @@ public:
     explicit UKUIDirOperator(const QUrl &urlName  = QUrl(), QWidget *parent = nullptr);
     ~UKUIDirOperator();
 
+    void setIsSaving(bool isSaving);
     void setCurrentItem(const QUrl &url);
     //void setCurrentItem(const KFileItem &item);
+    virtual void setUrl(const QUrl &url, bool clearforward);
+    UKUIActionCollection *ActionCollection() const;
 
 
 

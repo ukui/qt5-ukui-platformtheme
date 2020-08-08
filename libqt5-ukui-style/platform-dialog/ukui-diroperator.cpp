@@ -71,11 +71,25 @@ UKUIDirOperator::~UKUIDirOperator()
     delete d;
 }
 
+void UKUIDirOperator::setIsSaving(bool isSaving)
+{
+    d->isSaving = isSaving;
+}
+
 void UKUIDirOperator::setCurrentItem(const QUrl &url)
 {
 
 }
 
+void UKUIDirOperator::setUrl(const QUrl &_newurl, bool clearforward)
+{
+
+}
+
+UKUIActionCollection *UKUIDirOperator::ActionCollection() const
+{
+    return d->actionCollection;
+}
 
 
 void UKUIDirOperator::setupActions()

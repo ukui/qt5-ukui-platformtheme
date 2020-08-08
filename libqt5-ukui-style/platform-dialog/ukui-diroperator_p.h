@@ -67,6 +67,7 @@ public:
     UKUIActionCollection *actionCollection;
 
     bool completeListDirty;
+    bool isSaving;
 
 
 
