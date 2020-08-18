@@ -1241,8 +1241,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         // Conflict with qspinbox and so on, The widget text cannot use this style
         if (widget) {
             if (widget->parentWidget())
-                if (widget->parentWidget()->inherits("QDoubleSpinBox")|widget->parentWidget()->inherits("QSpinBox")|widget->parentWidget()->inherits("QComboBox")
-                    | widget->parentWidget()->inherits("QDateTimeEdit"))
+                if (widget->parentWidget()->inherits("QDoubleSpinBox")|| widget->parentWidget()->inherits("QSpinBox")
+                        || widget->parentWidget()->inherits("QComboBox") || widget->parentWidget()->inherits("QDateTimeEdit"))
                 {
                     return;
                 }
@@ -1255,7 +1255,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setBrush(option->palette.color(QPalette::Base));
             // if (panel->lineWidth > 0)
             // proxy()->drawPrimitive(PE_FrameLineEdit, panel, painter, widget);
-            if (widget->isEnabled()) {
+            if (widget && widget->isEnabled()) {
                 if (option->state &State_MouseOver) {
                     painter->setBrush(option->palette.button().color().lighter());
                 }
