@@ -14,7 +14,7 @@ on:
   
 jobs:
   archlinux-latest:
-    name: on Archlinux
+    name: on Archlinux Latest
     runs-on: ubuntu-20.04
     container: docker.io/library/archlinux:latest
     steps:
