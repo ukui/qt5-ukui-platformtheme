@@ -13,7 +13,7 @@ on:
     - cron: '0 0 * * *'
   
 jobs:
-  archlinux:
+  archlinux-latest:
     name: on Archlinux
     runs-on: ubuntu-20.04
     container: docker.io/library/archlinux:latest
@@ -23,14 +23,15 @@ jobs:
       - name: Refresh pacman repository
         run: pacman -Sy
       - name: Install build dependencies
-        run: pacman -S --noconfirm base-devel qt5-base gsettings-qt kwindowsystem qt5-tools dconf
+        run: pacman -S --noconfirm base-devel qt5-base gsettings-qt kwindowsystem qt5-tools dconf glibc
       - name: QMake configure & Make
         run: |
           mkdir build;
           cd build;
           qmake-qt5 ..;
           make -j$(nproc);
-  debian:
+
+  debian-sid:
     name: on Debian Sid
     runs-on: ubuntu-20.04
     container: docker.io/library/debian:sid
@@ -50,10 +51,10 @@ jobs:
           qmake ..;
           make -j$(nproc);
   
-  fedora:
-    name: on Fedora 32
+  fedora-latest:
+    name: on Fedora Latest
     runs-on: ubuntu-20.04
-    container: docker.io/library/fedora:32
+    container: docker.io/library/fedora:latest
     steps:
       - name: Checkout qt5-ukui-platformtheme source code
         uses: actions/checkout@v2
@@ -65,10 +66,27 @@ jobs:
           cd build;
           qmake-qt5 ..;
           make -j$(nproc);
-  ubuntu:
-    name: on Ubuntu 20.04
+  
+  fedora-rawhide:
+    name: on Fedora Rawhide
     runs-on: ubuntu-20.04
-    container: docker.io/library/ubuntu:focal
+    container: docker.io/library/fedora:rawhide
+    steps: 
+      - name: Checkout peony source code
+        uses: actions/checkout@v2
+      - name: Install build dependencies
+        run: dnf install --refresh --nogpg -y make gcc gcc-c++ which cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros glib2-devel qt5-qtx11extras-devel kf5-kwindowsystem-devel gsettings-desktop-schemas-devel qt5-qtbase-devel qt5-qtbase-private-devel qt5-qttools-devel gsettings-qt-devel
+      - name: QMake configure & Make
+        run: |
+          mkdir build;
+          cd build;
+          qmake-qt5 ..;
+          make -j$(nproc);
+
+  ubuntu-latest:
+    name: on Ubuntu Latest
+    runs-on: ubuntu-20.04
+    container: docker.io/library/ubuntu:latest
     env:
       DEBIAN_FRONTEND: noninteractive
     steps:
