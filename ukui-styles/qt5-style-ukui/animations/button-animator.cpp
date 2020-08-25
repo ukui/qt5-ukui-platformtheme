@@ -31,57 +31,56 @@ using namespace UKUI::Button;
 
 ButtonAnimator::ButtonAnimator(QObject *parent) : QParallelAnimationGroup (parent)
 {
-    m_mouseover = new QVariantAnimation(this);
+
+}
+
+bool ButtonAnimator::bindWidget(QWidget *w)
+{
+    if (w->property("doNotAnimate").toBool())
+        return false;
+    if (qobject_cast<QToolButton*>(w) || qobject_cast<QPushButton*>(w) || qobject_cast<QComboBox*>(w)
+            || qobject_cast<QSpinBox*>(w) || qobject_cast<QDoubleSpinBox*>(w)) {
+        m_widget = w;
+    } else {
+        return false;
+    }
+
+    m_mouseover = new QVariantAnimation();
     m_mouseover->setStartValue(0.0);
     m_mouseover->setEndValue(1.0);
     m_mouseover->setDuration(100);
     m_mouseover->setEasingCurve(QEasingCurve::OutCubic);
     addAnimation(m_mouseover);
 
-    m_sunken = new QVariantAnimation(this);
+    m_sunken = new QVariantAnimation();
     m_sunken->setStartValue(0.0);
     m_sunken->setEndValue(1.0);
     m_sunken->setDuration(75);
     m_sunken->setEasingCurve(QEasingCurve::InCubic);
     addAnimation(m_sunken);
-}
 
-bool ButtonAnimator::bindWidget(QWidget *w)
-{
-    if (qobject_cast<QToolButton*>(w)) {
-        if (w->property("doNotAnimate").toBool())
-            return false;
-        m_widget = w;
-        return true;
-    }
-    else if(qobject_cast<QPushButton*>(w))
-    {
-        if(w->property("doNotAnimate").toBool())
-            return false;
-        m_widget = w;
-        return true;
-    }
-    else if(qobject_cast<QComboBox*>(w))
-    {
-        if(w->property("doNotAnimate").toBool())
-            return false;
-        m_widget = w;
-        return true;
-    }
-    else if(qobject_cast<QSpinBox*>(w) || qobject_cast<QDoubleSpinBox*>(w) )
-    {
-        if(w->property("doNotAnimate").toBool())
-            return false;
-        m_widget = w;
-        return true;
-    }
-    return false;
+    connect(m_sunken, &QVariantAnimation::valueChanged, this, [=]() {
+       w->repaint();
+    });
+    connect(m_mouseover, &QVariantAnimation::valueChanged, this, [=]() {
+       w->repaint();
+    });
+    connect(m_sunken, &QVariantAnimation::finished, this, [=]() {
+       w->repaint();
+    });
+    connect(m_mouseover, &QVariantAnimation::finished, this, [=]() {
+       w->repaint();
+    });
+    return true;
 }
 
 bool ButtonAnimator::unboundWidget()
 {
     this->stop();
     this->setDirection(QAbstractAnimation::Forward);
+    m_sunken->deleteLater();
+    m_mouseover->deleteLater();
+
     if (m_widget) {
         this->setParent(nullptr);
         return true;

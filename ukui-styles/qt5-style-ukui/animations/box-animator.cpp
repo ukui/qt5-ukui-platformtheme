@@ -28,6 +28,20 @@ using namespace UKUI::Box;
 
 BoxAnimator::BoxAnimator(QObject *parent) : QParallelAnimationGroup (parent)
 {
+
+}
+
+bool BoxAnimator::bindWidget(QWidget *w)
+{
+    if (w->property("doNotAnimate").toBool())
+        return false;
+
+    if (qobject_cast<QComboBox*>(w)) {
+        m_widget = w;
+    } else {
+        return false;
+    }
+
     m_mouseover = new QVariantAnimation(this);
     m_mouseover->setStartValue(0.0);
     m_mouseover->setEndValue(1.0);
@@ -41,23 +55,31 @@ BoxAnimator::BoxAnimator(QObject *parent) : QParallelAnimationGroup (parent)
     m_sunken->setDuration(75);
     m_sunken->setEasingCurve(QEasingCurve::InCubic);
     addAnimation(m_sunken);
-}
 
-bool BoxAnimator::bindWidget(QWidget *w)
-{
-    if (qobject_cast<QComboBox*>(w)) {
-        if (w->property("doNotAnimate").toBool())
-            return false;
-        m_widget = w;
-        return true;
-    }
-    return false;
+    connect(m_sunken, &QVariantAnimation::valueChanged, this, [=]() {
+       w->repaint();
+    });
+    connect(m_mouseover, &QVariantAnimation::valueChanged, this, [=]() {
+       w->repaint();
+    });
+    connect(m_sunken, &QVariantAnimation::finished, this, [=]() {
+       w->repaint();
+    });
+    connect(m_mouseover, &QVariantAnimation::finished, this, [=]() {
+       w->repaint();
+    });
+
+    return true;
+
 }
 
 bool BoxAnimator::unboundWidget()
 {
     this->stop();
     this->setDirection(QAbstractAnimation::Forward);
+    m_mouseover->deleteLater();
+    m_sunken->deleteLater();
+
     if (m_widget) {
         this->setParent(nullptr);
         return true;

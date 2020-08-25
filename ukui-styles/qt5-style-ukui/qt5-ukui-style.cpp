@@ -821,10 +821,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         animator->startAnimator("SunKen");
                     }
                 }
-                if (animator->isRunning("SunKen"))
-                {
-                    const_cast<QWidget *>(widget)->update();
-                }
+
                 painter->save();
                 auto color = button->palette.color(QPalette::Highlight).lighter(125);
                 painter->setBrush(color);
@@ -862,10 +859,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         animator->startAnimator("MouseOver");
                     }
                 }
-                if (animator->isRunning("MouseOver"))
-                {
-                    const_cast<QWidget *>(widget)->update();
-                }
+
                 painter->save();
                 painter->setOpacity(opacity);
                 auto color = button->palette.color(QPalette::Highlight).lighter(125);
@@ -1074,10 +1068,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
             }
 
-            if (animator->isRunning("SunKen"))
-            {
-                const_cast<QWidget *>(widget)->update();
-            }
             painter->save();
             auto color = option->palette.color(QPalette::Highlight).lighter(125);
             painter->setBrush(color);
@@ -1115,10 +1105,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     animator->startAnimator("MouseOver");
                 }
             }
-            if (animator->isRunning("MouseOver"))
-            {
-                const_cast<QWidget *>(widget)->update();
-            }
+
             painter->save();
             painter->setOpacity(opacity);
             auto color = option->palette.color(QPalette::Highlight).lighter(125);
@@ -1803,10 +1790,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                       animator->startAnimator("SunKen");
                   }
               }
-              if (animator->isRunning("SunKen"))
-              {
-                  const_cast<QWidget *>(widget)->update();
-              }
 
               painter->save();
               painter->setClipRect(rect);
@@ -1846,10 +1829,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                       animator->startAnimator("MouseOver");
                   }
               }
-              if (animator->isRunning("MouseOver"))
-              {
-                  const_cast<QWidget *>(widget)->update();
-              }
+
               painter->save();
               painter->setClipRect(rect);
               auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
