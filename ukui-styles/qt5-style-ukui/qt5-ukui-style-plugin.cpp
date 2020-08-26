@@ -43,11 +43,11 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
             HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
         });
 
-        connect(settings, &QGSettings::changed, this, [=](){
-            qDebug()<<"update symbolic color";
-            QIcon::setThemeName(settings->get("iconThemeName").toString());
-            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
-        });
+//        connect(settings, &QGSettings::changed, this, [=](){
+//            qDebug()<<"update symbolic color";
+//            QIcon::setThemeName(settings->get("iconThemeName").toString());
+//            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
+//        });
     }
 }
 

@@ -43,7 +43,7 @@
 
 using namespace UKUI;
 
-ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusion": key)
+ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion": key)
 {
     auto settings = UKUIStyleSettings::globalInstance();
     m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
@@ -51,7 +51,7 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
     m_blink_cursor = settings->get("cursorBlink").toBool();
     m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
     qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
-    connect(settings, &QGSettings::changed, this, [=](const QString &key){
+    connect(settings, &QGSettings::changed, this, [=](const QString &key) {
         if (key == "cursorBlink") {
             m_blink_cursor = settings->get("cursorBlink").toBool();
             if (qApp->activeWindow()) {
@@ -68,6 +68,9 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
             m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
             qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
         }
+    });
+
+    connect(settings, &QGSettings::changed, this, [=](const QString &key) {
         if (key == "useCustomHighlightColor") {
             m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
         }
@@ -99,7 +102,7 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle (key == nullptr? "fusio
     }
 
     m_app_style_settings = ApplicationStyleSettings::getInstance();
-    connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy){
+    connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy) {
         /*!
           \todo implemet palette switch.
           */
@@ -151,15 +154,14 @@ void ProxyStyle::polish(QWidget *widget)
 
     QProxyStyle::polish(widget);
 
+    if(!widget)
+        return;
+
     if (qAppName() == "ukui-menu" && !widget->inherits("QMenu")) {
         return;
     }
 
     m_gesture_helper->registerWidget(widget);
-
-    //FIXME:
-    if(!widget)
-        return;
 
     if (auto label = qobject_cast<QLabel *>(widget)) {
         if (auto p = label->parent()) {
@@ -259,9 +261,4 @@ void ProxyStyle::polish(QPalette &pal)
         pal.setColor(QPalette::Inactive, QPalette::Highlight, m_custom_highlight_color);
         pal.setColor(QPalette::Disabled, QPalette::Highlight, Qt::transparent);
     }
-}
-
-void ProxyStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
-{
-    return QProxyStyle::drawPrimitive(element, option, painter, widget);
 }

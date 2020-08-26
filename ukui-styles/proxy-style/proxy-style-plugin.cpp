@@ -30,6 +30,7 @@
 
 #include <QApplication>
 #include <QStyleFactory>
+#include <QWidget>
 
 #include <QDebug>
 
@@ -39,44 +40,53 @@ ProxyStylePlugin::ProxyStylePlugin()
 {
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
-        connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key){
-            auto appStyleSettings = ApplicationStyleSettings::getInstance();
-            if (appStyleSettings->currentStyleStretagy() != ApplicationStyleSettings::Default)
-                return;
-
+        connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
             if (key == "styleName") {
                 qDebug()<<"style name changed";
+                if (blackList().contains(qAppName()))
+                    return;
+
                 //We should not swich a application theme which use internal style.
                 if (QApplication::style()->inherits("InternalStyle"))
                     return;
 
+                auto appStyleSettings = ApplicationStyleSettings::getInstance();
+                if (appStyleSettings->currentStyleStretagy() != ApplicationStyleSettings::Default)
+                    return;
+
                 auto styleName = settings->get("styleName").toString();
 
-                if (styleName == "ukui") {
-                    styleName = "ukui-default";
+                if (styleName == "ukui-default" || styleName == "ukui-dark" || styleName == "ukui-white"
+                        || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui") {
+                    if (styleName == "ukui-white" || styleName == "ukui") {
+                        styleName = "ukui-light";
+                    } else if (styleName == "ukui-black") {
+                        styleName = "ukui-dark";
+                    }
+
+                    qApp->setStyle(new ProxyStyle(styleName));
+//                    foreach (auto widget, qApp->allWidgets()) {
+//                        QEvent e(QEvent::StyleChange);
+//                        QApplication::sendEvent(widget, &e);
+//                        widget->repaint();
+//                    }
+                    return;
                 }
 
-                if (styleName == "ukui-white") {
-                    styleName = "ukui-default";
-                }
-
-                if (styleName == "ukui-black") {
-                    styleName = "ukui-dark";
-                }
-
-                bool isStyleValid = false;
-                for (auto key : QStyleFactory::keys()) {
-                    if (key.toLower() == styleName.toLower()) {
-                        isStyleValid = true;
+                for (auto keys : QStyleFactory::keys()) {
+                    if (styleName.toLower() == keys.toLower()) {
+                        qApp->setStyle(new QProxyStyle(styleName));
+//                    foreach (auto widget, qApp->allWidgets()) {
+//                        QEvent e(QEvent::StyleChange);
+//                        QApplication::sendEvent(widget, &e);
+//                        widget->repaint();
+//                    }
+                        return;
                     }
                 }
 
-                if (!isStyleValid) {
-                    styleName = "fusion";
-                }
-
-                if (!blackList().contains(qAppName()))
-                    QApplication::setStyle(new ProxyStyle(styleName));
+                qApp->setStyle(new QProxyStyle("fusion"));
+                return;
 
                 QPalette palette = QApplication::palette();
                 /*!
@@ -118,23 +128,23 @@ QStyle *ProxyStylePlugin::create(const QString &key)
         //get current style, fusion for invalid.
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
-            if (m_current_style_name == "ukui-white") {
-                m_current_style_name = "ukui-default";
-            }
-            if (m_current_style_name == "ukui-black") {
-                m_current_style_name = "ukui-dark";
+            if (m_current_style_name == "ukui-default" || m_current_style_name == "ukui-dark"
+                    || m_current_style_name == "ukui-white"|| m_current_style_name == "ukui-black"
+                    || m_current_style_name == "ukui-light" || m_current_style_name == "ukui") {
+                if (m_current_style_name == "ukui-white" || m_current_style_name == "ukui")
+                    m_current_style_name = "ukui-light";
+                if (m_current_style_name == "ukui-black")
+                    m_current_style_name = "ukui-dark";
+                return new ProxyStyle(m_current_style_name);
             }
             for (auto styleName : QStyleFactory::keys()) {
-                if (styleName.toLower() == m_current_style_name.toLower()) {
-                    return new ProxyStyle(styleName);
-                }
+                if (styleName.toLower() == m_current_style_name.toLower())
+                    return new QProxyStyle(m_current_style_name);
             }
         }
-        qDebug()<<"ukui create proxy style";
-        return new ProxyStyle(nullptr);
+        return new QProxyStyle("fusion");
     }
-    qDebug()<<"ukui create proxy style: null";
-    return new ProxyStyle(nullptr);
+    return new QProxyStyle("fusion");
 }
 
 const QStringList ProxyStylePlugin::blackList()

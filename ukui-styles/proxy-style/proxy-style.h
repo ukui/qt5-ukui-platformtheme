@@ -68,11 +68,6 @@ public:
 
     void polish(QPalette &pal);
 
-    void drawPrimitive(QStyle::PrimitiveElement element,
-                       const QStyleOption *option,
-                       QPainter *painter,
-                       const QWidget *widget = nullptr) const;
-
 private:
     BlurHelper *m_blur_helper;
     GestureHelper *m_gesture_helper;
