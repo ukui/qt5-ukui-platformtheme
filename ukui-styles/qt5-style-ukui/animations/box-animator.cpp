@@ -56,16 +56,16 @@ bool BoxAnimator::bindWidget(QWidget *w)
     m_sunken->setEasingCurve(QEasingCurve::InCubic);
     addAnimation(m_sunken);
 
-    connect(m_sunken, &QVariantAnimation::valueChanged, this, [=]() {
+    connect(m_sunken, &QVariantAnimation::valueChanged, w, [=]() {
        w->repaint();
     });
-    connect(m_mouseover, &QVariantAnimation::valueChanged, this, [=]() {
+    connect(m_mouseover, &QVariantAnimation::valueChanged, w, [=]() {
        w->repaint();
     });
-    connect(m_sunken, &QVariantAnimation::finished, this, [=]() {
+    connect(m_sunken, &QVariantAnimation::finished, w, [=]() {
        w->repaint();
     });
-    connect(m_mouseover, &QVariantAnimation::finished, this, [=]() {
+    connect(m_mouseover, &QVariantAnimation::finished, w, [=]() {
        w->repaint();
     });
 
