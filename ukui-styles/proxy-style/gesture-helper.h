@@ -71,6 +71,8 @@ private:
 
     Qt::GestureType m_slide_type;
     Qt::GestureType m_zoom_type;
+
+    bool m_is_mouse_pressed = false;
 };
 
 #endif // GESTUREHELPER_H

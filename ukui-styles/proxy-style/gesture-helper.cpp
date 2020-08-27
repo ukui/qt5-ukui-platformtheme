@@ -230,7 +230,7 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 
             switch (tapAndHoldGesture->state()) {
             case Qt::GestureStarted: {
-                if (m_menu_popped) {
+                if (m_menu_popped || m_is_mouse_pressed) {
                     return false;
                 } else {
                     m_menu_popped = true;
@@ -334,6 +334,21 @@ bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
     case QEvent::DragMove: {
         if (m_is_paning)
             return true;
+    }
+
+    case QEvent::MouseButtonPress: {
+        auto me = static_cast<QMouseEvent *>(event);
+        if (me->source() == Qt::MouseEventNotSynthesized)
+            m_is_mouse_pressed = true;
+        else
+            m_is_mouse_pressed = false;
+        break;
+    }
+    case QEvent::MouseButtonRelease: {
+        auto me = static_cast<QMouseEvent *>(event);
+        if (me->source() == Qt::MouseEventNotSynthesized)
+            m_is_mouse_pressed = false;
+        break;
     }
 
     default:
