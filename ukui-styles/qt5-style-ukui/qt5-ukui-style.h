@@ -102,6 +102,7 @@ public:
                                  const QWidget *widget = nullptr) const;
 
 protected:
+    const QStringList useDefaultPalette() const;
     void viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const;
     QRect scrollBarSubControlRect(QStyle::ComplexControl control,
                                   const QStyleOptionComplex *option,
