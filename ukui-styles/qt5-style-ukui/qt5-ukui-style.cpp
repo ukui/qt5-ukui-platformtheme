@@ -272,6 +272,20 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
+
+    auto settings = UKUIStyleSettings::globalInstance();
+    m_use_tablet_model = settings->get("useTabletModel").toBool();
+    connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
+        if (key == "useTabletModel") {
+            m_use_tablet_model = settings->get("useTabletModel").toBool();
+//            QPalette palette = qApp->palette();
+//            polish(palette);
+//            qApp->setPalette(palette);
+            foreach (QWidget *widget, qApp->allWidgets()) {
+               widget->update();
+            }
+        }
+    });
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -387,7 +401,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             tip_font(22,22,22),
             alternateBase(248,248,248);
 
-        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  specialList().contains(qAppName()))) {
+    if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  specialList().contains(qAppName()))) {
         //ukui-dark
         window_bg.setRgb(45,46,50);
         window_no_bg.setRgb(48,46,50);
