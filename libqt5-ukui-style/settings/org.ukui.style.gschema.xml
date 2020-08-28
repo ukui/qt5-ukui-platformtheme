@@ -79,5 +79,10 @@
             <summary>Blink text cursor interval.</summary>
             <description>The interval of text cursor blink.</description>
         </key>
+        <key type="b" name="use-tablet-model">
+            <default>false</default>
+            <summary>Use tablet model</summary>
+            <description>Decide theme use tablet or pc model</description>
+        </key>
     </schema>
 </schemalist>
