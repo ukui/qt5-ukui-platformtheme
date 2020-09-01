@@ -395,7 +395,8 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
-    //ukui-light
+
+    //PC-ukui-light
     QColor  window_bg(231,231,231),
             window_no_bg(233,233,233),
             base_bg(255,255,255),
@@ -410,9 +411,8 @@ QPalette Qt5UKUIStyle::standardPalette() const
             tip_bg(248,248,248),
             tip_font(22,22,22),
             alternateBase(248,248,248);
-
     if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  specialList().contains(qAppName()))) {
-        //ukui-dark
+        //PC-ukui-dark
         window_bg.setRgb(45,46,50);
         window_no_bg.setRgb(48,46,50);
         base_bg.setRgb(31,32,34);
@@ -430,6 +430,46 @@ QPalette Qt5UKUIStyle::standardPalette() const
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
+    }
+
+    //dev-unity-ukui-light
+    if(m_use_tablet_model){
+        window_bg.setRgb(231,231,231);
+        window_no_bg.setRgb(233,233,233);
+        base_bg.setRgb(255,255,255);
+        base_no_bg.setRgb(248, 248, 248);
+        font_bg.setRgb(0,0,0);
+        font_br_bg.setRgb(255,255,255);
+        font_di_bg.setRgb(191,191,191);
+        button_bg.setRgb(217,217,217);
+        button_ac_bg.setRgb(107,142,235);
+        button_di_bg.setRgb(233,233,233);
+        highlight_bg.setRgb(47,179,232);
+        tip_bg.setRgb(248,248,248);
+        tip_font.setRgb(22,22,22);
+        alternateBase.setRgb(248,248,248);
+
+        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  specialList().contains(qAppName()))) {
+            //dev-unity-ukui-dark
+            window_bg.setRgb(45,46,50);
+            window_no_bg.setRgb(48,46,50);
+            base_bg.setRgb(31,32,34);
+            base_no_bg.setRgb(28,28,30);
+            font_bg.setRgb(255,255,255);
+            font_bg.setAlphaF(0.9);
+            font_br_bg.setRgb(255,255,255);
+            font_br_bg.setAlphaF(0.9);
+            font_di_bg.setRgb(255,255,255);
+            font_di_bg.setAlphaF(0.1);
+            button_bg.setRgb(61,61,65);
+            button_ac_bg.setRgb(48,48,51);
+            button_di_bg.setRgb(48,48,51);
+            highlight_bg.setRgb(47,179,232);
+            tip_bg.setRgb(61,61,65);
+            tip_font.setRgb(232,232,232);
+            alternateBase.setRgb(36,35,40);
+        }
+
     }
 
     palette.setBrush(QPalette::Window,window_bg);
