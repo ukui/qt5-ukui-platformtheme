@@ -819,7 +819,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect,4,4);
+                painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 return;
             }
@@ -830,7 +830,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect,4,4);
+                painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
             }
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
@@ -859,7 +859,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setBrush(color);
                 painter->setPen(Qt::NoPen);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
+                painter->drawRoundedRect(button->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
 
                 painter->save();
@@ -867,7 +867,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setBrush(button->palette.color(QPalette::Highlight));
                 painter->setOpacity(opacity);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
+                painter->drawRoundedRect(button->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 return;
             }
@@ -898,7 +898,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setBrush(color);
                 painter->setPen(Qt::NoPen);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
+                painter->drawRoundedRect(button->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 return;
             }
@@ -949,7 +949,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             QPainterPath rectPath;
-            rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), 4, 4);
+            rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), ukui_border_radius, ukui_border_radius);
 
             // Draw a black floor
             QPixmap pixmap(option->rect.size());
@@ -1002,7 +1002,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QPainterPath path;
             auto region = widget->mask();
             if (region.isEmpty()) {
-                path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), 4, 4);
+                path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), ukui_border_radius, ukui_border_radius);
             } else {
                 path.addRegion(region);
             }
@@ -1033,7 +1033,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if(widget->isEnabled()){
             if (option->state & State_MouseOver) {
                 painter->setBrush(option->palette.color(QPalette::Highlight));
-                painter->drawRoundedRect(option->rect.left()-4,option->rect.y(),option->rect.width()+4,option->rect.height(),4,4);
+                painter->drawRoundedRect(option->rect.left()-4,option->rect.y(),option->rect.width()+4,option->rect.height(),ukui_border_radius,ukui_border_radius);
             }
         }
         painter->restore();
@@ -1066,7 +1066,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
             return;
         }
@@ -1076,7 +1076,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
         }
         if(option->state & (State_Sunken | State_On) || animator->isRunning("SunKen")
@@ -1105,7 +1105,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setBrush(color);
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
 
             painter->save();
@@ -1113,7 +1113,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setBrush(option->palette.color(QPalette::Highlight));
             painter->setOpacity(opacity);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
             return;
         }
@@ -1144,7 +1144,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setBrush(color);
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(option->rect,4,4);
+            painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
             return;
         }
@@ -1283,7 +1283,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(option->palette.color(QPalette::Base));
                 }
             }
-            painter->drawRoundedRect(panel->rect,4,4);
+            painter->drawRoundedRect(panel->rect,ukui_border_radius,ukui_border_radius);
         }
         painter->restore();
         return;
@@ -1387,7 +1387,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             painter->setPen(QPen(box,1));
             painter->setBrush(Qt::NoBrush);
-            painter->drawRoundedRect(rect,4,4);
+            painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
 
             QColor color = option->palette.color(QPalette::Highlight);
             qreal h, s, v;
@@ -1402,7 +1402,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setPen(QPen(option->palette.color(QPalette::Highlight).lighter(150),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
                 }
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
             }
 
             if(SunKen)
@@ -1415,7 +1415,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight));
                 }
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
             }
 
             if(checkbox->state & (State_On | State_NoChange))
@@ -1424,7 +1424,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 {
                     painter->setPen(QPen(option->palette.color(QPalette::Highlight).lighter(125),1));
                     painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
-                    painter->drawRoundedRect(rect,4,4);
+                    painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
                 }
                 QPainterPath path;
                 if(checkbox->state & State_On)
@@ -1788,7 +1788,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
                 return;
@@ -1798,7 +1798,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing,true);
-            painter->drawRoundedRect(rect,4,4);
+            painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
             painter->restore();
             proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
 
@@ -1829,7 +1829,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setBrush(Qt::NoBrush);
                 painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
 
                 painter->save();
@@ -1837,7 +1837,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setBrush(Qt::NoBrush);
                 painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 return;
             }
@@ -1869,7 +1869,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setOpacity(opacity);
-                painter->drawRoundedRect(rect,4,4);
+                painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
                 return;
             }
@@ -1963,7 +1963,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(spinbox->palette.color(QPalette::Highlight));
                 painter->setBrush(Qt::NoBrush);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(spinbox->rect,4,4);
+                painter->drawRoundedRect(spinbox->rect,ukui_border_radius,ukui_border_radius);
                 painter->restore();
             }
             if(spinbox->buttonSymbols != QAbstractSpinBox::NoButtons)
@@ -2414,7 +2414,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Base));
-                painter->drawRoundedRect(groupContents,4,4);
+                painter->drawRoundedRect(groupContents,ukui_border_radius,ukui_border_radius);
                 painter->restore();
 
             }
@@ -2692,7 +2692,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->setRenderHint(QPainter::Antialiasing, true);
         painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
         painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-        painter->drawRoundedRect(rect,4,4);
+        painter->drawRoundedRect(rect,ukui_border_radius,ukui_border_radius);
         painter->restore();
         return;
     }
@@ -2764,7 +2764,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->setRenderHints(QPainter::Antialiasing,true);
             painter->setPen(Qt::NoPen);
             painter->setBrush(linearGradient);
-            painter->drawRoundedRect(progressRect,4,4);
+            painter->drawRoundedRect(progressRect,ukui_border_radius,ukui_border_radius);
             painter->restore();
             return;
         }
@@ -3520,7 +3520,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (act) {
                 painter->setBrush(option->palette.highlight().color());
                 painter->setPen(Qt::NoPen);
-                painter->drawRoundedRect(r.adjusted(0, 0, -1, -1),4,4);
+                painter->drawRoundedRect(r.adjusted(0, 0, -1, -1),ukui_border_radius,ukui_border_radius);
 
                 QPalette::ColorRole textRole = dis ? QPalette::Text : QPalette::HighlightedText;
                 uint alignment = Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
@@ -3574,7 +3574,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 QRect r = option->rect;
                 painter->setBrush(highlightOutline);
                 painter->setPen(Qt::NoPen);
-                painter->drawRoundedRect(r.adjusted(2, 0.5, -2, -0.5),4,4);
+                painter->drawRoundedRect(r.adjusted(2, 0.5, -2, -0.5),ukui_border_radius,ukui_border_radius);
             }
             bool checkable = menuItem->checkType != QStyleOptionMenuItem::NotCheckable;
             bool checked = menuItem->checked;
@@ -3800,7 +3800,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (tb->direction != Qt::RightToLeft|tb->direction != Qt::RightToLeft) {
-                painter->drawRoundedRect(option->rect,4,4);
+                painter->drawRoundedRect(option->rect,ukui_border_radius,ukui_border_radius);
             }
             painter->restore();
             return;
