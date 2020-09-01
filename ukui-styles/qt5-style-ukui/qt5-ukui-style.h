@@ -124,6 +124,9 @@ private:
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
     bool m_use_tablet_model = false;
+
+    //Add border-radius value
+      int ukui_border_radius;
 };
 
 #endif // QT5UKUISTYLE_H

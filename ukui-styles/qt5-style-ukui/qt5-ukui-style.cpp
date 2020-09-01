@@ -189,7 +189,7 @@ QString calculateElidedText(const QString &text, const QTextOption &textOption,
 QString toolButtonElideText(const QStyleOptionToolButton *option,
                             const QRect &textRect, int flags)
 {
-//    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
+    //    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
     if (option->fontMetrics.width(option->text, -1) <= textRect.width())
         return option->text;
 
@@ -262,9 +262,9 @@ void Qt5UKUIStyle::viewItemDrawText(QPainter *p, const QStyleOptionViewItem *opt
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle()
-#else
+  #else
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
-#endif
+  #endif
 {
     m_is_default_style = useDefault;
     m_use_dark_palette = dark;
@@ -273,16 +273,26 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
 
+    //PC border-radius value
+    ukui_border_radius=4;
     auto settings = UKUIStyleSettings::globalInstance();
     m_use_tablet_model = settings->get("useTabletModel").toBool();
     connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
         if (key == "useTabletModel") {
             m_use_tablet_model = settings->get("useTabletModel").toBool();
-//            QPalette palette = qApp->palette();
-//            polish(palette);
-//            qApp->setPalette(palette);
+            //            QPalette palette = qApp->palette();
+            //            polish(palette);
+            //            qApp->setPalette(palette);
+
+            //The following are new additions, if the tablet mode and PC mode are changed
+            if(m_use_tablet_model){
+                ukui_border_radius=8;
+            }
+            else{
+                ukui_border_radius=4;
+            }
             foreach (QWidget *widget, qApp->allWidgets()) {
-               widget->update();
+                widget->update();
             }
         }
     });
@@ -527,8 +537,8 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 
     if(auto tv = qobject_cast<QTableView*>(widget))
     {
-       tv->setShowGrid(false);
-       tv->setAlternatingRowColors(true);
+        tv->setShowGrid(false);
+        tv->setAlternatingRowColors(true);
     }
 
     if (widget->inherits("QTipLabel")) {
@@ -589,11 +599,11 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         m_button_animation_helper->unregisterWidget(widget);
     }
 
-//    if(auto tv = qobject_cast<QTableView*>(widget))
-//    {
-//       tv->setShowGrid(true);
-//       tv->setAlternatingRowColors(false);
-//    }
+    //    if(auto tv = qobject_cast<QTableView*>(widget))
+    //    {
+    //       tv->setShowGrid(true);
+    //       tv->setAlternatingRowColors(false);
+    //    }
 
     Style::unpolish(widget);
 }
@@ -638,10 +648,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 // for now the style paint arrow with highlight text brush when hover
                 // we but don't want to highligh the indicator when hover a view item.
                 if (isSelected) {
-//                    tmp.state.setFlag(QStyle::State_MouseOver);
+                    //                    tmp.state.setFlag(QStyle::State_MouseOver);
                     tmp.state |= QStyle::State_MouseOver;
                 } else {
-//                    tmp.state.setFlag(QStyle::State_MouseOver, false);
+                    //                    tmp.state.setFlag(QStyle::State_MouseOver, false);
                     tmp.state &= ~QStyle::State_MouseOver;
                 }
 
@@ -700,46 +710,46 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-//    case PE_IndicatorHeaderArrow: //Here is the arrow drawing of the table box
+        //    case PE_IndicatorHeaderArrow: //Here is the arrow drawing of the table box
 
-//        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setBrush(Qt::NoBrush);
-//            if(option->state & State_Enabled){
-//                painter->setPen(QPen(option->palette.foreground().color(), 1.1));
-//                if (option->state & State_MouseOver) {
-//                    painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
-//                }
-//            }
-//            else {
-//                painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-//            }
-//            QPolygon points(4);
-//            //Add 8 to center vertically
-//            int x = option->rect.x()+8;
-//            int y = option->rect.y()+8;
+        //        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+        //            painter->save();
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            painter->setBrush(Qt::NoBrush);
+        //            if(option->state & State_Enabled){
+        //                painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+        //                if (option->state & State_MouseOver) {
+        //                    painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+        //                }
+        //            }
+        //            else {
+        //                painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+        //            }
+        //            QPolygon points(4);
+        //            //Add 8 to center vertically
+        //            int x = option->rect.x()+8;
+        //            int y = option->rect.y()+8;
 
-//            int w = 8;
-//            int h =  4;
-//            x += (option->rect.width() - w) / 2;
-//            y += (option->rect.height() - h) / 2;
-//            if (header->sortIndicator & QStyleOptionHeader::SortUp) {
-//                points[0] = QPoint(x, y);
-//                points[1] = QPoint(x + w / 2, y + h);
-//                points[2] = QPoint(x + w / 2, y + h);
-//                points[3] = QPoint(x + w, y);
-//            } else if (header->sortIndicator & QStyleOptionHeader::SortDown) {
-//                points[0] = QPoint(x, y + h);
-//                points[1] = QPoint(x + w / 2, y);
-//                points[2] = QPoint(x + w / 2, y);
-//                points[3] = QPoint(x + w, y + h);
-//            }
-//            painter->drawLine(points[0],  points[1] );
-//            painter->drawLine(points[2],  points[3] );
-//            painter->restore();
-//            return;
-//        }
+        //            int w = 8;
+        //            int h =  4;
+        //            x += (option->rect.width() - w) / 2;
+        //            y += (option->rect.height() - h) / 2;
+        //            if (header->sortIndicator & QStyleOptionHeader::SortUp) {
+        //                points[0] = QPoint(x, y);
+        //                points[1] = QPoint(x + w / 2, y + h);
+        //                points[2] = QPoint(x + w / 2, y + h);
+        //                points[3] = QPoint(x + w, y);
+        //            } else if (header->sortIndicator & QStyleOptionHeader::SortDown) {
+        //                points[0] = QPoint(x, y + h);
+        //                points[1] = QPoint(x + w / 2, y);
+        //                points[2] = QPoint(x + w / 2, y);
+        //                points[3] = QPoint(x + w, y + h);
+        //            }
+        //            painter->drawLine(points[0],  points[1] );
+        //            painter->drawLine(points[2],  points[3] );
+        //            painter->restore();
+        //            return;
+        //        }
 
     case PE_IndicatorHeaderArrow:
     {
@@ -786,7 +796,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->drawLine(vopt->rect.topRight(),vopt->rect.bottomRight());
                 painter->restore();
             }
-           return;
+            return;
         }
         break;
     }
@@ -814,15 +824,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 return;
             }
 
-             if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
-             {
-                 painter->save();
-                 painter->setPen(Qt::NoPen);
-                 painter->setBrush(option->palette.color(QPalette::Button));
-                 painter->setRenderHint(QPainter::Antialiasing,true);
-                 painter->drawRoundedRect(option->rect,4,4);
-                 painter->restore();
-             }
+            if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
+            {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(option->rect,4,4);
+                painter->restore();
+            }
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
@@ -932,77 +942,77 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         //        }
 
     case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
-        {
-            if (widget->isEnabled()) {
-                QStyleOption opt = *option;
+    {
+        if (widget->isEnabled()) {
+            QStyleOption opt = *option;
 
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing);
-                QPainterPath rectPath;
-                rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), 4, 4);
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            QPainterPath rectPath;
+            rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), 4, 4);
 
-                // Draw a black floor
-                QPixmap pixmap(option->rect.size());
-                pixmap.fill(Qt::transparent);
-                QPainter pixmapPainter(&pixmap);
-                pixmapPainter.setRenderHint(QPainter::Antialiasing);
-                pixmapPainter.setPen(Qt::transparent);
-                pixmapPainter.setBrush(Qt::black);
-                pixmapPainter.drawPath(rectPath);
-                pixmapPainter.end();
+            // Draw a black floor
+            QPixmap pixmap(option->rect.size());
+            pixmap.fill(Qt::transparent);
+            QPainter pixmapPainter(&pixmap);
+            pixmapPainter.setRenderHint(QPainter::Antialiasing);
+            pixmapPainter.setPen(Qt::transparent);
+            pixmapPainter.setBrush(Qt::black);
+            pixmapPainter.drawPath(rectPath);
+            pixmapPainter.end();
 
-                // Blur the black background
-                QImage img = pixmap.toImage();
-                qt_blurImage(img, 4, false, false);
+            // Blur the black background
+            QImage img = pixmap.toImage();
+            qt_blurImage(img, 4, false, false);
 
-                // Dig out the center part
-                pixmap = QPixmap::fromImage(img);
-                QPainter pixmapPainter2(&pixmap);
-                pixmapPainter2.setRenderHint(QPainter::Antialiasing);
-                pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
-                pixmapPainter2.setPen(Qt::transparent);
-                pixmapPainter2.setBrush(Qt::transparent);
-                pixmapPainter2.drawPath(rectPath);
+            // Dig out the center part
+            pixmap = QPixmap::fromImage(img);
+            QPainter pixmapPainter2(&pixmap);
+            pixmapPainter2.setRenderHint(QPainter::Antialiasing);
+            pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
+            pixmapPainter2.setPen(Qt::transparent);
+            pixmapPainter2.setBrush(Qt::transparent);
+            pixmapPainter2.drawPath(rectPath);
 
-                // Shadow rendering
-                painter->drawPixmap(option->rect, pixmap, pixmap.rect());
+            // Shadow rendering
+            painter->drawPixmap(option->rect, pixmap, pixmap.rect());
 
-                //This is the beginning of drawing the bottom of the prompt box
-                auto color = opt.palette.color(QPalette::ToolTipBase);
-                if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-                    auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-                    color.setAlphaF(opacity);
-                }
-
-                if (qApp->property("blurEnable").isValid()) {
-                    bool blurEnable = qApp->property("blurEnable").toBool();
-                    if (!blurEnable) {
-                        color.setAlphaF(1);
-                    }
-                }
-
-                opt.palette.setColor(QPalette::ToolTipBase, color);
-                painter->setRenderHint(QPainter::Antialiasing);
-                QPen pen(opt.palette.toolTipBase().color().darker(150), 1);
-                pen.setCapStyle(Qt::RoundCap);
-                pen.setJoinStyle(Qt::RoundJoin);
-                painter->setPen(Qt::transparent);
-                painter->setBrush(color);
-
-                QPainterPath path;
-                auto region = widget->mask();
-                if (region.isEmpty()) {
-                    path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), 4, 4);
-                } else {
-                    path.addRegion(region);
-                }
-
-                painter->drawPath(path);
-                painter->restore();
-                return;
+            //This is the beginning of drawing the bottom of the prompt box
+            auto color = opt.palette.color(QPalette::ToolTipBase);
+            if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+                auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
+                color.setAlphaF(opacity);
             }
-            return Style::drawPrimitive(element, option, painter, widget);
+
+            if (qApp->property("blurEnable").isValid()) {
+                bool blurEnable = qApp->property("blurEnable").toBool();
+                if (!blurEnable) {
+                    color.setAlphaF(1);
+                }
+            }
+
+            opt.palette.setColor(QPalette::ToolTipBase, color);
+            painter->setRenderHint(QPainter::Antialiasing);
+            QPen pen(opt.palette.toolTipBase().color().darker(150), 1);
+            pen.setCapStyle(Qt::RoundCap);
+            pen.setJoinStyle(Qt::RoundJoin);
+            painter->setPen(Qt::transparent);
+            painter->setBrush(color);
+
+            QPainterPath path;
+            auto region = widget->mask();
+            if (region.isEmpty()) {
+                path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), 4, 4);
+            } else {
+                path.addRegion(region);
+            }
+
+            painter->drawPath(path);
+            painter->restore();
+            return;
         }
+        return Style::drawPrimitive(element, option, painter, widget);
+    }
 
     case PE_FrameStatusBar://UKUI Status style
     {
@@ -1035,15 +1045,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         /*
          * When the control does not require animation,please use the code annotated below
         */
-//        AnimatorIface* animator =  new AnimatorIface();
-//        auto button_animator = m_button_animation_helper->animator(widget);
-//        if(!(animator = button_animator))
-//        {
-//            animator->setAnimatorDuration("SunKen",1);
-//            animator->setAnimatorDuration("MouseOver",1);
-//            animator->setAnimatorStartValue("SunKen",1);
-//            animator->setAnimatorStartValue("MouseOver",1);
-//        }
+        //        AnimatorIface* animator =  new AnimatorIface();
+        //        auto button_animator = m_button_animation_helper->animator(widget);
+        //        if(!(animator = button_animator))
+        //        {
+        //            animator->setAnimatorDuration("SunKen",1);
+        //            animator->setAnimatorDuration("MouseOver",1);
+        //            animator->setAnimatorStartValue("SunKen",1);
+        //            animator->setAnimatorStartValue("MouseOver",1);
+        //        }
 
         auto animator = m_button_animation_helper->animator(widget);
         if(animator == nullptr)
@@ -1138,8 +1148,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->restore();
             return;
         }
-       return;
-      }
+        return;
+    }
 
         //Show this section when there are too many tabs
     case PE_IndicatorTabTear:
@@ -1280,74 +1290,74 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
 
-//    case PE_IndicatorCheckBox: { //UKUI CheckBox style
-//        if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
-//            painter->save();
-//            painter->translate(0.5, 0.5);
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            QColor selectpen=option->palette.color(QPalette::Mid);
-//            QColor selectbg;
-//            QColor selectmark;
-//            if (option->state&State_Enabled){
-//                selectbg=option->palette.color(QPalette::Highlight);
-//                selectmark=option->palette.color(QPalette::HighlightedText);
-//            }
-//            else{
-//                selectbg=option->palette.button().color();
-//                selectmark=option->palette.color(QPalette::Mid);
-//            }
+        //    case PE_IndicatorCheckBox: { //UKUI CheckBox style
+        //        if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
+        //            painter->save();
+        //            painter->translate(0.5, 0.5);
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            QColor selectpen=option->palette.color(QPalette::Mid);
+        //            QColor selectbg;
+        //            QColor selectmark;
+        //            if (option->state&State_Enabled){
+        //                selectbg=option->palette.color(QPalette::Highlight);
+        //                selectmark=option->palette.color(QPalette::HighlightedText);
+        //            }
+        //            else{
+        //                selectbg=option->palette.button().color();
+        //                selectmark=option->palette.color(QPalette::Mid);
+        //            }
 
-//            const int maxFactor = 120;
-//            QColor tmp = option->palette.base().color();
-//            tmp.setRed((tmp.red() * 85) / maxFactor + (option->palette.foreground().color().red() * (maxFactor - 85)) / maxFactor);
-//            tmp.setGreen((tmp.green() * 85) / maxFactor + (option->palette.foreground().color().green() * (maxFactor - 85)) / maxFactor);
-//            tmp.setBlue((tmp.blue() * 85) / maxFactor + (option->palette.foreground().color().blue() * (maxFactor - 85)) / maxFactor);
+        //            const int maxFactor = 120;
+        //            QColor tmp = option->palette.base().color();
+        //            tmp.setRed((tmp.red() * 85) / maxFactor + (option->palette.foreground().color().red() * (maxFactor - 85)) / maxFactor);
+        //            tmp.setGreen((tmp.green() * 85) / maxFactor + (option->palette.foreground().color().green() * (maxFactor - 85)) / maxFactor);
+        //            tmp.setBlue((tmp.blue() * 85) / maxFactor + (option->palette.foreground().color().blue() * (maxFactor - 85)) / maxFactor);
 
-//            painter->setPen(tmp);
-//            painter->setBrush(Qt::NoBrush);
-//            if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
-//                painter->setPen(option->palette.color(QPalette::Highlight));
-//            painter->drawRoundedRect(option->rect,3,3);
-//            painter->restore();
-//            // if (option->state & State_MouseOver)
-//            // painter->setBrush(option->palette.color(QPalette::Highlight));
-//            if (option->state & State_NoChange){//Non optional status
-//                selectpen=tmp;
-//                selectbg=Qt::NoBrush;
-//                selectmark=tmp;
-//            }
-//            else if (option->state & State_On) {
-//                painter->save();
-//                painter->translate(0.5, 0.5);
-//                painter->setRenderHint(QPainter::Antialiasing,true);
-//                painter->setPen(selectpen);
-//                painter->setBrush(selectbg);
-//                if(option->state & State_MouseOver){
-//                    painter->setPen(option->palette.midlight().color());
-//                    painter->setBrush( option->palette.highlight().color().lighter());
-//                }
-//                else if (option->state & State_Sunken) {
-//                    painter->setBrush( option->palette.highlight().color().darker());
-//                }
-//                painter->drawRoundedRect(option->rect,3,3);
-//                painter->restore();
+        //            painter->setPen(tmp);
+        //            painter->setBrush(Qt::NoBrush);
+        //            if (option->state & State_HasFocus && option->state & State_KeyboardFocusChange)
+        //                painter->setPen(option->palette.color(QPalette::Highlight));
+        //            painter->drawRoundedRect(option->rect,3,3);
+        //            painter->restore();
+        //            // if (option->state & State_MouseOver)
+        //            // painter->setBrush(option->palette.color(QPalette::Highlight));
+        //            if (option->state & State_NoChange){//Non optional status
+        //                selectpen=tmp;
+        //                selectbg=Qt::NoBrush;
+        //                selectmark=tmp;
+        //            }
+        //            else if (option->state & State_On) {
+        //                painter->save();
+        //                painter->translate(0.5, 0.5);
+        //                painter->setRenderHint(QPainter::Antialiasing,true);
+        //                painter->setPen(selectpen);
+        //                painter->setBrush(selectbg);
+        //                if(option->state & State_MouseOver){
+        //                    painter->setPen(option->palette.midlight().color());
+        //                    painter->setBrush( option->palette.highlight().color().lighter());
+        //                }
+        //                else if (option->state & State_Sunken) {
+        //                    painter->setBrush( option->palette.highlight().color().darker());
+        //                }
+        //                painter->drawRoundedRect(option->rect,3,3);
+        //                painter->restore();
 
-//                // Draw checkmark
-//                painter->save();
-//                painter->setRenderHint(QPainter::Antialiasing,true);
-//                painter->setPen(QPen(selectmark,1.1));
-//                const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
-//                QPainterPath path;
-//                const qreal rectHeight = option->rect.height(); // assuming height equals width
-//                path.moveTo(checkMarkPadding + rectHeight * 0.11, rectHeight * 0.47);
-//                path.lineTo(rectHeight * 0.5, rectHeight - checkMarkPadding);
-//                path.lineTo(rectHeight - checkMarkPadding, checkMarkPadding);
-//                painter->drawPath(path.translated(option->rect.topLeft()));
-//                painter->restore();
-//            }
-//        }
-//        return;
-//    }
+        //                // Draw checkmark
+        //                painter->save();
+        //                painter->setRenderHint(QPainter::Antialiasing,true);
+        //                painter->setPen(QPen(selectmark,1.1));
+        //                const qreal checkMarkPadding = 1 + option->rect.width() * 0.13; // at least one pixel padding
+        //                QPainterPath path;
+        //                const qreal rectHeight = option->rect.height(); // assuming height equals width
+        //                path.moveTo(checkMarkPadding + rectHeight * 0.11, rectHeight * 0.47);
+        //                path.lineTo(rectHeight * 0.5, rectHeight - checkMarkPadding);
+        //                path.lineTo(rectHeight - checkMarkPadding, checkMarkPadding);
+        //                painter->drawPath(path.translated(option->rect.topLeft()));
+        //                painter->restore();
+        //            }
+        //        }
+        //        return;
+        //    }
 
     case PE_IndicatorCheckBox:
     {
@@ -1546,56 +1556,56 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-//    case PE_IndicatorRadioButton:{
-//        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
+        //    case PE_IndicatorRadioButton:{
+        //        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
 
-//        if (option->state & State_None){//Non optional status
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-//            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Mid));
-//            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
-//            painter->restore();
-//        }
-//        else if (option->state & State_Off) {
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setBrush(option->palette.color(QPalette::Button));
-//            painter->setPen(option->palette.color(QPalette::Mid));
-//            if (option->state & State_Sunken) {
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-//            }else if (option->state & State_MouseOver){
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-//            }
-//            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
-//            painter->restore();
-//        }
-//        else if (option->state & State_On) {
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setBrush(option->palette.color(QPalette::Highlight));
-//            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-//            if (option->state & State_Sunken) {
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-//            }else if(option->state & State_MouseOver){
-//                painter->setBrush(option->palette.color(QPalette::Highlight));
-//                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
-//            }
-//            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
-//            painter->restore();
+        //        if (option->state & State_None){//Non optional status
+        //            painter->save();
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Mid));
+        //            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+        //            painter->restore();
+        //        }
+        //        else if (option->state & State_Off) {
+        //            painter->save();
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            painter->setBrush(option->palette.color(QPalette::Button));
+        //            painter->setPen(option->palette.color(QPalette::Mid));
+        //            if (option->state & State_Sunken) {
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        //            }else if (option->state & State_MouseOver){
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        //            }
+        //            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+        //            painter->restore();
+        //        }
+        //        else if (option->state & State_On) {
+        //            painter->save();
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            painter->setBrush(option->palette.color(QPalette::Highlight));
+        //            painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        //            if (option->state & State_Sunken) {
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        //            }else if(option->state & State_MouseOver){
+        //                painter->setBrush(option->palette.color(QPalette::Highlight));
+        //                painter->setPen(QPen(option->palette.color(QPalette::Dark), 1));
+        //            }
+        //            painter->drawEllipse(option->rect.x()+1,option->rect.y(), 16.0, 16.0);
+        //            painter->restore();
 
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setPen(option->palette.color(QPalette::HighlightedText));
-//            painter->setBrush(option->palette.color(QPalette::HighlightedText));
-//            painter->drawEllipse(option->rect.x()+6, option->rect.y()+5, 6.0, 6.0);
-//            painter->restore();
-//        }
-//        return;
-//    }
+        //            painter->save();
+        //            painter->setRenderHint(QPainter::Antialiasing,true);
+        //            painter->setPen(option->palette.color(QPalette::HighlightedText));
+        //            painter->setBrush(option->palette.color(QPalette::HighlightedText));
+        //            painter->drawEllipse(option->rect.x()+6, option->rect.y()+5, 6.0, 6.0);
+        //            painter->restore();
+        //        }
+        //        return;
+        //    }
 
     case PE_IndicatorRadioButton:
     {
@@ -1751,7 +1761,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         {
             auto animator = m_combobox_animation_helper->animator(widget);
             if(animator == nullptr)
-              return Style::drawComplexControl(CC_ComboBox,option,painter,widget);
+                return Style::drawComplexControl(CC_ComboBox,option,painter,widget);
 
             QRect rect = subControlRect(CC_ComboBox,option,SC_ComboBoxFrame,widget);
             QRect ArrowRect = subControlRect(CC_ComboBox,option,SC_ComboBoxArrow,widget);
@@ -1772,16 +1782,16 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
             if(!(option->state & State_Enabled))
             {
-              animator->stopAnimator("SunKen");
-              animator->stopAnimator("MouseOver");
-              painter->save();
-              painter->setPen(Qt::NoPen);
-              painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
-              proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
-              return;
+                animator->stopAnimator("SunKen");
+                animator->stopAnimator("MouseOver");
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
+                proxy()->drawPrimitive(PE_IndicatorArrowDown,&button,painter,widget);
+                return;
             }
 
             painter->save();
@@ -1793,149 +1803,149 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
 
             if((combobox->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
-                  || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
+                    || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
             {
-              double opacity = animator->value("SunKen").toDouble();
-              if(combobox->state & (State_Sunken | State_On))
-              {
-                  if(opacity == 0.0)
-                  {
-                      animator->setAnimatorDirectionForward("SunKen",true);
-                      animator->startAnimator("SunKen");
-                  }
-              }
-              else
-              {
-                  if(animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
-                  {
-                      animator->setAnimatorDirectionForward("SunKen",false);
-                      animator->startAnimator("SunKen");
-                  }
-              }
+                double opacity = animator->value("SunKen").toDouble();
+                if(combobox->state & (State_Sunken | State_On))
+                {
+                    if(opacity == 0.0)
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",true);
+                        animator->startAnimator("SunKen");
+                    }
+                }
+                else
+                {
+                    if(animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
+                    {
+                        animator->setAnimatorDirectionForward("SunKen",false);
+                        animator->startAnimator("SunKen");
+                    }
+                }
 
-              painter->save();
-              painter->setClipRect(rect);
-              auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
+                painter->save();
+                painter->setClipRect(rect);
+                auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(color,1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
 
-              painter->save();
-              painter->setClipRect(rect);
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
-              return;
+                painter->save();
+                painter->setClipRect(rect);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(combobox->palette.color(QPalette::Highlight),1,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
+                return;
             }
             if(combobox->state & State_MouseOver || animator->isRunning("MouseOver")
-                  || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
+                    || (animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")))
             {
-              double opacity = animator->value("MouseOver").toDouble();
-              if(combobox->state & State_MouseOver)
-              {
-                  animator->setAnimatorDirectionForward("MouseOver",true);
-                  if(opacity == 0.0)
-                  {
-                      animator->startAnimator("MouseOver");
-                  }
-              }
-              else
-              {
-                  animator->setAnimatorDirectionForward("MouseOver",false);
-                  if(animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
-                  {
-                      animator->startAnimator("MouseOver");
-                  }
-              }
+                double opacity = animator->value("MouseOver").toDouble();
+                if(combobox->state & State_MouseOver)
+                {
+                    animator->setAnimatorDirectionForward("MouseOver",true);
+                    if(opacity == 0.0)
+                    {
+                        animator->startAnimator("MouseOver");
+                    }
+                }
+                else
+                {
+                    animator->setAnimatorDirectionForward("MouseOver",false);
+                    if(animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
+                    {
+                        animator->startAnimator("MouseOver");
+                    }
+                }
 
-              painter->save();
-              painter->setClipRect(rect);
-              auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
-              painter->setBrush(Qt::NoBrush);
-              painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
-              painter->setRenderHint(QPainter::Antialiasing,true);
-              painter->setOpacity(opacity);
-              painter->drawRoundedRect(rect,4,4);
-              painter->restore();
-              return;
+                painter->save();
+                painter->setClipRect(rect);
+                auto color = combobox->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(color,1.0,Qt::SolidLine,Qt::SquareCap,Qt::RoundJoin));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setOpacity(opacity);
+                painter->drawRoundedRect(rect,4,4);
+                painter->restore();
+                return;
             }
         }
         break;
     }
 
-//    case CC_SpinBox:
-//    {
-//        const QStyleOptionSpinBox *pb=qstyleoption_cast<const QStyleOptionSpinBox*>(option);
-//        QRectF r1=subControlRect(control,option,QStyle::SC_SpinBoxUp,widget);
-//        QRectF r2=subControlRect(control,option,QStyle::SC_SpinBoxDown,widget);
-//        // QRect r3=subControlRect(control,option,QStyle::SC_SpinBoxEditField,widget);
+        //    case CC_SpinBox:
+        //    {
+        //        const QStyleOptionSpinBox *pb=qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+        //        QRectF r1=subControlRect(control,option,QStyle::SC_SpinBoxUp,widget);
+        //        QRectF r2=subControlRect(control,option,QStyle::SC_SpinBoxDown,widget);
+        //        // QRect r3=subControlRect(control,option,QStyle::SC_SpinBoxEditField,widget);
 
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing,true);
-//        painter->setPen(QPen(option->palette.color(QPalette::Button),1));
-//        painter->setBrush(option->palette.color(QPalette::Button));
-//        if (widget->isEnabled()) {
-//            if(pb->state&QStyle::State_HasFocus){
-//                painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
-//            }
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing,true);
+        //        painter->setPen(QPen(option->palette.color(QPalette::Button),1));
+        //        painter->setBrush(option->palette.color(QPalette::Button));
+        //        if (widget->isEnabled()) {
+        //            if(pb->state&QStyle::State_HasFocus){
+        //                painter->setPen(QPen(option->palette.color(QPalette::Highlight),1));
+        //            }
 
-//            if(pb->state&State_MouseOver){
-//                painter->setPen(option->palette.color(QPalette::Highlight));
-//            }
-//        }
-//        painter->drawRoundedRect(option->rect,4,4);
-//        painter->restore();
+        //            if(pb->state&State_MouseOver){
+        //                painter->setPen(option->palette.color(QPalette::Highlight));
+        //            }
+        //        }
+        //        painter->drawRoundedRect(option->rect,4,4);
+        //        painter->restore();
 
-//        /*
-//         * There's no PE_IndicatorSpinUp and PE_IndicatorSpinDown here, and it's drawn directly.
-//        */
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing,true);
-//        painter->setBrush(Qt::NoBrush);
-//        if(option->state & State_Enabled){
-//            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
-//            if (option->state & State_MouseOver) {
-//                painter->restore();
-//                painter->save();
-//                painter->setRenderHint(QPainter::Antialiasing,true);
-//                painter->setBrush(Qt::NoBrush);
-//                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
-//            }
-//        }
-//        else {
-//            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-//        }
-//        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),Qt::NoBrush);
+        //        /*
+        //         * There's no PE_IndicatorSpinUp and PE_IndicatorSpinDown here, and it's drawn directly.
+        //        */
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing,true);
+        //        painter->setBrush(Qt::NoBrush);
+        //        if(option->state & State_Enabled){
+        //            painter->setPen(QPen(option->palette.foreground().color(), 1.1));
+        //            if (option->state & State_MouseOver) {
+        //                painter->restore();
+        //                painter->save();
+        //                painter->setRenderHint(QPainter::Antialiasing,true);
+        //                painter->setBrush(Qt::NoBrush);
+        //                painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
+        //            }
+        //        }
+        //        else {
+        //            painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
+        //        }
+        //        painter->fillRect(int(r1.x())-2, int(r1.y()), int(r1.width()), int(r1.height()+r2.height()),Qt::NoBrush);
 
-//        int w = 8;
-//        int h =  4;
+        //        int w = 8;
+        //        int h =  4;
 
-//        QPolygon points(4);
-//        int x = int(r1.x())+2;
-//        int y = int(r1.y())+2;
-//        points[0] = QPoint(x, y + h);
-//        points[1] = QPoint(x + w / 2, y);
-//        points[2] = QPoint(x + w / 2, y);
-//        points[3] = QPoint(x + w, y + h);
-//        painter->drawLine(points[0],  points[1] );
-//        painter->drawLine(points[2],  points[3] );
+        //        QPolygon points(4);
+        //        int x = int(r1.x())+2;
+        //        int y = int(r1.y())+2;
+        //        points[0] = QPoint(x, y + h);
+        //        points[1] = QPoint(x + w / 2, y);
+        //        points[2] = QPoint(x + w / 2, y);
+        //        points[3] = QPoint(x + w, y + h);
+        //        painter->drawLine(points[0],  points[1] );
+        //        painter->drawLine(points[2],  points[3] );
 
-//        int x2 = int(r2.x())+2;
-//        int y2 = int(r2.y())+2;
-//        points[0] = QPoint(x2, y2);
-//        points[1] = QPoint(x2 + w / 2, y2 + h);
-//        points[2] = QPoint(x2 + w / 2, y2 + h);
-//        points[3] = QPoint(x2 + w, y2);
-//        painter->drawLine(points[0],  points[1] );
-//        painter->drawLine(points[2],  points[3] );
-//        painter->restore();
+        //        int x2 = int(r2.x())+2;
+        //        int y2 = int(r2.y())+2;
+        //        points[0] = QPoint(x2, y2);
+        //        points[1] = QPoint(x2 + w / 2, y2 + h);
+        //        points[2] = QPoint(x2 + w / 2, y2 + h);
+        //        points[3] = QPoint(x2 + w, y2);
+        //        painter->drawLine(points[0],  points[1] );
+        //        painter->drawLine(points[2],  points[3] );
+        //        painter->restore();
 
-//        return ;
-//    }
+        //        return ;
+        //    }
 
     case CC_SpinBox:
     {
@@ -2017,89 +2027,89 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         break;
     }
 
-//    case CC_Slider :
-//        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
-//            //Size and location of each rectangle used
-//            QRectF rect = option->rect;
-//            QRectF rectHandle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
-//            QRectF rectSliderTickmarks = proxy()->subControlRect(CC_Slider, option, SC_SliderTickmarks, widget);
-//            QRect rectGroove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
-//            const bool enable = option->state & State_Enabled;
-//            const QColor highlight = option->palette.color(QPalette::Highlight);
-//            const QColor dis_highlight = option->palette.color(QPalette::Disabled,QPalette::Button).darker(120);
-//            QPen pen;
-//            //Drawing chute (line)
-//            if (option->subControls & SC_SliderGroove) {
-//                pen.setStyle(Qt::CustomDashLine);
-//                QVector<qreal> dashes;
-//                //qreal space = 1.3;
-//                qreal space = 0;
-//                dashes << 0.1 << space;
-//                // dashes << -0.1 << space;
-//                pen.setDashPattern(dashes);
-//                pen.setWidthF(3);
-//                pen.setColor(enable ? highlight.lighter() : dis_highlight);
-//                painter->setPen(pen);
-//                painter->setRenderHint(QPainter::Antialiasing);
+        //    case CC_Slider :
+        //        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+        //            //Size and location of each rectangle used
+        //            QRectF rect = option->rect;
+        //            QRectF rectHandle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
+        //            QRectF rectSliderTickmarks = proxy()->subControlRect(CC_Slider, option, SC_SliderTickmarks, widget);
+        //            QRect rectGroove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
+        //            const bool enable = option->state & State_Enabled;
+        //            const QColor highlight = option->palette.color(QPalette::Highlight);
+        //            const QColor dis_highlight = option->palette.color(QPalette::Disabled,QPalette::Button).darker(120);
+        //            QPen pen;
+        //            //Drawing chute (line)
+        //            if (option->subControls & SC_SliderGroove) {
+        //                pen.setStyle(Qt::CustomDashLine);
+        //                QVector<qreal> dashes;
+        //                //qreal space = 1.3;
+        //                qreal space = 0;
+        //                dashes << 0.1 << space;
+        //                // dashes << -0.1 << space;
+        //                pen.setDashPattern(dashes);
+        //                pen.setWidthF(3);
+        //                pen.setColor(enable ? highlight.lighter() : dis_highlight);
+        //                painter->setPen(pen);
+        //                painter->setRenderHint(QPainter::Antialiasing);
 
-//                if (slider->orientation == Qt::Horizontal) {
-//                    painter->drawLine(QPointF(rectGroove.left(), rectHandle.center().y()), QPointF(rectHandle.left(), rectHandle.center().y()));
-//                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-//                    painter->setPen(pen);
-//                    painter->drawLine(QPointF(rectGroove.right(), rectHandle.center().y()), QPointF(rectHandle.right(), rectHandle.center().y()));
-//                } else {
-//                    painter->drawLine(QPointF(rectGroove.center().x(), rectGroove.bottom()), QPointF(rectGroove.center().x(),  rectHandle.bottom()));
-//                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-//                    painter->setPen(pen);
-//                    painter->drawLine(QPointF(rectGroove.center().x(),  rectGroove.top()), QPointF(rectGroove.center().x(),  rectHandle.top()));
-//                }
-//            }
+        //                if (slider->orientation == Qt::Horizontal) {
+        //                    painter->drawLine(QPointF(rectGroove.left(), rectHandle.center().y()), QPointF(rectHandle.left(), rectHandle.center().y()));
+        //                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
+        //                    painter->setPen(pen);
+        //                    painter->drawLine(QPointF(rectGroove.right(), rectHandle.center().y()), QPointF(rectHandle.right(), rectHandle.center().y()));
+        //                } else {
+        //                    painter->drawLine(QPointF(rectGroove.center().x(), rectGroove.bottom()), QPointF(rectGroove.center().x(),  rectHandle.bottom()));
+        //                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
+        //                    painter->setPen(pen);
+        //                    painter->drawLine(QPointF(rectGroove.center().x(),  rectGroove.top()), QPointF(rectGroove.center().x(),  rectHandle.top()));
+        //                }
+        //            }
 
-//            //Painting slider
-//            if (option->subControls & SC_SliderHandle) {
-//                pen.setStyle(Qt::SolidLine);
-//                painter->setPen(Qt::NoPen);
-//                painter->setBrush(enable ? highlight : dis_highlight);
-//                painter->drawEllipse(rectHandle);
-//            }
+        //            //Painting slider
+        //            if (option->subControls & SC_SliderHandle) {
+        //                pen.setStyle(Qt::SolidLine);
+        //                painter->setPen(Qt::NoPen);
+        //                painter->setBrush(enable ? highlight : dis_highlight);
+        //                painter->drawEllipse(rectHandle);
+        //            }
 
-//            //Drawing scale
-//            if ((option->subControls & SC_SliderTickmarks) && slider->tickInterval) {
-//                painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText));
-//                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, slider, widget);
-//                int interval = slider->tickInterval;
-//                //int tickSize = proxy()->pixelMetric(PM_SliderTickmarkOffset, opt, w);
-//                //int ticks = slider->tickPosition;
-//                int v = slider->minimum;
-//                int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
-//                while (v <= slider->maximum + 1) {
-//                    const int v_ = qMin(v, slider->maximum);
-//                    int pos = sliderPositionFromValue(slider->minimum, slider->maximum, v_, available) + len / 2;
+        //            //Drawing scale
+        //            if ((option->subControls & SC_SliderTickmarks) && slider->tickInterval) {
+        //                painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText));
+        //                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, slider, widget);
+        //                int interval = slider->tickInterval;
+        //                //int tickSize = proxy()->pixelMetric(PM_SliderTickmarkOffset, opt, w);
+        //                //int ticks = slider->tickPosition;
+        //                int v = slider->minimum;
+        //                int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
+        //                while (v <= slider->maximum + 1) {
+        //                    const int v_ = qMin(v, slider->maximum);
+        //                    int pos = sliderPositionFromValue(slider->minimum, slider->maximum, v_, available) + len / 2;
 
-//                    if (slider->orientation == Qt::Horizontal) {
-//                        if (slider->tickPosition == QSlider::TicksBothSides) {
-//                            painter->drawLine(pos, int(rect.top()), pos, int(rectHandle.top()));
-//                            painter->drawLine(pos, int(rect.bottom()), pos, int(rectHandle.bottom()));
-//                        } else {
-//                            painter->drawLine(pos, int(rectSliderTickmarks.top()), pos, int(rectSliderTickmarks.bottom()));
-//                        }
-//                    } else {
-//                        if (slider->tickPosition == QSlider::TicksBothSides) {
-//                            painter->drawLine(int(rect.left()), pos, int(rectHandle.left()), pos);
-//                            painter->drawLine(int(rect.right()), pos, int(rectHandle.right()), pos);
-//                        } else {
-//                            painter->drawLine(int(rectSliderTickmarks.left()), pos, int(rectSliderTickmarks.right()), pos);
-//                        }
-//                    }
-//                    // in the case where maximum is max int
-//                    int nextInterval = v + interval;
-//                    if (nextInterval < v)
-//                        break;
-//                    v = nextInterval;
-//                }
-//            }
-//            return;
-//        }
+        //                    if (slider->orientation == Qt::Horizontal) {
+        //                        if (slider->tickPosition == QSlider::TicksBothSides) {
+        //                            painter->drawLine(pos, int(rect.top()), pos, int(rectHandle.top()));
+        //                            painter->drawLine(pos, int(rect.bottom()), pos, int(rectHandle.bottom()));
+        //                        } else {
+        //                            painter->drawLine(pos, int(rectSliderTickmarks.top()), pos, int(rectSliderTickmarks.bottom()));
+        //                        }
+        //                    } else {
+        //                        if (slider->tickPosition == QSlider::TicksBothSides) {
+        //                            painter->drawLine(int(rect.left()), pos, int(rectHandle.left()), pos);
+        //                            painter->drawLine(int(rect.right()), pos, int(rectHandle.right()), pos);
+        //                        } else {
+        //                            painter->drawLine(int(rectSliderTickmarks.left()), pos, int(rectSliderTickmarks.right()), pos);
+        //                        }
+        //                    }
+        //                    // in the case where maximum is max int
+        //                    int nextInterval = v + interval;
+        //                    if (nextInterval < v)
+        //                        break;
+        //                    v = nextInterval;
+        //                }
+        //            }
+        //            return;
+        //        }
 
     case CC_Slider:
     {
@@ -2126,14 +2136,14 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 QRect hlRect;
                 if(horizontal)
                 {
-                   if(slider->upsideDown)
-                      hlRect.setRect(handle.right(),groove.top(),groove.right() - handle.center().x(),groove.height());
-                   else
-                      hlRect.setRect(groove.left(),groove.top(),handle.center().x() - groove.left(),groove.height());
+                    if(slider->upsideDown)
+                        hlRect.setRect(handle.right(),groove.top(),groove.right() - handle.center().x(),groove.height());
+                    else
+                        hlRect.setRect(groove.left(),groove.top(),handle.center().x() - groove.left(),groove.height());
                 }
                 else
                 {
-                   hlRect.setRect(groove.left(), handle.center().y(), groove.width(), groove.bottom() - handle.center().y());
+                    hlRect.setRect(groove.left(), handle.center().y(), groove.width(), groove.bottom() - handle.center().y());
                 }
                 painter->setPen(button);
                 painter->setBrush(button);
@@ -2146,19 +2156,19 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
             int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
             int sliderPos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,slider->sliderPosition,
-                                                    (horizontal ? slider->rect.width(): slider->rect.height()) - len,slider->upsideDown);
+                                                            (horizontal ? slider->rect.width(): slider->rect.height()) - len,slider->upsideDown);
             if(slider->subControls & SC_SliderTickmarks)
             {
                 int tickOffset = proxy()->pixelMetric(PM_SliderTickmarkOffset, option, widget);
                 int tickSize = tickOffset;
-//                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, option, widget);
+                //                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, option, widget);
                 int interval = slider->tickInterval;
                 if (interval <= 0)
                 {
-//                    interval = slider->singleStep;
-//                    if (QStyle::sliderPositionFromValue(slider->minimum, slider->maximum, interval,available)
-//                              - QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,0, available) < 3)
-                        interval = slider->pageStep;
+                    //                    interval = slider->singleStep;
+                    //                    if (QStyle::sliderPositionFromValue(slider->minimum, slider->maximum, interval,available)
+                    //                              - QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,0, available) < 3)
+                    interval = slider->pageStep;
                 }
                 if (interval <= 0)
                     interval = 1;
@@ -2166,52 +2176,52 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
                 while (v <= slider->maximum + 1)
                 {
-                   if (v == slider->maximum + 1 && interval == 1)
-                       break;
-                   const int v_ = qMin(v, slider->maximum);
-                   int pos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,v_, (horizontal ? slider->rect.width():
-                                                     slider->rect.height()) - len,slider->upsideDown) + len / 2;
-                   //int extra = 2 - ((v_ == slider->minimum || v_ == slider->maximum) ? 1 : 0);
+                    if (v == slider->maximum + 1 && interval == 1)
+                        break;
+                    const int v_ = qMin(v, slider->maximum);
+                    int pos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,v_, (horizontal ? slider->rect.width():
+                                                                                                                 slider->rect.height()) - len,slider->upsideDown) + len / 2;
+                    //int extra = 2 - ((v_ == slider->minimum || v_ == slider->maximum) ? 1 : 0);
 
-                   painter->save();
-                   painter->setPen(QPen(slider->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText),1));
-                   painter->setBrush(Qt::NoBrush);
-                   if (horizontal)
-                   {
-                       if(pos <= sliderPos + handle.width()/2)
-                       {
-                           painter->setPen(QPen(hightligt,1));
-                       }
-                       if (ticksAbove)
-                       {
-                           painter->drawLine(pos, groove.top() - tickOffset,pos, groove.top() - tickOffset - tickSize);
-                       }
-                       if (ticksBelow)
-                       {
-                           painter->drawLine(pos, groove.bottom() + tickOffset,pos, groove.bottom() + tickOffset + tickSize);
-                       }
-                   }
-                   else
-                   {
-                       if(pos >= sliderPos + handle.width()/2)
-                       {
-                           painter->setPen(QPen(hightligt,1));
-                       }
-                       if (ticksAbove)
-                       {
-                           painter->drawLine(groove.left() - tickOffset, pos,groove.left() - tickOffset - tickSize, pos);
-                       }
-                       if (ticksBelow)
-                       {
-                           painter->drawLine(groove.right() + tickOffset, pos,groove.right() + tickOffset + tickSize, pos);
-                       }
-                   }
-                   // in the case where maximum is max int
-                   int nextInterval = v + interval;
-                   if (nextInterval < v)
-                       break;
-                   v = nextInterval;
-                   painter->restore();
+                    painter->save();
+                    painter->setPen(QPen(slider->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText),1));
+                    painter->setBrush(Qt::NoBrush);
+                    if (horizontal)
+                    {
+                        if(pos <= sliderPos + handle.width()/2)
+                        {
+                            painter->setPen(QPen(hightligt,1));
+                        }
+                        if (ticksAbove)
+                        {
+                            painter->drawLine(pos, groove.top() - tickOffset,pos, groove.top() - tickOffset - tickSize);
+                        }
+                        if (ticksBelow)
+                        {
+                            painter->drawLine(pos, groove.bottom() + tickOffset,pos, groove.bottom() + tickOffset + tickSize);
+                        }
+                    }
+                    else
+                    {
+                        if(pos >= sliderPos + handle.width()/2)
+                        {
+                            painter->setPen(QPen(hightligt,1));
+                        }
+                        if (ticksAbove)
+                        {
+                            painter->drawLine(groove.left() - tickOffset, pos,groove.left() - tickOffset - tickSize, pos);
+                        }
+                        if (ticksBelow)
+                        {
+                            painter->drawLine(groove.right() + tickOffset, pos,groove.right() + tickOffset + tickSize, pos);
+                        }
+                    }
+                    // in the case where maximum is max int
+                    int nextInterval = v + interval;
+                    if (nextInterval < v)
+                        break;
+                    v = nextInterval;
+                    painter->restore();
                 }
             }
 
@@ -2314,7 +2324,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             State mflags = bflags;
             if (toolbutton->state & State_Sunken) {
                 //if (toolbutton->activeSubControls & SC_ToolButton)
-                    bflags |= State_Sunken;
+                bflags |= State_Sunken;
                 mflags |= State_Sunken;
             }
 
@@ -2535,144 +2545,144 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         }
         break;
     }
-//    case CE_ProgressBarGroove:{
-//        const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-//        if (!bar)
-//            return;
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing, true);
-//        painter->setPen(Qt::NoPen);
-//        painter->setBrush(option->palette.button());
-//        int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
-//        bool needAdjustBarWidth = adjustMarignx2 > 0;
-//        bool vertical = (bar->orientation == Qt::Vertical);
-//        auto progressBarGroveRect = option->rect;
-//        if (!vertical) {
-//            if (needAdjustBarWidth) {
-//                progressBarGroveRect.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//            }
-//        } else {
-//            if (needAdjustBarWidth) {
-//                progressBarGroveRect.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//            }
-//        }
-//        painter->drawRoundedRect(progressBarGroveRect, 4, 4);
-//        painter->restore();
-//        return;
-//    }
-//    case CE_ProgressBarContents:{
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing, true);
-//        if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
-//            //Judgment status
-//            painter->setPen(Qt::NoPen);
-//            bool vertical = false;
-//            bool inverted = false;
-//            bool indeterminate = (bar->minimum == 0 && bar->maximum == 0);
-//            bool complete = bar->progress == bar->maximum;
+        //    case CE_ProgressBarGroove:{
+        //        const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+        //        if (!bar)
+        //            return;
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing, true);
+        //        painter->setPen(Qt::NoPen);
+        //        painter->setBrush(option->palette.button());
+        //        int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
+        //        bool needAdjustBarWidth = adjustMarignx2 > 0;
+        //        bool vertical = (bar->orientation == Qt::Vertical);
+        //        auto progressBarGroveRect = option->rect;
+        //        if (!vertical) {
+        //            if (needAdjustBarWidth) {
+        //                progressBarGroveRect.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
+        //            }
+        //        } else {
+        //            if (needAdjustBarWidth) {
+        //                progressBarGroveRect.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
+        //            }
+        //        }
+        //        painter->drawRoundedRect(progressBarGroveRect, 4, 4);
+        //        painter->restore();
+        //        return;
+        //    }
+        //    case CE_ProgressBarContents:{
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing, true);
+        //        if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+        //            //Judgment status
+        //            painter->setPen(Qt::NoPen);
+        //            bool vertical = false;
+        //            bool inverted = false;
+        //            bool indeterminate = (bar->minimum == 0 && bar->maximum == 0);
+        //            bool complete = bar->progress == bar->maximum;
 
-//            // Get extra style options if version 2
-//            vertical = (bar->orientation == Qt::Vertical);
-//            inverted = bar->invertedAppearance;
+        //            // Get extra style options if version 2
+        //            vertical = (bar->orientation == Qt::Vertical);
+        //            inverted = bar->invertedAppearance;
 
-//            // If the orientation is vertical, we use a transform to rotate
-//            // the progress bar 90 degrees clockwise.  This way we can use the
-//            // same rendering code for both orientations.
-//            int maxWidth = vertical? option->rect.height(): option->rect.width();
-//            const auto progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
-//            const auto totalSteps = qMax(Q_INT64_C(1), qint64(bar->maximum) - bar->minimum);
-//            const auto progressSteps = qint64(progress) - bar->minimum;
-//            const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
-//            int width = indeterminate ? maxWidth : progressBarWidth;
+        //            // If the orientation is vertical, we use a transform to rotate
+        //            // the progress bar 90 degrees clockwise.  This way we can use the
+        //            // same rendering code for both orientations.
+        //            int maxWidth = vertical? option->rect.height(): option->rect.width();
+        //            const auto progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
+        //            const auto totalSteps = qMax(Q_INT64_C(1), qint64(bar->maximum) - bar->minimum);
+        //            const auto progressSteps = qint64(progress) - bar->minimum;
+        //            const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
+        //            int width = indeterminate ? maxWidth : progressBarWidth;
 
-//            QRect progressBar;
-//            painter->setPen(Qt::NoPen);
+        //            QRect progressBar;
+        //            painter->setPen(Qt::NoPen);
 
 
-//            int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
-//            bool needAdjustBarWidth = adjustMarignx2 > 0;
+        //            int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
+        //            bool needAdjustBarWidth = adjustMarignx2 > 0;
 
-//            //Positioning
-//            progressBar = option->rect;
-//            if (!indeterminate) {
-//                if (!inverted) {
-//                    if (!vertical) {
-//                        //progressBar.setRect(option->rect.left()-1, option->rect.top(), width-3,option->rect.height()-7);
-//                        progressBar.setRight(width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//                        }
-//                    } else {
-//                        progressBar.setTop(maxWidth - width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//                        }
-//                    }
-//                } else {
-//                    if (!vertical) {
-//                        progressBar = option->rect;
-//                        progressBar.setLeft(maxWidth - width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//                        }
-//                    } else {
-//                        progressBar = option->rect;
-//                        progressBar.setBottom(width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//                        }
-//                    }
-//                }
-//            }
+        //            //Positioning
+        //            progressBar = option->rect;
+        //            if (!indeterminate) {
+        //                if (!inverted) {
+        //                    if (!vertical) {
+        //                        //progressBar.setRect(option->rect.left()-1, option->rect.top(), width-3,option->rect.height()-7);
+        //                        progressBar.setRight(width);
+        //                        if (needAdjustBarWidth) {
+        //                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
+        //                        }
+        //                    } else {
+        //                        progressBar.setTop(maxWidth - width);
+        //                        if (needAdjustBarWidth) {
+        //                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
+        //                        }
+        //                    }
+        //                } else {
+        //                    if (!vertical) {
+        //                        progressBar = option->rect;
+        //                        progressBar.setLeft(maxWidth - width);
+        //                        if (needAdjustBarWidth) {
+        //                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
+        //                        }
+        //                    } else {
+        //                        progressBar = option->rect;
+        //                        progressBar.setBottom(width);
+        //                        if (needAdjustBarWidth) {
+        //                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
+        //                        }
+        //                    }
+        //                }
+        //            }
 
-//            //Brush color
-//            if (!indeterminate && width > 0) {
-//                painter->save();
-//                if (!vertical) {
-//                    painter->setPen(Qt::NoPen);
+        //            //Brush color
+        //            if (!indeterminate && width > 0) {
+        //                painter->save();
+        //                if (!vertical) {
+        //                    painter->setPen(Qt::NoPen);
 
-//                    QColor startcolor = option->palette.highlight().color();
-//                    QColor endcolor = option->palette.highlight().color().darker(200);
-//                    QLinearGradient linearGradient(QPoint(option->rect.bottomRight().x(), option->rect.bottomRight().y()),
-//                                                   QPoint(option->rect.bottomLeft().x(), option->rect.bottomLeft().y()));
-//                    linearGradient.setColorAt(1,startcolor);
-//                    linearGradient.setColorAt(0,endcolor);
-//                    painter->setBrush(QBrush(linearGradient));
+        //                    QColor startcolor = option->palette.highlight().color();
+        //                    QColor endcolor = option->palette.highlight().color().darker(200);
+        //                    QLinearGradient linearGradient(QPoint(option->rect.bottomRight().x(), option->rect.bottomRight().y()),
+        //                                                   QPoint(option->rect.bottomLeft().x(), option->rect.bottomLeft().y()));
+        //                    linearGradient.setColorAt(1,startcolor);
+        //                    linearGradient.setColorAt(0,endcolor);
+        //                    painter->setBrush(QBrush(linearGradient));
 
-//                    // painter->setBrush(option->palette.highlight().color());
+        //                    // painter->setBrush(option->palette.highlight().color());
 
-//                    if (!complete && !indeterminate)
-//                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
+        //                    if (!complete && !indeterminate)
+        //                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
 
-//                    painter->drawRoundedRect(progressBar, 4, 4);
-//                } else {
-//                    painter->setPen(Qt::NoPen);
+        //                    painter->drawRoundedRect(progressBar, 4, 4);
+        //                } else {
+        //                    painter->setPen(Qt::NoPen);
 
-//                    QColor startcolor = option->palette.highlight().color();
-//                    QColor endcolor = option->palette.highlight().color().darker(200);
-//                    QLinearGradient linearGradient(QPoint(option->rect.topLeft()),
-//                                                   QPoint(option->rect.bottomLeft()));
-//                    linearGradient.setColorAt(0,startcolor);
-//                    linearGradient.setColorAt(1,endcolor);
-//                    painter->setBrush(QBrush(linearGradient));
+        //                    QColor startcolor = option->palette.highlight().color();
+        //                    QColor endcolor = option->palette.highlight().color().darker(200);
+        //                    QLinearGradient linearGradient(QPoint(option->rect.topLeft()),
+        //                                                   QPoint(option->rect.bottomLeft()));
+        //                    linearGradient.setColorAt(0,startcolor);
+        //                    linearGradient.setColorAt(1,endcolor);
+        //                    painter->setBrush(QBrush(linearGradient));
 
-//                    if (!complete && !indeterminate)
-//                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
+        //                    if (!complete && !indeterminate)
+        //                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
 
-//                    painter->drawRoundedRect(progressBar, 4, 4);
-//                }
-//                painter->restore();
-//            } else {
-//                //FIXME: implement waiting animation.
-//                //painter->fillRect(option->rect, Qt::red);
-//            }
-//        }
-//        painter->restore();
-//        return;
-//    }
-//    case CE_ProgressBarLabel:{
-//        return;
-//    }
+        //                    painter->drawRoundedRect(progressBar, 4, 4);
+        //                }
+        //                painter->restore();
+        //            } else {
+        //                //FIXME: implement waiting animation.
+        //                //painter->fillRect(option->rect, Qt::red);
+        //            }
+        //        }
+        //        painter->restore();
+        //        return;
+        //    }
+        //    case CE_ProgressBarLabel:{
+        //        return;
+        //    }
 
     case CE_ProgressBarGroove:
     {
@@ -2689,8 +2699,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_ProgressBarContents:
     {
-       if(const QStyleOptionProgressBar* bar = qstyleoption_cast<const QStyleOptionProgressBar*>(option))
-       {
+        if(const QStyleOptionProgressBar* bar = qstyleoption_cast<const QStyleOptionProgressBar*>(option))
+        {
             QRect rect = proxy()->subElementRect(SE_ProgressBarContents,option,widget);
             const bool vertical = bar->orientation == Qt::Vertical;
             const bool inverted = bar->invertedAppearance;
@@ -2703,9 +2713,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             bool reverse = (!vertical && (bar->direction == Qt::RightToLeft)) || vertical;
             if(inverted)
-               reverse = !reverse;
+                reverse = !reverse;
             if(complete)
-               return;
+                return;
 
             QColor startColor = option->palette.color(QPalette::Highlight).lighter(125);
             QColor middleColor = option->palette.color(QPalette::Highlight);
@@ -3023,10 +3033,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QRect rect = toolbutton->rect;
             int shiftX = 0;
             int shiftY = 0;
-//            if (toolbutton->state & (State_Sunken | State_On)) {
-//                shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
-//                shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
-//            }
+            //            if (toolbutton->state & (State_Sunken | State_On)) {
+            //                shiftX = proxy()->pixelMetric(PM_ButtonShiftHorizontal, toolbutton, widget);
+            //                shiftY = proxy()->pixelMetric(PM_ButtonShiftVertical, toolbutton, widget);
+            //            }
             // Arrow type always overrules and is always shown
             bool hasArrow = toolbutton->features & QStyleOptionToolButton::Arrow;
             if (((!hasArrow && toolbutton->icon.isNull()) && !toolbutton->text.isEmpty())
@@ -3346,46 +3356,46 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             proxy()->drawPrimitive(PE_IndicatorRadioButton ,&subopt, painter, widget);
             subopt.rect = subElementRect( SE_RadioButtonContents, btn, widget);
             proxy()->drawControl( CE_RadioButtonLabel , &subopt, painter, widget);
-//            if (btn->state & State_HasFocus) {
-//                QStyleOptionFocusRect fropt;
-//                fropt.QStyleOption::operator=(*btn);
-//                fropt.rect = subElementRect(SE_RadioButtonFocusRect, btn, widget);
-//                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
-//            }
+            //            if (btn->state & State_HasFocus) {
+            //                QStyleOptionFocusRect fropt;
+            //                fropt.QStyleOption::operator=(*btn);
+            //                fropt.rect = subElementRect(SE_RadioButtonFocusRect, btn, widget);
+            //                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+            //            }
             return;
         }
         break;
 
     case CE_CheckBox:
     {
-           if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option))
-           {
+        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option))
+        {
 
-               QStyleOptionButton subopt = *btn;
-               subopt.rect = subElementRect(SE_CheckBoxIndicator, btn, widget);
-               proxy()->drawPrimitive(PE_IndicatorCheckBox,&subopt, painter, widget);
-               subopt.rect = subElementRect(SE_CheckBoxContents, btn, widget);
-               proxy()->drawControl(CE_CheckBoxLabel, &subopt, painter, widget);
-//               if (btn->state & State_HasFocus)
-//               {
-//                   QStyleOptionFocusRect fropt;
-//                   fropt.QStyleOption::operator=(*btn);
-//                   fropt.rect = subElementRect(SE_CheckBoxFocusRect, btn, widget);
-//                   proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
-//               }
-           }
-           break;
+            QStyleOptionButton subopt = *btn;
+            subopt.rect = subElementRect(SE_CheckBoxIndicator, btn, widget);
+            proxy()->drawPrimitive(PE_IndicatorCheckBox,&subopt, painter, widget);
+            subopt.rect = subElementRect(SE_CheckBoxContents, btn, widget);
+            proxy()->drawControl(CE_CheckBoxLabel, &subopt, painter, widget);
+            //               if (btn->state & State_HasFocus)
+            //               {
+            //                   QStyleOptionFocusRect fropt;
+            //                   fropt.QStyleOption::operator=(*btn);
+            //                   fropt.rect = subElementRect(SE_CheckBoxFocusRect, btn, widget);
+            //                   proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
+            //               }
+        }
+        break;
     }
 
         //Draw table header style
-//    case CE_HeaderSection:
-//    {
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing);
-//        painter->fillRect(option->rect, option->palette.alternateBase().color());
-//        painter->restore();
-//        return;
-//    }break;
+        //    case CE_HeaderSection:
+        //    {
+        //        painter->save();
+        //        painter->setRenderHint(QPainter::Antialiasing);
+        //        painter->fillRect(option->rect, option->palette.alternateBase().color());
+        //        painter->restore();
+        //        return;
+        //    }break;
 
     case CE_Header:
     {
@@ -3418,8 +3428,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QPalette::ColorGroup cg = (widget ? widget->isEnabled() : enable)
                     ? QPalette::Active : QPalette::Disabled;
             QPixmap cache = QPixmap(header->rect.size());
-//            if(!QPixmapCache::find(key,cache))
-//            {
+            //            if(!QPixmapCache::find(key,cache))
+            //            {
             cache.fill(Qt::transparent);
             QRect pixampRect(0,0,header->rect.width(),header->rect.height());
             QPainter cachePainter(&cache);
@@ -3428,7 +3438,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             cachePainter.setPen(Qt::NoPen);
             cachePainter.setBrush(header->palette.color(enable ? QPalette::Active : QPalette::Disabled,
                                                         QPalette::Base));
-           if(header->orientation == Qt::Vertical && (header->section & 1))
+            if(header->orientation == Qt::Vertical && (header->section & 1))
             {
                 cachePainter.setBrush(header->palette.brush(cg, QPalette::AlternateBase));
             }
@@ -3452,8 +3462,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 cachePainter.drawLine(pixampRect.topRight(),pixampRect.bottomRight());
             }
             cachePainter.end();
-//            QPixmapCache::insert(key, cache);
-//            }
+            //            QPixmapCache::insert(key, cache);
+            //            }
             painter->drawPixmap(header->rect.topLeft(),cache);
             painter->restore();
             return;
@@ -3547,7 +3557,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     proxy()->drawItemText(painter, menuItem->rect.adjusted(margin, 0, -margin, 0), Qt::AlignLeft | Qt::AlignVCenter,
                                           menuItem->palette, menuItem->state & State_Enabled, menuItem->text,
                                           QPalette::Text);
-//                    w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + margin;
+                    //                    w = menuItem->fontMetrics.horizontalAdvance(menuItem->text) + margin;
                     w = menuItem->fontMetrics.width(menuItem->text,-1) + margin;
                 }
                 // painter->setPen(shadow.lighter(106));
@@ -3705,7 +3715,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                                                      QRect(textRect.topRight(), QPoint(menuitem->rect.right(), textRect.bottom())));
                     const QString textToDraw = s.mid(t + 1).toString();
                     if (dis && !act && proxy()->styleHint(SH_EtchDisabledText, option, widget)) {
-//                        p->setPen(menuitem->palette.light().color());
+                        //                        p->setPen(menuitem->palette.light().color());
                         p->setPen(discol);
                         p->drawText(vShortcutRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
 
@@ -3730,7 +3740,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 p->setFont(font);
                 const QString textToDraw = s.left(t).toString();
                 if (dis && !act && proxy()->styleHint(SH_EtchDisabledText, option, widget)) {
-//                    p->setPen(menuitem->palette.light().color());
+                    //                    p->setPen(menuitem->palette.light().color());
                     p->setPen(discol);
                     p->drawText(vTextRect.adjusted(1, 1, 1, 1), text_flags, textToDraw);
 
@@ -3881,7 +3891,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 2;
     case PM_TabBarTabVSpace:return 20;
     case PM_TabBarTabHSpace:return 40;
-//    case PM_HeaderMargin:return 9;
+        //    case PM_HeaderMargin:return 9;
     case PM_HeaderMargin:
     {
         if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
@@ -3938,17 +3948,17 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         return rect;
         return scrollBarSubControlRect(control, option, subControl, widget);
     }
-//    case CC_Slider:
-//        switch( subControl )
-//        {
-//        case SC_SliderHandle:
-//        {
-//            QRect handleRect( Style::subControlRect( CC_Slider, option, subControl, widget ) );
-//            handleRect = centerRect( handleRect, PM_SliderThickness+9, PM_SliderControlThickness+8);
-//            return handleRect;
-//        }
-//        default:return Style::subControlRect(control, option, subControl, widget);
-//        }
+        //    case CC_Slider:
+        //        switch( subControl )
+        //        {
+        //        case SC_SliderHandle:
+        //        {
+        //            QRect handleRect( Style::subControlRect( CC_Slider, option, subControl, widget ) );
+        //            handleRect = centerRect( handleRect, PM_SliderThickness+9, PM_SliderControlThickness+8);
+        //            return handleRect;
+        //        }
+        //        default:return Style::subControlRect(control, option, subControl, widget);
+        //        }
 
     case CC_Slider:
     {
@@ -4079,22 +4089,22 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 
             switch (subControl)
             {
-                case SC_ComboBoxFrame:
-                    return rect;
-                case SC_ComboBoxArrow:
-                    rect.setRect(rect.right() - ArrowWidth, rect.top(),ArrowWidth, rect.height());
-                    rect = visualRect(combobox->direction,combobox->rect,rect);
-                    return rect;
-                case SC_ComboBoxEditField:
-                    rect.setRect(rect.left()+fw,rect.top()+fw,rect.width() - ArrowWidth - gap - 2*fw,rect.height() - 2*fw);
-                    rect = visualRect(combobox->direction,combobox->rect,rect);
-                    return rect;
-                case SC_ComboBoxListBoxPopup:
-                    rect.translate(0,2);
-                    rect.adjust(0,2,0,0);
-                    return combobox->rect;
-                default:
-                    break;
+            case SC_ComboBoxFrame:
+                return rect;
+            case SC_ComboBoxArrow:
+                rect.setRect(rect.right() - ArrowWidth, rect.top(),ArrowWidth, rect.height());
+                rect = visualRect(combobox->direction,combobox->rect,rect);
+                return rect;
+            case SC_ComboBoxEditField:
+                rect.setRect(rect.left()+fw,rect.top()+fw,rect.width() - ArrowWidth - gap - 2*fw,rect.height() - 2*fw);
+                rect = visualRect(combobox->direction,combobox->rect,rect);
+                return rect;
+            case SC_ComboBoxListBoxPopup:
+                rect.translate(0,2);
+                rect.adjust(0,2,0,0);
+                return combobox->rect;
+            default:
+                break;
             }
         }
         else
@@ -4124,30 +4134,30 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             rx = x - fw;
             switch (subControl)
             {
-                case SC_SpinBoxUp:
-                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
-                        return QRect();
-                    rect = QRect(x, y, bs.width(), bs.height());
-                    break;
-                case SC_SpinBoxDown:
-                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
-                        return QRect();
-                    rect = QRect(x, y + bs.height(), bs.width(), bs.height());
-                    break;
-                case SC_SpinBoxEditField:
-                    if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
-                    {
-                        rect = QRect(lx, fw, spinbox->rect.width() - 2*fw, spinbox->rect.height() - 2*fw);
-                    }
-                    else
-                    {
-                        rect = QRect(lx, fw, rx, spinbox->rect.height() - 2*fw);
-                    }
-                    break;
-                case SC_SpinBoxFrame:
-                    rect = spinbox->rect;
-                default:
-                    break;
+            case SC_SpinBoxUp:
+                if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                    return QRect();
+                rect = QRect(x, y, bs.width(), bs.height());
+                break;
+            case SC_SpinBoxDown:
+                if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                    return QRect();
+                rect = QRect(x, y + bs.height(), bs.width(), bs.height());
+                break;
+            case SC_SpinBoxEditField:
+                if (spinbox->buttonSymbols == QAbstractSpinBox::NoButtons)
+                {
+                    rect = QRect(lx, fw, spinbox->rect.width() - 2*fw, spinbox->rect.height() - 2*fw);
+                }
+                else
+                {
+                    rect = QRect(lx, fw, rx, spinbox->rect.height() - 2*fw);
+                }
+                break;
+            case SC_SpinBoxFrame:
+                rect = spinbox->rect;
+            default:
+                break;
             }
             rect = visualRect(spinbox->direction, spinbox->rect, rect);
             return rect;
@@ -4226,7 +4236,7 @@ void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alig
             QStyleOption opt;
             opt.initFrom(widget);
             if (auto button = qobject_cast<QAbstractButton *>(widget)) {
-//                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
+                //                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
                 if(button->isDown())
                 {
                     opt.state |= QStyle::State_Sunken;
