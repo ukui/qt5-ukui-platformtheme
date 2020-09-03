@@ -66,10 +66,7 @@ bool BlurHelper::eventFilter(QObject *obj, QEvent *e)
 
     QWidget* widget = qobject_cast<QWidget*>(obj);
 
-    if (!widget)
-        return false;
-
-    if (widget->winId() <= 0)
+    if (!widget || !widget->isWindow())
         return false;
 
     //FIXME:
