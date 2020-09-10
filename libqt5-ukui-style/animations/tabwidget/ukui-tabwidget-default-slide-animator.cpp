@@ -96,19 +96,64 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             watchSubPage(w->widget(i));
         }
 
+        previous_widget = m_bound_widget->currentWidget();
+
         connect(w, &QTabWidget::currentChanged, this, [=](int index){
-            this->stop();
-            m_tmp_page->hide();
-            if (m_bound_widget->currentWidget()) {
-                left_right = m_bound_widget->currentIndex() > pervIndex;
-                pervIndex = m_bound_widget->currentIndex();
-                m_next_pixmap = m_bound_widget->grab(QRect(m_bound_widget->rect().x(), m_bound_widget->tabBar()->height(),
-                                                           m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
-                this->start();
-                m_tmp_page->raise();
-                m_tmp_page->show();
-            }
-        });
+                    this->stop();
+                    m_tmp_page->hide();
+                    if (m_bound_widget->currentWidget() && m_bound_widget->currentWidget() != previous_widget) {
+                        left_right = m_bound_widget->currentIndex() > pervIndex;
+                        pervIndex = m_bound_widget->currentIndex();
+                        /*
+                         * This way not suitable for 4k
+                        */
+                        //m_next_pixmap = m_bound_widget->grab(QRect(m_bound_widget->rect().x(), m_bound_widget->tabBar()->height(),
+                        //m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
+
+                        QPixmap pixmap(m_bound_widget->currentWidget()->size());
+
+                        /*
+                         * This way some widget such as QFrame.
+                         * QPalette::Window was used to draw the background during the screenshot,
+                         * but QWidget itself did not draw the entire area with others during the screenshot,
+                         * resulting in some areas in the screenshot that the background drawn by QPalette::Window was different from the actual drawing.
+                        */
+                        //m_bound_widget->currentWidget()->render(&pixmap, QPoint(), m_bound_widget->currentWidget()->rect());
+
+                        /*
+                         * This way by modifying the way of QPalette, get the same screenshot as the actual state
+                        */
+                        //QPalette palette, palette_save;
+                        //palette = palette_save = m_bound_widget->currentWidget()->palette();
+                        //palette.setBrush(QPalette::Window, palette.brush(QPalette::Base));
+                        //m_bound_widget->currentWidget()->setPalette(palette);
+                        //m_bound_widget->currentWidget()->render(&pixmap, QPoint(), m_bound_widget->currentWidget()->rect());
+                        //m_bound_widget->currentWidget()->setPalette(palette_save);
+
+                        m_bound_widget->render(&pixmap, QPoint(), QRect(m_bound_widget->currentWidget()->rect().left() + 2,
+                                                                        m_bound_widget->currentWidget()->rect().top() + m_bound_widget->tabBar()->height(),
+                                                                        m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
+                        m_next_pixmap = pixmap;
+
+                        if (qobject_cast<QWidget *>(previous_widget)) {
+                            QPixmap previous_pixmap(previous_widget->size());
+                            QPalette palette, palette_save;
+                            palette = palette_save = previous_widget->palette();
+                            /*
+                             * This use QPalette::Base to replace QPalette::Window, Mabey have unknow bug.
+                            */
+                            palette.setBrush(QPalette::Window, palette.brush(QPalette::Base));
+                            previous_widget->setPalette(palette);
+                            previous_widget->render(&previous_pixmap);
+                            previous_widget->setPalette(palette_save);
+                            m_previous_pixmap = previous_pixmap;
+                            this->start();
+                            m_tmp_page->raise();
+                            m_tmp_page->show();
+                        }
+                    }
+                    previous_widget = m_bound_widget->currentWidget();
+                });
 
         connect(this, &QVariantAnimation::valueChanged, m_tmp_page, [=]() {
             m_tmp_page->repaint();
@@ -134,6 +179,7 @@ bool DefaultSlideAnimator::unboundTabWidget()
         m_tmp_page->removeEventFilter(this);
         m_tmp_page->deleteLater();
         m_tmp_page = nullptr;
+        previous_widget = nullptr;
         m_bound_widget = nullptr;
         this->deleteLater();
         return true;
@@ -218,14 +264,19 @@ bool DefaultSlideAnimator::filterSubPage(QObject *obj, QEvent *e)
         return false;
     }
     case QEvent::Hide: {
-        if (m_bound_widget->currentWidget()) {
-        QScreen *screen = QGuiApplication::primaryScreen();
-        m_previous_pixmap = screen->grabWindow(m_bound_widget->winId(),
-                                               m_bound_widget->tabBar()->x() + 2,
-                                               m_bound_widget->tabBar()->height(),
-                                               m_bound_widget->currentWidget()->width(),
-                                               m_bound_widget->currentWidget()->height());
-        }
+        /*
+         * This way not suitable for 4k and multi-screen crash(Todo: get the screen change event, get the corresponding screen,
+         * call the grabWindow method of QScreen to get the picture,
+         * but the picture needs to be processed by 4k and orientation size)
+        */
+        //if (m_bound_widget->currentWidget()) {
+        //QScreen *screen = QGuiApplication::primaryScreen();
+        //m_previous_pixmap = screen->grabWindow(m_bound_widget->winId(),
+        //                                       m_bound_widget->tabBar()->x() + 2,
+        //                                       m_bound_widget->tabBar()->height(),
+        //                                       m_bound_widget->currentWidget()->width(),
+        //                                       m_bound_widget->currentWidget()->height());
+        //}
         this->stop();
         return false;
     }

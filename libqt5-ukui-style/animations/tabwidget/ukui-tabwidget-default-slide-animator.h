@@ -103,6 +103,7 @@ private:
     bool m_tab_resizing = false;
     int pervIndex = -1;
     bool left_right = true;
+    QWidget *previous_widget = nullptr;
 };
 
 }
