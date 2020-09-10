@@ -55,7 +55,7 @@ using namespace UKUI::TabWidget;
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
     setDuration(200);
-    setEasingCurve(QEasingCurve::InQuad);
+    setEasingCurve(QEasingCurve::OutQuad);
     setStartValue(0.0);
     setEndValue(1.0);
 }
@@ -108,6 +108,13 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                 m_tmp_page->raise();
                 m_tmp_page->show();
             }
+        });
+
+        connect(this, &QVariantAnimation::valueChanged, m_tmp_page, [=]() {
+            m_tmp_page->repaint();
+        });
+        connect(this, &QVariantAnimation::finished, m_tmp_page, [=]() {
+            m_tmp_page->repaint();
         });
 
         return true;
@@ -271,11 +278,6 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
                 prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
                 p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
             }
-
-            //continue paint until animate finished.
-            w->raise();
-            w->show();
-            w->update();
 
             //eat event so that widget will not paint default items and override
             //our custom pixmap.
