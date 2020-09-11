@@ -919,7 +919,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
         {
-            if (widget->isEnabled()) {
+            if (widget && widget->isEnabled()) {
                 QStyleOption opt = *option;
 
                 painter->save();
@@ -1006,7 +1006,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing,true);
         painter->setPen(Qt::NoPen);
-        if(widget->isEnabled()){
+        if(widget && widget->isEnabled()){
             if (option->state & State_MouseOver) {
                 painter->setBrush(option->palette.color(QPalette::Highlight));
                 painter->drawRoundedRect(option->rect.left()-4,option->rect.y(),option->rect.width()+4,option->rect.height(),4,4);
