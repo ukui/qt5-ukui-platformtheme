@@ -130,6 +130,7 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 
     QWidget *w = qobject_cast<QWidget*>(obj);
     const QPoint native = e->globalPos();
+    qreal  dpiRatio = qApp->devicePixelRatio();
     if (QX11Info::isPlatformX11()) {
         if (m_is_dragging)
             return;
@@ -137,7 +138,7 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         qDebug()<<"x11 move start";
         auto connection = QX11Info::connection();
         xcb_ungrab_pointer(connection, XCB_TIME_CURRENT_TIME);
-        NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x(), native.y(), NET::Move);
+        NETRootInfo(connection, NET::WMMoveResize).moveResizeRequest(w->winId(), native.x() * dpiRatio, native.y() * dpiRatio, NET::Move);
         qDebug()<<"x11 move end";
 
         if (e->source() == Qt::MouseEventSynthesizedByQt) {
