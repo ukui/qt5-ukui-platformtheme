@@ -81,7 +81,7 @@ public:
 #endif
 
 #ifdef DBUS_TRAY
-    virtual QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const;
+    QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override;
 #endif
 
 private:

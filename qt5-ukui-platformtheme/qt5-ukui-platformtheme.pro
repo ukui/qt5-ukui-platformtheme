@@ -6,6 +6,11 @@
 
 QT       += widgets dbus gui-private widgets-private
 
+greaterThan(QT_MAJOR_VERSION, 5)|greaterThan(QT_MINOR_VERSION, 7): \
+    QT += theme_support-private
+else: \
+    QT += platformsupport-private
+
 TARGET = qt5-ukui-platformtheme
 TEMPLATE = lib
 CONFIG += plugin

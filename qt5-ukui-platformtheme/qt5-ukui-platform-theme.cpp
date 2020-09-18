@@ -39,6 +39,8 @@
 #include <QWidget>
 
 #include <QDebug>
+#include <private/qgenericunixthemes_p.h>
+
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
 {
@@ -187,6 +189,7 @@ QPlatformMenuBar *Qt5UKUIPlatformTheme::createPlatformMenuBar() const
 #ifdef DBUS_TRAY
 QPlatformSystemTrayIcon *Qt5UKUIPlatformTheme::createPlatformSystemTrayIcon() const
 {
-    return QPlatformTheme::createPlatformSystemTrayIcon();
+    QGnomeTheme *gnomeTheme = new QGnomeTheme();
+    return gnomeTheme->createPlatformSystemTrayIcon();
 }
 #endif
