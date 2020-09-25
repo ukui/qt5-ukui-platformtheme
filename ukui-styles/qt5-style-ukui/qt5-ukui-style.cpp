@@ -294,6 +294,7 @@ const QStringList Qt5UKUIStyle::useDefaultPalette() const
     QStringList l;
     l<<"kylin-assistant";
     l<<"kybackup";
+    l<<"biometric-manager";
     return l;
 }
 
