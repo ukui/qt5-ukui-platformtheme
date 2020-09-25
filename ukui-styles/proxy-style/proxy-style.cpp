@@ -37,8 +37,6 @@
 #include <QLabel>
 #include <QWizardPage>
 
-#include <QStyleHints>
-
 #include <QDebug>
 
 using namespace UKUI;
@@ -48,28 +46,6 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion
     auto settings = UKUIStyleSettings::globalInstance();
     m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
     m_custom_highlight_color = QColor(settings->get("customHighlightColor").toString());
-    m_blink_cursor = settings->get("cursorBlink").toBool();
-    m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
-    qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
-    connect(settings, &QGSettings::changed, this, [=](const QString &key) {
-        if (key == "cursorBlink") {
-            m_blink_cursor = settings->get("cursorBlink").toBool();
-            if (qApp->activeWindow()) {
-                qApp->activeWindow()->update();
-            }
-            if (qApp->activeModalWidget()) {
-                qApp->activeModalWidget()->update();
-            }
-            if (qApp->activePopupWidget()) {
-                qApp->activePopupWidget()->update();
-            }
-        }
-        if (key == "cursorBlinkTime") {
-            m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
-            qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
-        }
-    });
-
     connect(settings, &QGSettings::changed, this, [=](const QString &key) {
         if (key == "useCustomHighlightColor") {
             m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
@@ -138,9 +114,6 @@ int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWid
     switch (hint) {
     case QStyle::SH_Menu_Scrollable: {
         return 1;
-    }
-    case QStyle::SH_BlinkCursorWhenTextSelected: {
-        return m_blink_cursor;
     }
     default:
         return QProxyStyle::styleHint(hint, option, widget, returnData);
