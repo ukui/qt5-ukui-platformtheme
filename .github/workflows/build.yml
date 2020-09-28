@@ -59,7 +59,7 @@ jobs:
       - name: Checkout qt5-ukui-platformtheme source code
         uses: actions/checkout@v2
       - name: Install build dependencies
-        run: dnf install -y which gcc gcc-c++ make cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros  glib2-devel qt5-qtx11extras-devel kf5-kwindowsystem-devel gsettings-desktop-schemas-devel qt5-qtbase-devel qt5-qtbase-private-devel qt5-qttools-devel gsettings-qt-devel
+        run: dnf install -y which gcc gcc-c++ make cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros  glib2-devel qt5-qtx11extras-devel kf5-kwindowsystem-devel gsettings-desktop-schemas-devel qt5-qtbase-devel qt5-qtbase-private-devel qt5-qtbase-static qt5-qttools-devel gsettings-qt-devel
       - name: QMake configure & Make
         run: |
           mkdir build;
@@ -75,7 +75,7 @@ jobs:
       - name: Checkout peony source code
         uses: actions/checkout@v2
       - name: Install build dependencies
-        run: dnf install --refresh --nogpg -y make gcc gcc-c++ which cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros glib2-devel qt5-qtx11extras-devel kf5-kwindowsystem-devel gsettings-desktop-schemas-devel qt5-qtbase-devel qt5-qtbase-private-devel qt5-qttools-devel gsettings-qt-devel
+        run: dnf install --refresh --nogpg -y make gcc gcc-c++ which cmake cmake-rpm-macros autoconf automake intltool rpm-build qt5-rpm-macros glib2-devel qt5-qtx11extras-devel kf5-kwindowsystem-devel gsettings-desktop-schemas-devel qt5-qtbase-devel qt5-qtbase-private-devel qt5-qtbase-static qt5-qttools-devel gsettings-qt-devel
       - name: QMake configure & Make
         run: |
           mkdir build;
@@ -95,7 +95,7 @@ jobs:
       - name: Update apt repository
         run: apt-get update -y
       - name: Install build dependcies
-        run: apt-get install -y build-essential qt5-default qttools5-dev-tools qtmultimedia5-dev debhelper-compat pkg-kde-tools libglib2.0-dev libqt5x11extras5-dev libkf5windowsystem-dev libgsettings-qt-dev pkg-config qt5-qmake qtbase5-dev qtbase5-dev-tools qtbase5-private-dev qtchooser qttools5-dev-tools
+        run: apt-get install -y build-essential qt5-default qttools5-dev-tools qtmultimedia5-dev debhelper-compat pkg-kde-tools libglib2.0-dev libqt5x11extras5-dev libkf5windowsystem-dev libgsettings-qt-dev pkg-config qt5-qmake qtbase5-dev qtbase5-dev-tools qtbase5-private-dev  qtchooser qttools5-dev-tools
       - name: QMake configure & Make
         run: |
           mkdir build;
