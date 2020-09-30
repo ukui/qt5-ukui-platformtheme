@@ -31,31 +31,7 @@ using namespace UKUI::ScrollBar;
 
 DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParallelAnimationGroup (parent)
 {
-    m_bg_opacity = new QVariantAnimation(this);
-    m_bg_opacity->setStartValue(0.0);
-    m_bg_opacity->setEndValue(0.1);
-    m_bg_opacity->setDuration(250);
-    addAnimation(m_bg_opacity);
 
-    m_groove_width = new QVariantAnimation(this);
-    m_groove_width->setStartValue(0);
-    m_groove_width->setEndValue(10);
-    m_bg_opacity->setDuration(150);
-    addAnimation(m_groove_width);
-
-    m_slider_opacity = new QVariantAnimation(this);
-    m_slider_opacity->setStartValue(0.2);
-    m_slider_opacity->setEndValue(0.35);
-    m_bg_opacity->setDuration(250);
-    addAnimation(m_slider_opacity);
-
-    m_sunken_silder_additional_opacity = new QVariantAnimation(this);
-    m_sunken_silder_additional_opacity->setStartValue(double(0));
-    m_sunken_silder_additional_opacity->setEndValue(0.15);
-    m_sunken_silder_additional_opacity->setDuration(150);
-    addAnimation(m_sunken_silder_additional_opacity);
-
-    setObjectName("ukui_scrollbar_default_interaction_animator");
 }
 
 /*!
@@ -79,20 +55,65 @@ DefaultInteractionAnimator::DefaultInteractionAnimator(QObject *parent) : QParal
  */
 bool DefaultInteractionAnimator::bindWidget(QWidget *w)
 {
-    //qDebug()<<w->objectName()<<w->topLevelWidget()->metaObject()->className();
+    if (w->property("doNotAnimate").toBool())
+        return false;
+
     if (qobject_cast<QScrollBar*>(w)) {
-        if (w->property("doNotAnimate").toBool())
-            return false;
         m_widget = w;
-        return true;
+    } else {
+        return false;
     }
-    return false;
+
+    m_groove_width = new QVariantAnimation(this);
+    m_groove_width->setStartValue(0.0);
+    m_groove_width->setEndValue(1.0);
+    m_groove_width->setDuration(150);
+    addAnimation(m_groove_width);
+
+    m_slider_opacity = new QVariantAnimation(this);
+    m_slider_opacity->setStartValue(0.2);
+    m_slider_opacity->setEndValue(0.35);
+    m_slider_opacity->setDuration(150);
+    addAnimation(m_slider_opacity);
+
+    m_sunken_silder_additional_opacity = new QVariantAnimation(this);
+    m_sunken_silder_additional_opacity->setStartValue(0.0);
+    m_sunken_silder_additional_opacity->setEndValue(0.15);
+    m_sunken_silder_additional_opacity->setDuration(150);
+    addAnimation(m_sunken_silder_additional_opacity);
+
+    setObjectName("ukui_scrollbar_default_interaction_animator");
+
+    connect(m_groove_width, &QVariantAnimation::valueChanged, w, [=]() {
+       w->repaint();
+    });
+    connect(m_slider_opacity, &QVariantAnimation::valueChanged, w, [=]() {
+       w->repaint();
+    });
+    connect(m_sunken_silder_additional_opacity, &QVariantAnimation::valueChanged, w, [=]() {
+       w->repaint();
+    });
+    connect(m_groove_width, &QVariantAnimation::finished, w, [=]() {
+       w->repaint();
+    });
+    connect(m_slider_opacity, &QVariantAnimation::finished, w, [=]() {
+       w->repaint();
+    });
+    connect(m_sunken_silder_additional_opacity, &QVariantAnimation::finished, w, [=]() {
+       w->repaint();
+    });
+
+    return true;
 }
 
 bool DefaultInteractionAnimator::unboundWidget()
 {
     this->stop();
     this->setDirection(QAbstractAnimation::Forward);
+    m_groove_width->deleteLater();
+    m_slider_opacity->deleteLater();
+    m_sunken_silder_additional_opacity->deleteLater();
+
     if (m_widget) {
         this->setParent(nullptr);
         return true;
@@ -102,9 +123,7 @@ bool DefaultInteractionAnimator::unboundWidget()
 
 QVariant DefaultInteractionAnimator::value(const QString &property)
 {
-    if (property == "bg_opacity") {
-        return m_bg_opacity->currentValue();
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         return m_groove_width->currentValue();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->currentValue();
@@ -117,10 +136,7 @@ QVariant DefaultInteractionAnimator::value(const QString &property)
 
 bool DefaultInteractionAnimator::setAnimatorStartValue(const QString &property, const QVariant &value)
 {
-    if (property == "bg_opacity") {
-        m_bg_opacity->setStartValue(value);
-        return true;
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->setStartValue(value);
         return true;
     } else if (property == "slider_opacity") {
@@ -137,10 +153,7 @@ bool DefaultInteractionAnimator::setAnimatorStartValue(const QString &property, 
 
 bool DefaultInteractionAnimator::setAnimatorEndValue(const QString &property, const QVariant &value)
 {
-    if (property == "bg_opacity") {
-        m_bg_opacity->setEndValue(value);
-        return true;
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->setEndValue(value);
         return true;
     } else if (property == "slider_opacity") {
@@ -156,10 +169,7 @@ bool DefaultInteractionAnimator::setAnimatorEndValue(const QString &property, co
 
 bool DefaultInteractionAnimator::setAnimatorDuration(const QString &property, int duration)
 {
-    if (property == "bg_opacity") {
-        m_bg_opacity->setDuration(duration);
-        return true;
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->setDuration(duration);
         return true;
     } else if (property == "slider_opacity") {
@@ -176,9 +186,7 @@ bool DefaultInteractionAnimator::setAnimatorDuration(const QString &property, in
 void DefaultInteractionAnimator::setAnimatorDirectionForward(const QString &property, bool forward)
 {
     auto d = forward? QAbstractAnimation::Forward: QAbstractAnimation::Backward;
-    if (property == "bg_opacity") {
-        m_bg_opacity->setDirection(d);
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->setDirection(d);
     } else if (property == "slider_opacity") {
         m_slider_opacity->setDirection(d);
@@ -191,9 +199,7 @@ void DefaultInteractionAnimator::setAnimatorDirectionForward(const QString &prop
 
 bool DefaultInteractionAnimator::isRunning(const QString &property)
 {
-    if (property == "bg_opacity") {
-        return m_bg_opacity->state() == Running;
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         return m_groove_width->state() == Running;
     } else if (property == "slider_opacity") {
         return m_slider_opacity->state() == Running;
@@ -206,9 +212,7 @@ bool DefaultInteractionAnimator::isRunning(const QString &property)
 
 void DefaultInteractionAnimator::startAnimator(const QString &property)
 {
-    if (property == "bg_opacity") {
-        m_bg_opacity->start();
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->start();
     } else if (property == "slider_opacity") {
         m_slider_opacity->start();
@@ -221,9 +225,7 @@ void DefaultInteractionAnimator::startAnimator(const QString &property)
 
 void DefaultInteractionAnimator::stopAnimator(const QString &property)
 {
-    if (property == "bg_opacity") {
-        m_bg_opacity->stop();
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         m_groove_width->stop();
     } else if (property == "slider_opacity") {
         m_slider_opacity->stop();
@@ -236,9 +238,7 @@ void DefaultInteractionAnimator::stopAnimator(const QString &property)
 
 int DefaultInteractionAnimator::currentAnimatorTime(const QString &property)
 {
-    if (property == "bg_opacity") {
-        return m_bg_opacity->currentTime();
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         return m_groove_width->currentTime();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->currentTime();
@@ -251,9 +251,7 @@ int DefaultInteractionAnimator::currentAnimatorTime(const QString &property)
 
 int DefaultInteractionAnimator::totalAnimationDuration(const QString &property)
 {
-    if (property == "bg_opacity") {
-        return m_bg_opacity->duration();
-    } else if (property == "groove_width") {
+    if (property == "groove_width") {
         return m_groove_width->duration();
     } else if (property == "slider_opacity") {
         return m_slider_opacity->duration();
