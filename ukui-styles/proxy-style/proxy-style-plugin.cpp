@@ -58,11 +58,12 @@ ProxyStylePlugin::ProxyStylePlugin()
 
                 if (styleName == "ukui-default" || styleName == "ukui-dark" || styleName == "ukui-white"
                         || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui") {
-                    if (styleName == "ukui-white" || styleName == "ukui") {
-                        styleName = "ukui-light";
-                    } else if (styleName == "ukui-black") {
+                    if (styleName == "ukui")
+                        styleName = "ukui-default";
+                    else if (styleName == "ukui-black")
                         styleName = "ukui-dark";
-                    }
+                    else if (styleName == "ukui-white")
+                        styleName = "ukui-light";
 
                     qApp->setStyle(new ProxyStyle(styleName));
 //                    foreach (auto widget, qApp->allWidgets()) {
@@ -129,12 +130,15 @@ QStyle *ProxyStylePlugin::create(const QString &key)
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
             if (m_current_style_name == "ukui-default" || m_current_style_name == "ukui-dark"
-                    || m_current_style_name == "ukui-white"|| m_current_style_name == "ukui-black"
+                    || m_current_style_name == "ukui-white" || m_current_style_name == "ukui-black"
                     || m_current_style_name == "ukui-light" || m_current_style_name == "ukui") {
-                if (m_current_style_name == "ukui-white" || m_current_style_name == "ukui")
-                    m_current_style_name = "ukui-light";
-                if (m_current_style_name == "ukui-black")
+                if (m_current_style_name == "ukui")
+                    m_current_style_name = "ukui-default";
+                else if (m_current_style_name == "ukui-black")
                     m_current_style_name = "ukui-dark";
+                else if (m_current_style_name == "ukui-white")
+                    m_current_style_name = "ukui-light";
+
                 return new ProxyStyle(m_current_style_name);
             }
             for (auto styleName : QStyleFactory::keys()) {

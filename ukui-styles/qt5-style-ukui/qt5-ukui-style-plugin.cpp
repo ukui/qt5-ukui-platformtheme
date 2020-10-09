@@ -58,10 +58,10 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     //FIXME:
     bool dark = false;
     bool useDefault = false;
-    if (key == "ukui-black" || key == "ukui-dark") {
+    if (key == "ukui-dark") {
         qDebug()<<"use ukui-black";
         dark = true;
-    } else if (key == "ukui-white" || key == "ukui-light") {
+    } else if (key == "ukui-light") {
         qDebug()<<"use ukui-white";
     } else {
         useDefault = true;

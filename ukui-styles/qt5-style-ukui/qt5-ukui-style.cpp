@@ -388,7 +388,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             tip_font(22,22,22),
             alternateBase(248,248,248);
 
-        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  specialList().contains(qAppName()))) {
+        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  (m_is_default_style && specialList().contains(qAppName())))) {
         //ukui-dark
         window_bg.setRgb(45,46,50);
         window_no_bg.setRgb(48,46,50);
