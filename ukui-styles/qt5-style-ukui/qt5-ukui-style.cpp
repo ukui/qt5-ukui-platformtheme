@@ -792,6 +792,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             {
                 animator->stopAnimator("SunKen");
                 animator->stopAnimator("MouseOver");
+                if (button->features & QStyleOptionButton::Flat)
+                    return;
                 painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
