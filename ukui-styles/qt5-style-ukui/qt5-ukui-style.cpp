@@ -463,7 +463,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
     Style::polish(widget);
     if (auto menu = qobject_cast<QMenu*>(widget)) {
         //widget->setAttribute(Qt::WA_TranslucentBackground);
-        HighLightEffect::setMenuIconHighlightEffect(menu, true, HighLightEffect::BothDefaultAndHighlit);
+        HighLightEffect::setMenuIconHighlightEffect(menu, HighLightEffect::HighlightEffect, HighLightEffect::BothDefaultAndHighlit);
         //HighLightEffect::setWidgetIconFillSymbolicColor(menu, true);
         //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
 
@@ -2459,24 +2459,25 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                                             mode,
                                             state);
 
-            auto target = pixmap;
-
-            if (widget) {
-                if (widget->property("useIconHighlightEffect").isValid()) {
-                    bool needHandel = widget->property("useIconHighlightEffect").toBool();
-                    if (needHandel) {
-                        HighLightEffect::EffectMode mode = HighLightEffect::HighlightOnly;
-                        if (widget->property("iconHighlightEffectMode").isValid()) {
-                            auto var = widget->property("iconHighlightEffectMode");
-                            mode = qvariant_cast<HighLightEffect::EffectMode>(var);
-                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false, mode);
-                        } else {
-                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false);
-                        }
-                    }
-                }
-            }
-            Style::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
+            QStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, HighLightEffect::generatePixmap(pixmap, vopt, widget));
+//            auto target = pixmap;
+//            if (widget) {
+//                if (widget->property("useIconHighlightEffect").isValid()) {
+//                    qDebug()<<widget->property("useIconHighlightEffect").toInt();
+//                    HighLightEffect::HighLightMode needHandel = HighLightEffect::HighLightMode(widget->property("useIconHighlightEffect").toInt());
+//                    if (needHandel) {
+//                        HighLightEffect::EffectMode mode = HighLightEffect::HighlightOnly;
+//                        if (widget->property("iconHighlightEffectMode").isValid()) {
+//                            auto var = widget->property("iconHighlightEffectMode");
+//                            mode = qvariant_cast<HighLightEffect::EffectMode>(var);
+//                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false, mode);
+//                        } else {
+//                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false);
+//                        }
+//                    }
+//                }
+//            }
+//            QStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
 
             // draw the text
             if (!vopt->text.isEmpty()) {
@@ -4134,17 +4135,6 @@ void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alig
         if (HighLightEffect::isWidgetIconUseHighlightEffect(widget)) {
             QStyleOption opt;
             opt.initFrom(widget);
-            if (auto button = qobject_cast<QAbstractButton *>(widget)) {
-//                opt.state.setFlag(QStyle::State_Sunken, button->isDown());
-                if(button->isDown())
-                {
-                    opt.state |= QStyle::State_Sunken;
-                }
-                else
-                {
-                    opt.state &= ~QStyle::State_Sunken;
-                }
-            }
             target = HighLightEffect::generatePixmap(pixmap, &opt, widget);
         }
     }

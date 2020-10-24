@@ -34,6 +34,15 @@ class HighLightEffect : public QObject
 {
     Q_OBJECT
 public:
+    enum HighLightMode {
+        skipHighlight = 0x0,
+        HighlightEffect = 0x1,
+        ordinaryHighLight = 0x2,
+        hoverHighLight = 0x4,
+        defaultHighLight = 0x8,
+        filledSymbolicColorHighLight = 0x10,
+    };
+
     enum EffectMode {
         HighlightOnly,
         BothDefaultAndHighlit
@@ -52,10 +61,10 @@ public:
      */
     static void setSkipEffect(QWidget *w, bool skip = true);
     static bool isPixmapPureColor(const QPixmap &pixmap);
-    static bool setMenuIconHighlightEffect(QMenu *menu, bool set = true, EffectMode mode = HighlightOnly);
-    static bool setViewItemIconHighlightEffect(QAbstractItemView *view, bool set = true, EffectMode mode = HighlightOnly);
-    static bool setButtonIconHighlightEffect(QAbstractButton *button, bool set = true, EffectMode mode = HighlightOnly);
-    static bool isWidgetIconUseHighlightEffect(const QWidget *w);
+    static bool setMenuIconHighlightEffect(QMenu *menu, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
+    static bool setViewItemIconHighlightEffect(QAbstractItemView *view, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
+    static bool setButtonIconHighlightEffect(QAbstractButton *button, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
+    static HighLightMode isWidgetIconUseHighlightEffect(const QWidget *w);
 
     static void setSymoblicColor(const QColor &color);
     static void setWidgetIconFillSymbolicColor(QWidget *widget, bool fill);
@@ -63,11 +72,11 @@ public:
     static const QColor getCurrentSymbolicColor();
     static const QColor defaultStyleDark();
 
-    static QPixmap generatePixmap(const QPixmap &pixmap,
-                                  const QStyleOption *option,
-                                  const QWidget *widget = nullptr,
-                                  bool force = false,
-                                  EffectMode mode = HighlightOnly);
+    static QPixmap generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, bool force = false, EffectMode mode = HighlightOnly);
+    static QPixmap ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
+    static QPixmap hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr);
+    static QPixmap bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
+    static QPixmap filledSymbolicColoredGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
 
 private:
     explicit HighLightEffect(QObject *parent = nullptr);

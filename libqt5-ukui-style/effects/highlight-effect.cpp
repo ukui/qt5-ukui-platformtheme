@@ -113,42 +113,43 @@ bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
     return isPure;
 }
 
-bool HighLightEffect::setMenuIconHighlightEffect(QMenu *menu, bool set, HighLightEffect::EffectMode mode)
+bool HighLightEffect::setMenuIconHighlightEffect(QMenu *menu, HighLightMode hlmode, EffectMode mode)
 {
     if (!menu)
         return false;
 
-    menu->setProperty("useIconHighlightEffect", set);
+    menu->setProperty("useIconHighlightEffect", hlmode);
     menu->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
-bool HighLightEffect::setViewItemIconHighlightEffect(QAbstractItemView *view, bool set, HighLightEffect::EffectMode mode)
+bool HighLightEffect::setViewItemIconHighlightEffect(QAbstractItemView *view, HighLightMode hlmode, EffectMode mode)
 {
     if (!view)
         return false;
 
-    view->viewport()->setProperty("useIconHighlightEffect", set);
+    view->viewport()->setProperty("useIconHighlightEffect", hlmode);
     view->viewport()->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
-bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, bool set, EffectMode mode)
+bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, HighLightMode hlmode, EffectMode mode)
 {
     if (!button)
         return false;
 
-    button->setProperty("useIconHighlightEffect", set);
+    button->setProperty("useIconHighlightEffect", hlmode);
     button->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
-bool HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
+HighLightEffect::HighLightMode HighLightEffect::isWidgetIconUseHighlightEffect(const QWidget *w)
 {
     if (w) {
-        return w->property("useIconHighlightEffect").toBool();
+        if (w->property("useIconHighlightEffect").isValid())
+            return HighLightMode(w->property("useIconHighlightEffect").toInt());
     }
-    return false;
+    return HighLightEffect::skipHighlight;
 }
 
 void HighLightEffect::setSymoblicColor(const QColor &color)
@@ -190,32 +191,20 @@ const QColor HighLightEffect::defaultStyleDark()
 
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
     if (!(option->state & QStyle::State_Enabled))
         return pixmap;
-
     if (widget && !widget->isEnabled())
         return pixmap;
 
-    if (pixmap.isNull())
-        return pixmap;
-
-    if (widget) {
-        if (widget->property("skipHighlightIconEffect").isValid()) {
-            bool skipEffect = widget->property("skipHighlightIconEffect").toBool();
-            if (skipEffect)
-                return pixmap;
-        }
-    }
-
+    QPixmap target = pixmap;
     bool isPurePixmap = isPixmapPureColor(pixmap);
-
     if (force) {
         if (!isPurePixmap)
             return pixmap;
 
-        QPixmap target = pixmap;
         QPainter p(&target);
-
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
@@ -228,39 +217,68 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             if (mode == BothDefaultAndHighlit)
                 p.fillRect(target.rect(), defaultStyleDark());
         }
-        //p.end();
         return target;
     }
 
-    if (widget) {
-        if (isWidgetIconUseHighlightEffect(widget)) {
-            bool fillIconSymbolicColor = false;
-            if (widget->property("fillIconSymbolicColor").isValid()) {
-                fillIconSymbolicColor = widget->property("fillIconSymbolicColor").toBool();
+
+
+    if (!widget)
+        return pixmap;
+
+    if (widget->property("skipHighlightIconEffect").isValid()) {
+        bool skipEffect = widget->property("skipHighlightIconEffect").toBool();
+        if (skipEffect)
+            return pixmap;
+    }
+
+    if (widget->property("iconHighlightEffectMode").isValid()) {
+        mode = EffectMode(widget->property("iconHighlightEffectMode").toInt());
+    }
+
+    HighLightMode hlmode = isWidgetIconUseHighlightEffect(widget);
+
+    if (hlmode == skipHighlight) {
+        return pixmap;
+    } else if (hlmode == HighlightEffect) {
+        bool fillIconSymbolicColor = false;
+        if (widget->property("fillIconSymbolicColor").isValid()) {
+            fillIconSymbolicColor = widget->property("fillIconSymbolicColor").toBool();
+        }
+
+        bool isEnable = option->state.testFlag(QStyle::State_Enabled);
+        bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
+                option->state.testFlag(QStyle::State_Sunken) ||
+                option->state.testFlag(QStyle::State_On) ||
+                option->state.testFlag(QStyle::State_Selected);
+        if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
+            if (button->isDown() || button->isChecked()) {
+                overOrDown = true;
+            }
+        }
+
+        if (qobject_cast<const QAbstractItemView *>(widget)) {
+            if (!option->state.testFlag(QStyle::State_Selected))
+                overOrDown = false;
+        }
+
+        if (isEnable && overOrDown) {
+            if (fillIconSymbolicColor) {
+                target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
             }
 
-            if (widget->property("iconHighlightEffectMode").isValid()) {
-                mode = EffectMode(widget->property("iconHighlightEffectMode").toInt());
-            }
+            if (!isPurePixmap)
+                return target;
 
-            bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-            bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
-                    option->state.testFlag(QStyle::State_Sunken) ||
-                    option->state.testFlag(QStyle::State_On) ||
-                    option->state.testFlag(QStyle::State_Selected);
-            if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-                if (button->isDown() || button->isChecked()) {
-                    overOrDown = true;
-                }
-            }
-
-            if (qobject_cast<const QAbstractItemView *>(widget)) {
-                if (!option->state.testFlag(QStyle::State_Selected))
-                    overOrDown = false;
-            }
-
-            if (isEnable && overOrDown) {
+            QPainter p(&target);
+            p.setRenderHint(QPainter::Antialiasing);
+            p.setRenderHint(QPainter::SmoothPixmapTransform);
+            p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+            p.fillRect(target.rect(), option->palette.highlightedText());
+            return target;
+        } else {
+            if (mode == BothDefaultAndHighlit) {
                 QPixmap target = pixmap;
+
                 if (fillIconSymbolicColor) {
                     target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
                 }
@@ -272,66 +290,166 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 p.setRenderHint(QPainter::Antialiasing);
                 p.setRenderHint(QPainter::SmoothPixmapTransform);
                 p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                p.fillRect(target.rect(), option->palette.highlightedText());
-                //p.end();
-                return target;
-            } else {
-                if (mode == BothDefaultAndHighlit) {
-                    QPixmap target = pixmap;
-
-                    if (fillIconSymbolicColor) {
-                        target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
-                    }
-
-                    if (!isPurePixmap)
-                        return target;
-
-                    QPainter p(&target);
-
-                    p.setRenderHint(QPainter::Antialiasing);
-                    p.setRenderHint(QPainter::SmoothPixmapTransform);
-                    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-                    p.fillRect(target.rect(), defaultStyleDark());
-                    //p.end();
-                    return target;
-                }
-            }
-        }
-    } else {
-        if (!isPurePixmap)
-            return pixmap;
-
-        bool isEnable = option->state.testFlag(QStyle::State_Enabled);
-        bool overOrDown = option->state.testFlag(QStyle::State_MouseOver) ||
-                option->state.testFlag(QStyle::State_Sunken) ||
-                option->state.testFlag(QStyle::State_Selected) ||
-                option->state.testFlag(QStyle::State_On);
-        if (isEnable && overOrDown) {
-            QPixmap target = pixmap;
-            QPainter p(&target);
-
-            p.setRenderHint(QPainter::Antialiasing);
-            p.setRenderHint(QPainter::SmoothPixmapTransform);
-            p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-            p.fillRect(target.rect(), option->palette.highlightedText());
-            //p.end();
-            return target;
-        } else {
-            if (mode == BothDefaultAndHighlit) {
-                QPixmap target = pixmap;
-                QPainter p(&target);
-
-                p.setRenderHint(QPainter::Antialiasing);
-                p.setRenderHint(QPainter::SmoothPixmapTransform);
-                p.setCompositionMode(QPainter::CompositionMode_SourceIn);
                 p.fillRect(target.rect(), defaultStyleDark());
                 //p.end();
                 return target;
             }
         }
+    } else if (hlmode == ordinaryHighLight) {
+        return ordinaryGeneratePixmap(pixmap, option, widget, mode);
+    } else if (hlmode == hoverHighLight) {
+        return hoverGeneratePixmap(pixmap, option, widget);
+    } else if (hlmode == defaultHighLight) {
+        return bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget, mode);
+    } else if (hlmode == filledSymbolicColorHighLight) {
+        if (isPurePixmap) {
+            return bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget, mode);
+        } else {
+            return filledSymbolicColoredGeneratePixmap(pixmap, option, widget, mode);
+        }
+    } else {
+        return pixmap;
     }
 
     return pixmap;
+}
+
+QPixmap HighLightEffect:: ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
+{
+    if (!isPixmapPureColor(pixmap))
+        return pixmap;
+
+    QPixmap target = pixmap;
+    QColor color;
+    if (widget && widget->property("setIconHighlightEffectDefaultColor").isValid() && widget->property("setIconHighlightEffectDefaultColor").canConvert<QColor>()) {
+        color = widget->property("setIconHighlightEffectDefaultColor").value<QColor>();
+    }
+
+    if (widget && widget->property("iconHighlightEffectMode").isValid()) {
+        mode = EffectMode(widget->property("iconHighlightEffectMode").toInt());
+    }
+
+    QPainter p(&target);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.fillRect(target.rect(), color.isValid() ? color : (mode ? defaultStyleDark() : option->palette.text()));
+    return target;
+}
+
+QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget)
+{
+    if (!isPixmapPureColor(pixmap))
+        return pixmap;
+
+    QPixmap target = pixmap;
+    QColor color;
+    if (widget && widget->property("setIconHighlightEffectHoverColor").isValid() && widget->property("setIconHighlightEffectHoverColor").canConvert<QColor>()) {
+        color = widget->property("setIconHighlightEffectHoverColor").value<QColor>();
+    }
+
+    bool isEnable = option->state.testFlag(QStyle::State_Enabled);
+    bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
+            option->state.testFlag(QStyle::State_Sunken) ||
+            option->state.testFlag(QStyle::State_On) ||
+            option->state.testFlag(QStyle::State_Selected);
+    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
+        if (button->isDown() || button->isChecked())
+            overOrDown = true;
+    }
+    if (qobject_cast<const QAbstractItemView *>(widget)) {
+        if (!option->state.testFlag(QStyle::State_Selected))
+            overOrDown = false;
+    }
+
+    QPainter p(&target);
+    if (isEnable && overOrDown) {
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(target.rect(), color.isValid() ? color : option->palette.highlightedText());
+    }
+    return target;
+}
+
+QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
+{
+    if (!isPixmapPureColor(pixmap))
+        return pixmap;
+
+    QPixmap target = pixmap;
+    QColor defaultColor, hoverColor;
+    if (widget && widget->property("setIconHighlightEffectDefaultColor").isValid() && widget->property("setIconHighlightEffectDefaultColor").canConvert<QColor>()) {
+        defaultColor = widget->property("setIconHighlightEffectDefaultColor").value<QColor>();
+    }
+    if (widget && widget->property("setIconHighlightEffectHoverColor").isValid() && widget->property("setIconHighlightEffectHoverColor").canConvert<QColor>()) {
+        hoverColor = widget->property("setIconHighlightEffectHoverColor").value<QColor>();
+    }
+
+    bool isEnable = option->state.testFlag(QStyle::State_Enabled);
+    bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
+            option->state.testFlag(QStyle::State_Sunken) ||
+            option->state.testFlag(QStyle::State_On) ||
+            option->state.testFlag(QStyle::State_Selected);
+    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
+        if (button->isDown() || button->isChecked())
+            overOrDown = true;
+    }
+    if (qobject_cast<const QAbstractItemView *>(widget)) {
+        if (!option->state.testFlag(QStyle::State_Selected))
+            overOrDown = false;
+    }
+
+    QPainter p(&target);
+    if (isEnable && overOrDown) {
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(target.rect(), hoverColor.isValid() ? hoverColor : option->palette.highlightedText());
+    } else {
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(target.rect(), defaultColor.isValid() ? defaultColor : (mode ? defaultStyleDark() : option->palette.text()));
+    }
+    return target;
+}
+
+QPixmap HighLightEffect::filledSymbolicColoredGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
+{
+    if (isPixmapPureColor(pixmap))
+        return bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget, mode);
+
+    QPixmap target = pixmap;
+    QColor defaultColor, hoverColor;
+    if (widget && widget->property("setIconHighlightEffectDefaultColor").isValid() && widget->property("setIconHighlightEffectDefaultColor").canConvert<QColor>()) {
+        defaultColor = widget->property("setIconHighlightEffectDefaultColor").value<QColor>();
+    }
+    if (widget && widget->property("setIconHighlightEffectHoverColor").isValid() && widget->property("setIconHighlightEffectHoverColor").canConvert<QColor>()) {
+        hoverColor = widget->property("setIconHighlightEffectHoverColor").value<QColor>();
+    }
+
+    bool isEnable = option->state.testFlag(QStyle::State_Enabled);
+    bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
+            option->state.testFlag(QStyle::State_Sunken) ||
+            option->state.testFlag(QStyle::State_On) ||
+            option->state.testFlag(QStyle::State_Selected);
+    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
+        if (button->isDown() || button->isChecked())
+            overOrDown = true;
+    }
+    if (qobject_cast<const QAbstractItemView *>(widget)) {
+        if (!option->state.testFlag(QStyle::State_Selected))
+            overOrDown = false;
+    }
+
+    if (isEnable && overOrDown) {
+        return filledSymbolicColoredPixmap(target, hoverColor.isValid() ? hoverColor : option->palette.color(QPalette::HighlightedText));
+    } else {
+        return filledSymbolicColoredPixmap(target, defaultColor.isValid() ? defaultColor : (mode ? defaultStyleDark() : option->palette.color(QPalette::Text)));
+    }
+
+    return target;
 }
 
 HighLightEffect::HighLightEffect(QObject *parent) : QObject(parent)
