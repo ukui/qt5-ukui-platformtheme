@@ -60,16 +60,16 @@ bool ButtonAnimator::bindWidget(QWidget *w)
     addAnimation(m_sunken);
 
     connect(m_sunken, &QVariantAnimation::valueChanged, w, [=]() {
-       w->repaint();
+       w->update();
     });
     connect(m_mouseover, &QVariantAnimation::valueChanged, w, [=]() {
-       w->repaint();
+       w->update();
     });
     connect(m_sunken, &QVariantAnimation::finished, w, [=]() {
-       w->repaint();
+       w->update();
     });
     connect(m_mouseover, &QVariantAnimation::finished, w, [=]() {
-       w->repaint();
+       w->update();
     });
     return true;
 }
