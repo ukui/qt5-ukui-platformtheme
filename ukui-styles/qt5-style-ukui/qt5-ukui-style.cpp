@@ -1249,7 +1249,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             painter->setRenderHint(QPainter::Antialiasing,true);
             //Setpen is set to avoid a bug that collides with a white background
-            painter->setPen(option->palette.color(QPalette::Window));
+            painter->setPen(option->palette.color(QPalette::Window).dark());
             painter->setBrush(option->palette.color(QPalette::Base));
             // if (panel->lineWidth > 0)
             // proxy()->drawPrimitive(PE_FrameLineEdit, panel, painter, widget);
