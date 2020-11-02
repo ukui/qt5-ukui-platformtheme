@@ -79,5 +79,10 @@
             <summary>Blink text cursor interval.</summary>
             <description>The interval of text cursor blink.</description>
         </key>
+        <key type="s" name="highlight-color">
+            <default>"Daybreak-Blue"</default>
+            <summary>highlight color.</summary>
+            <description>Set highlight color for UKUI desktop environment.</description>
+        </key>
     </schema>
 </schemalist>
