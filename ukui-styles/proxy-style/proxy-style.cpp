@@ -120,6 +120,22 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion
             break;
         }
     });
+
+    if (QGSettings::isSchemaInstalled("org.ukui.peripherals-mouse")) {
+        QGSettings *settings = new QGSettings("org.ukui.peripherals-mouse");
+        int mouse_double_click_time = settings->get("doubleClick").toInt();
+        if (mouse_double_click_time != qApp->doubleClickInterval()) {
+            qApp->setDoubleClickInterval(mouse_double_click_time);
+        }
+        connect(settings, &QGSettings::changed, qApp, [=] (const QString &key) {
+            if (key == "doubleClick") {
+                int mouse_double_click_time = settings->get("doubleClick").toInt();
+                if (mouse_double_click_time != qApp->doubleClickInterval()) {
+                    qApp->setDoubleClickInterval(mouse_double_click_time);
+                }
+            }
+        });
+    }
 }
 
 bool ProxyStyle::eventFilter(QObject *obj, QEvent *e)
