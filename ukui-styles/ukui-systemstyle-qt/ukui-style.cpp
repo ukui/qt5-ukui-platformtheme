@@ -153,5 +153,49 @@ QPalette UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
 
     return palette;
+}
 
+
+
+void UKUIStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    switch (element) {
+    case CE_PushButton: {
+        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            proxy()->drawControl(CE_PushButtonBevel, btn, painter, widget);
+            QStyleOptionButton subopt = *btn;
+            subopt.rect = subElementRect(SE_PushButtonContents, btn, widget);
+            proxy()->drawControl(CE_PushButtonLabel, &subopt, painter, widget);
+        }
+        return;
+    }
+
+    case CE_PushButtonBevel: {
+        if (qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            proxy()->drawPrimitive(PE_PanelButtonCommand, option, painter, widget);
+        }
+    }
+
+    default:
+        break;
+    }
+
+    return QFusionStyle::drawControl(element, option, painter, widget);
+}
+
+
+
+
+void UKUIStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    switch (element) {
+    case PE_PanelButtonCommand: {
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return QFusionStyle::drawPrimitive(element, option, painter, widget);
 }

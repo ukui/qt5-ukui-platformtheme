@@ -5,6 +5,7 @@
 
 #include <private/qfusionstyle_p.h>
 #include <QApplication>
+#include <QStyleOption>
 
 
 
@@ -22,6 +23,8 @@ public:
 
     QPalette standardPalette() const;
 
+    void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
 private:
     StyleType m_type;
 
