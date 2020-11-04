@@ -31,18 +31,13 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
-
 #include <QPaintDevice>
 
 #include "tab-widget-animation-helper.h"
 #include "scrollbar-animation-helper.h"
-#include "button-animation-helper.h"
-#include "button-animator.h"
 #include "box-animation-helper.h"
-
 #include "animator-iface.h"
 #include "animation-helper.h"
-
 #include "highlight-effect.h"
 
 #include <QIcon>
@@ -67,10 +62,12 @@
 #include <QDebug>
 #include <QPixmapCache>
 #include <QStyleOptionButton>
-
 #include <QLabel>
-
 #include <QApplication>
+
+#include <button-animation-helper.h>
+
+
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 

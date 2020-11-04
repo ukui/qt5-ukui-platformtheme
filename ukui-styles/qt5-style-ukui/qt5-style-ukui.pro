@@ -9,7 +9,7 @@ QT       += widgets widgets-private KWindowSystem gui gui-private
 TARGET = qt5-style-ukui
 TEMPLATE = lib
 CONFIG += plugin c++11 link_pkgconfig
-PKGCONFIG += gsettings-qt
+PKGCONFIG += gsettings-qt qt5-ukui
 
 include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
 include(animations/animations.pri)
@@ -28,7 +28,6 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
     box-animation-helper.cpp \
-    button-animation-helper.cpp \
         qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
     tab-widget-animation-helper.cpp \
@@ -37,7 +36,6 @@ SOURCES += \
 
 HEADERS += \
     box-animation-helper.h \
-    button-animation-helper.h \
         qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \
     tab-widget-animation-helper.h \
