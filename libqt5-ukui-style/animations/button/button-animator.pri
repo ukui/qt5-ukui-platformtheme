@@ -1,3 +1,4 @@
+INCLUDEPATH += $$PWD
 HEADERS += \
     $$PWD/button-animation-helper.h \
     $$PWD/button-animator.h

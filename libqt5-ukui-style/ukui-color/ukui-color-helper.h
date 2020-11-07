@@ -8,5 +8,6 @@
 
 namespace UKUIColorHelper {
 QColor get_SunKen_HighLight_Color();
+QColor get_SunKen_Button_Color();
 }
 #endif // UKUICOLORHELPER_H

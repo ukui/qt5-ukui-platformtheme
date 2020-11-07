@@ -1,3 +1,4 @@
+INCLUDEPATH += $$PWD
 HEADERS += \
     $$PWD/ukui-color-helper.h
 
