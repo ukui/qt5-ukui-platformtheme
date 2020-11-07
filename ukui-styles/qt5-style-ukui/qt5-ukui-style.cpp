@@ -71,6 +71,7 @@
 #include <QLabel>
 
 #include <QApplication>
+#define COMMERCIAL_VERSION true
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
@@ -2781,6 +2782,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->restore();
         } else {
             auto sliderWidth = animator->value("groove_width").toDouble();
+            if(COMMERCIAL_VERSION)
+            {
+                sliderWidth = animator->value("groove_width").toDouble()/2;
+
+            }
 
             animator->setAnimatorDirectionForward("slider_opacity", mouse_over);
             if (mouse_over) {
@@ -3770,7 +3776,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 {
     switch (metric) {
     case PM_ScrollBarExtent: {
-        return 8;
+        if(COMMERCIAL_VERSION)
+            return 14;
+        else
+            return 8;
     }
 
     case PM_ScrollBarSliderMin: {
