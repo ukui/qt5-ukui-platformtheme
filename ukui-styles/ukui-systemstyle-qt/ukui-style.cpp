@@ -5,6 +5,7 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QToolButton>
 
 
 
@@ -327,6 +328,9 @@ int UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *optio
     case PM_ButtonDefaultIndicator:
         return UKUIStyleCommon::Button_DefaultIndicator;
 
+    case PM_MenuButtonIndicator:
+        return UKUIStyleCommon::MenuButton_IndicatorWidth;
+
     default:
         break;
     }
@@ -360,9 +364,41 @@ QSize UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option, c
                 h = UKUIStyleCommon::Button_MinHight;
 
             if (!button->icon.isNull() && button->iconSize.height() > 16)
-                h -+ 2;
+                h -= 2;
             return QSize(w, h);
         }
+    }
+
+    case CT_ToolButton: {
+        int w = size.width();
+        int h = size.height();
+        int mw = UKUIStyleCommon::TB_MarginWidth;
+        int mh = UKUIStyleCommon::TB_MarginHight;
+        w += mw * 2;
+        h += mh * 2;
+        if (const QStyleOptionToolButton * tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            if (const QToolButton *toolbutton = qobject_cast<const QToolButton *>(widget)) {
+                const bool haveicon = tb->icon.isNull();
+                const bool havetext = tb->text.isEmpty();
+                if (haveicon && havetext) {
+                    if (tb->toolButtonStyle == Qt::ToolButtonTextBesideIcon)
+                        w += (UKUIStyleCommon::Button_IconTextDistance - 4);
+                    if (tb->toolButtonStyle == Qt::ToolButtonTextUnderIcon)
+                        h += (UKUIStyleCommon::Button_IconTextDistance - 4);
+                }
+                if ((haveicon || havetext) && toolbutton->popupMode() == QToolButton::MenuButtonPopup)
+                    w += UKUIStyleCommon::MB_IndicatorOtherDistance;
+                if (tb->toolButtonStyle != Qt::ToolButtonTextUnderIcon) {
+                    if (h < 36)
+                        h = 36;
+                }
+                if (tb->toolButtonStyle == Qt::ToolButtonTextBesideIcon) {
+                    if (h < 52)
+                        h = 52;
+                }
+            }
+        }
+        return QSize(w, h);
     }
 
     default:
