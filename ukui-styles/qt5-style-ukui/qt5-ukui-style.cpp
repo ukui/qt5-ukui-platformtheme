@@ -788,6 +788,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             {
                 return Style::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
             }
+            bool isWindowButton = false;
+            bool isWindowColoseButton = false;
+            if (widget && widget->property("isWindowButton").isValid())
+                if (widget->property("isWindowButton").toInt() == 0x01)
+                    isWindowButton = true;
+                else if (widget->property("isWindowButton").toInt() == 0x02)
+                    isWindowColoseButton = true;
+
             if(!(button->state & State_Enabled))
             {
                 animator->stopAnimator("SunKen");
@@ -834,8 +842,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
 
                 painter->save();
-                auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                painter->setBrush(color);
+                if (isWindowButton) {
+                    QColor color = button->palette.color(QPalette::Text);
+                    color.setAlphaF(0.1);
+                    painter->setBrush(color);
+                } else if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#F86458"));
+                } else {
+                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
+                    painter->setBrush(color);
+                }
                 painter->setPen(Qt::NoPen);
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(button->rect,4,4);
@@ -843,7 +859,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(button->palette.color(QPalette::Highlight));
+                if (isWindowButton) {
+                    QColor color = button->palette.color(QPalette::Text);
+                    color.setAlphaF(0.15);
+                    painter->setBrush(color);
+                } else if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#E44C50"));
+                } else {
+                    painter->setBrush(button->palette.color(QPalette::Highlight));
+                }
                 painter->setOpacity(opacity);
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(button->rect,4,4);
@@ -873,8 +897,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
                 painter->save();
                 painter->setOpacity(opacity);
-                auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                painter->setBrush(color);
+                if (isWindowButton) {
+                    QColor color = button->palette.color(QPalette::Text);
+                    color.setAlphaF(0.1);
+                    painter->setBrush(color);
+                } else if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#F86458"));
+                } else {
+                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
+                    painter->setBrush(color);
+                }
                 painter->setPen(Qt::NoPen);
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(button->rect,4,4);
@@ -1037,6 +1069,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         auto animator = m_button_animation_helper->animator(widget);
         if(animator == nullptr)
             return Style::drawPrimitive(PE_PanelButtonTool,option,painter,widget);
+        bool isWindowButton = false;
+        bool isWindowColoseButton = false;
+        if (widget && widget->property("isWindowButton").isValid())
+            if (widget->property("isWindowButton").toInt() == 0x01)
+                isWindowButton = true;
+            else if (widget->property("isWindowButton").toInt() == 0x02)
+                isWindowColoseButton = true;
+
         if(!(option->state & State_Enabled))
         {
             animator->stopAnimator("SunKen");
@@ -1080,8 +1120,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             }
 
             painter->save();
-            auto color = option->palette.color(QPalette::Highlight).lighter(125);
-            painter->setBrush(color);
+            if (isWindowButton) {
+                QColor color = option->palette.color(QPalette::Text);
+                color.setAlphaF(0.1);
+                painter->setBrush(color);
+            } else if (isWindowColoseButton) {
+                painter->setBrush(QColor("#F86458"));
+            } else {
+                auto color = option->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(color);
+            }
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(option->rect,4,4);
@@ -1089,7 +1137,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(option->palette.color(QPalette::Highlight));
+            if (isWindowButton) {
+                QColor color = option->palette.color(QPalette::Text);
+                color.setAlphaF(0.15);
+                painter->setBrush(color);
+            } else if (isWindowColoseButton) {
+                painter->setBrush(QColor("#E44C50"));
+            } else {
+                painter->setBrush(option->palette.color(QPalette::Highlight));
+            }
             painter->setOpacity(opacity);
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(option->rect,4,4);
@@ -1119,8 +1175,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             painter->save();
             painter->setOpacity(opacity);
-            auto color = option->palette.color(QPalette::Highlight).lighter(125);
-            painter->setBrush(color);
+            if (isWindowButton) {
+                QColor color = option->palette.color(QPalette::Text);
+                color.setAlphaF(0.1);
+                painter->setBrush(color);
+            } else if (isWindowColoseButton) {
+                painter->setBrush(QColor("#F86458"));
+            } else {
+                auto color = option->palette.color(QPalette::Highlight).lighter(125);
+                painter->setBrush(color);
+            }
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(option->rect,4,4);
