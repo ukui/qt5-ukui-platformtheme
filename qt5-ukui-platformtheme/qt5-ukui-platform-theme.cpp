@@ -66,18 +66,25 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
          */
         QApplication::setFont(m_system_font);
 
-        //QIcon::setThemeName(settings->get("icon-theme-name").toString());
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             qDebug()<<key<<"changed";
             if (key == "iconThemeName") {
-                qDebug()<<"icon theme changed";
-                QIcon::setThemeName(settings->get("icon-theme-name").toString());
+                QString icontheme = settings->get("icon-theme-name").toString();
+                if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
+                    icontheme = "ukui";
+                else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
+                    icontheme = "ukui-classical";
+                else
+                    icontheme = "ukui";
+
+                QIcon::setThemeName(icontheme);
                 HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
                 // update all widgets for repaint new themed icons.
                 for (auto widget : QApplication::allWidgets()) {
                     widget->update();
                 }
             }
+
             if (key == "systemFont") {
                 QString font = settings->get("system-font").toString();
                 QFontDatabase db;
@@ -140,13 +147,22 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
     switch (hint) {
     case QPlatformTheme::StyleNames:
         return QStringList()<<"ukui";
+
     case QPlatformTheme::SystemIconThemeName: {
         qDebug()<<"request icon theme name";
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-            return UKUIStyleSettings::globalInstance()->get("icon-theme-name");
+            if (auto settings = UKUIStyleSettings::globalInstance()) {
+                QString icontheme = settings->get("icon-theme-name").toString();
+                if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
+                    return QStringList()<<"ukui";
+                else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
+                    return QStringList()<<"ukui-classical";
+            }
+            return QStringList()<<"ukui";
         }
         return "hicolor";
     }
+
     case QPlatformTheme::SystemIconFallbackThemeName:
         return "hicolor";
     case QPlatformTheme::IconThemeSearchPaths:
