@@ -9,7 +9,7 @@ QT       += widgets KWindowSystem x11extras
 TARGET = ukui-proxy-style
 TEMPLATE = lib
 CONFIG += plugin c++11 link_pkgconfig
-PKGCONFIG += gsettings-qt
+PKGCONFIG += gsettings-qt xcb
 
 #include(../../libqt5-ukui-style/settings/settings.pri)
 include(../../libqt5-ukui-style/libqt5-ukui-style.pri)
