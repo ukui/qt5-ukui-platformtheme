@@ -46,6 +46,7 @@ int TwoFingerSlideGesture::delta()
     case Invalid:
         return 0;
     }
+    return 0;
 }
 
 int TwoFingerSlideGesture::totalDelta()
@@ -58,6 +59,7 @@ int TwoFingerSlideGesture::totalDelta()
     case Invalid:
         return 0;
     }
+    return 0;
 }
 
 TwoFingerSlideGestureRecognizer::TwoFingerSlideGestureRecognizer() : QGestureRecognizer()
