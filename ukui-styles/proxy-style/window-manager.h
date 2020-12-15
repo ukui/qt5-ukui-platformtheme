@@ -65,6 +65,8 @@ private:
     QPoint m_start_point;
 
     bool m_prepared_to_drag = false;
+    bool isDragable(QWidget *widget);
+    bool dragable = true;
 };
 
 class AppEventFilter : public QObject

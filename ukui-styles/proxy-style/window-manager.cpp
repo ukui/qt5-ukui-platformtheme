@@ -46,13 +46,16 @@ WindowManager::WindowManager(QObject *parent) : QObject(parent)
 
 void WindowManager::registerWidget(QWidget *w)
 {
-    w->removeEventFilter(this);
-    w->installEventFilter(this);
+    if (dragable = isDragable(w)) {
+        w->removeEventFilter(this);
+        w->installEventFilter(this);
+    }
 }
 
 void WindowManager::unregisterWidget(QWidget *w)
 {
-    w->removeEventFilter(this);
+    if (dragable)
+        w->removeEventFilter(this);
 }
 
 bool WindowManager::eventFilter(QObject *obj, QEvent *e)
@@ -199,6 +202,22 @@ void WindowManager::endDrag()
     m_start_point = QPoint(0, 0);
     m_timer.stop();
 }
+
+bool WindowManager::isDragable(QWidget *widget)
+{
+    if (widget && widget->isWindow()) {
+        if ((widget->windowFlags() & Qt::Popup) == Qt::Popup) {
+            if ((widget->windowFlags() & Qt::Tool) == Qt::Tool)
+                return true;
+            return false;
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 
 // AppEventFilter
 AppEventFilter::AppEventFilter(WindowManager *parent) : QObject(parent)
