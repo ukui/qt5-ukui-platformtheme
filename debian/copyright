@@ -88,6 +88,8 @@ Files: libqt5-ukui-style/animations/animation-helper.cpp
        ukui-styles/qt5-style-ukui/scrollbar-animation-helper.h
        ukui-styles/qt5-style-ukui/tab-widget-animation-helper.cpp
        ukui-styles/qt5-style-ukui/tab-widget-animation-helper.h
+       ukui-styles/qt5-style-ukui/shadow-helper.cpp
+       ukui-styles/qt5-style-ukui/shadow-helper.h
 Copyright: 2020 Tianjin KYLIN Information Technology Co., Ltd.
 License:   LGPL-3.0+
 

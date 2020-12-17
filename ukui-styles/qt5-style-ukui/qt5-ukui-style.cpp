@@ -42,6 +42,7 @@
 
 #include "animator-iface.h"
 #include "animation-helper.h"
+#include "shadow-helper.h"
 
 #include "highlight-effect.h"
 
@@ -273,6 +274,7 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
+    m_shadow_helper = new ShadowHelper(this);
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -462,6 +464,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
     Style::polish(widget);
+
+    m_shadow_helper->registerWidget(widget);
+
     if (auto menu = qobject_cast<QMenu*>(widget)) {
         //widget->setAttribute(Qt::WA_TranslucentBackground);
         HighLightEffect::setMenuIconHighlightEffect(menu, HighLightEffect::HighlightEffect, HighLightEffect::BothDefaultAndHighlit);
@@ -530,6 +535,8 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 
 void Qt5UKUIStyle::unpolish(QWidget *widget)
 {
+    m_shadow_helper->unregisterWidget(widget);
+
     widget->removeEventFilter(this);
 
     if (widget->inherits("QTipLabel")) {
