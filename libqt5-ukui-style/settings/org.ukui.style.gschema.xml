@@ -1,7 +1,7 @@
 <schemalist>
     <schema id="org.ukui.style" path="/org/ukui/style/" gettext-domain="style">
         <key type="s" name="style-name">
-            <default>"ukui-default"</default>
+            <default>"ukui"</default>
             <summary>Current Qt Style</summary>
             <description>Set default style for UKUI desktop environment.</description>
         </key>
