@@ -1591,11 +1591,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             imagePainter.setPen(QPen(option->palette.color(QPalette::QPalette::WindowText), 1.1));
             if (option->state & (State_MouseOver|State_Sunken))
             {
-                if (widget && widget->property("isWindowButton").toInt() == 1) {
-                    // skip setting pen
-                } else {
-                    imagePainter.setPen(QPen(option->palette.color(QPalette::HighlightedText), 1.1));
-                }
+                imagePainter.setPen(QPen(option->palette.color(QPalette::HighlightedText), 1.1));
             }
             imagePainter.setBrush(Qt::NoBrush);;
             imagePainter.setRenderHint(QPainter::Antialiasing);
@@ -2414,6 +2410,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             if (toolbutton->subControls & SC_ToolButtonMenu) {
                 tool.rect = menuarea;
                 tool.state = mflags;
+                if (widget && widget->property("isWindowButton").isValid())
+                    tool.state &= State_Enabled;
                 proxy()->drawPrimitive(PE_IndicatorArrowDown, &tool, painter, widget);
             }
             /*
