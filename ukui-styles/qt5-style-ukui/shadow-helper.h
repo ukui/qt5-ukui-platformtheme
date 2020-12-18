@@ -43,6 +43,7 @@ public:
     void unregisterWidget(const QWidget *widget);
 
     QPixmap getShadowPixmap(/*State state,*/
+                            QColor color,
                             int shadow_border,
                             qreal darkness,
                             int borderRadiusTopLeft = 0,
@@ -56,7 +57,7 @@ public:
                                              qreal borderRadiusBottomRight = 0);
 
 
-    KWindowShadow *getShaodw(int shadow_border,
+    KWindowShadow *getShadow(QColor color, int shadow_border,
                              qreal darkness,
                              int borderRadiusTopLeft = 0,
                              int borderRadiusTopRight = 0,

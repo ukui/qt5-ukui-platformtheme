@@ -1579,7 +1579,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             imagePainter.setPen(QPen(option->palette.color(QPalette::QPalette::WindowText), 1.1));
             if (option->state & (State_MouseOver|State_Sunken))
             {
-                imagePainter.setPen(QPen(option->palette.color(QPalette::Light), 1.1));
+                if (widget && widget->property("isWindowButton").toInt() == 1) {
+                    // skip setting pen
+                } else {
+                    imagePainter.setPen(QPen(option->palette.color(QPalette::HighlightedText), 1.1));
+                }
             }
             imagePainter.setBrush(Qt::NoBrush);;
             imagePainter.setRenderHint(QPainter::Antialiasing);

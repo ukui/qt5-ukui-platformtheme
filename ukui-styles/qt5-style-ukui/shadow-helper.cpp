@@ -90,7 +90,7 @@ void ShadowHelper::unregisterWidget(const QWidget *widget)
     }
 }
 
-QPixmap ShadowHelper::getShadowPixmap(/*ShadowHelper::State state,*/ int shadow_border, qreal darkness, int borderRadiusTopLeft, int borderRadiusTopRight, int borderRadiusBottomLeft, int borderRadiusBottomRight)
+QPixmap ShadowHelper::getShadowPixmap(QColor color, /*ShadowHelper::State state,*/ int shadow_border, qreal darkness, int borderRadiusTopLeft, int borderRadiusTopRight, int borderRadiusBottomLeft, int borderRadiusBottomRight)
 {
     int maxTopRadius = qMax(borderRadiusTopLeft, borderRadiusTopRight);
     int maxBottomRadius = qMax(borderRadiusBottomLeft, borderRadiusBottomRight);
@@ -166,7 +166,7 @@ QPixmap ShadowHelper::getShadowPixmap(/*ShadowHelper::State state,*/ int shadow_
     auto borderPath = caculateRelativePainterPath(borderRadiusTopLeft + 0.5, borderRadiusTopRight + 0.5, borderRadiusBottomLeft + 0.5, borderRadiusBottomRight + 0.5);
     painter2.setCompositionMode(QPainter::CompositionMode_DestinationOver);
     painter2.setRenderHint(QPainter::HighQualityAntialiasing);
-    QColor borderColor = QColor(26, 26, 26);
+    QColor borderColor = color;
     borderColor.setAlphaF(0.05);
     painter2.setPen(borderColor);
     painter2.setBrush(Qt::NoBrush);
@@ -217,9 +217,9 @@ QPainterPath ShadowHelper::caculateRelativePainterPath(qreal borderRadiusTopLeft
     return windowRelativePath;
 }
 
-KWindowShadow *ShadowHelper::getShaodw(int shadow_border, qreal darkness, int borderRadiusTopLeft, int borderRadiusTopRight, int borderRadiusBottomLeft, int borderRadiusBottomRight)
+KWindowShadow *ShadowHelper::getShadow(QColor color, int shadow_border, qreal darkness, int borderRadiusTopLeft, int borderRadiusTopRight, int borderRadiusBottomLeft, int borderRadiusBottomRight)
 {
-    QPixmap shadowPixmap = getShadowPixmap(shadow_border, darkness, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight);
+    QPixmap shadowPixmap = getShadowPixmap(color, shadow_border, darkness, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight);
     qreal maxTopRadius = qMax(borderRadiusTopLeft, borderRadiusTopRight);
     qreal maxBottomRadius = qMax(borderRadiusBottomLeft, borderRadiusBottomRight);
     int maxRadius = qMax(maxTopRadius, maxBottomRadius);
@@ -269,6 +269,8 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
         auto widget = qobject_cast<QWidget *>(watched);
         if (QX11Info::isPlatformX11() && event->type() == QEvent::Show) {
             if (watched->property("useCustomShadow").toBool() && widget->isTopLevel()) {
+                auto shadowColor = widget->palette().shadow().color();
+
                 int shadowBorder = widget->property("customShadowWidth").toInt();
                 qreal darkness = widget->property("customShadowDarkness").toReal();
                 QVector4D radius = qvariant_cast<QVector4D>(widget->property("customShadowRadius"));
@@ -279,7 +281,7 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
                         return false;
                 }
 
-                auto shadow = getShaodw(shadowBorder, darkness, radius.x(), radius.y(), radius.z(), radius.w());
+                auto shadow = getShadow(shadowColor, shadowBorder, darkness, radius.x(), radius.y(), radius.z(), radius.w());
                 shadow->setPadding(QMargins(margins.x(), margins.y(), margins.z(), margins.w()));
                 shadow->setWindow(widget->windowHandle());
                 shadow->create();
@@ -305,7 +307,9 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
                     tmp->deleteLater();
                 }
 
-                auto shadow = getShaodw(15, 0.5, 6, 6, 6, 6);
+                auto shadowColor = widget->palette().shadow().color();
+
+                auto shadow = getShadow(shadowColor, 15, 0.5, 6, 6, 6, 6);
                 shadow->setPadding(QMargins(15, 15, 15, 15));
                 shadow->setWindow(widget->windowHandle());
                 shadow->create();
