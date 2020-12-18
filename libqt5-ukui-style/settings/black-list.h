@@ -29,6 +29,7 @@ static const QStringList blackAppList() {
     QStringList l;
     //l<<"ukui-control-center";
     l<<"ubuntu-kylin-software-center.py";
+    l<<"kylin-software-center.py";
     l<<"kylin-burner";
     l<<"assistant";
     l<<"sogouIme-configtool";
