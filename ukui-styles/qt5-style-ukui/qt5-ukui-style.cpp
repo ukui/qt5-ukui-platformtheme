@@ -852,6 +852,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->save();
                 if (isWindowButton) {
                     QColor color = button->palette.color(QPalette::Text);
+                    if (useDefaultPalette().contains(qAppName()))
+                        color = button->palette.color(QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
@@ -869,6 +871,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 if (isWindowButton) {
                     QColor color = button->palette.color(QPalette::Text);
+                    if (useDefaultPalette().contains(qAppName()))
+                        color = button->palette.color(QPalette::Base);
                     color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
@@ -907,6 +911,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setOpacity(opacity);
                 if (isWindowButton) {
                     QColor color = button->palette.color(QPalette::Text);
+                    if (useDefaultPalette().contains(qAppName()))
+                        color = button->palette.color(QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
@@ -1130,6 +1136,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             if (isWindowButton) {
                 QColor color = option->palette.color(QPalette::Text);
+                if (useDefaultPalette().contains(qAppName()))
+                    color = option->palette.color(QPalette::Base);
                 color.setAlphaF(0.1);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
@@ -1147,6 +1155,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             if (isWindowButton) {
                 QColor color = option->palette.color(QPalette::Text);
+                if (useDefaultPalette().contains(qAppName()))
+                    color = option->palette.color(QPalette::Base);
                 color.setAlphaF(0.15);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
@@ -1185,6 +1195,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setOpacity(opacity);
             if (isWindowButton) {
                 QColor color = option->palette.color(QPalette::Text);
+                if (useDefaultPalette().contains(qAppName()))
+                    color = option->palette.color(QPalette::Base);
                 color.setAlphaF(0.1);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
