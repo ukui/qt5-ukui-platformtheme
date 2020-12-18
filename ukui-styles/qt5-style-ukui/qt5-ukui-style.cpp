@@ -3911,7 +3911,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 9;
-    case PM_ToolBarItemSpacing:return 4;
     case PM_ToolTipLabelFrameWidth:return 7;
     case PM_MenuButtonIndicator:
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
@@ -3932,6 +3931,19 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     {
         return 16;
     }
+    case PM_LayoutLeftMargin:
+    case PM_LayoutTopMargin:
+    case PM_LayoutRightMargin:
+    case PM_LayoutBottomMargin:
+        return 8;
+    case PM_LayoutHorizontalSpacing:
+    case PM_LayoutVerticalSpacing:
+        return 8;
+    case PM_ToolBarFrameWidth:
+    case PM_ToolBarItemMargin:
+        return 0;
+    case PM_ToolBarItemSpacing:
+        return 4;
     default:
         break;
     }
