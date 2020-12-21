@@ -402,7 +402,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
         font_br_bg.setRgb(255,255,255);
         font_br_bg.setAlphaF(0.9);
         font_di_bg.setRgb(255,255,255);
-        font_di_bg.setAlphaF(0.1);
+        font_di_bg.setAlphaF(0.3);
         button_bg.setRgb(61,61,65);
         button_ac_bg.setRgb(48,48,51);
         button_di_bg.setRgb(48,48,51);
