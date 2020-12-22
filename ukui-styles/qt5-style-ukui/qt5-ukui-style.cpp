@@ -3886,7 +3886,8 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_IndicatorHeight:{
         return 16;
     }
-    case PM_SubMenuOverlap:return -2;
+    case PM_MenuPanelWidth:return 2;
+    case PM_SubMenuOverlap:return 2;
     case PM_ButtonMargin:return  9;
     case PM_DefaultFrameWidth:
         if(const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(option))
@@ -4226,6 +4227,39 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     }
     return Style::subElementRect(element,option,widget);
 }
+
+
+
+
+// change control Qsize
+QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option,
+                                     const QSize &csz, const QWidget *widget) const
+{
+
+    QSize sz = QFusionStyle::sizeFromContents(ct, option, csz, widget);
+    switch (ct) {
+
+    case CT_MenuItem:{
+        if (const QStyleOptionMenuItem *vopt = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+            // call base class
+            QSize size( QFusionStyle::sizeFromContents( CT_MenuItem, option, csz, widget ) );
+            // add margins
+            return size + QSize(0,4);
+        }
+        return sz;
+    }break;
+
+    default:
+        break;
+    }
+    return sz;
+}
+
+
+
+
+
+
 
 void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const
 {
