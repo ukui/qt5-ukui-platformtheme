@@ -84,15 +84,18 @@ void GestureHelper::registerWidget(QWidget *widget)
     if (!widget)
         return;
 
+    if (widget->contextMenuPolicy() == Qt::NoContextMenu)
+        return;
+
     //widget->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     widget->removeEventFilter(this);
 
-    widget->grabGesture(Qt::TapGesture);
+    //widget->grabGesture(Qt::TapGesture);
     widget->grabGesture(Qt::TapAndHoldGesture);
-    widget->grabGesture(Qt::PanGesture);
-    widget->grabGesture(Qt::PinchGesture);
-    widget->grabGesture(Qt::SwipeGesture);
+    //widget->grabGesture(Qt::PanGesture);
+    //widget->grabGesture(Qt::PinchGesture);
+    //widget->grabGesture(Qt::SwipeGesture);
     //widget->grabGesture(m_slide_type);
     //widget->grabGesture(m_zoom_type);
 
@@ -104,15 +107,18 @@ void GestureHelper::unregisterWidget(QWidget *widget)
     if (!widget)
         return;
 
+    if (widget->contextMenuPolicy() == Qt::NoContextMenu)
+        return;
+
     //widget->setAttribute(Qt::WA_AcceptTouchEvents, true);
 
     widget->removeEventFilter(this);
 
-    widget->ungrabGesture(Qt::TapGesture);
+    //widget->ungrabGesture(Qt::TapGesture);
     widget->ungrabGesture(Qt::TapAndHoldGesture);
-    widget->ungrabGesture(Qt::PanGesture);
-    widget->ungrabGesture(Qt::PinchGesture);
-    widget->ungrabGesture(Qt::SwipeGesture);
+    //widget->ungrabGesture(Qt::PanGesture);
+    //widget->ungrabGesture(Qt::PinchGesture);
+    //widget->ungrabGesture(Qt::SwipeGesture);
     //widget->ungrabGesture(m_slide_type);
     //widget->ungrabGesture(m_zoom_type);
 }

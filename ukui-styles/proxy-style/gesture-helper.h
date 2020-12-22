@@ -33,6 +33,11 @@ class TwoFingerSlideGestureRecognizer;
 class TwoFingerZoomGestureRecognizer;
 }
 
+/*!
+ * \brief The GestureHelper class
+ * \note
+ * this class only handle hold and tap gesture for now.
+ */
 class GestureHelper : public QObject
 {
     Q_OBJECT
