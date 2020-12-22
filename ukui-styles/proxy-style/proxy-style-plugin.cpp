@@ -43,7 +43,7 @@ ProxyStylePlugin::ProxyStylePlugin()
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
             if (key == "styleName") {
                 qDebug()<<"style name changed";
-                if (blackList().contains(qAppName()))
+                if (blackList().contains(qAppName()) || qAppName() == "biometric-manager")
                     return;
 
                 //We should not swich a application theme which use internal style.
