@@ -3613,7 +3613,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         if (menuItem->icon.isNull()) {
                             QStyleOptionButton box;
                             box.QStyleOption::operator=(*option);
-                            box.rect = checkRect;
+                            //由于菜单变高，导致复选框会变大，需要减小
+                            box.rect = checkRect.adjusted(+0,+2,-5,-3);
                             if (checked)
                                 box.state |= State_On;
                             proxy()->drawPrimitive(PE_IndicatorCheckBox, &box, painter, widget);
@@ -3692,7 +3693,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 p->setPen(discol);
             }
             //int xm = checkColHOffset + checkcol + windowsItemHMargin;
-            int xm = checkColHOffset + checkcol + 5;
+//            int xm = checkColHOffset + checkcol + 5;
+            int xm = checkColHOffset + checkcol ;
             int xpos = menuitem->rect.x() + xm;
 
             //                QRect textRect(xpos, y + windowsItemVMargin, w - xm - windowsRightBorder - tab + 1, h - 2 * windowsItemVMargin);
@@ -4229,8 +4231,6 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
 }
 
 
-
-
 // change control Qsize
 QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option,
                                      const QSize &csz, const QWidget *widget) const
@@ -4254,11 +4254,6 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     }
     return sz;
 }
-
-
-
-
-
 
 
 void Qt5UKUIStyle::drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const
