@@ -59,11 +59,13 @@ void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QW
 
 void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
 {
-    //qDebug()<<"draw menu frame"<<option->styleObject<<option->palette;
+    int Menu_xRadius = 4;
+    int Menu_yRadius = 4;
+    int rander = 5;
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
     QPainterPath rectPath;
-    rectPath.addRoundedRect(option->rect.adjusted(+5,+5,-5,-5), 6, 6);
+    rectPath.addRoundedRect(option->rect.adjusted(+rander, +rander, -rander, -rander), Menu_xRadius, Menu_yRadius);
 
     // Draw a black floor
     QPixmap pixmap(option->rect.size());
@@ -77,7 +79,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
 
     // Blur the black background
     QImage img = pixmap.toImage();
-    qt_blurImage(img, 6, false, false);
+    qt_blurImage(img, Menu_xRadius, false, false);
 
     // Dig out the center part
     pixmap = QPixmap::fromImage(img);
@@ -96,7 +98,6 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     auto color = opt.palette.color(QPalette::Base);
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-        //qDebug()<<opacity;
         color.setAlphaF(opacity);
     }
 
@@ -123,7 +124,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     QPainterPath path;
     auto region = widget->mask();
     if (region.isEmpty()) {
-        path.addRoundedRect(opt.rect.adjusted(+5,+5,-5,-5), 6, 6);
+        path.addRoundedRect(opt.rect.adjusted(+rander, +rander, -rander,-rander), Menu_xRadius, Menu_yRadius);
     } else {
         path.addRegion(region);
     }

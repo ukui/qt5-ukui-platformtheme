@@ -102,7 +102,7 @@ public:
                                  const QStyleOption *option,
                                  const QWidget *widget = nullptr) const;
     QSize sizeFromContents(ContentsType ct, const QStyleOption *option,
-                           const QSize &csz, const QWidget *widget) const;
+                           const QSize &size, const QWidget *widget) const;
 
 protected:
     const QStringList useDefaultPalette() const;
