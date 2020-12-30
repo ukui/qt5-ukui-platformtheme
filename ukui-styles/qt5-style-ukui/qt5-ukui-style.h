@@ -23,6 +23,8 @@
 #ifndef QT5UKUISTYLE_H
 #define QT5UKUISTYLE_H
 
+#include "messagebox-helper.h"
+
 #include <QProxyStyle>
 
 class TabWidgetAnimationHelper;
@@ -123,6 +125,7 @@ private:
     ButtonAnimationHelper*  m_button_animation_helper;
     BoxAnimationHelper* m_combobox_animation_helper;
     ShadowHelper *m_shadow_helper;
+    MessageboxHelper* m_messagebox_helper;
 
 
     bool m_use_dark_palette = false;

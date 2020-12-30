@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QPainterPath>
+#include <QMessageBox>
 
 #include <QPaintDevice>
 
@@ -275,6 +276,7 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
+    m_messagebox_helper = new MessageboxHelper(this);
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -484,6 +486,10 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_tab_animation_helper->registerWidget(widget);
     }
 
+    if (qobject_cast<QMessageBox*>(widget)) {
+        m_messagebox_helper->registerWidget(widget);
+    }
+
     if (qobject_cast<QScrollBar*>(widget)) {
         widget->setAttribute(Qt::WA_Hover);
         m_scrollbar_animation_helper->registerWidget(widget);
@@ -582,6 +588,10 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     if(qobject_cast<QSpinBox*>(widget) || qobject_cast<QDoubleSpinBox*>(widget))
     {
         m_button_animation_helper->unregisterWidget(widget);
+    }
+
+    if (qobject_cast<QMessageBox*>(widget)) {
+        m_messagebox_helper->unregisterWidget(widget);
     }
 
 //    if(auto tv = qobject_cast<QTableView*>(widget))
