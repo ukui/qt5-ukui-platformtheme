@@ -289,6 +289,7 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"kylin-nm";
     l<<"ukui-flash-disk";
     l<<"indicator-china-weather";
+    l<<"kylin-video";
     return l;
 }
 
