@@ -350,7 +350,7 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 
     switch (hint) {
     case SH_ScrollBar_Transient:
-        return true;
+        return false;
     case SH_ItemView_ShowDecorationSelected:
         return true;
     case SH_DialogButtonBox_ButtonsHaveIcons:
@@ -1787,27 +1787,27 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 }
             }
         }
+//        移上去不需要滚动条背景
+//        painter->save();
+//        painter->setPen(Qt::transparent);
+//        painter->setBrush(tmp.palette.windowText());
+//        double percent = animator->value("groove_width").toDouble();
+//        painter->setOpacity(percent * 0.1);
+//        auto grooveRect = option->rect;
+//        if (is_horizontal) {
+//            grooveRect.setY(grooveRect.height() * (1.0 - percent));
+//        } else {
+//            grooveRect.setX(grooveRect.width() * (1.0 - percent));
+//        }
+//        if (widget->property("drawScrollBarGroove").isValid()) {
+//            if (!widget->property("drawScrollBarGroove").toBool()) {
+//                painter->restore();
+//                return QCommonStyle::drawComplexControl(control, option, painter, widget);
+//            }
+//        }
 
-        painter->save();
-        painter->setPen(Qt::transparent);
-        painter->setBrush(tmp.palette.windowText());
-        double percent = animator->value("groove_width").toDouble();
-        painter->setOpacity(percent * 0.1);
-        auto grooveRect = option->rect;
-        if (is_horizontal) {
-            grooveRect.setY(grooveRect.height() * (1.0 - percent));
-        } else {
-            grooveRect.setX(grooveRect.width() * (1.0 - percent));
-        }
-        if (widget->property("drawScrollBarGroove").isValid()) {
-            if (!widget->property("drawScrollBarGroove").toBool()) {
-                painter->restore();
-                return QCommonStyle::drawComplexControl(control, option, painter, widget);
-            }
-        }
-
-        painter->drawRect(grooveRect);
-        painter->restore();
+//        painter->drawRect(grooveRect);
+//        painter->restore();
 
         return QCommonStyle::drawComplexControl(control, option, painter, widget);
     }
@@ -3797,6 +3797,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_SmallIconSize:
         return 16;
+
 
     case PM_IndicatorWidth:{
         return 16;
