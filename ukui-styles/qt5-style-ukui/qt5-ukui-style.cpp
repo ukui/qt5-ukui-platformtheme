@@ -387,7 +387,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             button_bg(217,217,217),
             button_ac_bg(107,142,235),
             button_di_bg(233,233,233),
-            highlight_bg(61,107,229),
+            highlight_bg(55,144,250),
             tip_bg(248,248,248),
             tip_font(22,22,22),
             alternateBase(248,248,248);
@@ -407,7 +407,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
         button_bg.setRgb(61,61,65);
         button_ac_bg.setRgb(48,48,51);
         button_di_bg.setRgb(48,48,51);
-        highlight_bg.setRgb(61,107,229);
+        highlight_bg.setRgb(55,144,250);
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
