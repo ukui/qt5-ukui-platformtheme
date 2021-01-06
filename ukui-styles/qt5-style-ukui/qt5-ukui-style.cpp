@@ -2946,6 +2946,15 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     case CE_PushButtonLabel:
     {
         const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option);
+        if (!button)
+            return Style::drawControl(element, option, painter, widget);
+
+        if (button->state & State_HasFocus) {
+            QStyleOptionFocusRect opt;
+            opt.initFrom(widget);
+            Style::drawPrimitive(PE_FrameFocusRect, &opt, painter, widget);
+        }
+
         QRect rect = button->rect;
         int bf = proxy()->pixelMetric(PM_DefaultFrameWidth,button,widget);//2
         int bm = proxy()->pixelMetric(PM_ButtonMargin,button,widget);//9
