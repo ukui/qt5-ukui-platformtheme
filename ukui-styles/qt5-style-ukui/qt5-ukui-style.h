@@ -67,6 +67,9 @@ public:
     void unpolish(QWidget *widget);
     void polish(QPalette& palette) ;
 
+    QIcon standardIcon(StandardPixmap standardIcon, const QStyleOption *option = nullptr,
+                           const QWidget *widget = nullptr) const override;
+
     QPalette standardPalette() const;
 
     void drawPrimitive(QStyle::PrimitiveElement element,
