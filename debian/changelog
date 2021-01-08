@@ -1,3 +1,17 @@
+qt5-ukui-platformtheme (1.0.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * d/control: bump standards-version to 4.5.1.
+
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Fri, 08 Jan 2021 02:05:36 +0000
+
+qt5-ukui-platformtheme (1.0.5-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * debian: use shlibs instead of symbols file.
+
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Mon, 28 Sep 2020 10:47:04 +0800
+
 qt5-ukui-platformtheme (1.0.4-1) unstable; urgency=medium
 
   * New upstream release.

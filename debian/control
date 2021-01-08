@@ -16,7 +16,7 @@ Build-Depends: debhelper-compat (=12),
                qtbase5-private-dev,
                qtchooser,
                qttools5-dev-tools
-Standards-Version: 4.5.0
+Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
 Vcs-Git: https://github.com/ukui/qt5-ukui-platformtheme.git

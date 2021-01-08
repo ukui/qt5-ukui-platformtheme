@@ -17,7 +17,7 @@ Files: CONTRIBUTING.md
        libqt5-ukui-style/libqt5-ukui-style.pro
        libqt5-ukui-style/settings/settings.pri
        libqt5-ukui-style/settings/org.ukui.style.gschema.xml
-       libqt5-ukui-style/black-list.h
+       libqt5-ukui-style/settings/black-list.h
        libqt5-ukui-style/effects/effects.pri
        libqt5-ukui-style/effects/highlight-effect.cpp
        libqt5-ukui-style/effects/highlight-effect.h
@@ -59,7 +59,7 @@ Files: libqt5-ukui-style/animations/animation-helper.cpp
        libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator-factory.h
        libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.cpp
        libqt5-ukui-style/animations/tabwidget/ukui-tabwidget-default-slide-animator.h
-       libqt5-ukui-style/libqt5-ukui-style_global.h
+       libqt5-ukui-style/settings/libqt5-ukui-style_global.h
        libqt5-ukui-style/settings/ukui-style-settings.cpp
        libqt5-ukui-style/settings/ukui-style-settings.h
        libqt5-ukui-style/settings/application-style-settings.cpp
