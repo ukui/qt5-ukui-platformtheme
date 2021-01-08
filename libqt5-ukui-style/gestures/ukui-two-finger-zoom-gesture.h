@@ -36,7 +36,7 @@ class TwoFingerZoomGesture : public QGesture
     Q_OBJECT
 public:
     enum Direction {
-        Invaild,
+        Invalid,
         Unkown,
         ZoomIn,
         ZoomOut
@@ -57,7 +57,7 @@ private:
     qreal m_start_points_distance = -1;
     qreal m_last_points_distance = -1;
 
-    Direction m_zoom_direction = Invaild;
+    Direction m_zoom_direction = Invalid;
 };
 
 class TwoFingerZoomGestureRecognizer : public QGestureRecognizer
