@@ -70,7 +70,7 @@
 #include <QStyleOptionButton>
 #include <QStyleOptionMenuItem>
 #include <QLabel>
-
+#include <QMessageBox>
 #include <QApplication>
 #define COMMERCIAL_VERSION true
 
@@ -531,6 +531,11 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         label->setScaledContents(true);
     }
 
+    if (qobject_cast<QMessageBox *>(widget)) {
+        widget->setAutoFillBackground(true);
+        widget->setBackgroundRole(QPalette::Base);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -593,6 +598,35 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 
     Style::unpolish(widget);
 }
+
+
+
+QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption *option, const QWidget *widget) const
+{
+    if (QApplication::desktopSettingsAware() && !QIcon::themeName().isEmpty()) {
+        switch (standardIcon) {
+        case SP_DialogOkButton:
+        case SP_DialogSaveButton:
+        case SP_DialogOpenButton:
+        case SP_DialogCancelButton:
+        case SP_DialogCloseButton:
+        case SP_DialogApplyButton:
+        case SP_DialogResetButton:
+        case SP_DialogHelpButton:
+        case SP_DialogDiscardButton:
+        case SP_DialogYesButton:
+        case SP_DialogNoButton:
+        {
+            return QIcon();
+        }
+        default:
+            break;
+        }
+    }
+    return Style::standardIcon(standardIcon, option, widget);
+}
+
+
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
