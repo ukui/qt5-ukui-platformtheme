@@ -43,7 +43,7 @@ jobs:
       - name: Update apt repository
         run: apt-get update -y
       - name: Install build dependcies
-        run: apt-get install -y build-essential qt5-default qttools5-dev-tools qtmultimedia5-dev debhelper-compat pkg-kde-tools libglib2.0-dev libqt5x11extras5-dev libkf5windowsystem-dev libgsettings-qt-dev pkg-config qt5-qmake qtbase5-dev qtbase5-dev-tools qtbase5-private-dev qtchooser qttools5-dev-tools
+        run: apt-get install -y build-essential qttools5-dev-tools debhelper-compat pkg-kde-tools libglib2.0-dev libqt5x11extras5-dev libkf5windowsystem-dev libgsettings-qt-dev pkg-config qt5-qmake qtbase5-dev qtbase5-dev-tools qtbase5-private-dev qtchooser qttools5-dev-tools
       - name: QMake configure & Make
         run: |
           mkdir build;
