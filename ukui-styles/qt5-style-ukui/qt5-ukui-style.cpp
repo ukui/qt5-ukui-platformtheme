@@ -71,7 +71,11 @@
 #include <QStyleOptionMenuItem>
 #include <QLabel>
 #include <QMessageBox>
+#include <QLineEdit>
 #include <QApplication>
+
+#include <private/qlineedit_p.h>
+
 #define COMMERCIAL_VERSION true
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
@@ -537,6 +541,10 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         widget->setBackgroundRole(QPalette::Base);
     }
 
+    if (qobject_cast<QLineEdit *>(widget)) {
+        widget->setAttribute(Qt::WA_Hover);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -596,6 +604,10 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 //       tv->setShowGrid(true);
 //       tv->setAlternatingRowColors(false);
 //    }
+
+    if (qobject_cast<QLineEdit *>(widget)) {
+        widget->setAttribute(Qt::WA_Hover, false);
+    }
 
     Style::unpolish(widget);
 }
@@ -1356,6 +1368,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelLineEdit://UKUI Text edit style
     {
+        if (widget) {
+            if (QAction *clearAction = widget->findChild<QAction *>(QLatin1String("_q_qlineeditclearaction"))) {
+                QStyleOption subOption = *option;
+                QColor color = subOption.palette.color(QPalette::Text);
+                color.setAlphaF(1.0);
+                subOption.palette.setColor(QPalette::Text, color);
+                clearAction->setIcon(QIcon(HighLightEffect::ordinaryGeneratePixmap(clearAction->icon().pixmap(16, 16), &subOption, widget)));
+            }
+        }
+
         // Conflict with qspinbox and so on, The widget text cannot use this style
         if (widget) {
             if (widget->parentWidget())
@@ -1365,28 +1387,47 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     return;
                 }
         }
-        painter->save();
-        if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
-            painter->setRenderHint(QPainter::Antialiasing,true);
-            //Setpen is set to avoid a bug that collides with a white background
-            painter->setPen(option->palette.color(QPalette::Window).dark());
-            painter->setBrush(option->palette.color(QPalette::Base));
-            // if (panel->lineWidth > 0)
-            // proxy()->drawPrimitive(PE_FrameLineEdit, panel, painter, widget);
-            if (widget && widget->isEnabled()) {
-                if (option->state &State_MouseOver) {
-                    painter->setBrush(option->palette.button().color().lighter());
+
+        if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+            painter->save();
+            const bool enable(f->state & State_Enabled);
+            const bool focus(f->state & State_HasFocus);
+            const bool hover(f->state & State_MouseOver);
+            QRect rect(f->rect);
+            if (enable) {
+                int LineEdit_xRadius = 4;
+                int LineEdit_yRadius = 4;
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
+                painter->drawRoundedRect(f->rect, LineEdit_xRadius, LineEdit_yRadius);
+                if (focus) {
+                    painter->save();
+                    QPen pen(f->palette.brush(QPalette::Active, QPalette::Highlight), 2);
+                    pen.setJoinStyle(Qt::RoundJoin);
+                    painter->setPen(pen);
+                    painter->setBrush(Qt::NoBrush);
+                    painter->translate(1, 1);
+                    painter->drawRoundedRect(rect.adjusted(0, 0, -2, -2), LineEdit_xRadius, LineEdit_yRadius);
+                    painter->restore();
+                } else if (hover) {
+                    painter->save();
+                    painter->setPen(f->palette.color(QPalette::Active, QPalette::Highlight));
+                    painter->setBrush(Qt::NoBrush);
+                    painter->translate(0.5, 0.5);
+                    painter->drawRoundedRect(rect.adjusted(0, 0, -1, -1), LineEdit_xRadius, LineEdit_yRadius);
+                    painter->restore();
                 }
-                if(option->state &State_HasFocus) {
-                    painter->setPen(option->palette.color(QPalette::Highlight));
-                    painter->setBrush(option->palette.color(QPalette::Base));
-                }
+            } else {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(f->palette.brush(QPalette::Disabled, QPalette::Button));
+                painter->drawRoundedRect(f->rect, 4, 4);
             }
-            painter->drawRoundedRect(panel->rect,4,4);
+            painter->restore();
+            return;
         }
-        painter->restore();
-        return;
+        break;
     }
+
 
 
 //    case PE_IndicatorCheckBox: { //UKUI CheckBox style
@@ -3852,12 +3893,15 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_SubMenuOverlap:return 2;
     case PM_ButtonMargin:return  9;
+
     case PM_DefaultFrameWidth:
-        if(const QStyleOptionToolButton *toolbutton = qstyleoption_cast<const QStyleOptionToolButton *>(option))
-        {
+        if (qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             return 4;
+        } else if (qobject_cast<const QLineEdit *>(widget)) {
+            return 6;
         }
         return 2;
+
     case PM_TabBarTabVSpace:return 20;
     case PM_TabBarTabHSpace:return 40;
 //    case PM_HeaderMargin:return 9;
@@ -4242,6 +4286,17 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             default:
                 break;
             }
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_LineEdit:
+    {
+        if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+            newSize += QSize(f->lineWidth * 2, f->lineWidth * 2);
+            newSize.setWidth(qMax(newSize.width(), 140));
+            newSize.setHeight(qMax(newSize.height(), 32));
             return newSize;
         }
         break;
