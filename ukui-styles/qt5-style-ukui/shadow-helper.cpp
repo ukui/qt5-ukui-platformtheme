@@ -295,16 +295,18 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
                         if (shadowToBeDelete->isCreated())
                             shadowToBeDelete->destroy();
                         shadowToBeDelete->deleteLater();
+                        m_shadows.remove(widget);
                     }
                 });
             } else {
-                if (!widget->testAttribute(Qt::WA_WState_Created) && widget->internalWinId())
+                if (!widget->testAttribute(Qt::WA_WState_Created) && !widget->isTopLevel())
                     return false;
 
                 if (auto tmp = m_shadows.value(widget)) {
                     if (tmp->isCreated())
                         tmp->destroy();
                     tmp->deleteLater();
+                    m_shadows.remove(widget);
                 }
 
                 auto shadowColor = widget->palette().shadow().color();
@@ -320,6 +322,7 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
                         if (shadowToBeDelete->isCreated())
                             shadowToBeDelete->destroy();
                         shadowToBeDelete->deleteLater();
+                        m_shadows.remove(widget);
                     }
                 });
             }
