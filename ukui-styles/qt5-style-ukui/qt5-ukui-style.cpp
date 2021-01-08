@@ -388,7 +388,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             base_no_bg(248, 248, 248),
             font_bg(0,0,0),
             font_br_bg(255,255,255),
-            font_di_bg(191,191,191),
+            font_di_bg(0, 0, 0, 76),
             button_bg(217,217,217),
             button_ac_bg(107,142,235),
             button_di_bg(233,233,233),
@@ -3635,9 +3635,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (menuItem->menuItemType == QStyleOptionMenuItem::Separator) {
                 int SepMenuItem_Margin = 8;
                 painter->save();
-                QBrush SepBrush = menuItem->palette.brush((enable ? QPalette::Active : QPalette::Disabled), QPalette::Button);
+                QBrush SepBrush = menuItem->palette.brush(QPalette::Disabled, QPalette::Text);
                 painter->setPen(QPen(SepBrush, 1, Qt::SolidLine, Qt::RoundCap));
                 painter->setBrush(Qt::NoBrush);
+                painter->setOpacity(0.5);
                 painter->drawLine(QPointF(drawRect.left() + SepMenuItem_Margin, drawRect.center().y()),
                                   QPointF(drawRect.right() - SepMenuItem_Margin, drawRect.center().y()));
                 painter->restore();
