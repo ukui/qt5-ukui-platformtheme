@@ -41,10 +41,14 @@
 #include <QDebug>
 #include <private/qgenericunixthemes_p.h>
 
+#include <syslog.h>
+#include "widget/message-box.h"
+
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
 {
     //FIXME:
+    syslog(LOG_ERR, "Qt5UKUIPlatformTheme init");
     Q_UNUSED(args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
@@ -176,13 +180,35 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
 bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
 {
-    //FIXME:
+    return true;
+    switch (type) {
+    case QPlatformTheme::FileDialog:
+    case QPlatformTheme::FontDialog:
+    case QPlatformTheme::ColorDialog:
+        return false;
+    case QPlatformTheme::MessageDialog:
+        return true;
+    default:
+        break;
+    }
+
     return false;
 }
 
 QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogType type) const
 {
-    return QPlatformTheme::createPlatformDialogHelper(type);
+    switch (type) {
+    case QPlatformTheme::FileDialog:
+    case QPlatformTheme::FontDialog:
+    case QPlatformTheme::ColorDialog:
+        return QPlatformTheme::createPlatformDialogHelper(type);
+//    case QPlatformTheme::MessageDialog:
+        return new MessageBoxHelper;
+    default:
+        break;
+    }
+
+    return nullptr;
 }
 #endif
 
