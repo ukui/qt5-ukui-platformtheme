@@ -62,7 +62,7 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
                 return QGestureRecognizer::Ignore;
 
             switch (zoomGesture->zoomDirection()) {
-            case TwoFingerZoomGesture::Invaild: {
+            case TwoFingerZoomGesture::Invalid: {
                 zoomGesture->m_start_points.first = touchEvent->touchPoints().first().pos().toPoint();
                 zoomGesture->m_start_points.second = touchEvent->touchPoints().last().pos().toPoint();
                 zoomGesture->m_last_points = zoomGesture->m_start_points;
@@ -166,6 +166,6 @@ void TwoFingerZoomGestureRecognizer::reset(QGesture *gesture)
     zoomGesture->m_start_points.second = QPoint();
     zoomGesture->m_current_points.first = QPoint();
     zoomGesture->m_current_points.second = QPoint();
-    zoomGesture->m_zoom_direction = TwoFingerZoomGesture::Invaild;
+    zoomGesture->m_zoom_direction = TwoFingerZoomGesture::Invalid;
     QGestureRecognizer::reset(gesture);
 }
