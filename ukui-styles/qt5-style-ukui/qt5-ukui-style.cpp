@@ -1632,8 +1632,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             border = 4;
             sqsize = 16;
         }
-        if (!QPixmapCache::find(key, pixmap))
-        {
+//       if (!QPixmapCache::find(key, pixmap))
+//     {
             QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
             image.fill(0);
             QPainter imagePainter(&image);
@@ -1687,9 +1687,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 imagePainter.drawLines(lines,2);
             }
             imagePainter.end();
-            pixmap = QPixmap::fromImage(image);
-            QPixmapCache::insert(key, pixmap);
-        }
+//            pixmap = QPixmap::fromImage(image);
+//            QPixmapCache::insert(key, pixmap);
+//        }
         int xOffset = r.x() + (r.width() - sqsize)/2;
         int yOffset = r.y() + (r.height() - sqsize)/2;
         painter->drawPixmap(xOffset, yOffset, pixmap);
