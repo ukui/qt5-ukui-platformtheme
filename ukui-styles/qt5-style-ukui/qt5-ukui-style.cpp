@@ -1632,7 +1632,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             border = 4;
             sqsize = 16;
         }
-
+//        if (!QPixmapCache::find(key, pixmap))
+//        {
             QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
             image.fill(0);
             QPainter imagePainter(&image);
@@ -1686,6 +1687,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 imagePainter.drawLines(lines,2);
             }
             imagePainter.end();
+            pixmap = QPixmap::fromImage(image);
+//            QPixmapCache::insert(key, pixmap);
+//        }
 
         int xOffset = r.x() + (r.width() - sqsize)/2;
         int yOffset = r.y() + (r.height() - sqsize)/2;
@@ -3632,10 +3636,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (menuItem->menuItemType == QStyleOptionMenuItem::Separator) {
                 int SepMenuItem_Margin = 8;
                 painter->save();
-                QBrush SepBrush = menuItem->palette.brush(QPalette::Disabled, QPalette::Text);
+                QBrush SepBrush = menuItem->palette.brush(QPalette::Active, QPalette::Text);
                 painter->setPen(QPen(SepBrush, 1, Qt::SolidLine, Qt::RoundCap));
                 painter->setBrush(Qt::NoBrush);
-                painter->setOpacity(0.5);
+                painter->setOpacity(0.1);
                 painter->drawLine(QPointF(drawRect.left() + SepMenuItem_Margin, drawRect.center().y()),
                                   QPointF(drawRect.right() - SepMenuItem_Margin, drawRect.center().y()));
                 painter->restore();
@@ -3675,17 +3679,29 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     QStyleOptionButton checkBoxOption;
                     checkBoxOption.QStyleOption::operator=(*option);
                     checkBoxOption.rect = drawRect;
-                    if (checked)
+                    if (checked) {
                         checkBoxOption.state |= State_On;
-                    QRect checkBoxRect = proxy()->subElementRect(SE_CheckBoxIndicator, &checkBoxOption, widget);
-                    checkBoxOption.rect = checkBoxRect;
-                    proxy()->drawPrimitive(PE_IndicatorCheckBox, &checkBoxOption, painter, widget);
+
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::generatePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
+                    }
+//                    QRect checkBoxRect = proxy()->subElementRect(SE_CheckBoxIndicator, &checkBoxOption, widget);
+//                    checkBoxOption.rect = checkBoxRect;
+//                    proxy()->drawPrimitive(PE_IndicatorCheckBox, &checkBoxOption, painter, widget);
                 }
-                int ind_width = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
-                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(ind_width + MenuItem_Spacing, 0, 0, 0));
             }
 
-            if (menuItem->maxIconWidth != 0) {
+            if (menuItem->maxIconWidth != 0 && !menuItem->menuHasCheckableItems) {
                 int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
                 if (!menuItem->icon.isNull()) {
                     QSize iconSize(smallIconSize, smallIconSize);
@@ -3701,7 +3717,14 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     painter->drawPixmap(iconRect, target);
                     painter->restore();
                 }
-                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(smallIconSize + MenuItem_Spacing, 0, 0, 0));
+            }
+
+            if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
+                int indicatorWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+                int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(qMax(indicatorWidth, iconWidth) + MenuItem_Spacing, 0, 0, 0));
+            } else {
+                drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
             }
 
             if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu) {
@@ -4253,14 +4276,13 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             case QStyleOptionMenuItem::Normal:
             case QStyleOptionMenuItem::DefaultItem:
             {
-                if (menuItem->menuHasCheckableItems) {
-                    w += proxy()->pixelMetric(PM_IndicatorWidth, option, widget) + MenuItem_Spacing;
-                    newSize.setHeight(qMax(newSize.height(), proxy()->pixelMetric(PM_IndicatorWidth, option, widget)));
-                }
-
-                if (menuItem->maxIconWidth != 0) {
-                    w += proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget) + MenuItem_Spacing;
-                    newSize.setHeight(qMax(newSize.height(), proxy()->pixelMetric(PM_SmallIconSize, option, widget)));
+                if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
+                    int indicatorWidth = proxy()->pixelMetric(PM_IndicatorWidth);
+                    int iconWidth = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
+                    w += qMax(indicatorWidth, iconWidth) + MenuItem_Spacing;
+                    newSize.setHeight(qMax(qMax(indicatorWidth, iconWidth), newSize.height()));
+                } else {
+                    w += 8;
                 }
 
                 w += proxy()->pixelMetric(PM_IndicatorWidth, option, widget) + MenuItem_Spacing;
@@ -4269,9 +4291,9 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 int MenuItem_HMargin = 12 + 4;
                 int MenuItem_VMargin = 3;
                 w +=  MenuItem_HMargin;
-                newSize.setWidth(w);
-                newSize.setHeight(newSize.height() + MenuItem_VMargin * 2);
-                break;
+                newSize.setWidth(qMax(w, 160));
+                newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 30));
+                return newSize;
             }
 
             case QStyleOptionMenuItem::Separator:
