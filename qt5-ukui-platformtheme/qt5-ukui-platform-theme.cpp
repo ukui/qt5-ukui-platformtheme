@@ -41,14 +41,12 @@
 #include <QDebug>
 #include <private/qgenericunixthemes_p.h>
 
-#include <syslog.h>
 #include "widget/message-box.h"
 
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
 {
     //FIXME:
-    syslog(LOG_ERR, "Qt5UKUIPlatformTheme init");
     Q_UNUSED(args)
     if (QGSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
@@ -203,7 +201,7 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
-//    case QPlatformTheme::MessageDialog:
+    case QPlatformTheme::MessageDialog:
         return new MessageBoxHelper;
     default:
         break;

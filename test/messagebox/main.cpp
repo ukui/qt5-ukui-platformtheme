@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     qDebug() << (ret == QDialog::Accepted) << " --- " << ret;
 #endif
 
-#if 1
+#if 0
     QMessageBox m;
     m.setText("这是中文测试1，中文测试2，中文测试3，中文测试4，中文测试5，中文测试6，中文测试7，中文测试8，中文测试9，中文测试10，中文测试11，中文测试12，中文测试13，中文测试14");
     int ret = m.exec();
@@ -99,5 +99,33 @@ int main(int argc, char *argv[])
     m.exec();
     qDebug() << (ret == QDialog::Accepted) << " --- " << ret;
 #endif
+
+#if 1
+    // 一个完整的布局展示相关测试例子
+    QMessageBox m;
+    m.setText("<h2>测试html是否可以正常显示</h2><p>短字段</p>");
+    int ret = m.exec();
+    m.setText("<style type='text/css'> h1{color:red;font-size:12;} p{color:blue;font-size:10;}</style><h1>接下来要测试html是否可以正常显示</h1><p>关于HTML显示的测试例子，需要假如一些style之类的字符串来干扰其文本框大小的预估，接下来就是style段</p>");
+    ret = m.exec();
+    m.setIcon(QMessageBox::Critical);
+    m.setText("<style>h1{color:red;}p{color:blue;}</style><h1>接下来要测试html是否可以正常显示</h1><p>关于HTML显示的测试例子，需要假如一些style之类的字符串来干扰其文本框大小的预估，接下来就是style段 + 图标</p>");
+    ret = m.exec();
+    m.setText("较短的纯文本汉字");
+    ret = m.exec();
+    m.setText("很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,");
+    ret = m.exec();
+    m.setText("english");
+    ret = m.exec();
+    m.exec();
+    m.setText("long long english ... aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    m.exec();
+    m.setText("中英文混合 Chinese and English mixed");
+    m.exec();
+    m.setText("中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合 Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.");
+    m.exec();
+    qDebug() << (ret == QDialog::Accepted) << " --- " << ret;
+#endif
+
+
     return a.exec();
 }
