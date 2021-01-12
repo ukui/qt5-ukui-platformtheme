@@ -202,7 +202,7 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
-//    case QPlatformTheme::MessageDialog:
+    case QPlatformTheme::MessageDialog:
         return new MessageBoxHelper;
     default:
         break;
