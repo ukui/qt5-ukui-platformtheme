@@ -44,8 +44,8 @@ public:
     };
 
     enum EffectMode {
-        HighlightOnly,
-        BothDefaultAndHighlit
+        HighlightOnly = 0x0,
+        BothDefaultAndHighlit = 0x1
     };
     Q_ENUM(EffectMode)
 
@@ -74,7 +74,7 @@ public:
 
     static QPixmap generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, bool force = false, EffectMode mode = HighlightOnly);
     static QPixmap ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
-    static QPixmap hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr);
+    static QPixmap hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
     static QPixmap bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
     static QPixmap filledSymbolicColoredGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
 

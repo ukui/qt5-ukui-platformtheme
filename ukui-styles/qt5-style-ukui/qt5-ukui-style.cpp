@@ -473,18 +473,6 @@ void Qt5UKUIStyle::polish(QWidget *widget)
 
     m_shadow_helper->registerWidget(widget);
 
-    if (auto menu = qobject_cast<QMenu*>(widget)) {
-        //widget->setAttribute(Qt::WA_TranslucentBackground);
-        HighLightEffect::setMenuIconHighlightEffect(menu, HighLightEffect::HighlightEffect, HighLightEffect::BothDefaultAndHighlit);
-        //HighLightEffect::setWidgetIconFillSymbolicColor(menu, true);
-        //QRegion mask = getRoundedRectRegion(widget->rect(), 10, 10);
-
-        //widget->setMask(mask);
-        //do not polish widget with proxy style.
-        return;
-        //qDebug()<<mask<<"menu mask"<<widget->mask();
-    }
-
     if (qobject_cast<QTabWidget*>(widget)) {
         //FIXME: unpolish, extensiable.
         m_tab_animation_helper->registerWidget(widget);
@@ -1374,7 +1362,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 QColor color = subOption.palette.color(QPalette::Text);
                 color.setAlphaF(1.0);
                 subOption.palette.setColor(QPalette::Text, color);
-                clearAction->setIcon(QIcon(HighLightEffect::ordinaryGeneratePixmap(clearAction->icon().pixmap(16, 16), &subOption, widget)));
+                clearAction->setIcon(QIcon(HighLightEffect::ordinaryGeneratePixmap(clearAction->icon().pixmap(16, 16), &subOption, widget, HighLightEffect::BothDefaultAndHighlit)));
             }
         }
 
@@ -3686,7 +3674,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         QIcon icon = QIcon::fromTheme("dialog-ok");
                         QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
                         QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                        QPixmap drawPixmap = HighLightEffect::generatePixmap(pixmap, option, widget);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
                         QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
                         iconRect = visualRect(menuItem->direction, drawRect, iconRect);
                         painter->save();
@@ -3701,14 +3689,14 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 }
             }
 
-            if (menuItem->maxIconWidth != 0 && !menuItem->menuHasCheckableItems) {
+            if (menuItem->maxIconWidth != 0 && menuItem->checkType == QStyleOptionMenuItem::NotCheckable) {
                 int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
                 if (!menuItem->icon.isNull()) {
                     QSize iconSize(smallIconSize, smallIconSize);
                     QIcon::Mode mode =  enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
                     QIcon::State state = menuItem->checked ? QIcon::On : QIcon::Off;
                     QPixmap pixmap = menuItem->icon.pixmap(iconSize, mode, state);
-                    QPixmap target = HighLightEffect::generatePixmap(pixmap, option, widget);
+                    QPixmap target = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
                     QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - smallIconSize)/2, smallIconSize, smallIconSize);
                     iconRect = visualRect(menuItem->direction, drawRect, iconRect);
                     painter->save();
