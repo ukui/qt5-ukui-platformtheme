@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QCheckBox>
 #include <QMessageBox>
 #include <QMetaEnum>
 
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
     qDebug() << (ret == QDialog::Accepted) << " --- " << ret;
 #endif
 
-#if 1
+#if 0
     // 一个完整的布局展示相关测试例子
     QMessageBox m;
     m.setText("<h2>测试html是否可以正常显示</h2><p>短字段</p>");
@@ -124,6 +125,20 @@ int main(int argc, char *argv[])
     m.setText("中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合中英文混合 Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.Chinese and English mixed.");
     m.exec();
     qDebug() << (ret == QDialog::Accepted) << " --- " << ret;
+#endif
+
+#if 1
+    // 测试 detailLabel
+    QMessageBox m;
+    m.setIcon(QMessageBox::Critical);
+    m.setText("<style>h1{color:red;}p{color:blue;}</style><h1>接下来要测试html是否可以正常显示</h1><p>关于HTML显示的测试例子，需要假如一些style之类的字符串来干扰其文本框大小的预估，接下来就是style段 + 图标</p>");
+    m.setDetailedText("很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符,很长很长的中文字符");
+    m.exec();
+
+    m.setIcon(QMessageBox::Information);
+    m.setText("<style>h1{color:red;}p{color:blue;}</style><h1>接下来要测试html是否可以正常显示</h1><p>关于HTML显示的测试例子，需要假如一些style之类的字符串来干扰其文本框大小的预估，接下来就是style段 + 图标</p>");
+    m.setDetailedText("");
+    m.exec();
 #endif
 
 
