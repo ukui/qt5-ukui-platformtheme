@@ -230,6 +230,7 @@ static void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbut
     case Qt::UpArrow:
         pe = QStyle::PE_IndicatorArrowUp;
         break;
+
     case Qt::DownArrow:
         pe = QStyle::PE_IndicatorArrowDown;
         break;
@@ -1577,113 +1578,195 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
     case PE_IndicatorArrowUp:
+    {
+        QIcon icon = QIcon::fromTheme("pan-up-symbolic");
+        int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+        int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+        QRect drawRect(option->rect.topLeft(), QSize(indWidth, indHight));
+        drawRect.moveCenter(option->rect.center());
+        const bool enable(option->state & State_Enabled);
+        if(!icon.isNull()) {
+            //QPixmap pixmap=icon.pixmap(QSize(16,16));
+            QSize iconsize(QSize(16,16));
+            QIcon::Mode mode =  enable ? QIcon::Normal : QIcon::Disabled;
+            QPixmap pixmap = icon.pixmap(iconsize, mode, QIcon::On);
+            QPixmap target = HighLightEffect::generatePixmap(pixmap, option, widget);
+            painter->save();
+            painter->drawPixmap(drawRect, target);
+            painter->restore();
+            return;
+        }
+        break;
+    }
     case PE_IndicatorArrowDown:
+    {
+        QIcon icon = QIcon::fromTheme("pan-down-symbolic");
+        int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+        int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+        QRect drawRect(option->rect.topLeft(), QSize(indWidth, indHight));
+        drawRect.moveCenter(option->rect.center());
+        const bool enable(option->state & State_Enabled);
+        if(!icon.isNull()) {
+            //QPixmap pixmap=icon.pixmap(QSize(16,16));
+            QSize iconsize(QSize(16,16));
+            QIcon::Mode mode =  enable ? QIcon::Normal : QIcon::Disabled;
+            QPixmap pixmap = icon.pixmap(iconsize, mode, QIcon::On);
+            QPixmap target = HighLightEffect::generatePixmap(pixmap, option, widget);
+            painter->save();
+            painter->drawPixmap(drawRect, target);
+            painter->restore();
+            return;
+        }
+        break;
+    }
     case PE_IndicatorArrowRight:
+    {
+        QIcon icon = QIcon::fromTheme("pan-end-symbolic");
+        int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+        int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+        QRect drawRect(option->rect.topLeft(), QSize(indWidth, indHight));
+        drawRect.moveCenter(option->rect.center());
+        const bool enable(option->state & State_Enabled);
+        if(!icon.isNull()) {
+            //QPixmap pixmap=icon.pixmap(QSize(16,16));
+            QSize iconsize(QSize(16,16));
+            QIcon::Mode mode =  enable ? QIcon::Normal : QIcon::Disabled;
+            QPixmap pixmap = icon.pixmap(iconsize, mode, QIcon::On);
+            QPixmap target = HighLightEffect::generatePixmap(pixmap, option, widget);
+            painter->save();
+//            painter->setPen(option->palette.color(QPalette::Active, QPalette::Highlight));
+//            //painter->setPen(QPen(Qt::NoBrush, 2,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+//            painter->setBrush(Qt::NoBrush);
+//            painter->setRenderHint(QPainter::SmoothPixmapTransform);
+            painter->drawPixmap(drawRect, target);
+            painter->restore();
+            return;
+        }
+        break;
+    }
     case PE_IndicatorArrowLeft:
     {
-        if (option->rect.width() <= 1 || option->rect.height() <= 1)
-            break;
-        QRect r = option->rect;
-        int size = qMin(r.height(), r.width());
-        QPixmap pixmap;
-        QString key;
-        int width = option->rect.width();
-        int height = option->rect.height();
-        int state = option->state;
-        int direction = element;
-        while (width > 0) {
-            char a = width % 10 + 48;
-            key.insert(0,&a);
-            width /= 10;
+        QIcon icon = QIcon::fromTheme("pan-start-symbolic");
+        int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+        int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+        QRect drawRect(option->rect.topLeft(), QSize(indWidth, indHight));
+        drawRect.moveCenter(option->rect.center());
+        const bool enable(option->state & State_Enabled);
+        if(!icon.isNull()) {
+            //QPixmap pixmap=icon.pixmap(QSize(16,16));
+            QSize iconsize(QSize(16,16));
+            QIcon::Mode mode =  enable ? QIcon::Normal : QIcon::Disabled;
+            QPixmap pixmap = icon.pixmap(iconsize, mode, QIcon::On);
+            QPixmap target = HighLightEffect::generatePixmap(pixmap, option, widget);
+            painter->save();
+            painter->drawPixmap(drawRect, target);
+            painter->restore();
+            return;
         }
-        while (height > 0) {
-            char a = height % 10 + 48;
-            key.insert(0,&a);
-            height /= 10;
-        }
-        while (state > 0) {
-            char a = state % 10 + 48;
-            key.insert(0,&a);
-            state /= 10;
-        }
-        while (direction > 0)
-        {
-            char a = direction % 10 + 48;
-            key.insert(0,&a);
-            direction /= 10;
-        }
-        key += proxy()->objectName();
-        int border = size/4;
-        int sqsize = size;
-        if(size > 16)
-        {
-            border = 4;
-            sqsize = 16;
-        }
-//        if (!QPixmapCache::find(key, pixmap))
+        break;
+    }
+//    {
+//        if (option->rect.width() <= 1 || option->rect.height() <= 1)
+//            break;
+//        QRect r = option->rect;
+//        int size = qMin(r.height(), r.width());
+//        QPixmap pixmap;
+//        QString key;
+//        int width = option->rect.width();
+//        int height = option->rect.height();
+//        int state = option->state;
+//        int direction = element;
+//        while (width > 0) {
+//            char a = width % 10 + 48;
+//            key.insert(0,&a);
+//            width /= 10;
+//        }
+//        while (height > 0) {
+//            char a = height % 10 + 48;
+//            key.insert(0,&a);
+//            height /= 10;
+//        }
+//        while (state > 0) {
+//            char a = state % 10 + 48;
+//            key.insert(0,&a);
+//            state /= 10;
+//        }
+//        while (direction > 0)
 //        {
-            QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
-            image.fill(0);
-            QPainter imagePainter(&image);
-            int sx = 0;
-            int sy = (sqsize/2 - border)/2;
-            QLineF lines[2];
-            switch (element) {
-            case PE_IndicatorArrowUp:
-                lines[0] = QLine(border, sqsize/2, sqsize/2, border);
-                lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
-                break;
-            case PE_IndicatorArrowDown:
-                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-                lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
-                break;
-            case PE_IndicatorArrowRight:
-                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
-                lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
-                sx = (sqsize/2 - border)/2;
-                sy = 0;
-                break;
-            case PE_IndicatorArrowLeft:
-                lines[0] = QLine(sqsize/2, border, border, sqsize/2);
-                lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
-                sx = (sqsize/2 - border)/2;
-                sy = 0;
-                break;
-            default:
-                break;
-            }
-            imagePainter.translate(sx , sy);
-            imagePainter.setPen(QPen(option->palette.color(QPalette::QPalette::WindowText), 1.1));
-            if (option->state & (State_MouseOver|State_Sunken))
-            {
-                imagePainter.setPen(QPen(option->palette.color(QPalette::HighlightedText), 1.1));
-            }
-            imagePainter.setBrush(Qt::NoBrush);;
-            imagePainter.setRenderHint(QPainter::Antialiasing);
-
-            if (!(option->state & State_Enabled)) {
-                //imagePainter.translate(1, 1);
-                imagePainter.setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::WindowText), 1.3));
-                imagePainter.setBrush(Qt::NoBrush);
-                imagePainter.drawLines(lines,2);
-                //imagePainter.translate(-1, -1);
-                //imagePainter.setBrush(option->palette.mid().color());
-                //imagePainter.setPen(option->palette.mid().color());
-            }
-            else
-            {
-                imagePainter.drawLines(lines,2);
-            }
-            imagePainter.end();
-            pixmap = QPixmap::fromImage(image);
-//            QPixmapCache::insert(key, pixmap);
+//            char a = direction % 10 + 48;
+//            key.insert(0,&a);
+//            direction /= 10;
+//        }
+//        key += proxy()->objectName();
+//        int border = size/4;
+//        int sqsize = size;
+//        if(size > 16)
+//        {
+//            border = 4;
+//            sqsize = 16;
 //        }
 
-        int xOffset = r.x() + (r.width() - sqsize)/2;
-        int yOffset = r.y() + (r.height() - sqsize)/2;
-        painter->drawPixmap(xOffset, yOffset, pixmap);
-        return;
-    }
+//            QImage image(sqsize, sqsize, QImage::Format_ARGB32_Premultiplied);
+//            image.fill(0);
+//            QPainter imagePainter(&image);
+//            int sx = 0;
+//            int sy = (sqsize/2 - border)/2;
+//            QLineF lines[2];
+//            switch (element) {
+//            case PE_IndicatorArrowUp:
+//                lines[0] = QLine(border, sqsize/2, sqsize/2, border);
+//                lines[1] = QLine(sqsize/2, border, sqsize - border, sqsize/2);
+//                break;
+//            case PE_IndicatorArrowDown:
+//                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+//                lines[1] = QLine(sqsize/2, sqsize/2, sqsize - border, border);
+//                break;
+//            case PE_IndicatorArrowRight:
+//                lines[0] = QLine(border, border, sqsize/2, sqsize/2);
+//                lines[1] = QLine(sqsize/2, sqsize/2, border, sqsize - border);
+//                sx = (sqsize/2 - border)/2;
+//                sy = 0;
+//                break;
+//            case PE_IndicatorArrowLeft:
+//                lines[0] = QLine(sqsize/2, border, border, sqsize/2);
+//                lines[1] = QLine(border, sqsize/2, sqsize/2, sqsize - border);
+//                sx = (sqsize/2 - border)/2;
+//                sy = 0;
+//                break;
+//            default:
+//                break;
+//            }
+//            imagePainter.translate(sx , sy);
+//            imagePainter.setPen(QPen(option->palette.color(QPalette::QPalette::WindowText), 1.1));
+//            if (option->state & (State_MouseOver|State_Sunken))
+//            {
+//                imagePainter.setPen(QPen(option->palette.color(QPalette::HighlightedText), 1.1));
+//            }
+//            imagePainter.setBrush(Qt::NoBrush);
+//            imagePainter.setRenderHint(QPainter::Antialiasing);
+
+//            if (!(option->state & State_Enabled)) {
+//                //imagePainter.translate(1, 1);
+//                imagePainter.setPen(QPen(option->palette.color(QPalette::Disabled,QPalette::WindowText), 1.3));
+//                imagePainter.setBrush(Qt::NoBrush);
+//                imagePainter.drawLines(lines,2);
+//                //imagePainter.translate(-1, -1);
+//                //imagePainter.setBrush(option->palette.mid().color());
+//                //imagePainter.setPen(option->palette.mid().color());
+//            }
+//            else
+//            {
+//                imagePainter.drawLines(lines,2);
+//            }
+//            imagePainter.end();
+
+//        int xOffset = r.x() + (r.width() - sqsize)/2;
+//        int yOffset = r.y() + (r.height() - sqsize)/2;
+//        painter->drawPixmap(xOffset, yOffset, pixmap);
+//        return;
+//    }
+
+
 
 //    case PE_IndicatorRadioButton:{
 //        auto radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option);
