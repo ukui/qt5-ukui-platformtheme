@@ -59,6 +59,7 @@ public:
      * but we might not want to compose a special pure color image.
      * This function is use to skip the effect.
      */
+    static QColor symbolic_color;
     static void setSkipEffect(QWidget *w, bool skip = true);
     static bool isPixmapPureColor(const QPixmap &pixmap);
     static bool setMenuIconHighlightEffect(QMenu *menu, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);

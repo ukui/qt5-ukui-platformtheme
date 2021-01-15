@@ -37,17 +37,24 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
 {
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
-        QTimer::singleShot(1000, this, [=](){
+//        QTimer::singleShot(1000, this, [=](){
             qDebug()<<"update symbolic color";
-            QIcon::setThemeName(settings->get("iconThemeName").toString());
-            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
-        });
-
-//        connect(settings, &QGSettings::changed, this, [=](){
-//            qDebug()<<"update symbolic color";
-//            QIcon::setThemeName(settings->get("iconThemeName").toString());
-//            HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
+            QString inconTheme = settings->get("iconThemeName").toString();
+            if (inconTheme == "ukui-icon-theme-classical" || inconTheme == "ukui-classical") {
+                HighLightEffect::setSymoblicColor(QColor(128, 128, 128, 255));
+            }
 //        });
+
+        connect(settings, &QGSettings::changed, this, [=](const QString &key){
+            if (key == "iconThemeName") {
+                QString inconTheme = settings->get("iconThemeName").toString();
+                if (inconTheme == "ukui-icon-theme-classical" || inconTheme == "ukui-classical") {
+                    HighLightEffect::setSymoblicColor(QColor(128, 128, 128, 255));
+                } else {
+                    HighLightEffect::setSymoblicColor(QColor(31, 32, 34, 192));
+                }
+            }
+        });
     }
 }
 

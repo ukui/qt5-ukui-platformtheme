@@ -78,7 +78,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     icontheme = "ukui";
 
                 QIcon::setThemeName(icontheme);
-                HighLightEffect::setSymoblicColor(HighLightEffect::getCurrentSymbolicColor());
                 // update all widgets for repaint new themed icons.
                 for (auto widget : QApplication::allWidgets()) {
                     widget->update();

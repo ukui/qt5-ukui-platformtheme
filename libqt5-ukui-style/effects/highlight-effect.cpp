@@ -37,81 +37,65 @@
 
 #include <QDebug>
 
-#define TORLERANCE 40
+#define ColorDifference 10
 
-static QColor symbolic_color = Qt::gray;
+QColor HighLightEffect::symbolic_color = QColor(31, 32, 34, 192);
 
 void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
 {
     w->setProperty("skipHighlightIconEffect", skip);
 }
 
+
+
 bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
 {
-    QImage img = pixmap.toImage();
-    bool init = false;
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-    qreal variance = 0;
-    qreal mean = 0;
-    qreal standardDeviation = 0;
-    QVector<int> pixels;
-    bool isPure = true;
-    bool isFullyPure = true;
-    for (int x = 0; x < img.width(); x++) {
-        for (int y = 0; y < img.height(); y++) {
-            auto color = img.pixelColor(x, y);
-            if (color.alpha() != 0) {
-                int hue = color.hue();
-                pixels<<hue;
-                mean += hue;
-                if (!init) {
-                    red = color.red();
-                    green = color.green();
-                    blue = color.blue();
-                    init = true;
-                } else {
-                    color.setAlpha(255);
-                    int r = color.red();
-                    int g = color.green();
-                    int b = color.blue();
-                    int dr = qAbs(r - red);
-                    int dg = qAbs(g - green);
-                    int db = qAbs(b - blue);
-                    bool same = dr < TORLERANCE && dg < TORLERANCE && db < TORLERANCE;
-                    if (isFullyPure) {
-                        if (dr > 0 || dg > 0 || db > 0) {
-                            isFullyPure = false;
-                        }
-                    }
-                    if (!same) {
-                        if (isPure || isFullyPure) {
-                            isPure = false;
-                            isFullyPure = false;
-                            break;
-                        }
-                    }
-                }
+    QImage image = pixmap.toImage();
+
+    QVector<QColor> vector;
+    int total_red = 0;
+    int total_green = 0;
+    int total_blue = 0;
+    bool pure = true;
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            if (image.pixelColor(x, y).alphaF() > 0.3) {
+                QColor color = image.pixelColor(x, y);
+                vector << color;
+                total_red += color.red();
+                total_green += color.green();
+                total_blue += color.blue();
+                int dr = qAbs(color.red() - symbolic_color.red());
+                int dg = qAbs(color.green() - symbolic_color.green());
+                int db = qAbs(color.blue() - symbolic_color.blue());
+                if (dr > ColorDifference || dg > ColorDifference || db > ColorDifference)
+                    pure = false;
             }
         }
     }
 
-    if (isPure)
+    if (pure)
         return true;
 
-    mean = mean/pixels.count();
-    for (auto hue : pixels) {
-        variance += (hue - mean)*(hue - mean);
+    qreal squareRoot_red = 0;
+    qreal squareRoot_green = 0;
+    qreal squareRoot_blue = 0;
+    qreal average_red = total_red / vector.count();
+    qreal average_green = total_green / vector.count();
+    qreal average_blue = total_blue / vector.count();
+    for (QColor color : vector) {
+        squareRoot_red += (color.red() - average_red) * (color.red() - average_red);
+        squareRoot_green += (color.green() - average_green) * (color.green() - average_green);
+        squareRoot_blue += (color.blue() - average_blue) * (color.blue() - average_blue);
     }
 
-    standardDeviation = qSqrt(variance/pixels.count());
-
-    isFullyPure = standardDeviation == 0 || variance == 0;
-    isPure = standardDeviation < 1 || variance == 0;
-
-    return isPure;
+    qreal arithmeticSquareRoot_red = qSqrt(squareRoot_red / vector.count());
+    qreal arithmeticSquareRoot_green = qSqrt(squareRoot_green / vector.count());
+    qreal arithmeticSquareRoot_blue = qSqrt(squareRoot_blue / vector.count());
+    return arithmeticSquareRoot_red < 2.0 && arithmeticSquareRoot_green < 2.0 && arithmeticSquareRoot_blue < 2.0;
 }
+
+
 
 bool HighLightEffect::setMenuIconHighlightEffect(QMenu *menu, HighLightMode hlmode, EffectMode mode)
 {
@@ -468,14 +452,13 @@ QPixmap HighLightEffect::filledSymbolicColoredPixmap(const QPixmap &source, cons
     for (int x = 0; x < img.width(); x++) {
         for (int y = 0; y < img.height(); y++) {
             auto color = img.pixelColor(x, y);
-            if (color.alpha() > 0) {
-                int hue = color.hue();
-                if (qAbs(hue - symbolic_color.hue()) < 10) {
+            if (color.alpha() > 0.3) {
+                if (qAbs(color.red() - symbolic_color.red()) < 10 && qAbs(color.green() - symbolic_color.green()) < 10
+                        && qAbs(color.blue() - symbolic_color.blue()) < 10) {
                     color.setRed(baseColor.red());
                     color.setGreen(baseColor.green());
                     color.setBlue(baseColor.blue());
                     img.setPixelColor(x, y, color);
-                    qDebug()<<"fill"<<color<<baseColor;
                 }
             }
         }
