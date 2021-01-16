@@ -295,7 +295,7 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"ukui-flash-disk";
     l<<"indicator-china-weather";
     l<<"kylin-video";
-    l<<"ukui-bluetooth";
+//    l<<"ukui-bluetooth";
     return l;
 }
 
