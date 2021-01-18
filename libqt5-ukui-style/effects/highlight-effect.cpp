@@ -294,7 +294,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
 QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
-    if (!isPixmapPureColor(pixmap))
+    if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
     QPixmap target = pixmap;
@@ -317,7 +317,7 @@ QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QSt
 
 QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
-    if (!isPixmapPureColor(pixmap))
+    if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
     QPixmap target = pixmap;
@@ -330,7 +330,6 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
         mode = EffectMode(widget->property("iconHighlightEffectMode").toBool());
     }
 
-    bool isEnable = option->state.testFlag(QStyle::State_Enabled);
     bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
@@ -345,7 +344,7 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
     }
 
     QPainter p(&target);
-    if (isEnable && overOrDown) {
+    if (overOrDown) {
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
@@ -356,7 +355,7 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
 
 QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
-    if (!isPixmapPureColor(pixmap))
+    if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
     QPixmap target = pixmap;
@@ -372,13 +371,12 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
         mode = EffectMode(widget->property("iconHighlightEffectMode").toBool());
     }
 
-    bool isEnable = option->state.testFlag(QStyle::State_Enabled);
     bool overOrDown =  option->state.testFlag(QStyle::State_MouseOver) ||
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
     if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-        if (button->isDown() || button->isChecked())
+        if ((button->isDown() || button->isChecked()) && !button->property("isWindowButton").isValid())
             overOrDown = true;
     }
     if (qobject_cast<const QAbstractItemView *>(widget)) {
@@ -387,7 +385,7 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
     }
 
     QPainter p(&target);
-    if (isEnable && overOrDown) {
+    if (overOrDown) {
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
