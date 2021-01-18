@@ -3739,20 +3739,27 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 const bool checked = menuItem->checked;
                 if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
                     if (checked) {
-                        QStyleOptionButton radioOption;
-                        radioOption.QStyleOption::operator=(*option);
-                        radioOption.rect = drawRect;
-                        radioOption.state |= State_On;
-                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
-                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
+//                        QStyleOptionButton radioOption;
+//                        radioOption.QStyleOption::operator=(*option);
+//                        radioOption.rect = drawRect;
+//                        radioOption.state |= State_On;
+//                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
+//                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
                     }
                 } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
-                    QStyleOptionButton checkBoxOption;
-                    checkBoxOption.QStyleOption::operator=(*option);
-                    checkBoxOption.rect = drawRect;
                     if (checked) {
-                        checkBoxOption.state |= State_On;
-
                         int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
                         QIcon icon = QIcon::fromTheme("dialog-ok");
                         QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
@@ -3766,9 +3773,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         painter->drawPixmap(iconRect, drawPixmap);
                         painter->restore();
                     }
-//                    QRect checkBoxRect = proxy()->subElementRect(SE_CheckBoxIndicator, &checkBoxOption, widget);
-//                    checkBoxOption.rect = checkBoxRect;
-//                    proxy()->drawPrimitive(PE_IndicatorCheckBox, &checkBoxOption, painter, widget);
                 }
             }
 
@@ -3791,9 +3795,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
-                int indicatorWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
                 int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(qMax(indicatorWidth, iconWidth) + MenuItem_Spacing, 0, 0, 0));
+                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(iconWidth + MenuItem_Spacing, 0, 0, 0));
             } else {
                 drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
             }
@@ -4348,10 +4351,9 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             case QStyleOptionMenuItem::DefaultItem:
             {
                 if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
-                    int indicatorWidth = proxy()->pixelMetric(PM_IndicatorWidth);
                     int iconWidth = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
-                    w += qMax(indicatorWidth, iconWidth) + MenuItem_Spacing;
-                    newSize.setHeight(qMax(qMax(indicatorWidth, iconWidth), newSize.height()));
+                    w += iconWidth + MenuItem_Spacing;
+                    newSize.setHeight(qMax(iconWidth, newSize.height()));
                 } else {
                     w += 8;
                 }
@@ -4362,7 +4364,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 int MenuItem_HMargin = 12 + 4;
                 int MenuItem_VMargin = 3;
                 w +=  MenuItem_HMargin;
-                newSize.setWidth(qMax(w, 160));
+                newSize.setWidth(qMax(w, 152));
                 newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 30));
                 return newSize;
             }
