@@ -42,6 +42,34 @@ WindowManager::WindowManager(QObject *parent) : QObject(parent)
     m_start_point = QPoint(0, 0);
 
     qApp->installEventFilter(new AppEventFilter(this));
+
+    using namespace KWayland::Client;
+    m_connection = ConnectionThread::fromApplication(qApp);
+    m_registry = new Registry(this);
+    m_registry->create(m_connection);
+
+    connect(m_registry, &KWayland::Client::Registry::interfaceAnnounced, this, [=](){
+        const auto interface = m_registry->interface( Registry::Interface::Seat );
+        if( interface.name != 0 ) {
+            m_seat = m_registry->createSeat( interface.name, interface.version, this );
+            connect(m_seat, &Seat::hasPointerChanged, this, [=](bool pointerChanged){
+                if (pointerChanged) {
+                    if (!m_pointer) {
+                        m_pointer = m_seat->createPointer(this);
+                        connect(m_pointer, &KWayland::Client::Pointer::buttonStateChanged, this, [=](int serial){
+                            m_serial = serial;
+                        });
+                    }
+                } else {
+                    delete m_pointer;
+                    m_pointer = nullptr;
+                }
+            });
+        }
+    });
+
+    m_registry->setup();
+    m_connection->roundtrip();
 }
 
 void WindowManager::registerWidget(QWidget *w)
@@ -178,12 +206,10 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         auto widget = qobject_cast<QWidget *>(obj);
         auto topLevel = widget->topLevelWidget();
 
-        if (topLevel->windowFlags() & ~Qt::Window || topLevel->windowFlags() & Qt::Desktop)
+        auto shellSurface = KWayland::Client::ShellSurface::fromWindow(topLevel->windowHandle());
+        if (!shellSurface)
             return;
-
-        auto globalPos = QCursor::pos();
-        //auto offset = globalPos - m_press_pos;
-        topLevel->move(globalPos - topLevel->mapFrom(widget, m_start_point));
+        shellSurface->requestMove(m_seat, m_serial);
     }
 
     return;

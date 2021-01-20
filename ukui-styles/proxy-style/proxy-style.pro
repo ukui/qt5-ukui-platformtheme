@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets KWindowSystem x11extras
+QT       += widgets KWindowSystem x11extras KWaylandClient
 
 TARGET = ukui-proxy-style
 TEMPLATE = lib

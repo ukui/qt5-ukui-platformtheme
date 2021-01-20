@@ -27,6 +27,12 @@
 #include <QTimer>
 #include <QPoint>
 
+#include <KWayland/Client/shell.h>
+#include <KWayland/Client/seat.h>
+#include <KWayland/Client/registry.h>
+#include <KWayland/Client/connection_thread.h>
+#include <KWayland/Client/pointer.h>
+
 class QMouseEvent;
 class AppEventFilter;
 
@@ -67,6 +73,12 @@ private:
     bool m_prepared_to_drag = false;
     bool isDragable(QWidget *widget);
     bool dragable = true;
+
+    KWayland::Client::ConnectionThread *m_connection = nullptr;
+    KWayland::Client::Registry *m_registry = nullptr;
+    KWayland::Client::Seat *m_seat = nullptr;
+    KWayland::Client::Pointer *m_pointer = nullptr;
+    int m_serial = 0;
 };
 
 class AppEventFilter : public QObject
