@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets KWindowSystem x11extras
+QT       += widgets KWindowSystem x11extras gui-private widgets-private
 
 TARGET = ukui-proxy-style
 TEMPLATE = lib
