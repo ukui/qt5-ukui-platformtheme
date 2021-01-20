@@ -32,8 +32,6 @@
 
 #include <QApplication>
 
-#include <qpa/qplatformwindow.h>
-
 #include <QDebug>
 
 WindowManager::WindowManager(QObject *parent) : QObject(parent)
@@ -180,12 +178,12 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
         auto widget = qobject_cast<QWidget *>(obj);
         auto topLevel = widget->topLevelWidget();
 
-        auto platformWindow = topLevel->windowHandle()->handle();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-        platformWindow->startSystemMove();
-#else
-        platformWindow->startSystemMove(e->globalPos());
-#endif
+        if (topLevel->windowFlags() & ~Qt::Window || topLevel->windowFlags() & Qt::Desktop)
+            return;
+
+        auto globalPos = QCursor::pos();
+        //auto offset = globalPos - m_press_pos;
+        topLevel->move(globalPos - topLevel->mapFrom(widget, m_start_point));
     }
 
     return;
