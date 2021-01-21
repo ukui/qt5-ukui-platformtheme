@@ -43,8 +43,13 @@ WindowManager::WindowManager(QObject *parent) : QObject(parent)
 
     qApp->installEventFilter(new AppEventFilter(this));
 
+    if (QX11Info::isPlatformX11())
+        return;
+
     using namespace KWayland::Client;
     m_connection = ConnectionThread::fromApplication(qApp);
+    if (!m_connection)
+        return;
     m_registry = new Registry(this);
     m_registry->create(m_connection);
 
