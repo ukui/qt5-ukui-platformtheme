@@ -28,6 +28,11 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <qpa/qplatformdialoghelper.h>
+#include <QMenu>
+#include <QTextEdit>
+#include <QVBoxLayout>
+#include <QContextMenuEvent>
+
 
 class QLabel;
 class QAbstractButton;
@@ -43,9 +48,11 @@ class MessageBox : public QDialog
     Q_OBJECT
     Q_PROPERTY(Icon mIcon READ icon WRITE setIcon)
     Q_PROPERTY(QString mText READ text WRITE setText)
+    Q_PROPERTY(Qt::TextFormat textFormat READ textFormat WRITE setTextFormat)
     Q_PROPERTY(QPixmap mIconPixmap READ iconPixmap WRITE setIconPixmap)
     Q_PROPERTY(QString mInformativeText READ informativeText WRITE setInformativeText)
     Q_PROPERTY(StandardButtons mStandardButtons READ standardButtons WRITE setStandardButtons)
+    Q_PROPERTY(Qt::TextInteractionFlags textInteractionFlags READ textInteractionFlags WRITE setTextInteractionFlags)
     friend MessageBoxHelper;
 public:
     explicit MessageBox(QWidget *parent = nullptr);
@@ -57,22 +64,31 @@ public:
     QMessageBox::Icon icon ();
     void setIcon (QMessageBox::Icon icon);
 
+    QPixmap iconPixmap() const;
+    void setIconPixmap(const QPixmap &pixmap);
+
     QString text();
     void setText (const QString& text);
 
     QString informativeText() const;
     void setInformativeText(const QString &text);
 
-    QPixmap iconPixmap() const;
-    void setIconPixmap(const QPixmap &pixmap);
+    QString detailedText() const;
+    void setDetailedText(const QString &text);
 
     QString buttonText(int button) const;
     void setButtonText(int button, const QString &text);
 
-    void removeButton(QAbstractButton *button);
-    QPushButton* addButton(QMessageBox::StandardButton button);
+    Qt::TextFormat textFormat() const;
+    void setTextFormat(Qt::TextFormat format);
+
+    void setTextInteractionFlags(Qt::TextInteractionFlags flags);
+    Qt::TextInteractionFlags textInteractionFlags() const;
+
     void addButton(QAbstractButton *button, QMessageBox::ButtonRole role);
     QPushButton* addButton(const QString &text, QMessageBox::ButtonRole role);
+    QPushButton* addButton(QMessageBox::StandardButton button);
+    void removeButton(QAbstractButton *button);
 
     QAbstractButton* button (QMessageBox::StandardButton which) const;
 
@@ -109,6 +125,7 @@ protected:
 
 private:
     void initHelper(QPlatformMessageDialogHelper*);
+    void setuplayout();
 
 Q_SIGNALS:
     void buttonClicked(QAbstractButton* button);
@@ -117,7 +134,6 @@ private:
     Q_DISABLE_COPY(MessageBox)
     Q_DECLARE_PRIVATE(MessageBox)
 
-    Q_PRIVATE_SLOT(d_func(), void _q_released())
     Q_PRIVATE_SLOT(d_func(), void _q_buttonClicked(QAbstractButton*))
     Q_PRIVATE_SLOT(d_func(), void _q_clicked(QPlatformDialogHelper::StandardButton, QPlatformDialogHelper::ButtonRole))
 };
@@ -142,6 +158,22 @@ private:
 private:
     MessageBox*                                 mMessageBox = nullptr;
 };
+
+
+
+class TextEdit : public QTextEdit
+{
+public:
+    TextEdit(QWidget *parent=0) : QTextEdit(parent) { }
+    void contextMenuEvent(QContextMenuEvent * e) override
+    {
+        QMenu *menu = createStandardContextMenu();
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        menu->popup(e->globalPos());
+    }
+};
+
+
 
 #endif // MESSAGEBOX_H
 
