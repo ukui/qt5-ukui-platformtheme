@@ -3889,6 +3889,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 0;
     case PM_ToolBarItemSpacing:
         return 4;
+
+    case PM_MessageBoxIconSize:
+        return 24;
     default:
         break;
     }
