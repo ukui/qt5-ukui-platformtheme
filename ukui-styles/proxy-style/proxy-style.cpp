@@ -178,19 +178,6 @@ void ProxyStyle::polish(QWidget *widget)
 
     m_gesture_helper->registerWidget(widget);
 
-    if (auto label = qobject_cast<QLabel *>(widget)) {
-        if (auto p = label->parent()) {
-            //trying fix QWizardPage's title problems
-            if (QString(p->metaObject()->className()) == "QWidget") {
-                auto font = QApplication::font();
-                font.setPointSize(font.pointSize());
-                label->setFont(font);
-            }
-        }
-    }
-
-    //qDebug()<<"\n\n\n============widget mask"<<widget->metaObject()->className()<<widget->mask();
-
     /*!
       \todo
       register transparent widget to blurhelper with better way.
