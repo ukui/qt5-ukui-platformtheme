@@ -52,6 +52,7 @@ public:
     void startAnimator(const QString &property = nullptr);
     void stopAnimator(const QString &property = nullptr);
     int currentAnimatorTime(const QString &property = nullptr);
+    void setAnimatorCurrentTime(const QString &property = nullptr, const int msecs = 0);
     int totalAnimationDuration(const QString &property = nullptr);
     QVariant endValue(const QString &property = nullptr);
 

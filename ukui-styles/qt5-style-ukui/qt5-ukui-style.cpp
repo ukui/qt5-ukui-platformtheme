@@ -856,15 +856,22 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 return;
             }
 
-             if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
-             {
-                 painter->save();
-                 painter->setPen(Qt::NoPen);
-                 painter->setBrush(option->palette.color(QPalette::Button));
-                 painter->setRenderHint(QPainter::Antialiasing,true);
-                 painter->drawRoundedRect(option->rect,4,4);
-                 painter->restore();
-             }
+            if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
+            {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->drawRoundedRect(option->rect,4,4);
+                painter->restore();
+            }
+
+            if (!(button->state & State_Active) && (animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("Sunken")
+                  || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))) {
+                animator->setAnimatorCurrentTime("SunKen", 0);
+                animator->setAnimatorCurrentTime("MouseOver", 0);
+            }
+
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
@@ -923,6 +930,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->restore();
                 return;
             }
+
             if(button->state & State_MouseOver || animator->isRunning("MouseOver")
                     || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
             {
@@ -968,40 +976,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         break;
     }
-        //        painter->save();
-        //        painter->setRenderHint(QPainter::Antialiasing,true);
-        //        /*!
-        //       * \todo
-        //       * It is selected by default and not done first,because it conflicts with the normal button.
-        //       */
-        //        //        if(option->state & State_HasFocus){
-        //        //            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::Button));
-        //        //            painter->setBrush(option->palette.color(QPalette::Highlight));
-        //        //        }
-        //        //        else {
-        //        painter->setPen(Qt::NoPen);
-        //        painter->setBrush(option->palette.color(QPalette::Button));
-        //        //        }
-
-        //        if (option->state & State_MouseOver) {
-        //            if (option->state & State_Sunken) {
-        //                painter->setPen(Qt::NoPen);
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //            } else {
-        //                painter->setPen(Qt::NoPen);
-        //                painter->setBrush(option->palette.color(QPalette::Highlight));
-        //            }
-        //        }
-        //        painter->drawRoundedRect(option->rect,4,4);
-        //        painter->restore();
-
-        //        /*!
-        //       * \todo
-        //       * Judge whether it is OK or other buttons
-        //       */
-
-        //        return;
-        //        }
 
     case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
         {
@@ -1149,6 +1123,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->drawRoundedRect(option->rect,4,4);
             painter->restore();
         }
+
+        if (!(option->state & State_Active) && (animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("Sunken")
+              || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))) {
+            animator->setAnimatorCurrentTime("SunKen", 0);
+            animator->setAnimatorCurrentTime("MouseOver", 0);
+        }
+
         if(option->state & (State_Sunken | State_On) || animator->isRunning("SunKen")
                 || animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("SunKen"))
         {

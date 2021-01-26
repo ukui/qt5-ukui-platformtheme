@@ -211,6 +211,15 @@ int ButtonAnimator::currentAnimatorTime(const QString &property)
         return this->currentTime();
 }
 
+void ButtonAnimator::setAnimatorCurrentTime(const QString &property, const int msecs)
+{
+    if ("MouseOver" == property) {
+        m_mouseover->setCurrentTime(msecs);
+    } else if("SunKen" == property) {
+        m_sunken->setCurrentTime(msecs);
+    }
+}
+
 int ButtonAnimator::totalAnimationDuration(const QString &property)
 {
     if(property == "MouseOver")

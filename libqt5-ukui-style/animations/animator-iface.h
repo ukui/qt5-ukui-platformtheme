@@ -47,6 +47,7 @@ public:
     virtual void startAnimator(const QString &property = nullptr) {}
     virtual void stopAnimator(const QString &property = nullptr) {}
     virtual int currentAnimatorTime(const QString &property = nullptr) {return 0;}
+    virtual void setAnimatorCurrentTime(const QString &property = nullptr, const int msecs = 0) {}
     virtual int totalAnimationDuration(const QString &property = nullptr) {return 0;}
 };
 
