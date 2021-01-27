@@ -1653,8 +1653,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorRadioButton:
     {
-        if(const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option))
-        {
+        if (const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             QRect rect = radiobutton->rect;
             bool enable = radiobutton->state & State_Enabled;
             bool MouseOver = radiobutton->state & State_MouseOver;
@@ -1676,8 +1675,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             qreal h, s, v;
             color.getHsvF(&h, &s, &v);
 
-            if(radiobutton->state & State_Off)
-            {
+            if(radiobutton->state & State_Off) {
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing,true);
 
@@ -1695,30 +1693,27 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setPen(box);
                     painter->setBrush(color);
                 }
+                if (!enable)
+                    painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Base));
                 painter->drawPath(circle);
                 painter->restore();
-            }
-            else if(On)
-            {
-                if(enable)
-                {
-                    painter->save();
-                    painter->setRenderHint(QPainter::Antialiasing,true);
+            } else if (On) {
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(box);
+                painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
+                if (SunKen) {
                     painter->setPen(box);
-                    painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
-                    if(SunKen)
-                    {
-                        painter->setPen(box);
-                        painter->setBrush(option->palette.color(QPalette::Highlight));
-                    }
-                    else if(MouseOver)
-                    {
-                        painter->setPen(box);
-                        painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
-                    }
-                    painter->drawPath(circle);
-                    painter->restore();
+                    painter->setBrush(option->palette.color(QPalette::Highlight));
+                } else if (MouseOver) {
+                    painter->setPen(box);
+                    painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
                 }
+                if (!enable)
+                    painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Base));
+                painter->drawPath(circle);
+                painter->restore();
+
                 circle = QPainterPath();
                 const qreal On_radius = radius / 2.0;
                 circle.addEllipse(circleCenter, On_radius, On_radius);
