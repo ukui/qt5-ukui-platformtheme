@@ -608,21 +608,6 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
 {
     if (QApplication::desktopSettingsAware() && !QIcon::themeName().isEmpty()) {
         switch (standardIcon) {
-        case SP_DialogOkButton:
-        case SP_DialogSaveButton:
-        case SP_DialogOpenButton:
-        case SP_DialogCancelButton:
-        case SP_DialogCloseButton:
-        case SP_DialogApplyButton:
-        case SP_DialogResetButton:
-        case SP_DialogHelpButton:
-        case SP_DialogDiscardButton:
-        case SP_DialogYesButton:
-        case SP_DialogNoButton:
-        {
-            return QIcon();
-        }
-
         case SP_FileDialogListView:
             return QIcon::fromTheme(QLatin1String("view-list-symbolic"));
         case SP_FileDialogDetailedView:
