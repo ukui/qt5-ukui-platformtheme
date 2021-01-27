@@ -126,6 +126,16 @@ void GestureHelper::unregisterWidget(QWidget *widget)
 bool GestureHelper::eventFilter(QObject *watched, QEvent *event)
 {
     switch (event->type()) {
+    case QEvent::ActivationChange: {
+        // do not grab inactive window's gesture.
+        auto widget = qobject_cast<QWidget *>(watched);
+        if (widget->isActiveWindow()) {
+            widget->grabGesture(Qt::TapAndHoldGesture);
+        } else {
+            widget->ungrabGesture(Qt::TapAndHoldGesture);
+        }
+        return false;
+    }
     case QEvent::TouchBegin: {
         m_is_touching = true;
         auto te = static_cast<QTouchEvent *>(event);
