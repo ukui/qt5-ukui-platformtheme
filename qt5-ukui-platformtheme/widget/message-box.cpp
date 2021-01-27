@@ -825,7 +825,8 @@ void MessageBoxPrivate::setupLayout()
     QSize MaxSize(420, 562 + 6);
     QSize MinSize(380, 142 + 6);
 
-    int marge = mMarginLeft + mMarginRight + mIconSize + 8;
+    bool hasIcon = mIconLabel->pixmap() && !mIconLabel->pixmap()->isNull();
+    int marge = mMarginLeft + mMarginRight + (hasIcon ? (mIconSize + 8) : 0);
 
     mLabel->setContentsMargins(0, 0, 0, 0);
     mLabel->setWordWrap(false);
@@ -882,14 +883,14 @@ void MessageBoxPrivate::setupLayout()
     grid->setSpacing(0);
 
     QGridLayout *contentlayout = new QGridLayout;
-    bool hasIcon = mIconLabel->pixmap() && !mIconLabel->pixmap()->isNull();
-    mIconLabel->setContentsMargins(0, 0, 0, 0);
-    if (hasIcon)
-        contentlayout->addWidget(mIconLabel, 0, 0, 0, 1, Qt::AlignTop);
-    mIconLabel->setVisible(hasIcon);
 
-    QSpacerItem *indentSpacer = new QSpacerItem(hasIcon ? 8 : mIconSize + 8, mIconSize, QSizePolicy::Fixed, QSizePolicy::Fixed);
-    contentlayout->addItem(indentSpacer, 0, hasIcon ? 1 : 0, 2, 1);
+    mIconLabel->setContentsMargins(0, 0, 0, 0);
+    if (hasIcon) {
+        contentlayout->addWidget(mIconLabel, 0, 0, 0, 1, Qt::AlignTop);
+        QSpacerItem *indentSpacer = new QSpacerItem(8, mIconSize, QSizePolicy::Fixed, QSizePolicy::Fixed);
+        contentlayout->addItem(indentSpacer, 0, 1, 2, 1);
+    }
+    mIconLabel->setVisible(hasIcon);
 
     contentlayout->addWidget(contentArea, 0, hasIcon ? 2 : 1, 2, 1);
 
