@@ -296,6 +296,7 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"indicator-china-weather";
     l<<"kylin-video";
 //    l<<"ukui-bluetooth";
+    l<<"mktip";
     return l;
 }
 
@@ -621,6 +622,12 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
         {
             return QIcon();
         }
+
+        case SP_FileDialogListView:
+            return QIcon::fromTheme(QLatin1String("view-list-symbolic"));
+        case SP_FileDialogDetailedView:
+            return QIcon::fromTheme(QLatin1String("view-grid-symbolic"));
+
         default:
             break;
         }
