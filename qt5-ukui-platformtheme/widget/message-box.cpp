@@ -1418,6 +1418,15 @@ void MessageBoxHelper::initDialog()
         }
         mMessageBox->addButton((QMessageBox::StandardButton)sb);
     }
+
+    for (QMessageDialogOptions::CustomButton button : options()->customButtons()) {
+        QAbstractButton *ab = static_cast<QAbstractButton *>(button.button);
+        if (ab->text() == "Show Details..." || ab->text() == "Hide Details...")
+            continue;
+        ab->setIcon(QIcon());
+        mMessageBox->addButton((QAbstractButton *)button.button, (QMessageBox::ButtonRole)button.role);
+    }
+
     mMessageBox->setuplayout();
 }
 
