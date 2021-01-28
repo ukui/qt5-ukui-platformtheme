@@ -185,6 +185,8 @@ bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
     case QPlatformTheme::ColorDialog:
         return false;
     case QPlatformTheme::MessageDialog:
+        if (qAppName() == "ukui-control-center")
+            return false;
         return true;
     default:
         break;
@@ -201,6 +203,8 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
     case QPlatformTheme::MessageDialog:
+        if (qAppName() == "ukui-control-center")
+            return nullptr;
         return new MessageBoxHelper;
     default:
         break;
