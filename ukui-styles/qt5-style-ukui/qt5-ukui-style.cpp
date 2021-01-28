@@ -858,12 +858,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->restore();
             }
 
-            if (!(button->state & State_Active) && (animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("Sunken")
-                  || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))) {
-                animator->setAnimatorCurrentTime("SunKen", 0);
-                animator->setAnimatorCurrentTime("MouseOver", 0);
-            }
-
             if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
@@ -1114,12 +1108,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(option->rect,4,4);
             painter->restore();
-        }
-
-        if (!(option->state & State_Active) && (animator->currentAnimatorTime("SunKen") == animator->totalAnimationDuration("Sunken")
-              || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))) {
-            animator->setAnimatorCurrentTime("SunKen", 0);
-            animator->setAnimatorCurrentTime("MouseOver", 0);
         }
 
         if(option->state & (State_Sunken | State_On) || animator->isRunning("SunKen")
