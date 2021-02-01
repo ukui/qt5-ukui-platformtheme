@@ -370,6 +370,8 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return false;
     case SH_Table_GridLineColor:
         return option ? option->palette.mid().color().darker().rgb() : 0;
+    case SH_ComboBox_AllowWheelScrolling:
+        return int(false);
     default:
         break;
     }
