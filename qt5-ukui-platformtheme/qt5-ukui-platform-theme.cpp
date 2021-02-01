@@ -185,7 +185,7 @@ bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
     case QPlatformTheme::ColorDialog:
         return false;
     case QPlatformTheme::MessageDialog:
-        if (qAppName() == "ukui-control-center")
+        if (qAppName() == "ukui-control-center" || qAppName() == "kybackup")
             return false;
         return true;
     default:
@@ -203,7 +203,7 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
     case QPlatformTheme::MessageDialog:
-        if (qAppName() == "ukui-control-center")
+        if (qAppName() == "ukui-control-center" || qAppName() == "kybackup")
             return nullptr;
         return new MessageBoxHelper;
     default:
