@@ -311,7 +311,6 @@ void MessageBox::addButton(QAbstractButton *button, QMessageBox::ButtonRole role
     }
 
     removeButton(button);
-    d->mOptions->addButton(button->text(), static_cast<QPlatformDialogHelper::ButtonRole>(role), button);
     d->mButtonBox->addButton(button, (QDialogButtonBox::ButtonRole)role);
     d->mCustomButtonList.append(button);
     d->mAutoAddOkButton = false;
@@ -1421,10 +1420,12 @@ void MessageBoxHelper::initDialog()
 
     for (QMessageDialogOptions::CustomButton button : options()->customButtons()) {
         QAbstractButton *ab = static_cast<QAbstractButton *>(button.button);
-        if (ab->text() == "Show Details..." || ab->text() == "Hide Details...")
-            continue;
-        ab->setIcon(QIcon());
-        mMessageBox->addButton((QAbstractButton *)button.button, (QMessageBox::ButtonRole)button.role);
+        if (ab) {
+            if (!ab->text().isEmpty() && ab->text() == "Show Details..." || ab->text() == "Hide Details...")
+                continue;
+            ab->setIcon(QIcon());
+        }
+        mMessageBox->addButton(ab, QMessageBox::ButtonRole(button.role));
     }
 
     mMessageBox->setuplayout();
