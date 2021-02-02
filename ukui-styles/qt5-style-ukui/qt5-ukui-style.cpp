@@ -339,6 +339,21 @@ bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
     if (e->type() == QEvent::StyleAnimationUpdate) {
         return true;
     }
+
+    if (qobject_cast<QPushButton *>(obj) || qobject_cast<QToolButton *>(obj)) {
+        if (e->type() == QEvent::Hide) {
+            if (QWidget *w = qobject_cast<QWidget *>(obj)) {
+                auto animator = m_button_animation_helper->animator(w);
+                if (animator) {
+                    animator->stopAnimator("SunKen");
+                    animator->stopAnimator("MouseOver");
+                    animator->setAnimatorCurrentTime("SunKen", 0);
+                    animator->setAnimatorCurrentTime("MouseOver", 0);
+                }
+            }
+        }
+        return false;
+    }
     return false;
 }
 
@@ -820,13 +835,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_PanelButtonCommand://UKUI PushButton style
     {
-        if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
-        {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             auto animator = m_button_animation_helper->animator(widget);
-            if(animator == nullptr)
-            {
-                return Style::drawPrimitive(PE_PanelButtonCommand,option,painter,widget);
-            }
+
             bool isWindowButton = false;
             bool isWindowColoseButton = false;
             if (widget && widget->property("isWindowButton").isValid())
@@ -835,32 +846,67 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 else if (widget->property("isWindowButton").toInt() == 0x02)
                     isWindowColoseButton = true;
 
-            if(!(button->state & State_Enabled))
-            {
-                animator->stopAnimator("SunKen");
-                animator->stopAnimator("MouseOver");
+            if (!(button->state & State_Enabled)) {
+                if (animator) {
+                    animator->stopAnimator("SunKen");
+                    animator->stopAnimator("MouseOver");
+                }
                 if (button->features & QStyleOptionButton::Flat)
                     return;
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect,4,4);
+                painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect, 4, 4);
                 painter->restore();
                 return;
             }
 
-            if(!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat))
-            {
+            if (!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat)) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Button));
-                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->drawRoundedRect(option->rect,4,4);
                 painter->restore();
             }
 
-            if((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
+            if (animator == nullptr) {
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(Qt::NoPen);
+                if (button->state & (State_Sunken | State_On)) {
+                    if (isWindowButton) {
+                        QColor color = button->palette.color(QPalette::Text);
+                        if (useDefaultPalette().contains(qAppName()))
+                            color = button->palette.color(QPalette::Base);
+                        color.setAlphaF(0.15);
+                        painter->setBrush(color);
+                    } else if (isWindowColoseButton) {
+                        painter->setBrush(QColor("#E44C50"));
+                    } else {
+                        painter->setBrush(button->palette.color(QPalette::Highlight));
+                    }
+                } else if (button->state & State_MouseOver) {
+                    if (isWindowButton) {
+                        QColor color = button->palette.color(QPalette::Text);
+                        if (useDefaultPalette().contains(qAppName()))
+                            color = button->palette.color(QPalette::Base);
+                        color.setAlphaF(0.1);
+                        painter->setBrush(color);
+                    } else if (isWindowColoseButton) {
+                        painter->setBrush(QColor("#F86458"));
+                    } else {
+                        auto color = button->palette.color(QPalette::Highlight).lighter(125);
+                        painter->setBrush(color);
+                    }
+                }
+                painter->drawRoundedRect(button->rect, 4, 4);
+                painter->restore();
+                return;
+            }
+
+            if ((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
                     || animator->value("SunKen") == 1.0)
             {
                 double opacity = animator->value("SunKen").toDouble();
@@ -1080,8 +1126,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 //        }
 
         auto animator = m_button_animation_helper->animator(widget);
-        if(animator == nullptr)
-            return Style::drawPrimitive(PE_PanelButtonTool,option,painter,widget);
+
         bool isWindowButton = false;
         bool isWindowColoseButton = false;
         if (widget && widget->property("isWindowButton").isValid())
@@ -1110,6 +1155,41 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->drawRoundedRect(option->rect,4,4);
             painter->restore();
+        }
+
+        if (animator == nullptr) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setPen(Qt::NoPen);
+            if (option->state & (State_Sunken | State_On)) {
+                if (isWindowButton) {
+                    QColor color = option->palette.color(QPalette::Text);
+                    if (useDefaultPalette().contains(qAppName()))
+                        color = option->palette.color(QPalette::Base);
+                    color.setAlphaF(0.15);
+                    painter->setBrush(color);
+                } else if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#E44C50"));
+                } else {
+                    painter->setBrush(option->palette.color(QPalette::Highlight));
+                }
+            } else if (option->state & State_MouseOver) {
+                if (isWindowButton) {
+                    QColor color = option->palette.color(QPalette::Text);
+                    if (useDefaultPalette().contains(qAppName()))
+                        color = option->palette.color(QPalette::Base);
+                    color.setAlphaF(0.1);
+                    painter->setBrush(color);
+                } else if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#F86458"));
+                } else {
+                    auto color = option->palette.color(QPalette::Highlight).lighter(125);
+                    painter->setBrush(color);
+                }
+            }
+            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->restore();
+            return;
         }
 
         if(option->state & (State_Sunken | State_On) || animator->isRunning("SunKen")
