@@ -63,6 +63,7 @@
 #include <QTableWidget>
 #include <QTreeView>
 #include <QTreeWidget>
+#include <QListWidget>
 #include <QHeaderView>
 #include <QEvent>
 #include <QDebug>
@@ -718,6 +719,18 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (isSelected) {
             color.setAlpha(255);
         }
+
+        if ((qobject_cast<const QListView *>(widget) || qobject_cast<const QListWidget *>(widget))
+                && (opt->decorationPosition != QStyleOptionViewItem::Top)) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->setPen(Qt::transparent);
+            painter->setBrush(color);
+            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->restore();
+            return;
+        }
+
         if (!isIconView)
             painter->fillRect(option->rect, color);
         else {
