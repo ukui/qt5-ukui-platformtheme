@@ -76,8 +76,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     icontheme = "ukui";
                 else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
                     icontheme = "ukui-classical";
-                else
-                    icontheme = "ukui";
 
                 QIcon::setThemeName(icontheme);
                 // update all widgets for repaint new themed icons.
@@ -158,8 +156,8 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
                     return QStringList()<<"ukui";
                 else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
                     return QStringList()<<"ukui-classical";
+                return QStringList()<<icontheme;
             }
-            return QStringList()<<"ukui";
         }
         return "hicolor";
     }
