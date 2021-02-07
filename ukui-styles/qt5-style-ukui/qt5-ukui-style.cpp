@@ -837,7 +837,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->save();
                 painter->setPen(gridColor);
                 painter->setBrush(Qt::NoBrush);
-                painter->drawLine(vopt->rect.topRight(),vopt->rect.bottomRight());
+//                painter->drawLine(vopt->rect.topRight(),vopt->rect.bottomRight());
                 painter->restore();
             }
            return;
@@ -3471,50 +3471,83 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_HeaderSection:
     {
-        if(const QStyleOptionHeader* header = qstyleoption_cast<const QStyleOptionHeader*>(option))
-        {
-            painter->save();
-            const bool enable = header->state & QStyle::State_Enabled;
-            QPalette::ColorGroup cg = (widget ? widget->isEnabled() : enable)
-                    ? QPalette::Active : QPalette::Disabled;
-            QPixmap cache = QPixmap(header->rect.size());
-//            if(!QPixmapCache::find(key,cache))
-//            {
-            cache.fill(Qt::transparent);
-            QRect pixampRect(0,0,header->rect.width(),header->rect.height());
-            QPainter cachePainter(&cache);
-            const int gridHint = proxy()->styleHint(QStyle::SH_Table_GridLineColor, option, widget);
-            const QColor gridColor = static_cast<QRgb>(gridHint);
-            cachePainter.setPen(Qt::NoPen);
-            cachePainter.setBrush(header->palette.color(enable ? QPalette::Active : QPalette::Disabled,
-                                                        QPalette::Base));
-           if(header->orientation == Qt::Vertical && (header->section & 1))
-            {
-                cachePainter.setBrush(header->palette.brush(cg, QPalette::AlternateBase));
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)){
+
+            bool mouse = header->state &  QStyle::State_MouseOver;
+            bool select = header->state & QStyle::State_Sunken;
+            bool on = header->state & QStyle::State_On;
+            bool roundedRight = false;
+            //角落控件控制
+            const bool isCorner( widget && widget->inherits( "QTableCornerButton" ) );
+            //控件方向判断
+            const bool reverseLayout( option->direction == Qt::LeftToRight );
+            //对控件位置判断
+            if(header->section == QStyleOptionHeader::Middle){
+                roundedRight = true;
+            }else if(header->section == QStyleOptionHeader::Beginning){
+                roundedRight = true;
             }
-            cachePainter.drawRect(pixampRect);
-            cachePainter.setPen(gridColor);
-            cachePainter.setBrush(gridColor);
-            if(widget && (qobject_cast<const QTreeView*>(widget->parentWidget()) ||
-                          qobject_cast<const QTreeWidget*>(widget->parentWidget())))
-            {
-                if(header->position == QStyleOptionHeader::End)
-                {
-                    cachePainter.end();
-                    painter->drawPixmap(header->rect.topLeft(),cache);
+
+            painter->save();
+            painter->setPen(Qt::transparent);
+            //tree头部表格控制
+            const auto view = qobject_cast<const QHeaderView*>(widget);
+            if (view) {
+                auto treeView = qobject_cast<const QTreeView*>(view->parent());
+                if (treeView){
+                    painter->setBrush(header->palette.color(QPalette::Base));
+                    painter->drawRect(header->rect);
+                    if(!isCorner){
+                        if(roundedRight){
+                            painter->setPen(option->palette.color(QPalette::Button).darker(110));
+                            if(reverseLayout){
+                                if(header->orientation == Qt::Horizontal){
+                                    painter->drawLine(header->rect.right(),header->rect.top()+4,header->rect.right(),header->rect.bottom()-4);
+                                }
+                            }else{
+                                if(header->orientation == Qt::Horizontal){
+                                    painter->drawLine(header->rect.left(),header->rect.top()+4,header->rect.left(),header->rect.bottom()-4);
+                                }
+                            }
+                        }
+                    }
                     painter->restore();
                     return;
                 }
-                cachePainter.drawLine(pixampRect.topRight() + QPoint(0,4), pixampRect.bottomRight() - QPoint(0,4));
             }
-            else
-            {
-                cachePainter.drawLine(pixampRect.topRight(),pixampRect.bottomRight());
+
+            painter->setBrush(header->palette.color(QPalette::Button).lighter(105));
+            painter->drawRect(header->rect);
+            if(on){
+                painter->setBrush(header->palette.color(QPalette::Button).darker(105));
             }
-            cachePainter.end();
-//            QPixmapCache::insert(key, cache);
-//            }
-            painter->drawPixmap(header->rect.topLeft(),cache);
+            if(mouse){
+                painter->setBrush(header->palette.color(QPalette::Button));
+            }
+            if(select){
+                painter->setBrush(header->palette.color(QPalette::Button).darker(105));
+            }
+            QPainterPath path_indicator1;
+            path_indicator1.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3),4,4);
+            painter->drawPath(path_indicator1);
+
+
+            //根据不同位置绘制外观
+            if(!isCorner){
+                if(roundedRight){
+                    painter->setPen(option->palette.color(QPalette::Button).darker(110));
+                    if(reverseLayout){
+                        if(header->orientation == Qt::Horizontal){
+                            painter->drawLine(header->rect.right(),header->rect.top()+4,header->rect.right(),header->rect.bottom()-4);
+                        }
+                    }else{
+                        if(header->orientation == Qt::Horizontal){
+                            painter->drawLine(header->rect.left(),header->rect.top()+4,header->rect.left(),header->rect.bottom()-4);
+                        }
+                    }
+                }
+            }
+
             painter->restore();
             return;
         }
@@ -3524,7 +3557,18 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     case CE_HeaderEmptyArea:{
         bool enable = option->state & QStyle::State_Enabled;
         painter->fillRect(option->rect,option->palette.color(enable ? QPalette::Active : QPalette::Disabled,
-                                                             QPalette::Base));
+                                                             QPalette::Button).lighter(105));
+        const auto view = qobject_cast<const QHeaderView*>(widget);
+        if (view) {
+            auto treeView = qobject_cast<const QTreeView*>(view->parent());
+            if (treeView){
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.color(QPalette::Base));
+                painter->drawRect(option->rect);
+                painter->restore();
+                return;
+            }
+        }
     }
 
     case CE_SizeGrip:
