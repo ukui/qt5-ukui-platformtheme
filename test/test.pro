@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     custom-shadow \
+    filedialog \
     highlighted-icon-button \
     messagebox \
     region-blur \
