@@ -15,7 +15,9 @@ filedialog::filedialog(QWidget *parent)
     connect(mpb, &QPushButton::released, this, [=] () {
         QFileDialog fdlg;
 
-        qDebug() << fdlg.getOpenFileUrl().toDisplayString();
+        qDebug() << "test file dialog...";
+        fdlg.exec();
+//        qDebug() << fdlg.getOpenFileUrl().toDisplayString();
     });
 }
 

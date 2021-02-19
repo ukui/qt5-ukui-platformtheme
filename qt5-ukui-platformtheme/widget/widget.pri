@@ -1,5 +1,3 @@
-#PKGCONFIG +=
-
 HEADERS += \
     $$PWD/file-dialog.h \
     $$PWD/message-box.h \

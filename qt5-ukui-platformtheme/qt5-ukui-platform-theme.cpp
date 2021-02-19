@@ -177,7 +177,7 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
 bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
 {
-    return true;
+    qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
     switch (type) {
     case QPlatformTheme::FileDialog:
         return true;

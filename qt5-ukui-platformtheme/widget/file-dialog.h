@@ -107,7 +107,7 @@ public:
     QList<QUrl> selectedFiles () override;
 
 protected:
-//    KFileWidget *const              mFileWidget;              // 主要界面
+    QWidget*                mFileWidget = nullptr;
 };
 
 #endif // FILEDIALOG_H
