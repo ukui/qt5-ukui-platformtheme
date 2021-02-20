@@ -1,16 +1,28 @@
 #ifndef FILEDIALOG_H
 #define FILEDIALOG_H
 
-#include <qpa/qplatformdialoghelper.h>
-
+#include <QMenu>
 #include <QDialog>
+#include <QToolBar>
 #include <QVariant>
+#include <QProxyStyle>
+#include <QPushButton>
+#include <QPainterPath>
+#include <QGraphicsEffect>
+#include <qpa/qplatformdialoghelper.h>
+#include <peony-qt/directory-view-plugin-iface2.h>
+#include <peony-qt/controls/tool-bar/advance-search-bar.h>
+#include <peony-qt/controls/tool-bar/view-factory-sort-filter-model.h>
+#include <peony-qt/controls/directory-view/directory-view-factory/directory-view-factory-manager.h>
 
-class QDialogButtonBox;
-
+class HeaderBar;
 class FileDialog;
+class ViewTypeMenu;
 class FileDialogBase;
+class QDialogButtonBox;
 class FileDialogHelper;
+class HeadBarPushButton;
+class BorderShadowEffect;
 
 class FileDialogHelper : public QPlatformFileDialogHelper
 {
@@ -46,7 +58,9 @@ private:
     void restoreSize();
 
 private:
-    FileDialogBase              *mDialog = nullptr;
+    FileDialogBase*             mDialog = nullptr;
+    BorderShadowEffect*         mBorderShadow = nullptr;
+
     bool                        mDirectorySet = false;
     bool                        mFileSelected = false;
     bool                        mDialogInitialized = false;
@@ -107,7 +121,111 @@ public:
     QList<QUrl> selectedFiles () override;
 
 protected:
-    QWidget*                mFileWidget = nullptr;
+    void validBorder();
+
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
+
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+
+protected:
+    HeaderBar*                  mHeaderBar = nullptr;
+    const int                   mWindowMinWidth = 596;
+
+private:
+    bool                        mIsDraging = false;
+    QPoint                      mOffset;
+};
+
+
+class HeaderBar : public QToolBar
+{
+    friend class FileDialog;
+    friend class HeaderBarContainer;
+    Q_OBJECT
+private:
+    explicit HeaderBar(FileDialog *parent = nullptr);
+
+Q_SIGNALS:
+    void updateLocationRequest(const QString &uri, bool addHistory = true, bool force = true);
+    void updateSearch(const QString &uri, const QString &key="", bool updateKey=false);
+    void viewTypeChangeRequest(const QString &viewId);
+    void updateZoomLevelHintRequest(int zoomLevelHint);
+    void updateSearchRequest(bool showSearch);
+
+protected:
+    void addSpacing(int pixel);
+    void mouseMoveEvent(QMouseEvent *e);
+
+private Q_SLOTS:
+//    void setLocation(const QString &uri);
+//    void cancelEdit();
+//    void updateIcons();
+//    void updateSearchRecursive(bool recursive);
+//    void updateMaximizeState();
+//    void startEdit(bool bSearch = false);
+//    void finishEdit();
+//    void searchButtonClicked();
+//    void openDefaultTerminal();
+//    void findDefaultTerminal();
+//    void tryOpenAgain();
+//    void setSearchMode(bool mode);
+//    void closeSearch();
+//    void initFocus();
+//    void updateHeaderState();
+
+private:
+    const QString                   mUri;
+    FileDialog*                     mWindow;
+
+    Peony::AdvancedLocationBar*     mLocationBar;
+
+    ViewTypeMenu*                   mViewTypeMenu;
+
+    QPushButton*                    mGoBack;
+    QPushButton*                    mGoForward;
+    QPushButton*                    mSearchButton;
+
+    QWidgetList                     mFocusList;
+
+    const int                       ADDRESS_BAR_MINIMUN_WIDTH = 250;
+    const int                       DRAG_AREA_MINIMUN_WIDTH = 32;
+    const int                       DRAG_AREA_DEFAULT_WIDTH = 49;
+};
+
+class HeadBarPushButton : public QPushButton
+{
+    friend class HeaderBar;
+    friend class FileDialog;
+    Q_OBJECT
+    explicit HeadBarPushButton(QWidget *parent = nullptr);
+};
+
+class ViewTypeMenu : public QMenu
+{
+    Q_OBJECT
+public:
+    explicit ViewTypeMenu(QWidget *parent = nullptr);
+
+Q_SIGNALS:
+    void switchViewRequest(const QString &viewId, const QIcon &icon, bool resetToZoomLevelHint = false);
+    void updateZoomLevelHintRequest(int zoomLevelHint);
+
+public Q_SLOTS:
+    void setCurrentView(const QString &viewId, bool blockSignal = false);
+    void setCurrentDirectory(const QString &uri);
+
+protected:
+    bool isViewIdValid(const QString &viewId);
+    void updateMenuActions();
+
+private:
+    QString                                 mCurrentUri;
+    QString                                 mCurrentViewId;
+    QActionGroup*                           mViewActions;
+    Peony::ViewFactorySortFilterModel2*     mModel;
 };
 
 #endif // FILEDIALOG_H
