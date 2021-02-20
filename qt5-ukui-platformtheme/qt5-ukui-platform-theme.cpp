@@ -42,6 +42,7 @@
 #include <private/qgenericunixthemes_p.h>
 
 #include "widget/message-box.h"
+#include "widget/file-dialog.h"
 
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
@@ -176,9 +177,9 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
 bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
 {
-    return true;
     switch (type) {
     case QPlatformTheme::FileDialog:
+        return true;
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return false;
@@ -197,6 +198,7 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
 {
     switch (type) {
     case QPlatformTheme::FileDialog:
+        return new FileDialogHelper;
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
