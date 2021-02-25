@@ -265,7 +265,8 @@ QPixmap MessageBox::iconPixmap() const
 void MessageBox::setIconPixmap(const QPixmap &pixmap)
 {
     Q_D(MessageBox);
-    d->mIconLabel->setPixmap(pixmap.scaled(d->mIconSize, d->mIconSize));
+    if (!pixmap.isNull())
+        d->mIconLabel->setPixmap(pixmap.scaled(d->mIconSize, d->mIconSize));
     d->mIcon = QMessageBox::NoIcon;
 }
 
@@ -1387,6 +1388,10 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
     mMessageBox->show();
     mMessageBox->d_func()->updateSize();
 
+    if (parent) {
+        mMessageBox->move(QPoint((parent->width() - mMessageBox->width()) / 2, (parent->height() - mMessageBox->height()) / 2)
+                                 + QPoint(parent->x(), parent->y()));
+    }
     Q_UNUSED(parent);
     Q_UNUSED(windowFlags);
     Q_UNUSED(windowModality);
