@@ -32,6 +32,6 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
 const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radius_y);
 qreal calcRadialPos(const QStyleOptionSlider *dial, int postion);
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset);
-
+void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *style, QRect *textRect, QRect *iconRect);
 
 #endif // QT5UKUISTYLEHELPER_H

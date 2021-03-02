@@ -4392,6 +4392,17 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         break;
     }
 
+    case SE_TabBarTabText:
+    {
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            QRect rect = tab->rect;
+            QRect iconRect = tab->rect;
+            tabLayout(tab, widget, proxy(), &rect, &iconRect);
+            return rect;
+        }
+        break;
+    }
+
     default:
         break;
     }

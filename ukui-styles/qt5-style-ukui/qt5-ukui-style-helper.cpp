@@ -195,3 +195,54 @@ QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
     }
     return poly;
 }
+
+
+
+void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *style, QRect *textRect, QRect *iconRect)
+{
+    Q_ASSERT(textRect);
+    Q_ASSERT(iconRect);
+
+    QRect rect = tab->rect;
+    bool verticalTabs = tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::RoundedWest
+            || tab->shape == QTabBar::TriangularEast || tab->shape == QTabBar::TriangularWest;
+
+    int iconExtent = style->pixelMetric(QStyle::PM_SmallIconSize);
+    if (verticalTabs)
+        rect.setRect(0, 0, rect.height(), rect.width());
+
+    int hpadding = style->pixelMetric(QStyle::PM_TabBarTabHSpace, tab, widget) / 2;
+    int vpadding = style->pixelMetric(QStyle::PM_TabBarTabVSpace, tab, widget) / 2;
+
+    rect.adjust(hpadding, vpadding, -hpadding, -vpadding);
+    // left widget
+    if (!tab->leftButtonSize.isEmpty()) {
+        rect.setLeft(rect.left() + 8 + (verticalTabs ? tab->leftButtonSize.height() : tab->leftButtonSize.width()));
+    }
+    // right widget
+    if (!tab->rightButtonSize.isEmpty()) {
+        rect.setRight(rect.right() - 8 - (verticalTabs ? tab->rightButtonSize.height() : tab->rightButtonSize.width()));
+    }
+    // icon
+    if (!tab->icon.isNull()) {
+        QSize iconSize = tab->iconSize;
+        if (!iconSize.isValid()) {
+            iconSize = QSize(iconExtent, iconExtent);
+        }
+        QSize tabIconSize = tab->icon.actualSize(iconSize,
+                                                 (tab->state & QStyle::State_Enabled) ? QIcon::Normal : QIcon::Disabled,
+                                                 (tab->state & QStyle::State_Selected) ? QIcon::On : QIcon::Off);
+        qDebug()<<tabIconSize<<iconSize<<"iconSize";
+        // High-dpi icons do not need adjustment; make sure tabIconSize is not larger than iconSize
+        tabIconSize = QSize(qMin(tabIconSize.width(), iconSize.width()), qMin(tabIconSize.height(), iconSize.height()));
+
+        *iconRect = QRect(rect.left(), rect.center().y() - tabIconSize.height() / 2,
+                          tabIconSize.width(), tabIconSize.height());
+        if (!verticalTabs)
+            *iconRect = style->visualRect(tab->direction, tab->rect, *iconRect);
+        rect.setLeft(rect.left() + tabIconSize.width() + 8);
+    }
+    if (!verticalTabs)
+        rect = style->visualRect(tab->direction, tab->rect, rect);
+    *textRect = rect;
+}
