@@ -4364,6 +4364,29 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         break;
     }
 
+    case CT_TabBarTab:
+    {
+        int padding = 0;
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            if (!tab->icon.isNull())
+                padding += 4;
+
+            if (!tab->leftButtonSize.isEmpty() || !tab->rightButtonSize.isEmpty())
+                padding += 4;
+
+            if (tab->shape == QTabBar::RoundedWest || tab->shape == QTabBar::RoundedEast
+                    || tab->shape == QTabBar::TriangularWest || tab->shape == QTabBar::TriangularEast) {
+                newSize.setHeight(qMax(newSize.height() + padding, 168));
+                newSize.setWidth(qMax(newSize.width(), 36));
+            } else {
+                newSize.setWidth(qMax(newSize.width() + padding, 168));
+                newSize.setHeight(qMax(newSize.height(), 36));
+            }
+            return newSize;
+        }
+        break;
+    }
+
     default:
         break;
     }
