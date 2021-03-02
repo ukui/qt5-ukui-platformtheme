@@ -1318,6 +1318,33 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
         break;
 
+    case PE_IndicatorTabClose:
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Text));
+        if (option->state & (State_On | State_Sunken)) {
+            painter->setOpacity(0.15);
+        }
+        else if (option->state & State_MouseOver) {
+            painter->setOpacity(0.1);
+        }
+        else
+            painter->setOpacity(0.0);
+        painter->drawEllipse(option->rect);
+        painter->restore();
+        QIcon icon = QIcon::fromTheme("window-close-symbolic");
+        if (!icon.isNull()) {
+            int iconSize = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
+            QPixmap pixmap = icon.pixmap(QSize(iconSize, iconSize), QIcon::Normal, QIcon::On);
+            pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, option, widget);
+            proxy()->drawItemPixmap(painter, option->rect, Qt::AlignCenter, pixmap);
+        }
+        return;
+    }
+
+
         //This is rare. It's a line under the item
     case PE_FrameTabBarBase:
         if (const QStyleOptionTabBarBase *tbb
