@@ -3939,9 +3939,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         }
         return 2;
 
-    case PM_TabBarTabVSpace:return 20;
-    case PM_TabBarTabHSpace:return 40;
-//    case PM_HeaderMargin:return 9;
     case PM_HeaderMargin:
     {
         if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
@@ -3990,6 +3987,33 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_MessageBoxIconSize:
         return 24;
+
+    case PM_TabCloseIndicatorWidth:
+    case PM_TabCloseIndicatorHeight:
+        return 20;
+
+    case PM_TabBarTabHSpace:
+        return 8 * 2;
+    case PM_TabBarTabVSpace:
+        return 4 * 2;
+
+    case PM_TabBarTabOverlap:
+        return 1;
+
+    case PM_TabBarScrollButtonWidth:
+        return 16;
+
+    case PM_TabBar_ScrollButtonOverlap:
+        return 3;
+
+    case PM_TabBarIconSize:
+        return 16;
+
+    case PM_TabBarTabShiftVertical:
+        return 0;
+    case PM_TabBarTabShiftHorizontal:
+        return 0;
+
     default:
         break;
     }
@@ -4265,6 +4289,105 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
             rect.moveCenter(pb->rect.center());
             rect = visualRect(pb->direction, pb->rect, rect);
             return rect;
+        }
+        break;
+    }
+
+    case SE_TabBarScrollLeftButton:
+    {
+        const bool verticalTabs = option->rect.width() < option->rect.height();
+        const int buttonWidth = qMax(proxy()->pixelMetric(QStyle::PM_TabBarScrollButtonWidth, 0, widget), QApplication::globalStrut().width());
+        const int lap = proxy()->pixelMetric(QStyle::PM_TabBar_ScrollButtonOverlap, 0, widget);
+        QRect rect = verticalTabs ? QRect(-lap, option->rect.height() - (buttonWidth * 2), option->rect.width() + 2 * lap, buttonWidth)
+                                  : QStyle::visualRect(option->direction, option->rect, QRect(option->rect.width() - (buttonWidth * 2), -lap,
+                                                                                              buttonWidth, option->rect.height() + 2 * lap));
+        return rect;
+    }
+
+    case SE_TabBarScrollRightButton:
+    {
+        const bool verticalTabs = option->rect.width() < option->rect.height();
+        const int lap = proxy()->pixelMetric(QStyle::PM_TabBar_ScrollButtonOverlap, 0, widget);
+        const int buttonWidth = qMax(proxy()->pixelMetric(QStyle::PM_TabBarScrollButtonWidth, 0, widget), QApplication::globalStrut().width());
+
+        QRect rect = verticalTabs ? QRect(-lap, option->rect.height() - buttonWidth, option->rect.width() + 2 * lap, buttonWidth)
+                                  : QStyle::visualRect(option->direction, option->rect,
+                                                       QRect(option->rect.width() - buttonWidth, -lap, buttonWidth, option->rect.height() + 2 * lap));
+        return rect;
+    }
+
+    case SE_TabBarTabLeftButton:
+    {
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            int hpadding = proxy()->pixelMetric(QStyle::PM_TabBarTabHSpace, option, widget) / 2;
+            QRect buttonRect(QPoint(0, 0), tab->leftButtonSize);
+            switch (tab->shape) {
+            case QTabBar::RoundedNorth:
+            case QTabBar::RoundedSouth:
+            case QTabBar::TriangularNorth:
+            case QTabBar::TriangularSouth:
+            {
+                buttonRect.moveTop((tab->rect.height() - buttonRect.height()) / 2);
+                buttonRect.moveLeft(tab->rect.left() + hpadding);
+                buttonRect = visualRect(tab->direction, tab->rect, buttonRect);
+                break;
+            }
+            case QTabBar::RoundedWest:
+            case QTabBar::TriangularWest:
+            {
+                buttonRect.moveLeft((tab->rect.width() - buttonRect.width()) / 2);
+                buttonRect.moveBottom(tab->rect.bottom() - hpadding);
+                break;
+            }
+            case QTabBar::RoundedEast:
+            case QTabBar::TriangularEast:
+            {
+                buttonRect.moveLeft((tab->rect.width() - buttonRect.width()) / 2);
+                buttonRect.moveTop(tab->rect.top() + hpadding);
+                break;
+            }
+            default:
+                break;
+            }
+            return buttonRect;
+        }
+        break;
+    }
+
+    case SE_TabBarTabRightButton:
+    {
+        if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
+            int hpadding = proxy()->pixelMetric(QStyle::PM_TabBarTabHSpace, option, widget) / 2;
+            QRect buttonRect(QPoint(0, 0), tab->rightButtonSize);
+            switch (tab->shape) {
+            case QTabBar::RoundedNorth:
+            case QTabBar::RoundedSouth:
+            case QTabBar::TriangularNorth:
+            case QTabBar::TriangularSouth:
+            {
+                buttonRect.moveTop((tab->rect.height() - buttonRect.height()) / 2);
+                buttonRect.moveRight(tab->rect.right() - hpadding);
+                buttonRect = visualRect(tab->direction, tab->rect, buttonRect);
+                break;
+            }
+            case QTabBar::RoundedWest:
+            case QTabBar::TriangularWest:
+            {
+                buttonRect.moveLeft((tab->rect.width() - buttonRect.width()) / 2);
+                buttonRect.moveTop(tab->rect.top() + hpadding);
+                break;
+            }
+            case QTabBar::RoundedEast:
+            case QTabBar::TriangularEast:
+            {
+                buttonRect.moveLeft((tab->rect.width() - buttonRect.width()) / 2);
+                buttonRect.moveBottom(tab->rect.bottom() - hpadding);
+                break;
+            }
+            default:
+                break;
+            }
+            return buttonRect;
         }
         break;
     }
