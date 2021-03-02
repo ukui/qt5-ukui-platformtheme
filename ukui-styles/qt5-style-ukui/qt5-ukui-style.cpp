@@ -1345,45 +1345,21 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
 
-        //This is rare. It's a line under the item
-    case PE_FrameTabBarBase:
-        if (const QStyleOptionTabBarBase *tbb
-                = qstyleoption_cast<const QStyleOptionTabBarBase *>(option)) {
-            painter->save();
-            painter->setPen(option->palette.base().color());
 
-            switch (tbb->shape) {
-            case QTabBar::RoundedNorth: {
-                QRegion region(tbb->rect);
-                region -= tbb->selectedTabRect;
-                painter->drawLine(tbb->rect.topLeft(), tbb->rect.topRight());
-                //No more second line
-                //  painter->setClipRegion(region);
-                //  painter->setPen(option->palette.base().color());
-                // painter->drawLine(tbb->rect.topLeft() + QPoint(0, 1), tbb->rect.topRight() + QPoint(0, 1));
-            }
-                break;
-            case QTabBar::RoundedWest:
-                painter->drawLine(tbb->rect.left(), tbb->rect.top(), tbb->rect.left(), tbb->rect.bottom());
-                break;
-            case QTabBar::RoundedSouth:
-                painter->drawLine(tbb->rect.left(), tbb->rect.bottom(),
-                                  tbb->rect.right(), tbb->rect.bottom());
-                break;
-            case QTabBar::RoundedEast:
-                painter->drawLine(tbb->rect.topRight(), tbb->rect.bottomRight());
-                break;
-            case QTabBar::TriangularNorth:
-            case QTabBar::TriangularEast:
-            case QTabBar::TriangularWest:
-            case QTabBar::TriangularSouth:
-                //painter->restore();
-                Style::drawPrimitive(element, option, painter, widget);
-                return;
-            }
+    case PE_FrameTabBarBase:
+    {
+        if (const QStyleOptionTabBarBase *tbb = qstyleoption_cast<const QStyleOptionTabBarBase *>(option)) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(tbb->palette.brush(QPalette::Active, QPalette::Window));
+            painter->drawRect(tbb->tabBarRect);
             painter->restore();
             return;
         }
+        break;
+    }
+
+
 
         //This is the content box style in the table control
     case PE_FrameTabWidget:
