@@ -15,6 +15,14 @@
 #include <peony-qt/controls/tool-bar/view-factory-sort-filter-model.h>
 #include <peony-qt/controls/directory-view/directory-view-factory/directory-view-factory-manager.h>
 
+#define QT_CUSTOM_FILE_DIALOG 0
+
+
+typedef struct _GtkDialog               GtkDialog;
+typedef struct _GtkFileFilter           GtkFileFilter;
+
+class QGtk2Dialog;
+
 class HeaderBar;
 class FileDialog;
 class ViewTypeMenu;
@@ -24,6 +32,9 @@ class FileDialogHelper;
 class HeadBarPushButton;
 class BorderShadowEffect;
 
+/**
+ * FIXME://由于时间不够，先用折中办法，移植 gtk 的filedialog
+ */
 class FileDialogHelper : public QPlatformFileDialogHelper
 {
     Q_OBJECT
@@ -31,42 +42,37 @@ public:
     FileDialogHelper ();
     ~FileDialogHelper () override;
 
-    void initializeDialog();
-
-    bool defaultNameFilterDisables() const override;
-    QUrl directory() const override;
-    QList<QUrl> selectedFiles() const override;
-    QString selectedMimeTypeFilter() const override;
-    void selectMimeTypeFilter(const QString &filter) override;
-    QString selectedNameFilter() const override;
-    void selectNameFilter(const QString &filter) override;
-    void selectFile(const QUrl &filename) override;
-    void setFilter() override;
-    void setDirectory(const QUrl &directory) override;
-    bool isSupportedUrl(const QUrl& url) const override;
-
     void exec() override;
     void hide() override;
-    bool show(Qt::WindowFlags windowFlags, Qt::WindowModality windowModality, QWindow *parent) override;
+    bool show(Qt::WindowFlags flags, Qt::WindowModality modality, QWindow *parent) override;
 
-    QVariant styleHint(StyleHint hint) const override;
+    void setFilter() override;
+    QUrl directory() const override;
+    QList<QUrl> selectedFiles() const override;
+    QString selectedNameFilter() const override;
+    void selectFile(const QUrl &filename) override;
+    bool defaultNameFilterDisables() const override;
+    void setDirectory(const QUrl &directory) override;
+    void selectNameFilter(const QString &filter) override;
 
 private Q_SLOTS:
-    void saveSize();
+    void onAccepted();
 
 private:
-    void restoreSize();
+    void applyOptions();
+    void setNameFilters(const QStringList &filters);
+    static void onCurrentFolderChanged(FileDialogHelper* helper);
+    static void onSelectionChanged(GtkDialog* dialog, FileDialogHelper* helper);
 
-private:
-    FileDialogBase*             mDialog = nullptr;
-    BorderShadowEffect*         mBorderShadow = nullptr;
-
-    bool                        mDirectorySet = false;
-    bool                        mFileSelected = false;
-    bool                        mDialogInitialized = false;
-
+    QUrl                                mDir;
+    QList<QUrl>                         mSelection;
+    QScopedPointer<QGtk2Dialog>         mD;
+    QHash<QString, GtkFileFilter*>      mFilters;
+    QHash<GtkFileFilter*, QString>      mFilterNames;
 };
-
+// 以后继续开发自定义文件管理器
+// 先用 gtk 实现
+#if QT_CUSTOM_FILE_DIALOG
 class FileDialogBase : public QDialog
 {
     Q_OBJECT
@@ -227,5 +233,5 @@ private:
     QActionGroup*                           mViewActions;
     Peony::ViewFactorySortFilterModel2*     mModel;
 };
-
+#endif
 #endif // FILEDIALOG_H

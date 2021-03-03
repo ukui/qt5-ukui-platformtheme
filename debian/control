@@ -16,7 +16,8 @@ Build-Depends: debhelper-compat (=12),
                qtbase5-dev-tools,
                qtbase5-private-dev,
                qtchooser,
-               qttools5-dev-tools
+               qttools5-dev-tools,
+               libgtk2.0-dev
 Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
