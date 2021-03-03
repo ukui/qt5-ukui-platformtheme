@@ -1,6 +1,6 @@
 QT += KWindowSystem
 CONFIG += c++11 link_pkgconfig no_keywords
-PKGCONFIG += peony
+PKGCONFIG += peony gtk+-2.0 x11
 
 INCLUDEPATH += \
     /usr/include/peony-qt/controls/tool-bar/        \
