@@ -203,7 +203,8 @@ bool DefaultSlideAnimator::eventFilter(QObject *obj, QEvent *e)
 
 void DefaultSlideAnimator::watchSubPage(QWidget *w)
 {
-    w->installEventFilter(this);
+    if (w)
+        w->installEventFilter(this);
 }
 
 bool DefaultSlideAnimator::filterTabWidget(QObject *obj, QEvent *e)
