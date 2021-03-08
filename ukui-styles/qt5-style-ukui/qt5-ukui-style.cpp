@@ -1307,17 +1307,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
        return;
       }
 
-        //Show this section when there are too many tabs
-    case PE_IndicatorTabTear:
-    {
-        /*
-         * To Do
-         * Adjust to auto width instead of displaying this block
-         */
-        return;
-    }
-        break;
-
     case PE_IndicatorTabClose:
     {
         painter->save();
@@ -1769,6 +1758,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         break;
     }
+
+    case PE_IndicatorTabTearLeft:
+        return;
+
+    case PE_IndicatorTabTearRight:
+        return;
 
     default:   break;
     }
