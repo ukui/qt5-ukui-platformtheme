@@ -1344,8 +1344,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-
-
     case PE_FrameTabBarBase:
     {
         if (const QStyleOptionTabBarBase *tbb = qstyleoption_cast<const QStyleOptionTabBarBase *>(option)) {
@@ -1359,46 +1357,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         break;
     }
 
-
-
-        //This is the content box style in the table control
-    case PE_FrameTabWidget:
-    {
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(option->palette.color(QPalette::Base));
-        //painter->drawRect(option->rect.x()+2,
-        //option->rect.y(),option->rect.width()/2,option->rect.height()/2);
-        //painter->drawRoundedRect(option->rect.x()+5,
-        //option->rect.y(),option->rect.width()-4,option->rect.height(),5,5);
-        painter->drawRoundedRect(option->rect.adjusted(+2,+0,-2,+0),5,5);
-        /*if (const QStyleOptionTabWidgetFrame *twf = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
-            QColor borderColor = option->palette.color(QPalette::Light);
-            QRect rect = option->rect.adjusted(0, 0, -1, -1);
-
-            // Shadow outline
-            if (twf->shape != QTabBar::RoundedSouth) {
-                rect.adjust(0, 0, 0, -1);
-                QColor alphaShadow(Qt::Window);
-                alphaShadow.setAlpha(15);
-                painter->setPen(alphaShadow);
-                painter->drawLine(option->rect.bottomLeft(), option->rect.bottomRight());
-                painter->setPen(borderColor);
-            }*/
-
-        // outline
-        // painter->setPen( option->palette.color(QPalette::Light));
-        //painter->drawRect(rect);
-        // Inner frame highlight
-        //painter->setPen(  QColor(244,0,77));
-        //painter->drawRect(rect.adjusted(1, 1, -1, -1));
-        // }
-        painter->restore();
-        return;
+    case PE_FrameTabWidget: {
+        if (const QStyleOptionTabWidgetFrame *twf = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(twf->palette.brush(QPalette::Active, QPalette::Base));
+            painter->drawRect(option->rect.adjusted(0, 0, 0, 0));
+            painter->restore();
+            return;
+        }
+        break;
     }
-        break ;
-
 
     case PE_FrameGroupBox: //UKUI GroupBox style:
     {
