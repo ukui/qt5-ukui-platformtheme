@@ -4012,6 +4012,12 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_TabBarTabShiftHorizontal:
         return 0;
 
+    case PM_TabBarBaseHeight:
+        return 2;
+
+    case PM_TabBarBaseOverlap:
+        return 0;
+
     default:
         break;
     }
