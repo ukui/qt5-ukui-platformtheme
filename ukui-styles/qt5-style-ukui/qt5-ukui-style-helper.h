@@ -33,5 +33,5 @@ const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radi
 qreal calcRadialPos(const QStyleOptionSlider *dial, int postion);
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset);
 void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *style, QRect *textRect, QRect *iconRect);
-
+QColor mixColor(const QColor &c1, const QColor &c2, qreal bias = 0.5);
 #endif // QT5UKUISTYLEHELPER_H

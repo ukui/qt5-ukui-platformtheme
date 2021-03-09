@@ -549,7 +549,7 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         widget->setBackgroundRole(QPalette::Base);
     }
 
-    if (qobject_cast<QLineEdit *>(widget)) {
+    if (qobject_cast<QLineEdit *>(widget) || qobject_cast<QTabBar *>(widget)) {
         widget->setAttribute(Qt::WA_Hover);
     }
 
@@ -3194,8 +3194,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (flip) {
+                drawRect.adjust(0, 0, 1, 0);
                 QRect tmp = drawRect;
                 drawRect = QRect(tmp.y(), tmp.x(), tmp.height(), tmp.width());
+            } else {
+                drawRect.adjust(0, 0, 0, 1);
             }
 
             bool rtlHorTabs = (tab->direction == Qt::RightToLeft
@@ -3233,7 +3236,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
                 if (hover && !selected)
-                    painter->setOpacity(0.3);
+                    painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
+                                               tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
                 painter->drawPath(path);
             } else {
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
