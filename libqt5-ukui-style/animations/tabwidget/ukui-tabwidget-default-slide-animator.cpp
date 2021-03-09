@@ -54,7 +54,7 @@ using namespace UKUI::TabWidget;
  */
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
-    setDuration(200);
+    setDuration(400);
     setEasingCurve(QEasingCurve::OutQuad);
     setStartValue(0.0);
     setEndValue(1.0);
@@ -110,7 +110,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         //m_next_pixmap = m_bound_widget->grab(QRect(m_bound_widget->rect().x(), m_bound_widget->tabBar()->height(),
                         //m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
 
-                        QPixmap pixmap(m_bound_widget->currentWidget()->size());
+                        QPixmap pixmap(m_stack->size());
 
                         /*
                          * This way some widget such as QFrame.
@@ -130,13 +130,11 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         //m_bound_widget->currentWidget()->render(&pixmap, QPoint(), m_bound_widget->currentWidget()->rect());
                         //m_bound_widget->currentWidget()->setPalette(palette_save);
 
-                        m_bound_widget->render(&pixmap, QPoint(), QRect(m_bound_widget->currentWidget()->rect().left() + 2,
-                                                                        m_bound_widget->currentWidget()->rect().top() + m_bound_widget->tabBar()->height(),
-                                                                        m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
+                        m_bound_widget->render(&pixmap, QPoint(), m_stack->geometry());
                         m_next_pixmap = pixmap;
 
                         if (qobject_cast<QWidget *>(previous_widget)) {
-                            QPixmap previous_pixmap(previous_widget->size());
+                            QPixmap previous_pixmap(m_stack->size());
                             QPalette palette, palette_save;
                             palette = palette_save = previous_widget->palette();
                             /*
@@ -147,6 +145,24 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                             previous_widget->render(&previous_pixmap);
                             previous_widget->setPalette(palette_save);
                             m_previous_pixmap = previous_pixmap;
+
+                            switch (w->tabBar()->shape()) {
+                            case QTabBar::RoundedNorth:
+                            case QTabBar::TriangularNorth:
+                            case QTabBar::RoundedSouth:
+                            case QTabBar::TriangularSouth:
+                                horizontal = false;
+                                break;
+                            case QTabBar::RoundedWest:
+                            case QTabBar::TriangularWest:
+                            case QTabBar::RoundedEast:
+                            case QTabBar::TriangularEast:
+                                horizontal = true;
+                                break;
+                            default:
+                                break;
+                            }
+
                             this->start();
                             m_tmp_page->raise();
                             m_tmp_page->show();
@@ -309,25 +325,48 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             auto nextSrcRect = QRectF(m_next_pixmap.rect());
             auto nextTargetRect = QRectF(m_next_pixmap.rect());
             if (left_right) {
-                prevSrcRect.setX(m_previous_pixmap.width() * value);
-                prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
-                prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                if (horizontal) {
+                    prevSrcRect.setY(m_previous_pixmap.height() * value);
+                    prevSrcRect.setHeight(m_previous_pixmap.height() * (1 - value));
+                    prevTargetRect.setHeight(m_previous_pixmap.height() * (1 - value));
+                } else {
+                    prevSrcRect.setX(m_previous_pixmap.width() * value);
+                    prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                    prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                }
                 p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
 
-                nextSrcRect.setWidth(m_next_pixmap.width() * value);
-                nextTargetRect.setX(m_next_pixmap.width() * (1 - value));
-                nextTargetRect.setWidth(m_next_pixmap.width() * value);
+                if (horizontal) {
+                    nextSrcRect.setHeight(m_next_pixmap.height() * value);
+                    nextTargetRect.setY(m_next_pixmap.height() * (1 - value));
+                    nextTargetRect.setHeight(m_next_pixmap.height() * value);
+                } else {
+                    nextSrcRect.setWidth(m_next_pixmap.width() * value);
+                    nextTargetRect.setX(m_next_pixmap.width() * (1 - value));
+                    nextTargetRect.setWidth(m_next_pixmap.width() * value);
+                }
                 p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
-            }
-            else {
-                nextSrcRect.setX(m_next_pixmap.width() * (1 - value));
-                nextSrcRect.setWidth(m_next_pixmap.width() * value);
-                nextTargetRect.setWidth(m_next_pixmap.width() * value);
+            } else {
+                if (horizontal) {
+                    nextSrcRect.setY(m_next_pixmap.height() * (1 - value));
+                    nextSrcRect.setHeight(m_next_pixmap.height() * value);
+                    nextTargetRect.setHeight(m_next_pixmap.height() * value);
+                } else {
+                    nextSrcRect.setX(m_next_pixmap.width() * (1 - value));
+                    nextSrcRect.setWidth(m_next_pixmap.width() * value);
+                    nextTargetRect.setWidth(m_next_pixmap.width() * value);
+                }
                 p.drawPixmap(nextTargetRect, m_next_pixmap, nextSrcRect);
 
-                prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
-                prevTargetRect.setX(m_previous_pixmap.width() * value);
-                prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                if (horizontal) {
+                    prevSrcRect.setHeight(m_previous_pixmap.height() * (1 - value));
+                    prevTargetRect.setY(m_previous_pixmap.height() * value);
+                    prevTargetRect.setHeight(m_previous_pixmap.height() * (1 - value));
+                } else {
+                    prevSrcRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                    prevTargetRect.setX(m_previous_pixmap.width() * value);
+                    prevTargetRect.setWidth(m_previous_pixmap.width() * (1 - value));
+                }
                 p.drawPixmap(prevTargetRect, m_previous_pixmap, prevSrcRect);
             }
 
