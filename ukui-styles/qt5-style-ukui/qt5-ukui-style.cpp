@@ -78,7 +78,6 @@
 #include <private/qlineedit_p.h>
 
 #define COMMERCIAL_VERSION true
-
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
 //---copy from qcommonstyle
@@ -413,6 +412,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
             button_ac_bg(107,142,235),
             button_di_bg(233,233,233),
             highlight_bg(55,144,250),
+            highlight_dis(233, 233, 233),
             tip_bg(248,248,248),
             tip_font(22,22,22),
             alternateBase(248,248,248);
@@ -432,7 +432,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
         button_bg.setRgb(61,61,65);
         button_ac_bg.setRgb(48,48,51);
         button_di_bg.setRgb(48,48,51);
-        highlight_bg.setRgb(55,144,250);
+        highlight_dis.setRgb(71, 71, 71),
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
@@ -463,8 +463,10 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::ToolTipBase,tip_bg);
     palette.setBrush(QPalette::ToolTipText,tip_font);
 
-    palette.setBrush(QPalette::Highlight,highlight_bg);
-    palette.setBrush(QPalette::Active,QPalette::Highlight,highlight_bg);
+    palette.setBrush(QPalette::Active, QPalette::Highlight, highlight_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Highlight, highlight_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Highlight, highlight_dis);
+
     palette.setBrush(QPalette::HighlightedText,font_br_bg);
 
     palette.setBrush(QPalette::BrightText,font_br_bg);

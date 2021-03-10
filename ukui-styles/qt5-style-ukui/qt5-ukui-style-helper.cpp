@@ -273,3 +273,17 @@ QColor mixColor(const QColor &c1, const QColor &c2, qreal bias)
 
     return QColor::fromRgbF(r, g, b, a);
 }
+
+
+
+QColor highLight_Click()
+{
+    return QColor(41, 108, 217);
+}
+
+
+
+QColor highLight_Hover()
+{
+    return QColor(64, 169, 251);
+}

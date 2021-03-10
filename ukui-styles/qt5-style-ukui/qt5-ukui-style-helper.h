@@ -34,4 +34,6 @@ qreal calcRadialPos(const QStyleOptionSlider *dial, int postion);
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset);
 void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *style, QRect *textRect, QRect *iconRect);
 QColor mixColor(const QColor &c1, const QColor &c2, qreal bias = 0.5);
+QColor highLight_Click();
+QColor highLight_Hover();
 #endif // QT5UKUISTYLEHELPER_H
