@@ -1776,52 +1776,16 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 {
     switch (control) {
     case CC_ScrollBar: {
-        const QStyleOptionSlider opt = *qstyleoption_cast<const QStyleOptionSlider*>(option);
-        QStyleOption tmp = opt;
-        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
-        auto animator = m_scrollbar_animation_helper->animator(widget);
-        bool enable = option->state.testFlag(QStyle::State_Enabled);
-        bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
-        bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
-        if (!animator) {
-            return Style::drawComplexControl(control, option, painter, widget);
-        }
-
-        animator->setAnimatorDirectionForward("groove_width", mouse_over);
-        if (enable) {
-            if (mouse_over) {
-                if (!animator->isRunning("groove_width") && animator->currentAnimatorTime("groove_width") < animator->totalAnimationDuration("groove_width")) {
-                    animator->startAnimator("groove_width");
-                }
-            } else {
-                if (!animator->isRunning("groove_width") && animator->currentAnimatorTime("groove_width") > 0) {
-                    animator->startAnimator("groove_width");
-                }
+        if (const QStyleOptionSlider *bar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            QStyleOptionSlider newScrollbar = *bar;
+            newScrollbar.rect = proxy()->subControlRect(control, option, SC_ScrollBarSlider, widget);
+            if (!(bar->activeSubControls & SC_ScrollBarSlider)) {
+                newScrollbar.state &= ~(State_Sunken | State_MouseOver);
             }
+            proxy()->drawControl(CE_ScrollBarSlider, &newScrollbar, painter, widget);
+            return;
         }
-//        移上去不需要滚动条背景
-//        painter->save();
-//        painter->setPen(Qt::transparent);
-//        painter->setBrush(tmp.palette.windowText());
-//        double percent = animator->value("groove_width").toDouble();
-//        painter->setOpacity(percent * 0.1);
-//        auto grooveRect = option->rect;
-//        if (is_horizontal) {
-//            grooveRect.setY(grooveRect.height() * (1.0 - percent));
-//        } else {
-//            grooveRect.setX(grooveRect.width() * (1.0 - percent));
-//        }
-//        if (widget->property("drawScrollBarGroove").isValid()) {
-//            if (!widget->property("drawScrollBarGroove").toBool()) {
-//                painter->restore();
-//                return QCommonStyle::drawComplexControl(control, option, painter, widget);
-//            }
-//        }
-
-//        painter->drawRect(grooveRect);
-//        painter->restore();
-
-        return QCommonStyle::drawComplexControl(control, option, painter, widget);
+        break;
     }
 
     case CC_ComboBox:
