@@ -3894,16 +3894,14 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
     switch (metric) {
-    case PM_ScrollBarExtent: {
-        if(COMMERCIAL_VERSION)
-            return 14;
-        else
-            return 8;
-    }
+    case PM_ScrollBarExtent:
+        return 16;
 
-    case PM_ScrollBarSliderMin: {
-        return 60;
-    }
+    case PM_ScrollBarSliderMin:
+        return 68;
+
+    case PM_MaximumDragDistance:
+        return -1;
 
     case PM_ScrollView_ScrollBarOverlap: {
         return -10;
