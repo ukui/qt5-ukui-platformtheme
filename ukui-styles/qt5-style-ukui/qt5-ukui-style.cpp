@@ -1777,11 +1777,16 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     switch (control) {
     case CC_ScrollBar: {
         if (const QStyleOptionSlider *bar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(bar->palette.brush(QPalette::Active, QPalette::Base));
+            painter->drawRect(bar->rect);
+            painter->restore();
             QStyleOptionSlider newScrollbar = *bar;
             newScrollbar.rect = proxy()->subControlRect(control, option, SC_ScrollBarSlider, widget);
-            if (!(bar->activeSubControls & SC_ScrollBarSlider)) {
-                newScrollbar.state &= ~(State_Sunken | State_MouseOver);
-            }
+//            if (!(bar->activeSubControls & SC_ScrollBarSlider)) {
+//                newScrollbar.state &= ~(State_Sunken | State_MouseOver);
+//            }
             proxy()->drawControl(CE_ScrollBarSlider, &newScrollbar, painter, widget);
             return;
         }
@@ -2813,87 +2818,79 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
-    case CE_ScrollBarSlider: {
-        //auto animatorObj = widget->findChild<QObject*>("ukui_scrollbar_default_interaction_animator");
+    case CE_ScrollBarSlider:
+    {
         auto animator = m_scrollbar_animation_helper->animator(widget);
         if (!animator) {
             return Style::drawControl(element, option, painter, widget);
         }
 
-        bool enable = option->state.testFlag(QStyle::State_Enabled);
-        bool mouse_over = option->state.testFlag(QStyle::State_MouseOver);
-        bool is_horizontal = option->state.testFlag(QStyle::State_Horizontal);
-        bool is_sunken = option->state.testFlag(QStyle::State_Sunken);
+        if (const QStyleOptionSlider *bar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            const bool enable = bar->state & State_Enabled;
+            const bool sunKen = bar->state & State_Sunken;
+            const bool mouseOver = bar->state & State_MouseOver;
+            const bool horizontal = (bar->orientation == Qt::Horizontal);
+            QRect rect = bar->rect;
 
-        //draw slider
-        if (!enable) {
             painter->save();
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setPen(Qt::transparent);
-            painter->setBrush(option->palette.windowText());
-            painter->setOpacity(0.2);
-            auto sliderRect = option->rect;
-            if (is_horizontal) {
-                sliderRect.translate(0, sliderRect.height() - 3);
-                sliderRect.setHeight(2);
-            } else {
-                sliderRect.translate(sliderRect.width() - 3, 0);
-                sliderRect.setWidth(2);
-            }
-            painter->drawRoundedRect(sliderRect, 1, 1);
-            painter->restore();
-        } else {
-            auto sliderWidth = animator->value("groove_width").toDouble();
-            if(COMMERCIAL_VERSION)
-            {
-                sliderWidth = animator->value("groove_width").toDouble()/2;
+            painter->setPen(Qt::NoPen);
+            painter->setRenderHint(QPainter::Antialiasing, true);
 
-            }
-
-            animator->setAnimatorDirectionForward("slider_opacity", mouse_over);
-            if (mouse_over) {
+            animator->setAnimatorDirectionForward("slider_opacity", mouseOver);
+            animator->setAnimatorDirectionForward("groove_width", mouseOver);
+            if (mouseOver) {
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") == 0) {
                     animator->startAnimator("slider_opacity");
+                }
+                if (!animator->isRunning("groove_width") && animator->currentAnimatorTime("groove_width") == 0) {
+                    animator->startAnimator("groove_width");
                 }
             } else {
                 if (!animator->isRunning("slider_opacity") && animator->currentAnimatorTime("slider_opacity") > 0) {
                     animator->startAnimator("slider_opacity");
                 }
+                if (!animator->isRunning("groove_width") && animator->currentAnimatorTime("groove_width") > 0) {
+                    animator->startAnimator("groove_width");
+                }
             }
 
-            //sunken additional opacity
-            if (is_sunken) {
+            if (sunKen) {
                 if (animator->currentAnimatorTime("additional_opacity") == 0) {
-                    animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
+                    animator->setAnimatorDirectionForward("additional_opacity", sunKen);
                     animator->startAnimator("additional_opacity");
                 }
             } else {
                 if (animator->currentAnimatorTime("additional_opacity") > 0) {
-                    animator->setAnimatorDirectionForward("additional_opacity", is_sunken);
+                    animator->setAnimatorDirectionForward("additional_opacity", sunKen);
                     animator->startAnimator("additional_opacity");
                 }
             }
 
-            //draw slider
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setPen(Qt::transparent);
-            painter->setBrush(option->palette.windowText());
-            double slider_opacity = animator->value("slider_opacity").toDouble();
-            double additional_opacity = animator->value("additional_opacity").toDouble();
-            painter->setOpacity(slider_opacity + additional_opacity);
-            auto sliderRect = option->rect;
-            if (is_horizontal) {
-                sliderRect.setY(sliderRect.height() * (0.5 - sliderWidth/2));
+            QRectF drawRect;
+            qreal len = animator->value("groove_width").toReal() * 4 + 4;
+            qreal m_opacity = animator->value("slider_opacity").toReal();
+            qreal s_opacity = animator->value("additional_opacity").toReal();
+
+            if (horizontal) {
+                rect.adjust(0, 4, 0, 0);
+                drawRect.setRect(rect.x(), rect.y() + (rect.height() - len) / 2, rect.width(), len);
             } else {
-                sliderRect.setX(sliderRect.width() * (0.5 - sliderWidth/2));
+                if (bar->direction == Qt::LeftToRight)
+                    rect.adjust(4, 0, 0, 0);
+                else
+                    rect.adjust(0, 0, -4, 0);
+                drawRect.setRect(rect.x() + (rect.width() - len) / 2, rect.y(), len, rect.height());
             }
 
-            int rectMin = qMin(sliderRect.width(), sliderRect.height());
-            painter->drawRoundedRect(sliderRect, rectMin/2, rectMin/2);
+            painter->setBrush(mixColor(bar->palette.color(QPalette::Active, QPalette::Button),
+                                       bar->palette.color(QPalette::Active, QPalette::WindowText), m_opacity + s_opacity));
+            if (!enable)
+                painter->setBrush(bar->palette.brush(QPalette::Disabled, QPalette::Button));
+            painter->drawRoundedRect(drawRect, len / 2, len / 2);
             painter->restore();
+            return;
         }
-        return;
+        break;
     }
 
     case CE_ScrollBarAddLine: {
@@ -3867,9 +3864,8 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MaximumDragDistance:
         return -1;
 
-    case PM_ScrollView_ScrollBarOverlap: {
-        return -10;
-    }
+    case PM_ScrollView_ScrollBarOverlap:
+        return 0;
 
     case PM_MenuPanelWidth:
         return 0;
@@ -3994,7 +3990,8 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         if (const QStyleOptionSlider *bar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
             const QRect rect = bar->rect;
             const bool horizontal = bar->orientation == Qt::Horizontal;
-            int maxlen = horizontal ? rect.width() : rect.height();
+            int distance = 4;
+            int maxlen = horizontal ? rect.width() - distance: rect.height() - distance;
             int sliderlen = 0;
             if (bar->maximum != bar->minimum) {
                 uint range = bar->maximum - bar->minimum;
@@ -4009,15 +4006,31 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                 sliderlen = maxlen;
             }
 
-            int sliderstart = sliderPositionFromValue(bar->minimum, bar->maximum, bar->sliderPosition, maxlen - sliderlen, bar->upsideDown);
+
+            int sliderstart = sliderPositionFromValue(bar->minimum, bar->maximum, bar->sliderPosition, maxlen - sliderlen, bar->upsideDown) + distance / 2;
             switch (subControl) {
             case SC_ScrollBarSubLine:
             case SC_ScrollBarAddLine:
             case SC_ScrollBarFirst:
             case SC_ScrollBarLast:
-            case SC_ScrollBarSubPage:
-            case SC_ScrollBarAddPage:
                 return QRect();
+
+            case SC_ScrollBarSubPage:
+            {
+                if (horizontal)
+                    return QRect(0, 0, sliderstart, rect.height());
+                else
+                    return QRect(0, 0, rect.width(), sliderstart);
+            }
+
+            case SC_ScrollBarAddPage:
+            {
+                if (horizontal)
+                    return QRect(sliderstart + sliderlen, 0, rect.width() - sliderstart - sliderlen, rect.height());
+                else
+                    return QRect(0, sliderstart + sliderlen, rect.width(), rect.height() - sliderstart - sliderlen);
+            }
+
 
             case SC_ScrollBarSlider:
             {

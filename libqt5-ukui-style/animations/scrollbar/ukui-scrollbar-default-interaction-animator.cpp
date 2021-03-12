@@ -71,14 +71,14 @@ bool DefaultInteractionAnimator::bindWidget(QWidget *w)
     addAnimation(m_groove_width);
 
     m_slider_opacity = new QVariantAnimation(this);
-    m_slider_opacity->setStartValue(0.2);
-    m_slider_opacity->setEndValue(0.35);
+    m_slider_opacity->setStartValue(0.0);
+    m_slider_opacity->setEndValue(0.10);
     m_slider_opacity->setDuration(150);
     addAnimation(m_slider_opacity);
 
     m_sunken_silder_additional_opacity = new QVariantAnimation(this);
     m_sunken_silder_additional_opacity->setStartValue(0.0);
-    m_sunken_silder_additional_opacity->setEndValue(0.15);
+    m_sunken_silder_additional_opacity->setEndValue(0.10);
     m_sunken_silder_additional_opacity->setDuration(150);
     addAnimation(m_sunken_silder_additional_opacity);
 
