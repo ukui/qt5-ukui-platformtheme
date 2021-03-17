@@ -1777,11 +1777,15 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     switch (control) {
     case CC_ScrollBar: {
         if (const QStyleOptionSlider *bar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
-            painter->save();
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(bar->palette.brush(QPalette::Active, QPalette::Base));
-            painter->drawRect(bar->rect);
-            painter->restore();
+            if (widget && widget->property("drawScrollBarGroove").isValid() && (!widget->property("drawScrollBarGroove").toBool())) {
+
+            } else {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(bar->palette.brush(QPalette::Active, QPalette::Base));
+                painter->drawRect(bar->rect);
+                painter->restore();
+            }
             QStyleOptionSlider newScrollbar = *bar;
             newScrollbar.rect = proxy()->subControlRect(control, option, SC_ScrollBarSlider, widget);
 //            if (!(bar->activeSubControls & SC_ScrollBarSlider)) {
