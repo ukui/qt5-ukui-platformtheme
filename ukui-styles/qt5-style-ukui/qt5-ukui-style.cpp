@@ -2872,13 +2872,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             qreal s_opacity = animator->value("additional_opacity").toReal();
 
             if (horizontal) {
-                rect.adjust(0, 4, 0, 0);
                 drawRect.setRect(rect.x(), rect.y() + (rect.height() - len) / 2, rect.width(), len);
             } else {
-                if (bar->direction == Qt::LeftToRight)
-                    rect.adjust(4, 0, 0, 0);
-                else
-                    rect.adjust(0, 0, -4, 0);
                 drawRect.setRect(rect.x() + (rect.width() - len) / 2, rect.y(), len, rect.height());
             }
 
@@ -4005,7 +4000,6 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             } else {
                 sliderlen = maxlen;
             }
-
 
             int sliderstart = sliderPositionFromValue(bar->minimum, bar->maximum, bar->sliderPosition, maxlen - sliderlen, bar->upsideDown) + distance / 2;
             switch (subControl) {
