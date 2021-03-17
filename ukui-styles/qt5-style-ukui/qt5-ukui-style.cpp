@@ -644,7 +644,6 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
 
 void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-    //qDebug()<<"draw PE"<<element;
     switch (element) {
     case QStyle::PE_PanelMenu:
     case QStyle::PE_FrameMenu:

@@ -37,10 +37,7 @@ class Qt5UKUIPlatformThemePlugin : public QPlatformThemePlugin
 
 public:
     virtual QPlatformTheme *create(const QString &key, const QStringList &params) {
-        qDebug()<<"platform ukui"<<key<<params;
-        syslog(LOG_ERR, "platform theme:%s", key.toUtf8().constData());
         if (key.toLower() == "ukui") {
-            qDebug()<<"platform ukui";
             return new Qt5UKUIPlatformTheme(params);
         }
         return nullptr;

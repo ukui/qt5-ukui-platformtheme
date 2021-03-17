@@ -237,7 +237,6 @@ void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *
         QSize tabIconSize = tab->icon.actualSize(iconSize,
                                                  (tab->state & QStyle::State_Enabled) ? QIcon::Normal : QIcon::Disabled,
                                                  (tab->state & QStyle::State_Selected) ? QIcon::On : QIcon::Off);
-        qDebug()<<tabIconSize<<iconSize<<"iconSize";
         // High-dpi icons do not need adjustment; make sure tabIconSize is not larger than iconSize
         tabIconSize = QSize(qMin(tabIconSize.width(), iconSize.width()), qMin(tabIconSize.height(), iconSize.height()));
 
