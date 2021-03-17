@@ -3891,7 +3891,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         if (qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             return 4;
         } else if (qobject_cast<const QLineEdit *>(widget)) {
-            return 6;
+            return 2;
         }
         return 2;
 
@@ -4677,7 +4677,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             newSize += QSize(f->lineWidth * 2, f->lineWidth * 2);
             newSize.setWidth(qMax(newSize.width(), 140));
-            newSize.setHeight(qMax(newSize.height(), 32));
+            newSize.setHeight(qMax(newSize.height(), 40));
             return newSize;
         }
         break;
