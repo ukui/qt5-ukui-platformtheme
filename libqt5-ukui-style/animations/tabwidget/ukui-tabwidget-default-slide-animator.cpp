@@ -135,8 +135,8 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 
                         if (qobject_cast<QWidget *>(previous_widget)) {
                             QPixmap previous_pixmap(m_stack->size());
-                            QPalette palette, palette_save;
-                            palette = palette_save = previous_widget->palette();
+                            QPalette palette = previous_widget->palette();
+                            QPalette palette_save = previous_widget->palette();
                             /*
                              * This use QPalette::Base to replace QPalette::Window, Mabey have unknow bug.
                             */

@@ -146,11 +146,11 @@ QGestureRecognizer::Result TwoFingerZoomGestureRecognizer::recognize(QGesture *g
         case QEvent::TouchCancel:
             reset(gesture);
             return QGestureRecognizer::CancelGesture;
-            break;
+
         case QEvent::TouchEnd:
             reset(gesture);
             return QGestureRecognizer::FinishGesture;
-            break;
+
         default:
             break;
         }

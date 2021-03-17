@@ -163,7 +163,7 @@ qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
 
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
 {
-    QPolygonF poly;
+    QPolygonF poly(0);
     int width = dial->rect.width();
     int height = dial->rect.height();
     qreal r = qMin(width, height) / 2;

@@ -97,7 +97,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
             }
             if (key == "systemFontSize") {
                 double fontSize = settings->get("system-font-size").toString().toDouble();
-                QFontDatabase db;
                 if (fontSize > 0) {
                     QFont oldFont = QApplication::font();
                     m_system_font.setPointSize(fontSize);
