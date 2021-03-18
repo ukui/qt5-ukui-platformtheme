@@ -3857,7 +3857,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
 
     case PM_ScrollBarSliderMin:
-        return 68;
+        return 26;
 
     case PM_MaximumDragDistance:
         return -1;
@@ -4676,7 +4676,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             newSize += QSize(f->lineWidth * 2, f->lineWidth * 2);
             newSize.setWidth(qMax(newSize.width(), 140));
-            newSize.setHeight(qMax(newSize.height(), 40));
+            newSize.setHeight(qMax(newSize.height(), 36));
             return newSize;
         }
         break;
