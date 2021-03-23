@@ -127,12 +127,13 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     painter->setBrush(color);
 
     QPainterPath path;
-    auto region = widget->mask();
-    if (region.isEmpty()) {
+    QRegion region;
+    if (widget)
+        region = widget->mask();
+    if (region.isEmpty())
         path.addRoundedRect(opt.rect.adjusted(+rander, +rander, -rander,-rander), Menu_xRadius, Menu_yRadius);
-    } else {
+    else
         path.addRegion(region);
-    }
 
     //painter->drawPolygon(path.toFillPolygon().toPolygon());
     painter->drawPath(path);
@@ -285,4 +286,32 @@ QColor highLight_Click()
 QColor highLight_Hover()
 {
     return QColor(64, 169, 251);
+}
+
+
+
+void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
+                      const QRect &rect, QPainter *painter, const QWidget *widget)
+{
+    QStyle::PrimitiveElement pe;
+    switch (toolbutton->arrowType) {
+    case Qt::LeftArrow:
+        pe = QStyle::PE_IndicatorArrowLeft;
+        break;
+    case Qt::RightArrow:
+        pe = QStyle::PE_IndicatorArrowRight;
+        break;
+    case Qt::UpArrow:
+        pe = QStyle::PE_IndicatorArrowUp;
+        break;
+
+    case Qt::DownArrow:
+        pe = QStyle::PE_IndicatorArrowDown;
+        break;
+    default:
+        return;
+    }
+    QStyleOption arrowOpt = *toolbutton;
+    arrowOpt.rect = rect;
+    style->drawPrimitive(pe, &arrowOpt, painter, widget);
 }

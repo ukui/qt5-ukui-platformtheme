@@ -216,31 +216,7 @@ static QWindow *qt_getWindow(const QWidget *widget)
     return widget ? widget->window()->windowHandle() : 0;
 }
 
-static void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
-                      const QRect &rect, QPainter *painter, const QWidget *widget = 0)
-{
-    QStyle::PrimitiveElement pe;
-    switch (toolbutton->arrowType) {
-    case Qt::LeftArrow:
-        pe = QStyle::PE_IndicatorArrowLeft;
-        break;
-    case Qt::RightArrow:
-        pe = QStyle::PE_IndicatorArrowRight;
-        break;
-    case Qt::UpArrow:
-        pe = QStyle::PE_IndicatorArrowUp;
-        break;
 
-    case Qt::DownArrow:
-        pe = QStyle::PE_IndicatorArrowDown;
-        break;
-    default:
-        return;
-    }
-    QStyleOption arrowOpt = *toolbutton;
-    arrowOpt.rect = rect;
-    style->drawPrimitive(pe, &arrowOpt, painter, widget);
-}
 
 void Qt5UKUIStyle::viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const
 {
@@ -800,7 +776,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     {
         if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
         {
-            QStyleOption opt;
+            QStyleOption opt = *option;
             opt.state = header->state & State_Enabled ? State_Enabled : State_None;
             opt.rect = header->rect;
             if(header->sortIndicator & QStyleOptionHeader::SortUp)
@@ -854,11 +830,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
             bool isWindowButton = false;
             bool isWindowColoseButton = false;
-            if (widget && widget->property("isWindowButton").isValid())
+            if (widget && widget->property("isWindowButton").isValid()) {
                 if (widget->property("isWindowButton").toInt() == 0x01)
                     isWindowButton = true;
                 else if (widget->property("isWindowButton").toInt() == 0x02)
                     isWindowColoseButton = true;
+            }
 
             if (!(button->state & State_Enabled)) {
                 if (animator) {
@@ -1143,16 +1120,19 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
         bool isWindowButton = false;
         bool isWindowColoseButton = false;
-        if (widget && widget->property("isWindowButton").isValid())
+        if (widget && widget->property("isWindowButton").isValid()) {
             if (widget->property("isWindowButton").toInt() == 0x01)
                 isWindowButton = true;
             else if (widget->property("isWindowButton").toInt() == 0x02)
                 isWindowColoseButton = true;
+        }
 
         if(!(option->state & State_Enabled))
         {
-            animator->stopAnimator("SunKen");
-            animator->stopAnimator("MouseOver");
+            if (animator) {
+                animator->stopAnimator("SunKen");
+                animator->stopAnimator("MouseOver");
+            }
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Disabled,QPalette::Button));
@@ -2514,6 +2494,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 case Qt::Checked:
                     option.state |= QStyle::State_On;
                     break;
+                default:
+                    break;
                 }
                 proxy()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &option, p, widget);
             }
@@ -2587,6 +2569,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             */
 
             p->restore();
+            return;
         }
         break;
     }
@@ -3094,8 +3077,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     }
                 }
             }
+            return;
         }
-        return;
+        break;
     }
 
     case CE_TabBarTab:
@@ -3530,6 +3514,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 return;
             }
         }
+        break;
     }
 
     case CE_SizeGrip:

@@ -36,4 +36,5 @@ void tabLayout(const QStyleOptionTab *tab, const QWidget *widget, const QStyle *
 QColor mixColor(const QColor &c1, const QColor &c2, qreal bias = 0.5);
 QColor highLight_Click();
 QColor highLight_Hover();
+void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton, const QRect &rect, QPainter *painter, const QWidget *widget = 0);
 #endif // QT5UKUISTYLEHELPER_H
