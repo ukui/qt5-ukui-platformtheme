@@ -42,6 +42,7 @@ bool TabWidgetAnimationHelper::unregisterWidget(QWidget *w)
     auto animator = m_animators->value(w);
     if (animator) {
         animator->unboundWidget();
+        delete animator;
     }
     m_animators->remove(w);
     return true;
