@@ -94,7 +94,7 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion
 //    });
 
     m_blur_helper = new BlurHelper(this);
-    m_gesture_helper = new GestureHelper(this);
+//    m_gesture_helper = new GestureHelper(this);
     m_window_manager = new WindowManager(this);
 
     if (!baseStyle()->inherits("Qt5UKUIStyle")) {
@@ -176,7 +176,7 @@ void ProxyStyle::polish(QWidget *widget)
         return;
     }
 
-    m_gesture_helper->registerWidget(widget);
+//    m_gesture_helper->registerWidget(widget);
 
     /*!
       \todo
@@ -227,7 +227,7 @@ void ProxyStyle::unpolish(QWidget *widget)
         return;
     }
 
-    m_gesture_helper->unregisterWidget(widget);
+//    m_gesture_helper->unregisterWidget(widget);
 
     //return QProxyStyle::unpolish(widget);
     widget->removeEventFilter(this);
