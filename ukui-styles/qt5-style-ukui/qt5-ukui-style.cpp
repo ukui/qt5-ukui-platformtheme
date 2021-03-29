@@ -3960,6 +3960,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_TabBarBaseOverlap:
         return 0;
 
+    case PM_ExclusiveIndicatorWidth:
+        return 16;
+    case PM_ExclusiveIndicatorHeight:
+        return 16;
+    case PM_RadioButtonLabelSpacing:
+        return 8;
+
     default:
         break;
     }
@@ -4596,6 +4603,23 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         break;
     }
 
+    case SE_RadioButtonIndicator:
+    {
+        QRect rect;
+        int h = proxy()->pixelMetric(PM_ExclusiveIndicatorHeight, option, widget);
+        rect.setRect(option->rect.x(), option->rect.y() + ((option->rect.height() - h) / 2),
+                  proxy()->pixelMetric(PM_ExclusiveIndicatorWidth, option, widget), h);
+        rect = visualRect(option->direction, option->rect, rect);
+        return rect;
+    }
+
+    case SE_RadioButtonContents:
+    {
+        int radioWidth = proxy()->pixelMetric(PM_ExclusiveIndicatorWidth, option, widget);
+        int spacing = proxy()->pixelMetric(PM_RadioButtonLabelSpacing, option, widget);
+        return visualRect(option->direction, option->rect, option->rect.adjusted(radioWidth + spacing, 0, 0, 0));
+    }
+
     default:
         break;
     }
@@ -4685,6 +4709,21 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 newSize.setWidth(qMax(newSize.width() + padding, 168));
                 newSize.setHeight(qMax(newSize.height(), 36));
             }
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_RadioButton:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            int w = proxy()->pixelMetric(PM_ExclusiveIndicatorWidth, option, widget);
+            int h = proxy()->pixelMetric(PM_ExclusiveIndicatorHeight, option, widget);
+            int spacing = proxy()->pixelMetric(PM_RadioButtonLabelSpacing, option, widget);
+            if (!button->icon.isNull())
+                spacing += 4;
+            newSize.setWidth(newSize.width() + w + spacing);
+            newSize.setHeight(qMax(qMax(newSize.height(), h), 36));
             return newSize;
         }
         break;
