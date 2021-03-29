@@ -1659,82 +1659,79 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         break;
     }
 
-
-
     case PE_IndicatorRadioButton:
     {
         if (const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option)) {
-            QRect rect = radiobutton->rect;
+            QRectF rect = radiobutton->rect.adjusted(1, 1, -1, -1);
+
             bool enable = radiobutton->state & State_Enabled;
             bool MouseOver = radiobutton->state & State_MouseOver;
             bool SunKen = radiobutton->state & State_Sunken;
             bool On = radiobutton->state & State_On;
-            QColor box = option->palette.color(QPalette::Dark);
-            QColor light = option->palette.color(QPalette::Light);
-            if(!enable)
-            {
-                light = box = option->palette.color(QPalette::Disabled,QPalette::ButtonText);
+
+            QColor color = radiobutton->palette.color(QPalette::Active, QPalette::Highlight).toHsl();
+            color.setHsl(color.hue(), color.saturation(), color.lightness());
+
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            if (On) {
+                if (enable) {
+                    QColor penColor(36, 109, 212);
+                    if (SunKen) {
+                        painter->setPen(penColor);
+                        painter->setBrush(highLight_Click());
+                    } else if (MouseOver) {
+                        painter->setPen(penColor);
+                        painter->setBrush(highLight_Hover());
+                    } else {
+                        painter->setPen(penColor);
+                        painter->setBrush(radiobutton->palette.color(QPalette::Active, QPalette::Highlight));
+                    }
+                    painter->drawEllipse(rect);
+                    QRectF childRect(rect.x(), rect.y(), 6, 6);
+                    childRect.moveCenter(rect.center());
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::HighlightedText));
+                    painter->drawEllipse(childRect);
+                } else {
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(radiobutton->palette.color(QPalette::Disabled, QPalette::Button));
+                    painter->drawEllipse(rect);
+                    QRectF childRect(rect.x(), rect.y(), 6, 6);
+                    childRect.moveCenter(rect.center());
+                    painter->setBrush(radiobutton->palette.brush(QPalette::Disabled, QPalette::ButtonText));
+                    painter->drawEllipse(childRect);
+                }
+            } else {
+                if (enable) {
+                    if (SunKen) {
+                        painter->setPen(highLight_Click());
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
+                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 0.35);
+                        else
+                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 1.4);
+                        painter->setBrush(color);
+                    } else if (MouseOver) {
+                        painter->setPen(highLight_Hover());
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
+                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 0.5);
+                        else
+                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 1.5);
+                        painter->setBrush(color);
+                    } else {
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
+                            painter->setPen(QColor(72, 72, 77));
+                        else
+                            painter->setPen(QColor(191, 191, 191));
+                        painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::Button));
+                    }
+                } else {
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(radiobutton->palette.color(QPalette::Disabled, QPalette::Button));
+                }
+                painter->drawEllipse(rect);
             }
-
-            const int min = qMin(rect.width(),rect.height());
-            QPainterPath circle;
-            const QPointF circleCenter = rect.center() + QPoint(1, 1);
-            const qreal radius = (min + (min + 1) % 2) / 2.0 - 1;
-            circle.addEllipse(circleCenter, radius, radius);
-            QColor color = option->palette.color(QPalette::Highlight);
-            qreal h, s, v;
-            color.getHsvF(&h, &s, &v);
-
-            if(radiobutton->state & State_Off) {
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
-
-                painter->setPen(box);
-                painter->setBrush(Qt::NoBrush);
-                if(SunKen)
-                {
-                    color.setHsvF(h,s + 0.15,v - 0.2);
-                    painter->setPen(box);
-                    painter->setBrush(color);
-                }
-                else if(MouseOver)
-                {
-                    color.setHsvF(h,s,v - 0.13);
-                    painter->setPen(box);
-                    painter->setBrush(color);
-                }
-                if (!enable)
-                    painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Base));
-                painter->drawPath(circle);
-                painter->restore();
-            } else if (On) {
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(box);
-                painter->setBrush(option->palette.color(QPalette::Highlight).lighter(125));
-                if (SunKen) {
-                    painter->setPen(box);
-                    painter->setBrush(option->palette.color(QPalette::Highlight));
-                } else if (MouseOver) {
-                    painter->setPen(box);
-                    painter->setBrush(option->palette.color(QPalette::Highlight).lighter(150));
-                }
-                if (!enable)
-                    painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Base));
-                painter->drawPath(circle);
-                painter->restore();
-
-                circle = QPainterPath();
-                const qreal On_radius = radius / 2.0;
-                circle.addEllipse(circleCenter, On_radius, On_radius);
-
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(light);
-                painter->drawPath(circle);
-                painter->restore();
-            }
+            painter->restore();
             return;
         }
         break;
@@ -3319,47 +3316,46 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         }
         break;
 
+    case CE_RadioButton:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            QStyleOptionButton subopt = *button;
+            subopt.rect = proxy()->subElementRect(SE_RadioButtonIndicator, option, widget);
+            proxy()->drawPrimitive(PE_IndicatorRadioButton, &subopt, painter, widget);
+            subopt.rect = proxy()->subElementRect(SE_RadioButtonContents, option, widget);
+            proxy()->drawControl(CE_RadioButtonLabel, &subopt, painter, widget);
+            return;
+        }
+        break;
+    }
 
     case CE_RadioButtonLabel:
-        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
-            uint alignment = visualAlignment(btn->direction, Qt::AlignLeft | Qt::AlignVCenter);
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            uint alignment = visualAlignment(button->direction, Qt::AlignLeft | Qt::AlignVCenter);
+            const bool enable = button->state & State_Enabled;
 
-            if (!proxy()->styleHint(SH_UnderlineShortcut, btn, widget))
+            if (!proxy()->styleHint(SH_UnderlineShortcut, button, widget))
                 alignment |= Qt::TextHideMnemonic;
-            QPixmap pix;
-            QRect textRect = btn->rect;
-            if (!btn->icon.isNull()) {
-                pix = btn->icon.pixmap(widget ? widget->window()->windowHandle() : 0, btn->iconSize, btn->state & State_Enabled ? QIcon::Normal : QIcon::Disabled);
-                proxy()->drawItemPixmap(painter, btn->rect, alignment, pix);
-                if (btn->direction == Qt::RightToLeft)
-                    textRect.setRight(textRect.right() - btn->iconSize.width() - 4);
+            QPixmap pixmap;
+            QRect textRect = button->rect;
+            if (!button->icon.isNull()) {
+                pixmap = button->icon.pixmap(button->iconSize, enable ? QIcon::Normal : QIcon::Disabled);
+                proxy()->drawItemPixmap(painter, button->rect, alignment, pixmap);
+                int spacing = 8;
+                if (button->direction == Qt::RightToLeft)
+                    textRect.setRight(textRect.right() - button->iconSize.width() - spacing);
                 else
-                    textRect.setLeft(textRect.left() + btn->iconSize.width() + 4);
+                    textRect.setLeft(textRect.left() + button->iconSize.width() + spacing);
             }
-            if (!btn->text.isEmpty()){
+            if (!button->text.isEmpty()){
                 proxy()->drawItemText(painter, textRect, alignment | Qt::TextShowMnemonic,
-                                      btn->palette, btn->state & State_Enabled, btn->text, QPalette::WindowText);
+                                      button->palette, button->state & State_Enabled, button->text, QPalette::WindowText);
             }
             return;
         }
         break;
-
-    case CE_RadioButton:
-        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
-            QStyleOptionButton subopt = *btn;
-            subopt.rect = subElementRect( SE_RadioButtonIndicator, btn, widget);
-            proxy()->drawPrimitive(PE_IndicatorRadioButton ,&subopt, painter, widget);
-            subopt.rect = subElementRect( SE_RadioButtonContents, btn, widget);
-            proxy()->drawControl( CE_RadioButtonLabel , &subopt, painter, widget);
-//            if (btn->state & State_HasFocus) {
-//                QStyleOptionFocusRect fropt;
-//                fropt.QStyleOption::operator=(*btn);
-//                fropt.rect = subElementRect(SE_RadioButtonFocusRect, btn, widget);
-//                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, painter, widget);
-//            }
-            return;
-        }
-        break;
+    }
 
     case CE_CheckBox:
     {
