@@ -3878,14 +3878,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_SmallIconSize:
         return 16;
 
-
-    case PM_IndicatorWidth:{
-        return 16;
-    }
-    case PM_IndicatorHeight:{
-        return 16;
-    }
-
     case PM_SubMenuOverlap:return 2;
     case PM_ButtonMargin:return  9;
 
@@ -3984,6 +3976,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
     case PM_RadioButtonLabelSpacing:
         return 8;
+    case PM_IndicatorWidth:
+        return 16;
+    case PM_IndicatorHeight:
+        return 16;
 
     default:
         break;
@@ -4638,6 +4634,23 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         return visualRect(option->direction, option->rect, option->rect.adjusted(radioWidth + spacing, 0, 0, 0));
     }
 
+    case SE_CheckBoxIndicator:
+    {
+        QRect rect;
+        int h = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
+        rect.setRect(option->rect.x(), option->rect.y() + ((option->rect.height() - h) / 2),
+                     proxy()->pixelMetric(PM_IndicatorWidth, option, widget), h);
+        rect = visualRect(option->direction, option->rect, rect);
+        return rect;
+    }
+
+    case SE_CheckBoxContents:
+    {
+        int radioWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+        int spacing = proxy()->pixelMetric(PM_RadioButtonLabelSpacing, option, widget);
+        return visualRect(option->direction, option->rect, option->rect.adjusted(radioWidth + spacing, 0, 0, 0));
+    }
+
     default:
         break;
     }
@@ -4737,6 +4750,21 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             int w = proxy()->pixelMetric(PM_ExclusiveIndicatorWidth, option, widget);
             int h = proxy()->pixelMetric(PM_ExclusiveIndicatorHeight, option, widget);
+            int spacing = proxy()->pixelMetric(PM_RadioButtonLabelSpacing, option, widget);
+            if (!button->icon.isNull())
+                spacing += 4;
+            newSize.setWidth(newSize.width() + w + spacing);
+            newSize.setHeight(qMax(qMax(newSize.height(), h), 36));
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_CheckBox:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            int w = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
+            int h = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
             int spacing = proxy()->pixelMetric(PM_RadioButtonLabelSpacing, option, widget);
             if (!button->icon.isNull())
                 spacing += 4;
