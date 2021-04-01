@@ -37,7 +37,7 @@
 
 #include <QApplication>
 #include <QWidget>
-
+#include <qpa/qplatformthemefactory_p.h>
 #include <QDebug>
 #include <private/qgenericunixthemes_p.h>
 
@@ -178,6 +178,14 @@ bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
     return true;
     switch (type) {
     case QPlatformTheme::FileDialog:
+    {
+        if (QPlatformThemeFactory::keys().contains("gtk3")) {
+            QPlatformTheme *theme = QPlatformThemeFactory::create("gtk3");
+            return theme->usePlatformNativeDialog(QPlatformTheme::FileDialog);
+        } else {
+            return false;
+        }
+    }
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return false;
@@ -196,6 +204,14 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
 {
     switch (type) {
     case QPlatformTheme::FileDialog:
+    {
+        if (QPlatformThemeFactory::keys().contains("gtk3")) {
+            QPlatformTheme *theme = QPlatformThemeFactory::create("gtk3");
+            return theme->createPlatformDialogHelper(QPlatformTheme::FileDialog);
+        } else {
+            return QPlatformTheme::createPlatformDialogHelper(type);
+        }
+    }
     case QPlatformTheme::FontDialog:
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
