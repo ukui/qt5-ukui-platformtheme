@@ -377,15 +377,14 @@ QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
     //ukui-light
-    QColor  window_bg(231,231,231),
-            window_no_bg(233,233,233),
-            base_bg(255,255,255),
-            base_no_bg(248, 248, 248),
+    QColor  window_bg(245 , 245, 245),
+            window_no_bg(237 ,237, 237),
+            base_bg(255, 255, 255),
+            base_no_bg(245, 245, 245),
             font_bg(0,0,0),
             font_br_bg(255,255,255),
             font_di_bg(0, 0, 0, 76),
-            button_bg(217,217,217),
-            button_ac_bg(107,142,235),
+            button_bg(230, 230, 230),
             button_di_bg(233,233,233),
             highlight_bg(55,144,250),
             highlight_dis(233, 233, 233),
@@ -393,40 +392,39 @@ QPalette Qt5UKUIStyle::standardPalette() const
             tip_font(22,22,22),
             alternateBase(248,248,248);
 
-        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette ||  (m_is_default_style && specialList().contains(qAppName())))) {
+        if (!useDefaultPalette().contains(qAppName()) && (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))) {
         //ukui-dark
-        window_bg.setRgb(45,46,50);
-        window_no_bg.setRgb(48,46,50);
-        base_bg.setRgb(31,32,34);
-        base_no_bg.setRgb(28,28,30);
+        window_bg.setRgb(31, 32, 34);
+        window_no_bg.setRgb(26 , 26, 26);
+        base_bg.setRgb(18, 18, 18);
+        base_no_bg.setRgb(28, 28, 28);
         font_bg.setRgb(255,255,255);
         font_bg.setAlphaF(0.9);
         font_br_bg.setRgb(255,255,255);
         font_br_bg.setAlphaF(0.9);
         font_di_bg.setRgb(255,255,255);
         font_di_bg.setAlphaF(0.3);
-        button_bg.setRgb(61,61,65);
-        button_ac_bg.setRgb(48,48,51);
-        button_di_bg.setRgb(48,48,51);
+        button_bg.setRgb(51, 51, 54);
+        button_di_bg.setRgb(46, 46, 48);
         highlight_dis.setRgb(71, 71, 71),
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
     }
 
-    palette.setBrush(QPalette::Window,window_bg);
-    palette.setBrush(QPalette::Active,QPalette::Window,window_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::Window,window_no_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::Window,window_no_bg);
+    palette.setBrush(QPalette::Active, QPalette::Window, window_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Window, window_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Window, window_no_bg);
+
     palette.setBrush(QPalette::WindowText,font_bg);
     palette.setBrush(QPalette::Active,QPalette::WindowText,font_bg);
     palette.setBrush(QPalette::Inactive,QPalette::WindowText,font_bg);
     palette.setBrush(QPalette::Disabled,QPalette::WindowText,font_di_bg);
 
-    palette.setBrush(QPalette::Base,base_bg);
-    palette.setBrush(QPalette::Active,QPalette::Base,base_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::Base,base_no_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::Base,base_no_bg);
+    palette.setBrush(QPalette::Active, QPalette::Base, base_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Base, base_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Base, base_no_bg);
+
     palette.setBrush(QPalette::Text,font_bg);
     palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
     palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
@@ -450,10 +448,10 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::Inactive,QPalette::BrightText,font_br_bg);
     palette.setBrush(QPalette::Disabled,QPalette::BrightText,font_di_bg);
 
-    palette.setBrush(QPalette::Button,button_bg);
-    palette.setBrush(QPalette::Active,QPalette::Button,button_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::Button,button_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::Button,button_di_bg);
+    palette.setBrush(QPalette::Active, QPalette::Button, button_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Button, button_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Button, button_di_bg);
+
     palette.setBrush(QPalette::ButtonText,font_bg);
     palette.setBrush(QPalette::Inactive,QPalette::ButtonText,font_bg);
     palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
@@ -464,6 +462,30 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
     return palette;
 }
+
+
+
+QColor Qt5UKUIStyle::button_Click()
+{
+    if ((m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))) {
+        return QColor(43, 43, 46);
+    } else {
+        return QColor(217, 217, 217);
+    }
+}
+
+
+
+QColor Qt5UKUIStyle::button_Hover()
+{
+    if ((m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))) {
+        return QColor(75, 75, 79);
+    } else {
+        return QColor(235, 235, 235);
+    }
+}
+
+
 
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
