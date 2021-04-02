@@ -1527,8 +1527,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QRectF rect = radiobutton->rect.adjusted(1, 1, -1, -1);
 
             bool enable = radiobutton->state & State_Enabled;
-            bool MouseOver = radiobutton->state & State_MouseOver;
-            bool SunKen = radiobutton->state & State_Sunken;
+            bool mouseOver = radiobutton->state & State_MouseOver;
+            bool sunKen = radiobutton->state & State_Sunken;
             bool On = radiobutton->state & State_On;
 
             QColor color = radiobutton->palette.color(QPalette::Active, QPalette::Highlight).toHsl();
@@ -1538,16 +1538,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing, true);
             if (On) {
                 if (enable) {
-                    QColor penColor(36, 109, 212);
-                    if (SunKen) {
-                        painter->setPen(penColor);
+                    if (sunKen) {
+                        painter->setPen(QColor(25, 101, 207));
                         painter->setBrush(highLight_Click());
-                    } else if (MouseOver) {
-                        painter->setPen(penColor);
+                    } else if (mouseOver) {
+                        painter->setPen(QColor(36, 109, 212));
                         painter->setBrush(highLight_Hover());
                     } else {
-                        painter->setPen(penColor);
-                        painter->setBrush(radiobutton->palette.color(QPalette::Active, QPalette::Highlight));
+                        painter->setPen(QColor(36, 109, 212));
+                        painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::Highlight));
                     }
                     painter->drawEllipse(rect);
                     QRectF childRect(rect.x(), rect.y(), 6, 6);
@@ -1556,8 +1555,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::HighlightedText));
                     painter->drawEllipse(childRect);
                 } else {
-                    painter->setPen(Qt::NoPen);
-                    painter->setBrush(radiobutton->palette.color(QPalette::Disabled, QPalette::Button));
+                    if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
+                        painter->setPen(QColor(48, 48, 51));
+                        painter->setBrush(QColor(28, 28, 30));
+                    } else {
+                        painter->setPen(QColor(224, 224, 224));
+                        painter->setBrush(QColor(233, 233, 233));
+                    }
                     painter->drawEllipse(rect);
                     QRectF childRect(rect.x(), rect.y(), 6, 6);
                     childRect.moveCenter(rect.center());
@@ -1566,30 +1570,38 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
             } else {
                 if (enable) {
-                    if (SunKen) {
-                        painter->setPen(highLight_Click());
-                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
-                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 0.35);
-                        else
-                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 1.4);
-                        painter->setBrush(color);
-                    } else if (MouseOver) {
-                        painter->setPen(highLight_Hover());
-                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
-                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 0.5);
-                        else
-                            color.setHsl(color.hue(), color.saturation(), color.lightness() * 1.5);
-                        painter->setBrush(color);
+                    if (sunKen) {
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
+                            painter->setPen(QColor(36, 109, 212));
+                            painter->setBrush(QColor(6, 35, 97));
+                        } else {
+                            painter->setPen(QColor(36, 109, 212));
+                            painter->setBrush(QColor(179, 221, 255));
+                        }
+                    } else if (mouseOver) {
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
+                            painter->setPen(QColor(55, 144, 250));
+                            painter->setBrush(QColor(9, 53, 153));
+                        } else {
+                            painter->setPen(QColor(97, 173, 255));
+                            painter->setBrush(QColor(219, 240, 255));
+                        }
                     } else {
-                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))
+                        if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
                             painter->setPen(QColor(72, 72, 77));
-                        else
+                        } else {
                             painter->setPen(QColor(191, 191, 191));
-                        painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::Button));
+                        }
+                        painter->setBrush(Qt::NoBrush);
                     }
                 } else {
-                    painter->setPen(Qt::NoPen);
-                    painter->setBrush(radiobutton->palette.color(QPalette::Disabled, QPalette::Button));
+                    if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
+                        painter->setPen(QColor(48, 48, 51));
+                        painter->setBrush(QColor(28, 28, 30));
+                    } else {
+                        painter->setPen(QColor(224, 224, 224));
+                        painter->setBrush(QColor(233, 233, 233));
+                    }
                 }
                 painter->drawEllipse(rect);
             }
