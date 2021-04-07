@@ -1531,9 +1531,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             bool sunKen = radiobutton->state & State_Sunken;
             bool On = radiobutton->state & State_On;
 
-            QColor color = radiobutton->palette.color(QPalette::Active, QPalette::Highlight).toHsl();
-            color.setHsl(color.hue(), color.saturation(), color.lightness());
-
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing, true);
             if (On) {
@@ -3332,8 +3329,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     textRect.setLeft(textRect.left() + button->iconSize.width() + spacing);
             }
             if (!button->text.isEmpty()){
+                QString text = elidedText(button->text, button->rect, option);
                 proxy()->drawItemText(painter, textRect, alignment | Qt::TextShowMnemonic,
-                                      button->palette, button->state & State_Enabled, button->text, QPalette::WindowText);
+                                      button->palette, button->state & State_Enabled, text, QPalette::WindowText);
             }
             return;
         }

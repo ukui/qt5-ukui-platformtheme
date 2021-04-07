@@ -315,3 +315,13 @@ void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
     arrowOpt.rect = rect;
     style->drawPrimitive(pe, &arrowOpt, painter, widget);
 }
+
+
+
+QString elidedText(QString text, QRect drawRect, const QStyleOption *option, int flags)
+{
+    QFontMetrics fm = option->fontMetrics;
+    const bool ltr(option->direction == Qt::LeftToRight);
+    QString s = fm.elidedText(text, ltr ? Qt::ElideRight : Qt::ElideLeft, drawRect.width(), flags);
+    return s;
+}
