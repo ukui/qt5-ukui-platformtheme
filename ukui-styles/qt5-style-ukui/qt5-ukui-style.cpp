@@ -2291,73 +2291,13 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
     case CC_ToolButton:
     {
-        if (const QStyleOptionToolButton *toolbutton
-                = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
-            QRect button, menuarea,rect;
-            button = proxy()->subControlRect(control, toolbutton, SC_ToolButton, widget);
-            menuarea = proxy()->subControlRect(control, toolbutton, SC_ToolButtonMenu, widget);
-            rect = proxy()->subControlRect(CC_ToolButton,toolbutton,SC_None,widget);
-
-            State bflags = toolbutton->state & ~State_Sunken;
-
-            if (bflags & State_AutoRaise) {
-                if (!(bflags & State_MouseOver) || !(bflags & State_Enabled)) {
-                    bflags &= ~State_Raised;
-                }
-            }
-            State mflags = bflags;
-            if (toolbutton->state & State_Sunken) {
-                //if (toolbutton->activeSubControls & SC_ToolButton)
-                    bflags |= State_Sunken;
-                mflags |= State_Sunken;
-            }
-
-            QStyleOption tool = *toolbutton;
-            tool.state = bflags;
-            if(mflags & (State_Sunken | State_MouseOver))
-            {
-                tool.state = mflags;
-            }
-            tool.rect = rect;
-            proxy()->drawPrimitive(PE_PanelButtonTool, &tool, painter, widget);
-
-            if (toolbutton->state & State_HasFocus) {
-                QStyleOptionFocusRect fr;
-                fr.QStyleOption::operator=(*toolbutton);
-                fr.rect.adjust(3, 3, -3, -3);
-                if (toolbutton->features & QStyleOptionToolButton::MenuButtonPopup)
-                    fr.rect.adjust(0, 0, -proxy()->pixelMetric(QStyle::PM_MenuButtonIndicator,
-                                                               toolbutton, widget), 0);
-                proxy()->drawPrimitive(PE_FrameFocusRect, &fr, painter, widget);
-            }
-            QStyleOptionToolButton label = *toolbutton;
-            label.state = bflags;
-            label.rect = button;
-            proxy()->drawControl(CE_ToolButtonLabel, &label, painter, widget);
-
-            if (toolbutton->subControls & SC_ToolButtonMenu) {
-                tool.rect = menuarea;
-                tool.state = mflags;
-                if (widget && widget->property("isWindowButton").isValid())
-                    tool.state &= State_Enabled;
-                proxy()->drawPrimitive(PE_IndicatorArrowDown, &tool, painter, widget);
-            }
-            /*
-            ToolButton has Menu and popupmode is DelayedPopup.
-            If you want to show the arrow, please remove the comment below
-*/
-            //            else if (toolbutton->features & QStyleOptionToolButton::HasMenu) {
-            //                int mbi = qMin(button.width(),button.height())/5;
-            //                QRect ir = toolbutton->rect;
-            //                QStyleOptionToolButton newBtn = *toolbutton;
-            //                newBtn.rect = QRect(ir.right()  - mbi -1, ir.y() + ir.height() - mbi -1, mbi, mbi);
-            //                newBtn.rect = visualRect(toolbutton->direction, button, newBtn.rect);
-            //                Qt5UKUIStyle::drawPrimitive(PE_IndicatorArrowDown, &newBtn, painter, widget);
-            //            }
+        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            proxy()->drawPrimitive(PE_PanelButtonTool, option, painter, widget);
+            proxy()->drawControl(CE_ToolButtonLabel, option, painter, widget);
+            return;
         }
         break;
     }
-
 
     case CC_GroupBox: //UKUI GroupBox style
     {
