@@ -127,8 +127,8 @@ private:
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
 
-    QColor button_Click();
-    QColor button_Hover();
+    QColor button_Click() const;
+    QColor button_Hover() const;
 };
 
 #endif // QT5UKUISTYLE_H
