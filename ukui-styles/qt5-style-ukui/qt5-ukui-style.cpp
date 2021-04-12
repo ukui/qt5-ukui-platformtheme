@@ -2743,19 +2743,22 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         return;
     }
 
-    case CE_PushButtonBevel:
+    case CE_PushButton:
     {
-        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(option)) {
-            QRect br = btn->rect;
-            int dbi = proxy()->pixelMetric(PM_ButtonDefaultIndicator, btn, widget);
-            if (btn->features & QStyleOptionButton::AutoDefaultButton)
-                br.setCoords(br.left() + dbi, br.top() + dbi, br.right() - dbi, br.bottom() - dbi);
-
-            QStyleOptionButton tmpBtn = *btn;
-            tmpBtn.rect = br;
-            proxy()->drawPrimitive(PE_PanelButtonCommand, &tmpBtn, painter, widget);
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            proxy()->drawControl(CE_PushButtonBevel, option, painter, widget);
+            QStyleOptionButton subopt = *button;
+            subopt.rect = proxy()->subElementRect(SE_PushButtonContents, option, widget);
+            proxy()->drawControl(CE_PushButtonLabel, &subopt, painter, widget);
+            return;
         }
         break;
+    }
+
+    case CE_PushButtonBevel:
+    {
+        proxy()->drawPrimitive(PE_PanelButtonCommand, option, painter, widget);
+        return;
     }
 
     case CE_PushButtonLabel:
