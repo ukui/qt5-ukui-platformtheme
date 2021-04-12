@@ -1146,7 +1146,12 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             }
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
+            if (on)
+                painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
+            else if (raise)
+                painter->setBrush(Qt::NoBrush);
+            else
+                painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->drawRoundedRect(option->rect, 4, 4);
             painter->restore();
