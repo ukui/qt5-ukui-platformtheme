@@ -322,6 +322,10 @@ QString elidedText(QString text, QRect drawRect, const QStyleOption *option, int
 {
     QFontMetrics fm = option->fontMetrics;
     const bool ltr(option->direction == Qt::LeftToRight);
-    QString s = fm.elidedText(text, ltr ? Qt::ElideRight : Qt::ElideLeft, drawRect.width(), flags);
-    return s;
+    if (fm.horizontalAdvance("...") < fm.horizontalAdvance(text)) {
+        QString s = fm.elidedText(text, ltr ? Qt::ElideRight : Qt::ElideLeft, drawRect.width(), flags);
+        return s;
+    } else {
+        return text;
+    }
 }
