@@ -3846,9 +3846,11 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ButtonIconSize:
         return 16;
     case PM_ButtonMargin:
-        return 8;
+        return 16;
     case PM_MenuButtonIndicator:
         return 16;
+    case PM_ButtonDefaultIndicator:
+        return 0;
 
     default:
         break;
@@ -4503,6 +4505,22 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         return visualRect(option->direction, option->rect, option->rect.adjusted(radioWidth + spacing, 0, 0, 0));
     }
 
+    case SE_PushButtonContents:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            QRect rect = option->rect;
+            int Margin_Height = 2;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
+            rect.adjust(Button_MarginWidth, Margin_Height, -Button_MarginWidth, -Margin_Height);
+            if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
+                int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget);
+                rect.adjust(dbw, dbw, -dbw, -dbw);
+            }
+            return rect;
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4656,6 +4674,41 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             }
 
             newSize.setWidth(w > 36 ? w : 36);
+            newSize.setHeight(h > 36 ? h : 36);
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_PushButton:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            const bool icon = !button->icon.isNull();
+            const bool text = !button->text.isNull();
+            int w = size.width();
+            int h = size.height();
+            int Margin_Height = 2;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
+            w += Button_MarginWidth * 2;
+            h += Margin_Height * 2;
+
+            int spacing = 0;
+            if (text && icon)
+                spacing += 4;
+            if (!text && icon)
+                spacing -= 4;
+            if (button->features & QStyleOptionButton::HasMenu) {
+                if (icon || text)
+                    spacing += 8;
+            }
+            w += spacing;
+            if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
+                int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget) * 2;
+                w += dbw;
+                h += dbw;
+            }
+
+            newSize.setWidth(w > 96 ? w : 96);
             newSize.setHeight(h > 36 ? h : 36);
             return newSize;
         }
