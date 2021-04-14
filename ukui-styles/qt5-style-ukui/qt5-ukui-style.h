@@ -129,6 +129,7 @@ private:
 
     QColor button_Click() const;
     QColor button_Hover() const;
+    QColor button_DisableChecked() const;
 };
 
 #endif // QT5UKUISTYLE_H

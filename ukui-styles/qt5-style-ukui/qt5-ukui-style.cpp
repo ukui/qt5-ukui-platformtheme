@@ -487,6 +487,17 @@ QColor Qt5UKUIStyle::button_Hover() const
 
 
 
+QColor Qt5UKUIStyle::button_DisableChecked() const
+{
+    if ((m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName())))) {
+        return QColor(61, 61, 64);
+    } else {
+        return QColor(224, 224, 224);
+    }
+}
+
+
+
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
     Style::polish(widget);
@@ -845,42 +856,51 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
 
-    case PE_PanelButtonCommand://UKUI PushButton style
+    case PE_PanelButtonCommand:
     {
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             auto animator = m_button_animation_helper->animator(widget);
-
-            bool isWindowButton = false;
+            const bool enable = button->state & State_Enabled;
+            const bool hover = button->state & State_MouseOver;
+            const bool sunken = button->state & State_Sunken;
+            const bool on = button->state & State_On;
+            const bool db = button->features & QStyleOptionButton::DefaultButton;
+            qreal x_Radius = 4;
+            qreal y_Radius = 4;
             bool isWindowColoseButton = false;
             if (widget && widget->property("isWindowButton").isValid()) {
-                if (widget->property("isWindowButton").toInt() == 0x01)
-                    isWindowButton = true;
-                else if (widget->property("isWindowButton").toInt() == 0x02)
+                if (widget->property("isWindowButton").toInt() == 0x02)
                     isWindowColoseButton = true;
             }
 
-            if (!(button->state & State_Enabled)) {
+            if (!enable) {
                 if (animator) {
                     animator->stopAnimator("SunKen");
                     animator->stopAnimator("MouseOver");
                 }
-                if (button->features & QStyleOptionButton::Flat)
-                    return;
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
+                if (on)
+                    painter->setBrush(button_DisableChecked());
+                else if (button->features & QStyleOptionButton::Flat)
+                    painter->setBrush(Qt::NoBrush);
+                else
+                    painter->setBrush(option->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
 
-            if (!(button->state & State_AutoRaise) && !(button->features & QStyleOptionButton::Flat)) {
+            if (!(button->features & QStyleOptionButton::Flat)) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Button));
+                if (db)
+                    painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Highlight));
+                else
+                    painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect,4,4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
             }
 
@@ -888,134 +908,112 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(Qt::NoPen);
-                if (button->state & (State_Sunken | State_On)) {
-                    if (isWindowButton) {
-                        QColor color = button->palette.color(QPalette::Text);
-                        if (useDefaultPalette().contains(qAppName()))
-                            color = button->palette.color(QPalette::Base);
+                if (sunken || on) {
+                    if (isWindowColoseButton) {
+                        painter->setBrush(QColor("#E44C50"));
+                    } else if (useDefaultPalette().contains(qAppName())) {
+                        QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.15);
                         painter->setBrush(color);
-                    } else if (isWindowColoseButton) {
-                        painter->setBrush(QColor("#E44C50"));
                     } else {
-                        painter->setBrush(button->palette.color(QPalette::Highlight));
+                        if (db)
+                            painter->setBrush(highLight_Click());
+                        else
+                            painter->setBrush(button_Click());
                     }
-                } else if (button->state & State_MouseOver) {
-                    if (isWindowButton) {
-                        QColor color = button->palette.color(QPalette::Text);
-                        if (useDefaultPalette().contains(qAppName()))
-                            color = button->palette.color(QPalette::Base);
+                } else if (hover) {
+                    if (isWindowColoseButton) {
+                        painter->setBrush(QColor("#F86458"));
+                    } else if (useDefaultPalette().contains(qAppName())) {
+                        QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.1);
                         painter->setBrush(color);
-                    } else if (isWindowColoseButton) {
-                        painter->setBrush(QColor("#F86458"));
                     } else {
-                        auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                        painter->setBrush(color);
+                        if (db)
+                            painter->setBrush(highLight_Hover());
+                        else
+                            painter->setBrush(button_Hover());
                     }
                 }
-                painter->drawRoundedRect(button->rect, 4, 4);
+                painter->drawRoundedRect(button->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
 
-            if ((button->state & (State_Sunken | State_On)) || animator->isRunning("SunKen")
-                    || animator->value("SunKen") == 1.0)
-            {
+            if (sunken || on || animator->isRunning("SunKen") || animator->value("SunKen") == 1.0) {
                 double opacity = animator->value("SunKen").toDouble();
-                if(button->state & (State_Sunken | State_On))
-                {
-                    if(opacity == 0.0)
-                    {
-                        animator->setAnimatorDirectionForward("SunKen",true);
+                if (sunken || on) {
+                    if (opacity == 0.0) {
+                        animator->setAnimatorDirectionForward("SunKen", true);
                         animator->startAnimator("SunKen");
                     }
-                }
-                else
-                {
-                    if(opacity == 1.0)
-                    {
+                } else {
+                    if (opacity == 1.0) {
                         animator->setAnimatorDirectionForward("SunKen",false);
                         animator->startAnimator("SunKen");
                     }
                 }
 
-                painter->save();
-                if (isWindowButton) {
-                    QColor color = button->palette.color(QPalette::Text);
-                    if (useDefaultPalette().contains(qAppName()))
-                        color = button->palette.color(QPalette::Base);
-                    color.setAlphaF(0.1);
-                    painter->setBrush(color);
-                } else if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#F86458"));
-                } else {
-                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                    painter->setBrush(color);
-                }
-                painter->setPen(Qt::NoPen);
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
-                painter->restore();
-
+                QColor hoverColor, sunkenColor;
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                if (isWindowButton) {
-                    QColor color = button->palette.color(QPalette::Text);
-                    if (useDefaultPalette().contains(qAppName()))
-                        color = button->palette.color(QPalette::Base);
-                    color.setAlphaF(0.15);
-                    painter->setBrush(color);
-                } else if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#E44C50"));
-                } else {
-                    painter->setBrush(button->palette.color(QPalette::Highlight));
-                }
-                painter->setOpacity(opacity);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
+                if (isWindowColoseButton) {
+                    hoverColor = QColor("#F86458");
+                    sunkenColor = QColor("#E44C50");
+                } else if (useDefaultPalette().contains(qAppName())) {
+                    hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
+                    hoverColor.setAlphaF(0.1);
+                    sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
+                    sunkenColor.setAlphaF(0.15);
+                } else {
+                    if (db) {
+                        hoverColor = highLight_Hover();
+                        sunkenColor = highLight_Click();
+                    } else {
+                        hoverColor = button_Hover();
+                        sunkenColor = button_Click();
+                    }
+                }
+                painter->setBrush(mixColor(hoverColor, sunkenColor, opacity));
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
 
-            if(button->state & State_MouseOver || animator->isRunning("MouseOver")
-                    || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver"))
-            {
+            if (hover || animator->isRunning("MouseOver")
+                    || animator->currentAnimatorTime("MouseOver") == animator->totalAnimationDuration("MouseOver")) {
                 double opacity = animator->value("MouseOver").toDouble();
-                if(button->state & State_MouseOver)
-                {
+                if (hover) {
                     animator->setAnimatorDirectionForward("MouseOver",true);
-                    if(opacity == 0.0)
-                    {
+                    if (opacity == 0.0) {
                         animator->startAnimator("MouseOver");
                     }
-                }
-                else
-                {
+                } else {
                     animator->setAnimatorDirectionForward("MouseOver",false);
-                    if(opacity == 1.0)
-                    {
+                    if (opacity == 1.0) {
                         animator->startAnimator("MouseOver");
                     }
                 }
 
                 painter->save();
+                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setPen(Qt::NoPen);
                 painter->setOpacity(opacity);
-                if (isWindowButton) {
-                    QColor color = button->palette.color(QPalette::Text);
-                    if (useDefaultPalette().contains(qAppName()))
-                        color = button->palette.color(QPalette::Base);
+                if (isWindowColoseButton) {
+                    painter->setBrush(QColor("#F86458"));
+                } else  if (useDefaultPalette().contains(qAppName())) {
+                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
-                } else if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#F86458"));
                 } else {
-                    auto color = button->palette.color(QPalette::Highlight).lighter(125);
-                    painter->setBrush(color);
+                    if (db)
+                        painter->setBrush(highLight_Hover());
+                    else
+                        painter->setBrush(button_Hover());
                 }
-                painter->setPen(Qt::NoPen);
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(button->rect,4,4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
