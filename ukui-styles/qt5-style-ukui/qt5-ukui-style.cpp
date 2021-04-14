@@ -2761,93 +2761,85 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
     case CE_PushButtonLabel:
     {
-        const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option);
-        if (!button)
-            return Style::drawControl(element, option, painter, widget);
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            const bool enable = button->state & State_Enabled;
+            const bool db = button->features & QStyleOptionButton::DefaultButton;
+            const bool text = !button->text.isNull();
+            const bool icon = !button->icon.isNull();
 
-        if (button->state & State_HasFocus) {
-            QStyleOptionFocusRect opt;
-            opt.initFrom(widget);
-            Style::drawPrimitive(PE_FrameFocusRect, &opt, painter, widget);
-        }
-
-        QRect rect = button->rect;
-        int bf = proxy()->pixelMetric(PM_DefaultFrameWidth,button,widget);//2
-        int bm = proxy()->pixelMetric(PM_ButtonMargin,button,widget);//9
-        QRect drawRect = rect.adjusted(bf,bf,-bf,-bf);
-        if (button->features & QStyleOptionButton::HasMenu)
-        {
-            QStyleOptionButton arrow = *button;
-            int indicatorSize = proxy()->pixelMetric(PM_MenuButtonIndicator, button, widget);//16
-            if (button->direction == Qt::RightToLeft)
-            {
-                arrow.rect.setRect(drawRect.left(),drawRect.top(),indicatorSize,drawRect.height());
-                drawRect = drawRect.adjusted(indicatorSize, 0, 0, 0);
-            }
-            else
-            {
-                drawRect = drawRect.adjusted(0, 0, -indicatorSize, 0);
-                arrow.rect.setRect(drawRect.right(),drawRect.top(),indicatorSize,drawRect.height());
-            }
-            proxy()->drawPrimitive(PE_IndicatorArrowDown,&arrow,painter,widget);
-        }
-
-        //这是是否要绘制"&P" as P（带下划线）
-        uint tf = Qt::AlignVCenter | Qt::TextShowMnemonic;
-        if (!proxy()->styleHint(SH_UnderlineShortcut, button, widget))
-            tf |= Qt::TextHideMnemonic;
-
-        if (!button->icon.isNull())
-        {
-            //Center both icon and text
-            QIcon::Mode mode = button->state & State_Enabled ? QIcon::Normal : QIcon::Disabled;
-            if (mode == QIcon::Normal && button->state & State_HasFocus)
-                mode = QIcon::Active;
-            QIcon::State state = QIcon::Off;
-            if (button->state & State_On)
-                state = QIcon::On;
-            QPixmap pixmap = button->icon.pixmap(button->iconSize, mode, state);
-            if(button->text.isEmpty())
-            {
-                proxy()->drawItemPixmap(painter, drawRect, Qt::AlignCenter, pixmap);
-                return;
+            QRect drawRect = button->rect;
+            int spacing = 8;
+            if (button->features & QStyleOptionButton::HasMenu) {
+                QRect arrowRect;
+                int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
+                arrowRect.setRect(drawRect.right() - indicator, drawRect.top() + (drawRect.height() - indicator) / 2, indicator, indicator);
+                arrowRect = visualRect(option->direction, option->rect, arrowRect);
+                if (!text && !icon)
+                    spacing = 0;
+                drawRect.setWidth(drawRect.width() - indicator - spacing);
+                drawRect = visualRect(button->direction, button->rect, drawRect);
+                QStyleOption arrow = *option;
+                arrow.rect = arrowRect;
+                proxy()->drawPrimitive(PE_IndicatorArrowDown, &arrow, painter, widget);
             }
 
-            QRect iconRect;
-            iconRect.setRect(drawRect.left(),drawRect.top(),button->iconSize.width(),button->iconSize.height());
+            int tf = Qt::AlignCenter;
+            if (proxy()->styleHint(SH_UnderlineShortcut, button, widget))
+                tf |= Qt::TextShowMnemonic;
+            QPixmap pixmap;
+            if (icon) {
+                QIcon::Mode mode = button->state & State_Enabled ? QIcon::Normal : QIcon::Disabled;
+                if (mode == QIcon::Normal && button->state & State_HasFocus)
+                    mode = QIcon::Active;
+                QIcon::State state = QIcon::Off;
+                if (button->state & State_On)
+                    state = QIcon::On;
+                pixmap = button->icon.pixmap(button->iconSize, mode, state);
+            }
 
+            QFontMetrics fm = button->fontMetrics;
+            int textWidth = fm.horizontalAdvance(button->text);
+            int iconWidth = icon ? button->iconSize.width() : 0;
+            QRect iconRect, textRect;
+            if (icon && text) {
+                int width = textWidth + spacing + iconWidth;
+                if (width > drawRect.width()) {
+                    width = drawRect.width();
+                    textWidth = width - spacing - iconWidth;
+                }
+                textRect.setRect(drawRect.x(), drawRect.y(), width, drawRect.height());
+                textRect.moveCenter(drawRect.center());
+                iconRect.setRect(textRect.left(), textRect.top(), iconWidth, textRect.height());
+                textRect.setRect(iconRect.right() + spacing + 1, textRect.y(), textWidth, textRect.height());
+                iconRect = visualRect(option->direction, drawRect, iconRect);
+                textRect = visualRect(option->direction, drawRect, textRect);
+            } else if (icon) {
+                iconRect = drawRect;
+            } else if (text) {
+                textRect = drawRect;
+            }
 
-            QRect textRect = button->fontMetrics.boundingRect(option->rect, int(tf), button->text);
-            textRect.setRect(iconRect.right(),iconRect.top(),textRect.width(),textRect.height());
-
-            QRect IconTextRect = iconRect.adjusted(0,0,textRect.width()+bm,0);
-
-            IconTextRect.moveCenter(drawRect.center());
-
-            iconRect.moveCenter(IconTextRect.adjusted(0,0,-textRect.width()-bm,0).center());
-            textRect.moveCenter(IconTextRect.adjusted(iconRect.width(),0,0,0).center());
-
-            iconRect = visualRect(button->direction, drawRect, iconRect);
-            textRect = visualRect(button->direction, drawRect, textRect);
-
-            proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
-            drawRect = textRect;
+            if (iconRect.isValid()) {
+                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+            }
+            if (textRect.isValid()) {
+                QString text = elidedText(button->text, textRect, option);
+                if ((button->state & (State_MouseOver | State_Sunken | State_On) && db)
+                        || (db && !(button->features & QStyleOptionButton::Flat))) {
+                    if (enable) {
+                        painter->save();
+                        painter->setPen(button->palette.color(QPalette::Active, QPalette::HighlightedText));
+                        painter->setBrush(Qt::NoBrush);
+                        proxy()->drawItemText(painter, textRect, tf, button->palette, enable, text);
+                        painter->restore();
+                    }
+                } else {
+                    proxy()->drawItemText(painter, textRect, tf, button->palette, enable, text, QPalette::ButtonText);
+                }
+            }
+            return;
         }
-        else
-        {
-            tf |= Qt::AlignHCenter;
-        }
-
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing,true);
-        painter->setPen(option->palette.color(QPalette::ButtonText));
-        if(button->state & (State_Sunken | State_MouseOver | State_On))
-            painter->setPen(option->palette.color(QPalette::HighlightedText));
-        if(!(button->state & State_Enabled))
-            painter->setPen(option->palette.color(QPalette::Disabled,QPalette::ButtonText));
-        proxy()->drawItemText(painter, drawRect, int(tf), button->palette, (button->state & State_Enabled),button->text);
-        painter->restore();
-        return;
+        break;
     }
 
     case CE_ToolButtonLabel:
