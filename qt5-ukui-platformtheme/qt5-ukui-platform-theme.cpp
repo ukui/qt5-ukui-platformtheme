@@ -159,9 +159,9 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
             if (auto settings = UKUIStyleSettings::globalInstance()) {
                 QString icontheme = settings->get("icon-theme-name").toString();
                 if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
-                    return QStringList()<<"ukui";
+                    return QStringList()<<"ukui-icon-theme-default";
                 else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
-                    return QStringList()<<"ukui-classical";
+                    return QStringList()<<"ukui-icon-theme-classical";
                 return QStringList()<<icontheme;
             }
         }

@@ -1,12 +1,12 @@
 <schemalist>
     <schema id="org.ukui.style" path="/org/ukui/style/" gettext-domain="style">
         <key type="s" name="style-name">
-            <default>"ukui"</default>
+            <default>"ukui-default"</default>
             <summary>Current Qt Style</summary>
             <description>Set default style for UKUI desktop environment.</description>
         </key>
         <key type="s" name="icon-theme-name">
-            <default>"ukui"</default>
+            <default>"ukui-icon-theme-default"</default>
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.</description>
         </key>

@@ -5,6 +5,89 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
 
+qt5-ukui-platformtheme (1.0.6-3kylin5) v101; urgency=medium
+
+  * 将麒麟助手加入使用毛玻璃的黑名单。
+
+ -- leichen <leichen@kylinos.cn>  Fri, 26 Mar 2021 16:50:07 +0800
+
+qt5-ukui-platformtheme (1.0.6-3kylin4) v101; urgency=medium
+
+  * 取消手势(Remove GestureHelper)
+
+ -- leichen <leichen@kylinos.cn>  Thu, 25 Mar 2021 15:37:59 +0800
+
+qt5-ukui-platformtheme (1.0.6-3kylin3) v101; urgency=medium
+
+  * 修改QLineEdit的大小 [#42392 #42381 #41898 #38858 #36131]
+  * 重构QScrollBar界面(重构系统中Qt滚动条的样式)
+  * 代码漏洞扫描及去除多余日志打印
+
+ -- leichen <leichen@kylinos.cn>  Fri, 19 Mar 2021 09:01:44 +0800
+
+qt5-ukui-platformtheme (1.0.6-3kylin2) v101; urgency=medium
+
+  * 重构QTabBar QTabWidget样式 [#31234]
+  * 平台QMessagebox居中显示 [#41564]
+
+ -- leichen <leichen@kylinos.cn>  Fri, 12 Mar 2021 09:54:43 +0800
+
+qt5-ukui-platformtheme (1.0.6-2kylin4) v101; urgency=medium
+
+  * 将麒麟备份还原工具加入平台消息对话框黑名单
+  * 新增QListview QListWidget(除iconMode外)的样式[25382]
+  * 将kylin-burner移出主题、毛玻璃黑名单
+
+ -- leichen <leichen@kylinos.cn>  Thu, 04 Feb 2021 20:52:24 +0800
+
+qt5-ukui-platformtheme (1.0.6-2kylin2) v101; urgency=medium
+
+  * 修复平台QMessgebox奔溃问题[37682]
+  * 将麒麟备份还原加入使用平台QMEssageBox黑名单
+  * 设置QCombobox不再使用鼠标滚轮改变选项[32168]
+  * 新增当Button没有动画时的样式及新增按钮隐藏再次show时动画重置[35283]
+
+ -- leichen <leichen@kylinos.cn>  Tue, 02 Feb 2021 17:35:09 +0800
+
+qt5-ukui-platformtheme (1.0.6-2kylin1) v101; urgency=medium
+
+  * QMessagebox使用主题框架提供的样式
+  * 解决QLable不能设置字体的bug [35705]
+  * 将用户手册移除主题框架黑名单 [31581]
+  * 新增QRadioButton不可用状态样式 [35334]
+  * 修改QFialDialog列表视图、详细视图的图标 [19402]
+  * 删除对QDialogButtonBox的图标处理 [32948]
+
+ -- leichen <leichen@kylinos.com>  Tue, 26 Jan 2021 10:56:43 +0800
+
+qt5-ukui-platformtheme (1.0.6-1kylin1) v101; urgency=medium
+
+  * Modify CT_MenuItem enum in sizeFromContents() function Modify CE_MenuItem enum in drawControl() function
+  * Replace the arrows with icons
+  * Rewrite HighlightEffect isPixmapPureColol() fuction Modify symbolic_color
+  * Add kylin-user-guide to  blackAppList  Remove ukui-bluetooth in specialList
+  * 修改QMenu样式
+  * 将主题中用图标绘制箭头的样式
+  * 重写图标高亮协议的判别算法及symbolic_color
+  * 将用户手册拉入不使用主题框架名单，将蓝牙移除使用深色主题名单
+
+ -- leichen <leichen@kylinos.com>  Fri, 15 Jan 2021 15:02:19 +0800
+
+qt5-ukui-platformtheme (1.0.4-7kylin2) v101; urgency=medium
+
+  * Modify the disable status font alpha
+  * Set "biometric-manager" does not respond to theme switching
+  * GestureHelper: reduce gesture grabbing for improving UI fluency. link to: #19404
+  * Solve the fixed mode of scroll bar, and update the style when hover
+  * Refactoring and optimization of QMenu interface drawing process
+  * Add kylin-video use default theme and kylin-software-center.py use theme but Non-response theme chang
+  * Modify QMessageBox style
+  * Add ukui-bluetooth default use ukui theme
+  * Refactoring the QLineEdit interface
+  * ShadowHelper: fix some problem.
+
+ -- leichen <leichen@kylinos.com>  Fri, 08 Jan 2021 10:17:40 +0800
+
 qt5-ukui-platformtheme (1.0.6-1) unstable; urgency=medium
 
   * New upstream release.
