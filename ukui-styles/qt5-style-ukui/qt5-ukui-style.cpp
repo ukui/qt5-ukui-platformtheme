@@ -2250,6 +2250,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             proxy()->drawPrimitive(PE_PanelButtonTool, option, painter, widget);
             proxy()->drawControl(CE_ToolButtonLabel, option, painter, widget);
+            if (option->state & State_KeyboardFocusChange && option->state & State_HasFocus) {
+                painter->save();
+                painter->setPen(highLight_Click());
+                painter->setBrush(Qt::NoBrush);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                QRectF rect = option->rect;
+                int x_Radius = 4;
+                int y_Radius = 4;
+                painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), x_Radius, y_Radius);
+                painter->restore();
+            }
             return;
         }
         break;
@@ -2748,6 +2759,17 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QStyleOptionButton subopt = *button;
             subopt.rect = proxy()->subElementRect(SE_PushButtonContents, option, widget);
             proxy()->drawControl(CE_PushButtonLabel, &subopt, painter, widget);
+            if (option->state & State_KeyboardFocusChange && option->state & State_HasFocus) {
+                painter->save();
+                painter->setPen(highLight_Click());
+                painter->setBrush(Qt::NoBrush);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                QRectF rect = option->rect;
+                int x_Radius = 4;
+                int y_Radius = 4;
+                painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), x_Radius, y_Radius);
+                painter->restore();
+            }
             return;
         }
         break;
