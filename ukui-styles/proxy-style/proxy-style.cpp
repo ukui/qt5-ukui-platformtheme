@@ -48,29 +48,30 @@ using namespace UKUI;
 ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion": key)
 {
     auto settings = UKUIStyleSettings::globalInstance();
-//    m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
-//    m_custom_highlight_color = QColor(settings->get("customHighlightColor").toString());
-    m_blink_cursor = settings->get("cursorBlink").toBool();
-    m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
-    qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
-    connect(settings, &QGSettings::changed, this, [=](const QString &key) {
-        if (key == "cursorBlink") {
-            m_blink_cursor = settings->get("cursorBlink").toBool();
-            if (qApp->activeWindow()) {
-                qApp->activeWindow()->update();
+    if (settings) {
+//        m_use_custom_highlight_color = settings->get("useCustomHighlightColor").toBool();
+//        m_custom_highlight_color = QColor(settings->get("customHighlightColor").toString());
+        m_blink_cursor = settings->get("cursorBlink").toBool();
+        m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
+        qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
+        connect(settings, &QGSettings::changed, this, [=](const QString &key) {
+            if (key == "cursorBlink") {
+                m_blink_cursor = settings->get("cursorBlink").toBool();
+                if (qApp->activeWindow()) {
+                    qApp->activeWindow()->update();
+                }
+                if (qApp->activeModalWidget()) {
+                    qApp->activeModalWidget()->update();
+                }
+                if (qApp->activePopupWidget()) {
+                    qApp->activePopupWidget()->update();
+                }
             }
-            if (qApp->activeModalWidget()) {
-                qApp->activeModalWidget()->update();
+            if (key == "cursorBlinkTime") {
+                m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
+                qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
             }
-            if (qApp->activePopupWidget()) {
-                qApp->activePopupWidget()->update();
-            }
-        }
-        if (key == "cursorBlinkTime") {
-            m_blink_cursor_time = settings->get("cursorBlinkTime").toInt();
-            qApp->styleHints()->setCursorFlashTime(m_blink_cursor_time);
-        }
-    });
+        });
 
 //    connect(settings, &QGSettings::changed, this, [=](const QString &key) {
 //        if (key == "useCustomHighlightColor") {
@@ -94,6 +95,9 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion
 //            qApp->paletteChanged(pal);
 //        }
 //    });
+    } else {
+        qWarning("org.ukui.style is null!");
+    }
 
     m_blur_helper = new BlurHelper(this);
 //    m_gesture_helper = new GestureHelper(this);
@@ -104,49 +108,54 @@ ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion
     }
 
     m_app_style_settings = ApplicationStyleSettings::getInstance();
-    connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy) {
-        /*!
+    if (m_app_style_settings) {
+        connect(m_app_style_settings, &ApplicationStyleSettings::colorStretageChanged, [=](const ApplicationStyleSettings::ColorStretagy &stretagy) {
+            /*!
           \todo implemet palette switch.
           */
-        switch (stretagy) {
-        case ApplicationStyleSettings::System: {
-            break;
-        }
-        case ApplicationStyleSettings::Bright: {
-            break;
-        }
-        case ApplicationStyleSettings::Dark: {
-            break;
-        }
-        default:
-            break;
-        }
-    });
+            switch (stretagy) {
+            case ApplicationStyleSettings::System: {
+                break;
+            }
+            case ApplicationStyleSettings::Bright: {
+                break;
+            }
+            case ApplicationStyleSettings::Dark: {
+                break;
+            }
+            default:
+                break;
+            }
+        });
+    } else {
+        qWarning("org.ukui.style is null!");
+    }
 
     if (QGSettings::isSchemaInstalled("org.ukui.peripherals-mouse")) {
         QGSettings *settings = new QGSettings("org.ukui.peripherals-mouse");
-        int mouse_double_click_time = settings->get("doubleClick").toInt();
-        if (mouse_double_click_time != qApp->doubleClickInterval()) {
-            qApp->setDoubleClickInterval(mouse_double_click_time);
-        }
-        connect(settings, &QGSettings::changed, qApp, [=] (const QString &key) {
-            if (key == "doubleClick") {
-                int mouse_double_click_time = settings->get("doubleClick").toInt();
-                if (mouse_double_click_time != qApp->doubleClickInterval()) {
-                    qApp->setDoubleClickInterval(mouse_double_click_time);
-                }
+        if (settings->keys().contains("doubleClick")) {
+            int mouse_double_click_time = settings->get("doubleClick").toInt();
+            if (mouse_double_click_time != qApp->doubleClickInterval()) {
+                qApp->setDoubleClickInterval(mouse_double_click_time);
             }
-        });
+            connect(settings, &QGSettings::changed, qApp, [=] (const QString &key) {
+                if (key == "doubleClick") {
+                    int mouse_double_click_time = settings->get("doubleClick").toInt();
+                    if (mouse_double_click_time != qApp->doubleClickInterval()) {
+                        qApp->setDoubleClickInterval(mouse_double_click_time);
+                    }
+                }
+            });
+        } else {
+            qWarning("org.ukui.peripherals-mouse no doubleClick keys!");
+        }
+    } else {
+        qWarning("org.ukui.peripherals-mouse is null!");
     }
 }
 
 bool ProxyStyle::eventFilter(QObject *obj, QEvent *e)
 {
-//    if (e->type() == QEvent::Hide) {
-//        qDebug()<<obj->metaObject()->className()<<e->type()<<"=========\n\n\n";
-//    } else {
-//        qDebug()<<obj->metaObject()->className()<<e->type();
-//    }
     return false;
 }
 
@@ -208,9 +217,6 @@ void ProxyStyle::polish(QWidget *widget)
         }
         */
     }
-
-    //qDebug()<<widget->metaObject()->className();
-    //add exception.
 
     if (widget->isWindow()) {
         auto var = widget->property("useStyleWindowManager");

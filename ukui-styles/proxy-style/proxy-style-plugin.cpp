@@ -125,11 +125,10 @@ ProxyStylePlugin::ProxyStylePlugin()
 
 QStyle *ProxyStylePlugin::create(const QString &key)
 {
+    qDebug()<<"ProxyStyle create"<<qAppName()<<key;
     if (blackList().contains(qAppName()))
         return new QProxyStyle("fusion");
     if (key == "ukui") {
-        //FIXME:
-        //get current style, fusion for invalid.
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
             if (m_current_style_name == "ukui-default" || m_current_style_name == "ukui-dark"

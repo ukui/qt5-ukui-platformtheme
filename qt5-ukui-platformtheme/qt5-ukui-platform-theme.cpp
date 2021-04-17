@@ -148,8 +148,6 @@ const QFont *Qt5UKUIPlatformTheme::font(Font type) const
 
 QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 {
-    //FIXME:
-    //qDebug()<<"theme hint"<<hint;
     switch (hint) {
     case QPlatformTheme::StyleNames:
         return QStringList()<<"ukui";
@@ -187,6 +185,7 @@ QIconEngine *Qt5UKUIPlatformTheme::createIconEngine(const QString &iconName) con
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
 bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
 {
+    qDebug()<<"use platform native dialog"<<type;
     return true;
     switch (type) {
     case QPlatformTheme::FileDialog:
@@ -206,6 +205,7 @@ bool Qt5UKUIPlatformTheme::usePlatformNativeDialog(DialogType type) const
 
 QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogType type) const
 {
+    qDebug()<<"creater platform dialog helper"<<type;
     switch (type) {
     case QPlatformTheme::FileDialog:
     case QPlatformTheme::FontDialog:

@@ -249,7 +249,6 @@ bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
         return false;
     }
     case QEvent::Resize:
-        //qDebug()<<"resize";
         m_tab_resizing = true;
         return false;
     case QEvent::LayoutRequest: {

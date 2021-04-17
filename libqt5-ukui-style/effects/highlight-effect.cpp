@@ -49,6 +49,10 @@ void HighLightEffect::setSkipEffect(QWidget *w, bool skip)
 
 bool HighLightEffect::isPixmapPureColor(const QPixmap &pixmap)
 {
+    if (pixmap.isNull()) {
+        qWarning("pixmap is null!");
+        return false;
+    }
     QImage image = pixmap.toImage();
 
     QVector<QColor> vector;
@@ -193,8 +197,10 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
 
 
-    if (!widget)
+    if (!widget) {
+        qWarning("widget is null!");
         return pixmap;
+    }
 
     if (widget->property("skipHighlightIconEffect").isValid()) {
         bool skipEffect = widget->property("skipHighlightIconEffect").toBool();

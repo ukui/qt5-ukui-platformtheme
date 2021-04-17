@@ -38,6 +38,7 @@ class Qt5UKUIPlatformThemePlugin : public QPlatformThemePlugin
 public:
     virtual QPlatformTheme *create(const QString &key, const QStringList &params) {
         if (key.toLower() == "ukui") {
+            qDebug()<<"PlatformTheme Create"<<key;
             return new Qt5UKUIPlatformTheme(params);
         }
         return nullptr;
