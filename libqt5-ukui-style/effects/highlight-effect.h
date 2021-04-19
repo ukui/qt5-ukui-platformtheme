@@ -27,7 +27,6 @@
 #include <QStyleOption>
 
 class QAbstractItemView;
-class QAbstractButton;
 class QMenu;
 
 class HighLightEffect : public QObject
@@ -64,7 +63,6 @@ public:
     static bool isPixmapPureColor(const QPixmap &pixmap);
     static bool setMenuIconHighlightEffect(QMenu *menu, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
     static bool setViewItemIconHighlightEffect(QAbstractItemView *view, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
-    static bool setButtonIconHighlightEffect(QAbstractButton *button, HighLightMode hlmode = skipHighlight, EffectMode mode = HighlightOnly);
     static HighLightMode isWidgetIconUseHighlightEffect(const QWidget *w);
 
     static void setSymoblicColor(const QColor &color);

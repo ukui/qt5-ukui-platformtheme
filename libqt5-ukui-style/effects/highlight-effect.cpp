@@ -23,7 +23,6 @@
 #include "highlight-effect.h"
 
 #include <QAbstractItemView>
-#include <QAbstractButton>
 #include <QMenu>
 #include <QStyleOption>
 
@@ -114,16 +113,6 @@ bool HighLightEffect::setViewItemIconHighlightEffect(QAbstractItemView *view, Hi
 
     view->viewport()->setProperty("useIconHighlightEffect", hlmode);
     view->viewport()->setProperty("iconHighlightEffectMode", mode);
-    return true;
-}
-
-bool HighLightEffect::setButtonIconHighlightEffect(QAbstractButton *button, HighLightMode hlmode, EffectMode mode)
-{
-    if (!button)
-        return false;
-
-    button->setProperty("useIconHighlightEffect", hlmode);
-    button->setProperty("iconHighlightEffectMode", mode);
     return true;
 }
 
@@ -233,11 +222,6 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 option->state.testFlag(QStyle::State_Sunken) ||
                 option->state.testFlag(QStyle::State_On) ||
                 option->state.testFlag(QStyle::State_Selected);
-        if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-            if (button->isDown() || button->isChecked()) {
-                overOrDown = true;
-            }
-        }
 
         if (qobject_cast<const QAbstractItemView *>(widget)) {
             if (!option->state.testFlag(QStyle::State_Selected))
@@ -334,10 +318,6 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-        if (button->isDown() || button->isChecked())
-            overOrDown = true;
-    }
     if (qobject_cast<const QAbstractItemView *>(widget)) {
         if (!option->state.testFlag(QStyle::State_Selected))
             overOrDown = false;
@@ -375,10 +355,6 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-        if ((button->isDown() || button->isChecked()) && !button->property("isWindowButton").isValid())
-            overOrDown = true;
-    }
     if (qobject_cast<const QAbstractItemView *>(widget)) {
         if (!option->state.testFlag(QStyle::State_Selected))
             overOrDown = false;
@@ -421,10 +397,6 @@ QPixmap HighLightEffect::filledSymbolicColoredGeneratePixmap(const QPixmap &pixm
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (auto button = qobject_cast<const QAbstractButton *>(widget)) {
-        if (button->isDown() || button->isChecked())
-            overOrDown = true;
-    }
     if (qobject_cast<const QAbstractItemView *>(widget)) {
         if (!option->state.testFlag(QStyle::State_Selected))
             overOrDown = false;

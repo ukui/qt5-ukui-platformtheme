@@ -1717,7 +1717,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 QRect EditRect = subControlRect(CC_ComboBox,option,SC_ComboBoxEditField,widget);
                 rect = EditRect.adjusted(-fw,-fw,fw,fw);
                 proxy()->drawPrimitive(PE_PanelButtonCommand,&button,painter,widget);
-                arrow.state = combobox->state;
             }
 
             if(!(option->state & State_Enabled))
@@ -1928,10 +1927,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         if(spinbox->activeSubControls == SC_SpinBoxUp)
                         {
                             proxy()->drawPrimitive(PE_PanelButtonCommand,&upbutton,painter,widget);
-                            if(spinbox->state & State_MouseOver)
-                                uparrow.state |= State_MouseOver;
-                            if(spinbox->state & State_Sunken)
-                                uparrow.state |= State_Sunken;
                         }
                     }
                 }
@@ -1948,10 +1943,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         if(spinbox->activeSubControls == SC_SpinBoxDown)
                         {
                             proxy()->drawPrimitive(PE_PanelButtonCommand,&downbutton,painter,widget);
-                            if(spinbox->state & State_MouseOver)
-                                downarrow.state |= State_MouseOver;
-                            if(spinbox->state & State_Sunken)
-                                downarrow.state |= State_Sunken;
                         }
                     }
                 }
@@ -2791,6 +2782,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             QRect drawRect = button->rect;
             int spacing = 8;
+            QStyleOption sub = *option;
+            if (db && !(button->features & QStyleOptionButton::Flat))
+                sub.state = option->state | State_On;
+            else if (!db)
+                sub.state = enable ? State_Enabled : State_None;
             if (button->features & QStyleOptionButton::HasMenu) {
                 QRect arrowRect;
                 int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
@@ -2800,9 +2796,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     spacing = 0;
                 drawRect.setWidth(drawRect.width() - indicator - spacing);
                 drawRect = visualRect(button->direction, button->rect, drawRect);
-                QStyleOption arrow = *option;
-                arrow.rect = arrowRect;
-                proxy()->drawPrimitive(PE_IndicatorArrowDown, &arrow, painter, widget);
+                sub.rect = arrowRect;
+                proxy()->drawPrimitive(PE_IndicatorArrowDown, &sub, painter, widget);
             }
 
             int tf = Qt::AlignCenter;
@@ -2842,7 +2837,11 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (iconRect.isValid()) {
-                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                if (db)
+                    pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
+                else
+                    pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
+                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             if (textRect.isValid()) {
                 QString text = elidedText(button->text, textRect, option);
@@ -2989,7 +2988,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 default:
                     break;
                 }
-                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, option, widget);
+                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             return;
         }
