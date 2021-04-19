@@ -2837,11 +2837,12 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (iconRect.isValid()) {
-                if (db)
+                if (db  && !(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
                     pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
+                    QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                }
                 else
-                    pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
-                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                    proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             if (textRect.isValid()) {
                 QString text = elidedText(button->text, textRect, option);
@@ -2988,8 +2989,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 default:
                     break;
                 }
-                pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, option, widget);
-                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             return;
         }
