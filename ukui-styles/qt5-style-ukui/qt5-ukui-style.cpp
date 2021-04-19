@@ -2815,7 +2815,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             QFontMetrics fm = button->fontMetrics;
-            int textWidth = fm.boundingRect(button->text).width();
+            int textWidth = fm.boundingRect(button->text).width() + 2;
             int iconWidth = icon ? button->iconSize.width() : 0;
             QRect iconRect, textRect;
             if (icon && text) {
@@ -2876,7 +2876,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
 
-            int textDis = fm.boundingRect(tb->text).width();
+            int textDis = fm.boundingRect(tb->text).width() + 2;
             int iconWidth = (icon || ha) ? tb->iconSize.width() : 0;
             int spacing = 8;
             QRect textRect, iconRect, arrowRect;
