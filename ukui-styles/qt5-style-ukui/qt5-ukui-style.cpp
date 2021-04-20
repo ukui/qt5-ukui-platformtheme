@@ -1746,9 +1746,19 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_IndicatorTabTearRight:
         return;
 
-    default:   break;
+    case PE_PanelScrollAreaCorner:
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+        painter->drawRect(option->rect);
+        painter->restore();
+        return;
     }
-    return Style::drawPrimitive(element, option, painter, widget);
+
+    default:
+        break;
+    }
 }
 
 void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
