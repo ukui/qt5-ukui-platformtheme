@@ -43,7 +43,7 @@ static const QStringList blackAppListWithBlurHelper(){
     l<<"youker-assistant";
     l<<"kylin-assistant";
     l<<"kylin-video";
-    l<<"ukui-control-center";
+//    l<<"ukui-control-center";
     l<<"ubuntu-kylin-software-center.py";
     l<<"kylin-burner";
     l<<"ukui-clipboard";

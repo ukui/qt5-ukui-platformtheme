@@ -33,6 +33,7 @@
 #include <QApplication>
 
 #include <QDebug>
+#include "black-list.h"
 
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
@@ -114,7 +115,7 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
     }
 
     //if blur effect is not supported, do not use transparent color.
-    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind)) {
+    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) || blackAppListWithBlurHelper().contains(qAppName())) {
         color.setAlphaF(1);
     }
 
