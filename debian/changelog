@@ -5,6 +5,15 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
 
+qt5-ukui-platformtheme (1.0.6-4kylin3) v101; urgency=medium
+
+  * 任务号：25385  添加日志打印
+  * 任务号：26458  bug号：47689
+  * bug:44194
+  * 其他改动：将控制面板移除毛玻璃黑名单(龙芯机型需要重点测试)
+
+ -- leichen <leichen@kylinos.cn>  Wed, 21 Apr 2021 15:31:16 +0800
+
 qt5-ukui-platformtheme (1.0.6-3kylin5) v101; urgency=medium
 
   * 将麒麟助手加入使用毛玻璃的黑名单。
