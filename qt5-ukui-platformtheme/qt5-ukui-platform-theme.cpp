@@ -82,6 +82,8 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 for (auto widget : QApplication::allWidgets()) {
                     widget->update();
                 }
+                QIcon icon = qApp->windowIcon();
+                qApp->setWindowIcon(QIcon::fromTheme(icon.name()));
             }
 
             if (key == "systemFont") {
