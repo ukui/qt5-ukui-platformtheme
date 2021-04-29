@@ -24,6 +24,8 @@
 #define QT5UKUISTYLE_H
 
 #include <QProxyStyle>
+#include <QFileSystemWatcher>
+#include <QUrl>
 
 class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
@@ -126,6 +128,9 @@ private:
 
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
+
+    QList<QUrl> fdList;
+    QFileSystemWatcher *fsw;
 
     QColor button_Click() const;
     QColor button_Hover() const;

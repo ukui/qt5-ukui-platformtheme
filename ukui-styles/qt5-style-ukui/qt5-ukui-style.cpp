@@ -74,6 +74,8 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QApplication>
+#include <QFileDialog>
+#include <QDir>
 
 #include <private/qlineedit_p.h>
 
@@ -330,6 +332,42 @@ bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
+
+    if (QFileDialog *fd = qobject_cast<QFileDialog *>(obj)) {
+        if (e->type() == QEvent::Show) {
+            int sidebarNum = 8;
+            QString home = QDir::homePath().section("/", -1, -1);
+            QString mnt = "/media/" + home + "/";
+            QDir mntDir(mnt);
+            mntDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+            QFileInfoList filist = mntDir.entryInfoList();
+            QList<QUrl> mntUrlList;
+            for (int i = 0; i < sidebarNum && i < filist.size(); ++i) {
+                QFileInfo fi = filist.at(i);
+                if (fi.isReadable()) {
+                    mntUrlList << QUrl("file://" + fi.filePath());
+                }
+            }
+
+            fsw->addPath("/media/" + home + "/");
+            connect(fsw, &QFileSystemWatcher::directoryChanged, fd, [=](const QString path) {
+                int sidebarNum = 8;
+                QDir wmntDir(path);
+                wmntDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+                QFileInfoList wfilist = wmntDir.entryInfoList();
+                QList<QUrl> mntUrlList;
+                for (int i = 0; i < sidebarNum && i < wfilist.size(); ++i) {
+                    QFileInfo fi = wfilist.at(i);
+                        mntUrlList << QUrl("file://" + fi.filePath());
+                }
+                fd->setSidebarUrls(fdList + mntUrlList);
+            });
+
+            fd->setSidebarUrls(fdList + mntUrlList);
+        }
+        return false;
+    }
+
     return false;
 }
 
@@ -564,6 +602,16 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         widget->setAttribute(Qt::WA_Hover);
     }
 
+    if (QFileDialog *fd = qobject_cast<QFileDialog *>(widget)) {
+        fdList.clear();
+        fdList = fd->sidebarUrls();
+        connect(fd, &QFileDialog::finished, fd, [=]() {
+            fd->setSidebarUrls(fdList);
+        });
+        fsw = new QFileSystemWatcher(fd);
+        fd->installEventFilter(this);
+    }
+
     widget->installEventFilter(this);
 }
 
@@ -620,6 +668,12 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
 
     if (qobject_cast<QLineEdit *>(widget)) {
         widget->setAttribute(Qt::WA_Hover, false);
+    }
+
+    if (QFileDialog *fd = qobject_cast<QFileDialog *>(widget)) {
+        disconnect(fd, &QFileDialog::finished, fd, nullptr);
+        disconnect(fsw, &QFileSystemWatcher::directoryChanged, fd, nullptr);
+        fsw->deleteLater();
     }
 
     Style::unpolish(widget);
