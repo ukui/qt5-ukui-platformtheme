@@ -78,6 +78,9 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                     icontheme = "ukui-classical";
 
                 QIcon::setThemeName(icontheme);
+
+                QIcon icon = qApp->windowIcon();
+                qApp->setWindowIcon(QIcon::fromTheme(icon.name()));
                 // update all widgets for repaint new themed icons.
                 for (auto widget : QApplication::allWidgets()) {
                     widget->update();
