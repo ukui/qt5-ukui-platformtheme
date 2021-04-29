@@ -545,12 +545,6 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
         label->setWordWrap(false);
     }
 
-    if (qobject_cast<QMenu*>(widget)) {
-        widget->setAttribute(Qt::WA_TranslucentBackground, false);
-        //widget->setMask(QRegion());
-        return;
-    }
-
     if (qobject_cast<QTabWidget*>(widget)) {
         m_tab_animation_helper->unregisterWidget(widget);
     }
