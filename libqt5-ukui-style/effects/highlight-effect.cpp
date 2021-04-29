@@ -198,7 +198,6 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
 
     if (!widget) {
-        qWarning("widget is null!");
         return pixmap;
     }
 
