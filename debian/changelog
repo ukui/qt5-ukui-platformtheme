@@ -5,6 +5,14 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
 
+qt5-ukui-platformtheme (1.0.6-4kylin5) v101; urgency=medium
+
+  * bug:50962
+  * 其他改动：移除图标高亮协议中的一条日志打印
+              主题框架添加图标主题切换是窗口图标实时切换处理
+
+ -- leichen <leichen@kylinos.cn>  Thu, 29 Apr 2021 10:41:55 +0800
+
 qt5-ukui-platformtheme (1.0.6-4kylin4) v101; urgency=medium
 
   * bug:50453
