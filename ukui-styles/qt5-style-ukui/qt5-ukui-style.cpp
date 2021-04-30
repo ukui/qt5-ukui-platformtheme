@@ -2874,7 +2874,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             QFontMetrics fm = button->fontMetrics;
-            int textWidth = fm.boundingRect(button->text).width() + 2;
+            int textWidth = fm.boundingRect(option->rect, tf, button->text).width() + 2;
             int iconWidth = icon ? button->iconSize.width() : 0;
             QRect iconRect, textRect;
             if (icon && text) {
@@ -2896,7 +2896,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (iconRect.isValid()) {
-                if (db  && !(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
+                if (db && !(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
                     pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
                     QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
                 }
@@ -2904,15 +2904,17 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             if (textRect.isValid()) {
-                QString text = elidedText(button->text, textRect, option);
+                QString text = elidedText(button->text, textRect, option, tf);
                 if ((button->state & (State_MouseOver | State_Sunken | State_On) && db)
                         || (db && !(button->features & QStyleOptionButton::Flat))) {
                     if (enable) {
                         painter->save();
                         painter->setPen(button->palette.color(QPalette::Active, QPalette::HighlightedText));
                         painter->setBrush(Qt::NoBrush);
-                        proxy()->drawItemText(painter, textRect, tf, button->palette, enable, text);
+                        proxy()->drawItemText(painter, textRect, tf, button->palette, true, text);
                         painter->restore();
+                    } else {
+                       proxy()->drawItemText(painter, textRect, tf, button->palette, false, text, QPalette::ButtonText);
                     }
                 } else {
                     proxy()->drawItemText(painter, textRect, tf, button->palette, enable, text, QPalette::ButtonText);
@@ -2936,7 +2938,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
 
-            int textDis = fm.boundingRect(tb->text).width() + 2;
             int iconWidth = (icon || ha) ? tb->iconSize.width() : 0;
             int spacing = 8;
             QRect textRect, iconRect, arrowRect;
@@ -2966,6 +2967,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int alignment = Qt::AlignCenter;
             if (proxy()->styleHint(SH_UnderlineShortcut, option, widget))
                 alignment |= Qt::TextShowMnemonic;
+            int textDis = fm.boundingRect(option->rect, alignment, tb->text).width() + 2;
             QPixmap pixmap;
             if (icon) {
                 QIcon::State state = tb->state & State_On ? QIcon::On : QIcon::Off;
@@ -3019,7 +3021,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (textRect.isValid()) {
-                QString text = elidedText(tb->text, textRect, option);
+                QString text = elidedText(tb->text, textRect, option, alignment);
                 proxy()->drawItemText(painter, textRect, alignment, tb->palette, enable, text, QPalette::ButtonText);
             }
             if (iconRect.isValid()) {
