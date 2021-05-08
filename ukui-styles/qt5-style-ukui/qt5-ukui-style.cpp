@@ -2017,222 +2017,94 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         break;
     }
 
-//    case CC_Slider :
-//        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
-//            //Size and location of each rectangle used
-//            QRectF rect = option->rect;
-//            QRectF rectHandle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
-//            QRectF rectSliderTickmarks = proxy()->subControlRect(CC_Slider, option, SC_SliderTickmarks, widget);
-//            QRect rectGroove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
-//            const bool enable = option->state & State_Enabled;
-//            const QColor highlight = option->palette.color(QPalette::Highlight);
-//            const QColor dis_highlight = option->palette.color(QPalette::Disabled,QPalette::Button).darker(120);
-//            QPen pen;
-//            //Drawing chute (line)
-//            if (option->subControls & SC_SliderGroove) {
-//                pen.setStyle(Qt::CustomDashLine);
-//                QVector<qreal> dashes;
-//                //qreal space = 1.3;
-//                qreal space = 0;
-//                dashes << 0.1 << space;
-//                // dashes << -0.1 << space;
-//                pen.setDashPattern(dashes);
-//                pen.setWidthF(3);
-//                pen.setColor(enable ? highlight.lighter() : dis_highlight);
-//                painter->setPen(pen);
-//                painter->setRenderHint(QPainter::Antialiasing);
-
-//                if (slider->orientation == Qt::Horizontal) {
-//                    painter->drawLine(QPointF(rectGroove.left(), rectHandle.center().y()), QPointF(rectHandle.left(), rectHandle.center().y()));
-//                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-//                    painter->setPen(pen);
-//                    painter->drawLine(QPointF(rectGroove.right(), rectHandle.center().y()), QPointF(rectHandle.right(), rectHandle.center().y()));
-//                } else {
-//                    painter->drawLine(QPointF(rectGroove.center().x(), rectGroove.bottom()), QPointF(rectGroove.center().x(),  rectHandle.bottom()));
-//                    pen.setColor(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-//                    painter->setPen(pen);
-//                    painter->drawLine(QPointF(rectGroove.center().x(),  rectGroove.top()), QPointF(rectGroove.center().x(),  rectHandle.top()));
-//                }
-//            }
-
-//            //Painting slider
-//            if (option->subControls & SC_SliderHandle) {
-//                pen.setStyle(Qt::SolidLine);
-//                painter->setPen(Qt::NoPen);
-//                painter->setBrush(enable ? highlight : dis_highlight);
-//                painter->drawEllipse(rectHandle);
-//            }
-
-//            //Drawing scale
-//            if ((option->subControls & SC_SliderTickmarks) && slider->tickInterval) {
-//                painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText));
-//                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, slider, widget);
-//                int interval = slider->tickInterval;
-//                //int tickSize = proxy()->pixelMetric(PM_SliderTickmarkOffset, opt, w);
-//                //int ticks = slider->tickPosition;
-//                int v = slider->minimum;
-//                int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
-//                while (v <= slider->maximum + 1) {
-//                    const int v_ = qMin(v, slider->maximum);
-//                    int pos = sliderPositionFromValue(slider->minimum, slider->maximum, v_, available) + len / 2;
-
-//                    if (slider->orientation == Qt::Horizontal) {
-//                        if (slider->tickPosition == QSlider::TicksBothSides) {
-//                            painter->drawLine(pos, int(rect.top()), pos, int(rectHandle.top()));
-//                            painter->drawLine(pos, int(rect.bottom()), pos, int(rectHandle.bottom()));
-//                        } else {
-//                            painter->drawLine(pos, int(rectSliderTickmarks.top()), pos, int(rectSliderTickmarks.bottom()));
-//                        }
-//                    } else {
-//                        if (slider->tickPosition == QSlider::TicksBothSides) {
-//                            painter->drawLine(int(rect.left()), pos, int(rectHandle.left()), pos);
-//                            painter->drawLine(int(rect.right()), pos, int(rectHandle.right()), pos);
-//                        } else {
-//                            painter->drawLine(int(rectSliderTickmarks.left()), pos, int(rectSliderTickmarks.right()), pos);
-//                        }
-//                    }
-//                    // in the case where maximum is max int
-//                    int nextInterval = v + interval;
-//                    if (nextInterval < v)
-//                        break;
-//                    v = nextInterval;
-//                }
-//            }
-//            return;
-//        }
-
     case CC_Slider:
     {
-        if(const QStyleOptionSlider* slider = qstyleoption_cast<const QStyleOptionSlider*>(option))
-        {
-            QRect groove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
-            QRect handle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
+        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
             const bool horizontal = slider->orientation == Qt::Horizontal;
             const bool enable = slider->state & State_Enabled;
-            const bool ticksAbove = slider->tickPosition & QSlider::TicksAbove;
-            const bool ticksBelow = slider->tickPosition & QSlider::TicksBelow;
-            const QColor button = slider->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button);
-            QColor hightligt = slider->palette.color(QPalette::Highlight).lighter();
-            if(!enable)
-            {
-                hightligt = slider->palette.color(QPalette::Disabled,QPalette::Button).darker(120);
+            QRect groove = proxy()->subControlRect(CC_Slider, option, SC_SliderGroove, widget);
+            QRect handle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
+            int Slider_GrooveMargin = 4;
+            if (horizontal) {
+                groove.adjust(0, (groove.height() - Slider_GrooveMargin) / 2, 0, -(groove.height() - Slider_GrooveMargin) /2);
+            } else {
+                groove.adjust((groove.width() - Slider_GrooveMargin) / 2, 0, -(groove.width() - Slider_GrooveMargin) / 2, 0);
             }
-
-            if(slider->subControls & SC_SliderGroove)
-            {
+            QColor sColor = highLight_Click();
+            QColor hColor = slider->palette.color(QPalette::Active, QPalette::Highlight);
+            QColor gColor = slider->palette.color(QPalette::Active, QPalette::Button);
+            if (!enable) {
+                sColor = slider->palette.color(QPalette::Disabled, QPalette::ButtonText);
+                hColor = slider->palette.color(QPalette::Disabled, QPalette::ButtonText);
+                gColor = slider->palette.color(QPalette::Disabled, QPalette::Button);
+            }
+            if (slider->subControls & SC_SliderGroove) {
+                QRect sRect, gRect;
+                if (horizontal) {
+                    if (slider->upsideDown) {
+                        sRect.setRect(handle.center().x(), groove.y(), groove.width() - handle.center().x(), groove.height());
+                        gRect.setRect(groove.x(), groove.y(), handle.center().x(), groove.height());
+                    } else {
+                        sRect.setRect(groove.x(), groove.y(), handle.center().x(), groove.height());
+                        gRect.setRect(handle.center().x(), groove.y(), groove.width() - handle.center().x(), groove.height());
+                    }
+                } else {
+                    if (slider->upsideDown) {
+                        sRect.setRect(groove.x(), handle.center().y(), groove.width(), groove.height() - handle.center().y());
+                        gRect.setRect(groove.x(), groove.y(), groove.width(), handle.center().y());
+                    } else {
+                        sRect.setRect(groove.x(), groove.y(), groove.width(), groove.center().y());
+                        gRect.setRect(groove.x(), handle.center().y(), groove.width(), groove.height() - handle.center().y());
+                    }
+                }
                 painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                //draw blue groove highlight
-                QRect hlRect;
-                if(horizontal)
-                {
-                   if(slider->upsideDown)
-                      hlRect.setRect(handle.right(),groove.top(),groove.right() - handle.center().x(),groove.height());
-                   else
-                      hlRect.setRect(groove.left(),groove.top(),handle.center().x() - groove.left(),groove.height());
-                }
-                else
-                {
-                   hlRect.setRect(groove.left(), handle.center().y(), groove.width(), groove.bottom() - handle.center().y());
-                }
-                painter->setPen(button);
-                painter->setBrush(button);
-                painter->drawRoundedRect(groove, 2, 2);
-                painter->setPen(hightligt);
-                painter->setBrush(hightligt);
-                painter->drawRoundedRect(hlRect,2,2);
+                painter->setPen(Qt::NoPen);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->setBrush(sColor);
+                painter->drawRoundedRect(sRect, 2, 2);
+                painter->setBrush(gColor);
+                painter->drawRoundedRect(gRect, 2, 2);
                 painter->restore();
             }
 
-            int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
-            int sliderPos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,slider->sliderPosition,
-                                                    (horizontal ? slider->rect.width(): slider->rect.height()) - len,slider->upsideDown);
-            if(slider->subControls & SC_SliderTickmarks)
-            {
-                int tickOffset = proxy()->pixelMetric(PM_SliderTickmarkOffset, option, widget);
-                int tickSize = tickOffset;
-//                int available = proxy()->pixelMetric(PM_SliderSpaceAvailable, option, widget);
+            if (slider->subControls & SC_SliderTickmarks) {
+                QColor tColor("#3D3D41");
+                int tick = 4;
                 int interval = slider->tickInterval;
-                if (interval <= 0)
-                {
-//                    interval = slider->singleStep;
-//                    if (QStyle::sliderPositionFromValue(slider->minimum, slider->maximum, interval,available)
-//                              - QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,0, available) < 3)
-                        interval = slider->pageStep;
-                }
-                if (interval <= 0)
-                    interval = 1;
-                int v = slider->minimum;
-                int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
-                while (v <= slider->maximum + 1)
-                {
-                   if (v == slider->maximum + 1 && interval == 1)
-                       break;
-                   const int v_ = qMin(v, slider->maximum);
-                   int pos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum,v_, (horizontal ? slider->rect.width():
-                                                     slider->rect.height()) - len,slider->upsideDown) + len / 2;
-                   //int extra = 2 - ((v_ == slider->minimum || v_ == slider->maximum) ? 1 : 0);
-
-                   painter->save();
-                   painter->setPen(QPen(slider->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::WindowText),1));
-                   painter->setBrush(Qt::NoBrush);
-                   if (horizontal)
-                   {
-                       if(pos <= sliderPos + handle.width()/2)
-                       {
-                           painter->setPen(QPen(hightligt,1));
-                       }
-                       if (ticksAbove)
-                       {
-                           painter->drawLine(pos, groove.top() - tickOffset,pos, groove.top() - tickOffset - tickSize);
-                       }
-                       if (ticksBelow)
-                       {
-                           painter->drawLine(pos, groove.bottom() + tickOffset,pos, groove.bottom() + tickOffset + tickSize);
-                       }
-                   }
-                   else
-                   {
-                       if(pos >= sliderPos + handle.width()/2)
-                       {
-                           painter->setPen(QPen(hightligt,1));
-                       }
-                       if (ticksAbove)
-                       {
-                           painter->drawLine(groove.left() - tickOffset, pos,groove.left() - tickOffset - tickSize, pos);
-                       }
-                       if (ticksBelow)
-                       {
-                           painter->drawLine(groove.right() + tickOffset, pos,groove.right() + tickOffset + tickSize, pos);
-                       }
-                   }
-                   // in the case where maximum is max int
-                   int nextInterval = v + interval;
-                   if (nextInterval < v)
-                       break;
-                   v = nextInterval;
-                   painter->restore();
+                if (interval < 1)
+                    interval = slider->pageStep;
+                if (interval >= 1) {
+                    int v = slider->minimum;
+                    int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
+                    const int thickSpace = 2;
+                    painter->save();
+                    painter->setPen(tColor);
+                    painter->setBrush(Qt::NoBrush);
+                    while (v <= slider->maximum + 1) {
+                        int pos = sliderPositionFromValue(slider->minimum, slider->maximum, v, (horizontal ? slider->rect.width() : slider->rect.height()) - len,
+                                                          slider->upsideDown) + len / 2;
+                        if (horizontal) {
+                            if (slider->tickPosition & QSlider::TicksAbove)
+                                painter->drawLine(pos, handle.top() - thickSpace, pos, handle.top() - thickSpace + tick);
+                            if (slider->tickPosition & QSlider::TicksBelow)
+                                painter->drawLine(pos, handle.bottom() + thickSpace - tick, pos, handle.bottom() + thickSpace);
+                        } else {
+                            if (slider->tickPosition & QSlider::TicksAbove)
+                                painter->drawLine(handle.left() - thickSpace, pos, handle.left() - thickSpace + tick, pos);
+                            if (slider->tickPosition & QSlider::TicksBelow)
+                                painter->drawLine(handle.right() + thickSpace, pos, handle.right() + thickSpace - tick, pos);
+                        }
+                        v += interval;
+                    }
+                    painter->restore();
                 }
             }
 
-            if(slider->subControls & SC_SliderHandle)
-            {
+            if (slider->subControls & SC_SliderHandle) {
                 painter->save();
-                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(slider->palette.color(QPalette::Highlight).lighter(125));
-                if(slider->state & State_Sunken && slider->activeSubControls == SC_SliderHandle)
-                {
-                    painter->setBrush(slider->palette.color(QPalette::Highlight));
-                }
-                else if(slider->state & State_MouseOver && slider->activeSubControls == SC_SliderHandle)
-                {
-                    painter->setBrush(slider->palette.color(QPalette::Highlight).lighter());
-                }
-                if(!enable)
-                {
-                    painter->setBrush(hightligt);
-                }
+                painter->setBrush(slider->palette.brush(QPalette::Active, QPalette::Highlight));
                 painter->drawEllipse(handle);
                 painter->restore();
             }
@@ -3841,14 +3713,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 9;
     case PM_ToolTipLabelFrameWidth:return 7;
-    case PM_SliderTickmarkOffset:
-        return 5;
-    case PM_SliderLength:
-    case PM_SliderThickness:
-    case PM_SliderControlThickness:
-    {
-        return 16;
-    }
+
     case PM_LayoutLeftMargin:
     case PM_LayoutTopMargin:
     case PM_LayoutRightMargin:
@@ -3917,6 +3782,27 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
     case PM_ButtonDefaultIndicator:
         return 0;
+
+    case PM_SliderThickness:
+        return 20;
+    case PM_SliderControlThickness:
+        return 20;
+    case PM_SliderLength:
+        return 20;
+    case PM_SliderTickmarkOffset:
+        return 5;
+    case PM_SliderSpaceAvailable:
+    {
+        if (const QStyleOptionSlider *sl = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            if (sl->orientation == Qt::Horizontal)
+                return sl->rect.width() - proxy()->pixelMetric(PM_SliderLength, option, widget);
+            else
+                return sl->rect.height() - proxy()->pixelMetric(PM_SliderLength, option, widget);
+        } else {
+            return 0;
+        }
+        break;
+    }
 
     default:
         break;
@@ -3994,67 +3880,44 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 
     case CC_Slider:
     {
-        if(const QStyleOptionSlider* slider = qstyleoption_cast<const QStyleOptionSlider*>(option))
-        {
-            const bool horizontal = slider->state & State_Horizontal;
-            int tickOffset = proxy()->pixelMetric(PM_SliderTickmarkOffset, slider, widget);
-            int tickGroove = proxy()->pixelMetric(PM_SliderThickness, slider, widget);
-            int tickHandle = proxy()->pixelMetric(PM_SliderControlThickness, slider, widget);
-            int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
-            int sliderPos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum, slider->sliderPosition,
-                                                            (horizontal ? slider->rect.width() : slider->rect.height()) - len, slider->upsideDown);
-            QRect rect = slider->rect;
-            switch (subControl)
-            {
-            case SC_SliderGroove:
-            {
-                QRect GrooveRect = slider->rect;
-                if (slider->orientation == Qt::Horizontal)
-                {
-                    rect.setHeight(tickGroove / 4);
-                    if (slider->tickPosition & QSlider::TicksAbove)
-                        GrooveRect.adjust(0, tickOffset, 0, 0);
-                    if (slider->tickPosition & QSlider::TicksBelow)
-                        GrooveRect.adjust(0, 0, 0, -tickOffset);
-                }
-                else
-                {
-                    rect.setWidth(tickGroove / 4);
-                    if (slider->tickPosition & QSlider::TicksLeft)
-                        GrooveRect.adjust(tickOffset, 0, 0, 0);
-                    if (slider->tickPosition & QSlider::TicksRight)
-                        GrooveRect.adjust(0, 0, -tickOffset, 0);
-                }
-                rect.moveCenter(GrooveRect.center());
-                return rect;
+        if (const QStyleOptionSlider* slider = qstyleoption_cast<const QStyleOptionSlider*>(option)) {
+            QRect rect = option->rect;
+            const bool horizontal(slider->orientation == Qt::Horizontal);
+            const int thickSpace = 2;
+            if (horizontal) {
+                if (slider->tickPosition & QSlider::TicksAbove)
+                    rect.adjust(0, thickSpace, 0, 0);
+                if (slider->tickPosition & QSlider::TicksBelow)
+                    rect.adjust(0, 0, 0, -thickSpace);
+            } else {
+                if (slider->tickPosition & QSlider::TicksAbove)
+                    rect.adjust(thickSpace, 0, 0, 0);
+                if (slider->tickPosition & QSlider::TicksBelow)
+                    rect.adjust(0, 0, -thickSpace, 0);
             }
+            switch (subControl) {
             case SC_SliderHandle:
             {
-                rect.setHeight(tickHandle);
-                rect.setWidth(tickHandle);
-                QRect HandleRect = slider->rect;
-                if (slider->orientation == Qt::Horizontal)
-                {
-                    if (slider->tickPosition & QSlider::TicksAbove)
-                        HandleRect.adjust(0, tickOffset, 0, 0);
-                    if (slider->tickPosition & QSlider::TicksBelow)
-                        HandleRect.adjust(0, 0, 0, -tickOffset);
-                    rect.moveCenter(QPoint(sliderPos + rect.center().x(), HandleRect.center().ry()));
+                QRect handleRect = option->rect;
+                int handle = proxy()->pixelMetric(PM_SliderThickness, option, widget);
+                handleRect.setSize(QSize(handle, handle));
+                handleRect.moveCenter(rect.center());
+                int len = proxy()->pixelMetric(PM_SliderLength, option, widget);
+                int sliderPos = sliderPositionFromValue(slider->minimum, slider->maximum, slider->sliderPosition,
+                                                        (horizontal ? slider->rect.width() : slider->rect.height()) - len, slider->upsideDown);
+                if (horizontal) {
+                    handleRect.moveLeft(sliderPos);
+                } else {
+                    handleRect.moveTop((sliderPos));
                 }
-                else
-                {
-                    if (slider->tickPosition & QSlider::TicksLeft)
-                        HandleRect.adjust(tickOffset, 0, 0, 0);
-                    if (slider->tickPosition & QSlider::TicksRight)
-                        HandleRect.adjust(0, 0, -tickOffset, 0);
-                    rect.moveCenter(QPoint(HandleRect.center().rx(), sliderPos + rect.center().y()));
-                }
+                return visualRect(slider->direction, slider->rect, handleRect);
+            }
+
+            case SC_SliderGroove:
+            {
                 return rect;
             }
-            case SC_SliderTickmarks:
-            {
-                break;
-            }
+
             default:
                 break;
             }
@@ -4797,6 +4660,27 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
 
             newSize.setWidth(w > 96 ? w : 96);
             newSize.setHeight(h > 36 ? h : 36);
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_Slider:
+    {
+        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+            QSize newSize = size;
+            const bool horizontal(slider->orientation == Qt::Horizontal);
+            if (horizontal) {
+                if (slider->tickPosition & QSlider::TicksAbove)
+                    newSize.setHeight(newSize.height() - 3);
+                if (slider->tickPosition & QSlider::TicksBelow)
+                    newSize.setHeight(newSize.height() - 3);
+            } else {
+                if (slider->tickPosition & QSlider::TicksAbove)
+                    newSize.setWidth(newSize.width() - 3);
+                if (slider->tickPosition & QSlider::TicksBelow)
+                    newSize.setWidth(newSize.width() - 3);
+            }
             return newSize;
         }
         break;
