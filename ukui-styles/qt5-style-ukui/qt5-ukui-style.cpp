@@ -2152,6 +2152,12 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             {
                 hightligt = slider->palette.color(QPalette::Disabled,QPalette::Button).darker(120);
             }
+            int Slider_GrooveMargin = 4;
+            if (horizontal) {
+                groove.adjust(0, (groove.height() - Slider_GrooveMargin) / 2, 0, -(groove.height() - Slider_GrooveMargin) /2);
+            } else {
+                groove.adjust((groove.width() - Slider_GrooveMargin) / 2, 0, -(groove.width() - Slider_GrooveMargin) / 2, 0);
+            }
 
             if(slider->subControls & SC_SliderGroove)
             {
@@ -4044,12 +4050,10 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         {
             const bool horizontal = slider->state & State_Horizontal;
             int tickOffset = proxy()->pixelMetric(PM_SliderTickmarkOffset, slider, widget);
-            int tickGroove = proxy()->pixelMetric(PM_SliderThickness, slider, widget);
             int tickHandle = proxy()->pixelMetric(PM_SliderControlThickness, slider, widget);
             int len = proxy()->pixelMetric(PM_SliderLength, slider, widget);
             int sliderPos = QStyle::sliderPositionFromValue(slider->minimum, slider->maximum, slider->sliderPosition,
                                                             (horizontal ? slider->rect.width() : slider->rect.height()) - len, slider->upsideDown);
-            QRect rect = slider->rect;
             switch (subControl)
             {
             case SC_SliderGroove:
@@ -4057,7 +4061,6 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                 QRect GrooveRect = slider->rect;
                 if (slider->orientation == Qt::Horizontal)
                 {
-                    rect.setHeight(tickGroove / 4);
                     if (slider->tickPosition & QSlider::TicksAbove)
                         GrooveRect.adjust(0, tickOffset, 0, 0);
                     if (slider->tickPosition & QSlider::TicksBelow)
@@ -4065,17 +4068,16 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
                 }
                 else
                 {
-                    rect.setWidth(tickGroove / 4);
                     if (slider->tickPosition & QSlider::TicksLeft)
                         GrooveRect.adjust(tickOffset, 0, 0, 0);
                     if (slider->tickPosition & QSlider::TicksRight)
                         GrooveRect.adjust(0, 0, -tickOffset, 0);
                 }
-                rect.moveCenter(GrooveRect.center());
-                return rect;
+                return GrooveRect;
             }
             case SC_SliderHandle:
             {
+                QRect rect = slider->rect;
                 rect.setHeight(tickHandle);
                 rect.setWidth(tickHandle);
                 QRect HandleRect = slider->rect;
