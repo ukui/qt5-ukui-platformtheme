@@ -1753,6 +1753,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     default:
         break;
     }
+
+    return Style::drawPrimitive(element, option, painter, widget);
 }
 
 void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
