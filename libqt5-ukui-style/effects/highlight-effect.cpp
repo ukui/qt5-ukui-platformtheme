@@ -303,7 +303,7 @@ QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QSt
         color = widget->property("setIconHighlightEffectDefaultColor").value<QColor>();
     }
 
-    if (widget->property("iconHighlightEffectMode").isValid()) {
+    if (widget && widget->property("iconHighlightEffectMode").isValid()) {
         mode = EffectMode(widget->property("iconHighlightEffectMode").toBool());
     }
 
@@ -326,7 +326,7 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
         color = widget->property("setIconHighlightEffectHoverColor").value<QColor>();
     }
 
-    if (widget->property("iconHighlightEffectMode").isValid()) {
+    if (widget && widget->property("iconHighlightEffectMode").isValid()) {
         mode = EffectMode(widget->property("iconHighlightEffectMode").toBool());
     }
 

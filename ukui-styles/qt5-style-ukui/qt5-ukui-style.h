@@ -70,6 +70,8 @@ public:
     QIcon standardIcon(StandardPixmap standardIcon, const QStyleOption *option = nullptr,
                            const QWidget *widget = nullptr) const override;
 
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
+
     QPalette standardPalette() const;
 
     void drawPrimitive(QStyle::PrimitiveElement element,
