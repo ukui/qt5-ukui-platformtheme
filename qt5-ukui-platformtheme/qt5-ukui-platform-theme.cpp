@@ -54,6 +54,8 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         //set font
         auto fontName = settings->get("systemFont").toString();
         auto fontSize = settings->get("systemFontSize").toString().toDouble();
+        if (qApp->property("noChangeSystemFontSize").isValid() && qApp->property("noChangeSystemFontSize").toBool())
+            fontSize = 11;
         m_system_font.setFamily(fontName);
         m_system_font.setPointSizeF(fontSize);
 
