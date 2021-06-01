@@ -3888,7 +3888,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
 
     case PM_SubMenuOverlap:return 2;
-    case PM_ButtonMargin:return  9;
 
     case PM_DefaultFrameWidth:
         if (qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
@@ -3911,17 +3910,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuBarVMargin:return 4;
     case PM_ProgressBarChunkWidth: return 9;
     case PM_ToolTipLabelFrameWidth:return 7;
-    case PM_MenuButtonIndicator:
-        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
-        {
-            if(tb->subControls & SC_ToolButtonMenu)
-                return 16;
-        }
-        if(const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option))
-        {
-            return 16;
-        }
-        return 12;
+
     case PM_SliderTickmarkOffset:
         return 5;
     case PM_SliderLength:
@@ -3989,6 +3978,15 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
     case PM_IndicatorHeight:
         return 16;
+
+    case PM_ButtonIconSize:
+        return 16;
+    case PM_ButtonMargin:
+        return 16;
+    case PM_MenuButtonIndicator:
+        return 16;
+    case PM_ButtonDefaultIndicator:
+        return 0;
 
     default:
         break;
@@ -4130,52 +4128,35 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
         break;
     }
 
-    case QStyle::CC_ToolButton:
-        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option))
-        {
+    case CC_ToolButton:
+    {
+        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, tb, widget);
+            int MarginWidth = 10;
             QRect rect = tb->rect;
-            qreal width=rect.width();
-            qreal mbi = pixelMetric(PM_MenuButtonIndicator, tb, widget);
-            int fw = proxy()->pixelMetric(PM_DefaultFrameWidth, tb, widget);
-            qreal js = width - mbi - tb->iconSize.width() - fw*2;
-            if(js > 1)
-            {
-                mbi = qRound(js/2 + mbi);
-            }
-            if(width < 40)
-            {
-                mbi = 10;
-            }
-            else if(width < 30)
-            {
-                mbi = 8;
-            }
-            if(mbi > 24)
-                mbi = 24;
-
             switch (subControl) {
             case SC_ToolButton:
-                if ((tb->features
-                     & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+            {
+                if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
                         == QStyleOptionToolButton::MenuButtonPopup)
-                {
-                    rect.adjust(0, 0, -mbi, 0);
-                    rect = visualRect(tb->direction,tb->rect,rect);
-                }
-                return rect;
-            case SC_ToolButtonMenu:
-                if ((tb->features
-                     & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
-                        == QStyleOptionToolButton::MenuButtonPopup)
-                {
-                    rect.adjust(rect.width() -mbi, 0, 0, 0);
-                    rect = visualRect(tb->direction,tb->rect,rect);
-                }
-                return rect;
-            default:
-                return rect;
+                    rect.adjust(0, 0, - (mbi + MarginWidth), 0);
+                break;
             }
+            case SC_ToolButtonMenu:
+            {
+                if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
+                        == QStyleOptionToolButton::MenuButtonPopup)
+                    rect.adjust(rect.width() - (mbi + MarginWidth), 0, 0, 0);
+                break;
+            }
+            default:
+                break;
+            }
+            rect = visualRect(tb->direction, tb->rect, rect);
+            return rect;
         }
+        break;
+    }
 
     case CC_ComboBox:
     {
@@ -4656,6 +4637,29 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         return visualRect(option->direction, option->rect, option->rect.adjusted(radioWidth + spacing, 0, 0, 0));
     }
 
+    case SE_PushButtonContents:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            const bool icon = !button->icon.isNull();
+            const bool text = !button->text.isNull();
+            QRect rect = option->rect;
+            int Margin_Height = 2;
+            int ToolButton_MarginWidth = 10;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
+            if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
+                rect.adjust(Button_MarginWidth, 0, -Button_MarginWidth, 0);
+            } else {
+                rect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
+            }
+            if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
+                int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget);
+                rect.adjust(dbw, dbw, -dbw, -dbw);
+            }
+            return rect;
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4776,6 +4780,90 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 spacing += 4;
             newSize.setWidth(newSize.width() + w + spacing);
             newSize.setHeight(qMax(qMax(newSize.height(), h), 36));
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_ToolButton:
+    {
+        if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+            const bool icon = !tb->icon.isNull();
+            const bool text = !tb->text.isNull();
+            int w = size.width();
+            int h = size.height();
+            int Margin_Height = 2;
+            int ToolButton_MarginWidth = 10;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
+            if (tb->toolButtonStyle == Qt::ToolButtonTextOnly && !(tb->features & QStyleOptionToolButton::MenuButtonPopup)) {
+                w += Button_MarginWidth * 2;
+            } else {
+                w += ToolButton_MarginWidth * 2;
+            }
+            h += Margin_Height * 2;
+
+            if (tb->toolButtonStyle != Qt::ToolButtonIconOnly) {
+                QFontMetrics fm = tb->fontMetrics;
+                w -= fm.horizontalAdvance(QLatin1Char(' ')) * 2;
+                if (tb->toolButtonStyle == Qt::ToolButtonTextBesideIcon) {
+                    if (text && icon)
+                        w += 4;
+                    else
+                        w -= 4;
+                } else if (tb->toolButtonStyle == Qt::ToolButtonTextUnderIcon) {
+                    if (text && icon)
+                        h += 4;
+                    else
+                        h -= 4;
+                }
+            }
+            if (tb->features & QStyleOptionToolButton::MenuButtonPopup) {
+                w += 8;
+                newSize.setWidth(w > 60 ? w : 60);
+            } else {
+                newSize.setWidth(w > 36 ? w : 36);
+            }
+            newSize.setHeight(h > 36 ? h : 36);
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_PushButton:
+    {
+        if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+            const bool icon = !button->icon.isNull();
+            const bool text = !button->text.isNull();
+            int w = size.width();
+            int h = size.height();
+            int Margin_Height = 2;
+            int ToolButton_MarginWidth = 10;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
+            if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
+                w += Button_MarginWidth * 2;
+            } else {
+                w += ToolButton_MarginWidth * 2;
+            }
+            h += Margin_Height * 2;
+
+            int spacing = 0;
+            if (text && icon)
+                spacing += 4;
+            if (!text && icon)
+                spacing -= 4;
+            if (button->features & QStyleOptionButton::HasMenu) {
+                if (icon || text)
+                    spacing += 8;
+            }
+            w += spacing;
+            if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
+                int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget) * 2;
+                w += dbw;
+                h += dbw;
+            }
+
+            newSize.setWidth(w > 96 ? w : 96);
+            newSize.setHeight(h > 36 ? h : 36);
             return newSize;
         }
         break;
