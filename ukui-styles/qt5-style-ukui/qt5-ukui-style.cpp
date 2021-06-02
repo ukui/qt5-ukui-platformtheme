@@ -1289,7 +1289,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 sunkenColor = button_Click();
             }
             painter->setBrush(mixColor(hoverColor, sunkenColor, opacity));
-            painter->setRenderHint(QPainter::Antialiasing, true);
             painter->drawRoundedRect(option->rect, 4, 4);
             painter->restore();
             return;
@@ -4607,6 +4606,8 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
             if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
                 rect.adjust(Button_MarginWidth, 0, -Button_MarginWidth, 0);
+            } else if (!text && icon && !(button->features & QStyleOptionButton::HasMenu)) {
+
             } else {
                 rect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
             }
