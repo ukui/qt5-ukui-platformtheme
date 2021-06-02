@@ -3946,6 +3946,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ButtonDefaultIndicator:
         return 0;
 
+    case PM_ComboBoxFrameWidth:
+        return 2;
+
     default:
         break;
     }
@@ -4118,39 +4121,37 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 
     case CC_ComboBox:
     {
-        if(const QStyleOptionComboBox* combobox = qstyleoption_cast<const QStyleOptionComboBox*>(option))
-        {
-            QRect rect = combobox -> rect;
-            int fw = combobox->frame ? proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget) : 0;
-            const int textMargins = 2*(proxy()->pixelMetric(PM_FocusFrameHMargin) + 1);
-            int ArrowWidth = qMax(23, 2*textMargins + proxy()->pixelMetric(QStyle::PM_ScrollBarExtent, option, widget));
-            const int gap = combobox->editable ? 4 : 0;
+        if (qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+            int comboBox_Margin = proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget);
+            int comboBox_MarginWidth = 8;
+            int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
+            QRect rect = option->rect.adjusted(comboBox_MarginWidth, comboBox_Margin, -comboBox_MarginWidth, -comboBox_Margin);
 
-            switch (subControl)
+            switch (subControl) {
+            case SC_ComboBoxArrow:
             {
-                case SC_ComboBoxFrame:
-                    return rect;
-                case SC_ComboBoxArrow:
-                    rect.setRect(rect.right() - ArrowWidth, rect.top(),ArrowWidth, rect.height());
-                    rect = visualRect(combobox->direction,combobox->rect,rect);
-                    return rect;
-                case SC_ComboBoxEditField:
-                    rect.setRect(rect.left()+fw,rect.top()+fw,rect.width() - ArrowWidth - gap - 2*fw,rect.height() - 2*fw);
-                    rect = visualRect(combobox->direction,combobox->rect,rect);
-                    return rect;
-                case SC_ComboBoxListBoxPopup:
-                    rect.translate(0,2);
-                    rect.adjust(0,2,0,0);
-                    return combobox->rect;
-                default:
-                    break;
+                QRect arrowRect(rect.right() - indicator, rect.top(), indicator, rect.height());
+                return visualRect(option->direction, rect, arrowRect);
+            }
+
+            case SC_ComboBoxEditField:
+            {
+                QRect textRect(rect.left(), rect.top(), rect.width() - indicator - 8, rect.height());
+                return visualRect(option->direction, rect, textRect);
+            }
+
+            case SC_ComboBoxListBoxPopup:
+            {
+                return option->rect.adjusted(0, 0, 0, 4);
+            }
+
+            default:
+                break;
             }
         }
-        else
-        {
-            break;
-        }
+        break;
     }
+
 
     case CC_SpinBox:
     {
@@ -4824,6 +4825,20 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
 
             newSize.setWidth(w > 96 ? w : 96);
             newSize.setHeight(h > 36 ? h : 36);
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_ComboBox:
+    {
+        if (qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+            QSize newSize = size;
+            int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
+            int comboBox_Margin = proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget);
+            int comboBox_MarginWidth = 8 + 8 + 8 + 4;
+            newSize.setWidth(qMax(newSize.width() + indicator + comboBox_MarginWidth, 160));
+            newSize.setHeight(qMax(newSize.height() + comboBox_Margin, 36));
             return newSize;
         }
         break;
