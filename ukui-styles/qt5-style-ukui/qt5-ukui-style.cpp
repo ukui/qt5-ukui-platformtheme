@@ -1607,7 +1607,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(48, 48, 51));
                         } else {
                             painter->setPen(QColor(191, 191, 191));
-                            painter->setBrush(Qt::NoButton);
+                            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                         }
                     }
                 } else {
@@ -2902,33 +2902,24 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             const bool enable = tb->state & State_Enabled;
             QFontMetrics fm = tb->fontMetrics;
             int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
 
             int iconWidth = (icon || ha) ? tb->iconSize.width() : 0;
             int spacing = 8;
             QRect textRect, iconRect, arrowRect;
             QRect drawRect = tb->rect;
+            drawRect.adjust(Button_MarginWidth, Margin_Height, -Button_MarginWidth, -Margin_Height);
 
             QStyleOption sub = *option;
             sub.state = enable ? State_Enabled : State_None;
             if (arrow) {
                 int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
-                drawRect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
                 arrowRect.setRect(drawRect.right() - mbi + 1, drawRect.y(), mbi, drawRect.height());
                 drawRect.adjust(0, 0, - (mbi + spacing), 0);
                 arrowRect = visualRect(option->direction, option->rect, arrowRect);
                 drawRect = visualRect(option->direction, option->rect, drawRect);
                 sub.rect = arrowRect;
                 proxy()->drawPrimitive(PE_IndicatorArrowDown, &sub, painter, widget);
-            } else {
-                if (tb->toolButtonStyle == Qt::ToolButtonTextOnly) {
-                    drawRect.adjust(Button_MarginWidth, 0, -Button_MarginWidth, 0);
-                } else if (tb->toolButtonStyle == Qt::ToolButtonIconOnly){
-                    drawRect.adjust(0, Margin_Height, 0, -Margin_Height);
-                } else {
-                    drawRect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
-                }
             }
 
             int alignment = Qt::AlignCenter;
@@ -3858,7 +3849,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ButtonIconSize:
         return 16;
     case PM_ButtonMargin:
-        return 16;
+        return 4;
     case PM_MenuButtonIndicator:
         return 16;
     case PM_ButtonDefaultIndicator:
@@ -4011,21 +4002,21 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     {
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, tb, widget);
-            int MarginWidth = 10;
+            int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
             QRect rect = tb->rect;
             switch (subControl) {
             case SC_ToolButton:
             {
                 if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
                         == QStyleOptionToolButton::MenuButtonPopup)
-                    rect.adjust(0, 0, - (mbi + MarginWidth), 0);
+                    rect.adjust(0, 0, - (mbi + Button_MarginWidth), 0);
                 break;
             }
             case SC_ToolButtonMenu:
             {
                 if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
                         == QStyleOptionToolButton::MenuButtonPopup)
-                    rect.adjust(rect.width() - (mbi + MarginWidth), 0, 0, 0);
+                    rect.adjust(rect.width() - (mbi + Button_MarginWidth), 0, 0, 0);
                 break;
             }
             default:
@@ -4517,19 +4508,10 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     case SE_PushButtonContents:
     {
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
-            const bool icon = !button->icon.isNull();
-            const bool text = !button->text.isNull();
             QRect rect = option->rect;
             int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
-            if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
-                rect.adjust(Button_MarginWidth, 0, -Button_MarginWidth, 0);
-            } else if (!text && icon && !(button->features & QStyleOptionButton::HasMenu)) {
-
-            } else {
-                rect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
-            }
+            rect.adjust(Button_MarginWidth, Margin_Height, -Button_MarginWidth, -Margin_Height);
             if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
                 int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget);
                 rect.adjust(dbw, dbw, -dbw, -dbw);
@@ -4672,13 +4654,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             int w = size.width();
             int h = size.height();
             int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
-            if (tb->toolButtonStyle == Qt::ToolButtonTextOnly && !(tb->features & QStyleOptionToolButton::MenuButtonPopup)) {
-                w += Button_MarginWidth * 2;
-            } else {
-                w += ToolButton_MarginWidth * 2;
-            }
+            w += Button_MarginWidth * 2;
             h += Margin_Height * 2;
 
             if (tb->toolButtonStyle != Qt::ToolButtonIconOnly) {
@@ -4716,13 +4693,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             int w = size.width();
             int h = size.height();
             int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
-            if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
-                w += Button_MarginWidth * 2;
-            } else {
-                w += ToolButton_MarginWidth * 2;
-            }
+            w += Button_MarginWidth * 2;
             h += Margin_Height * 2;
 
             int spacing = 0;
