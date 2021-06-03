@@ -1604,10 +1604,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     } else {
                         if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
                             painter->setPen(QColor(72, 72, 77));
+                            painter->setBrush(QColor(48, 48, 51));
                         } else {
                             painter->setPen(QColor(191, 191, 191));
+                            painter->setBrush(Qt::NoButton);
                         }
-                        painter->setBrush(Qt::NoBrush);
                     }
                 } else {
                     if (m_use_dark_palette || (m_is_default_style && specialList().contains(qAppName()))) {
