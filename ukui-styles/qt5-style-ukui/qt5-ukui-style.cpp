@@ -363,6 +363,10 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return option ? option->palette.mid().color().darker().rgb() : 0;
     case SH_ComboBox_AllowWheelScrolling:
         return int(false);
+
+    case SH_Button_FocusPolicy:
+        return Qt::TabFocus;
+
     default:
         break;
     }
