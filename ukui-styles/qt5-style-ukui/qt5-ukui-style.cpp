@@ -1503,7 +1503,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorArrowUp:
     {
-        QIcon icon = QIcon::fromTheme("pan-up-symbolic");
+        QIcon icon = QIcon::fromTheme("ukui-up-symbolic");
         if(!icon.isNull()) {
             int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
             int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
@@ -1524,7 +1524,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorArrowDown:
     {
-        QIcon icon = QIcon::fromTheme("pan-down-symbolic");
+        QIcon icon = QIcon::fromTheme("ukui-down-symbolic");
         if(!icon.isNull()) {
             int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
             int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
@@ -1545,7 +1545,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorArrowRight:
     {
-        QIcon icon = QIcon::fromTheme("pan-end-symbolic");
+        QIcon icon = QIcon::fromTheme("ukui-end-symbolic");
         if(!icon.isNull()) {
             int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
             int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
@@ -1566,7 +1566,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorArrowLeft:
     {
-        QIcon icon = QIcon::fromTheme("pan-start-symbolic");
+        QIcon icon = QIcon::fromTheme("ukui-start-symbolic");
         if(!icon.isNull()) {
             int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
             int indHight = proxy()->pixelMetric(PM_IndicatorHeight, option, widget);
