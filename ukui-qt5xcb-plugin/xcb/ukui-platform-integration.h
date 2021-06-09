@@ -52,8 +52,8 @@ public:
     QPlatformOpenGLContext *createPlatformOpenGLContext(QOpenGLContext *context) const Q_DECL_OVERRIDE;
     QPaintEngine *createImagePaintEngine(QPaintDevice *paintDevice) const override;
 
-    QStringList themeNames() const Q_DECL_OVERRIDE;
-    QVariant styleHint(StyleHint hint) const override;
+//    QStringList themeNames() const Q_DECL_OVERRIDE;
+//    QVariant styleHint(StyleHint hint) const override;
 
     void initialize() Q_DECL_OVERRIDE;
 
