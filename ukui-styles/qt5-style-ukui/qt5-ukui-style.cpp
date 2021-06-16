@@ -950,7 +950,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (widget->property("useButtonPalette").isValid())
                     useButtonPalette = widget->property("useButtonPalette").toBool();
 
-                if (qobject_cast<const QComboBox*>(widget))
+                if (qobject_cast<const QComboBox*>(widget) || qobject_cast<const QLineEdit*>(widget))
                     useButtonPalette = true;
             }
 
@@ -1462,40 +1462,52 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
 
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
-            painter->save();
-            const bool enable(f->state & State_Enabled);
-            const bool focus(f->state & State_HasFocus);
-            const bool hover(f->state & State_MouseOver);
-            QRect rect(f->rect);
-            if (enable) {
-                int LineEdit_xRadius = 4;
-                int LineEdit_yRadius = 4;
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
-                painter->drawRoundedRect(f->rect, LineEdit_xRadius, LineEdit_yRadius);
-                if (focus) {
-                    painter->save();
-                    QPen pen(f->palette.brush(QPalette::Active, QPalette::Highlight), 2);
-                    pen.setJoinStyle(Qt::RoundJoin);
-                    painter->setPen(pen);
-                    painter->setBrush(Qt::NoBrush);
-                    painter->translate(1, 1);
-                    painter->drawRoundedRect(rect.adjusted(0, 0, -2, -2), LineEdit_xRadius, LineEdit_yRadius);
-                    painter->restore();
-                } else if (hover) {
-                    painter->save();
-                    painter->setPen(f->palette.color(QPalette::Active, QPalette::Highlight));
-                    painter->setBrush(Qt::NoBrush);
-                    painter->translate(0.5, 0.5);
-                    painter->drawRoundedRect(rect.adjusted(0, 0, -1, -1), LineEdit_xRadius, LineEdit_yRadius);
-                    painter->restore();
-                }
-            } else {
+            const bool enable = f->state & State_Enabled;
+            const bool focus = f->state & State_HasFocus;
+
+            if (!enable) {
+                painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(f->palette.brush(QPalette::Disabled, QPalette::Button));
-                painter->drawRoundedRect(f->rect, 4, 4);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->restore();
+                return;
             }
-            painter->restore();
+
+            if (f->state & State_ReadOnly) {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->restore();
+                return;
+            }
+
+            if (focus) {
+                painter->save();
+                painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
+                                     2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+                painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->restore();
+            } else {
+                QStyleOptionButton button;
+                button.state = option->state & ~(State_Sunken | State_On);
+                button.rect = option->rect;
+                proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
+
+                if (f->state & State_MouseOver) {
+                    QRectF rect = f->rect;
+                    painter->save();
+                    painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
+                                         1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+                    painter->setBrush(Qt::NoBrush);
+                    painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
+                    painter->restore();
+                }
+            }
             return;
         }
         break;
@@ -3865,8 +3877,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_DefaultFrameWidth:
         if (qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             return 4;
-        } else if (qobject_cast<const QLineEdit *>(widget)) {
-            return 2;
         }
         return 2;
 
@@ -4627,6 +4637,30 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         break;
     }
 
+    case SE_LineEditContents:
+    {
+        if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+            bool clear = false;
+            if (widget) {
+                if (qobject_cast<QComboBox *>(widget->parent()))
+                    return option->rect;
+                if (widget->findChild<QAction *>(QLatin1String("_q_qlineeditclearaction")))
+                    clear = true;
+            }
+
+            QRect rect = f->rect;
+            if (clear) {
+                rect.adjust(f->lineWidth + 4, f->lineWidth, 0, -f->lineWidth);
+                rect = visualRect(option->direction, option->rect, rect);
+            } else {
+                rect.adjust(f->lineWidth + 4, f->lineWidth, -(f->lineWidth + 4), -f->lineWidth);
+            }
+
+            return rect;
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4691,7 +4725,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     case CT_LineEdit:
     {
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
-            newSize += QSize(f->lineWidth * 2, f->lineWidth * 2);
+            newSize += QSize(f->lineWidth * 2 + 2, f->lineWidth * 2);
             newSize.setWidth(qMax(newSize.width(), 140));
             newSize.setHeight(qMax(newSize.height(), 36));
             return newSize;
