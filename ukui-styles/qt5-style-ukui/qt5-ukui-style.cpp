@@ -4146,7 +4146,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 
     case CC_ComboBox:
     {
-        if (qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+        if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             int comboBox_Margin = proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget);
             int comboBox_MarginWidth = 8;
             int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
@@ -4161,8 +4161,13 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 
             case SC_ComboBoxEditField:
             {
-                QRect textRect(rect.left(), rect.top(), rect.width() - indicator - 8, rect.height());
-                return visualRect(option->direction, rect, textRect);
+                QRect textRect = option->rect;
+                if (cb->editable) {
+                    textRect.setRect(rect.left(), rect.top(), rect.width() - indicator, rect.height());
+                } else {
+                    textRect.setRect(rect.left(), rect.top(), rect.width() - indicator - 8, rect.height());
+                }
+                return visualRect(option->direction, option->rect, textRect);
             }
 
             case SC_ComboBoxListBoxPopup:
