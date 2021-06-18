@@ -2928,12 +2928,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (iconRect.isValid()) {
-                if (isImportant && !(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
-                    pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
+                if (!(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
+                    if (isImportant || isWindowColoseButton) {
+                        pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
+                    } else {
+                        pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
+                    }
                     QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
-                }
-                else
+                } else {
                     proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                }
             }
 
             if (textRect.isValid()) {
@@ -3000,7 +3004,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             drawRect.adjust(Button_MarginWidth, Margin_Height, -Button_MarginWidth, -Margin_Height);
 
             QStyleOption sub = *option;
-            sub.state = (isWindowButton || isWindowColoseButton || useButtonPalette) ? (enable ? State_Enabled : State_None) : (option->state);
+            sub.state = (isWindowButton || useButtonPalette) ? (enable ? State_Enabled : State_None) : (option->state);
             if (arrow) {
                 int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
                 arrowRect.setRect(drawRect.right() - mbi + 1, drawRect.y(), mbi, drawRect.height());
@@ -3069,7 +3073,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             if (textRect.isValid()) {
                 proxy()->drawItemText(painter, textRect, alignment, tb->palette, enable, tb->text,
-                                      (isWindowButton || isWindowColoseButton || useButtonPalette) ? QPalette::ButtonText
+                                      (isWindowButton || useButtonPalette) ? QPalette::ButtonText
                                       : (option->state & (State_On | State_Sunken | State_MouseOver) && (option->state & State_Enabled))
                                       ? QPalette::HighlightedText : QPalette::ButtonText);
             }
@@ -3099,7 +3103,17 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 default:
                     break;
                 }
-                proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+
+                if (!(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
+                    if (isWindowColoseButton) {
+                        pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
+                    } else {
+                        pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
+                    }
+                    QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                } else {
+                    proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                }
             }
             return;
         }
