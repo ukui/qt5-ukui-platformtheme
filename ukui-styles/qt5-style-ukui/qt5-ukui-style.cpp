@@ -2934,10 +2934,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     } else {
                         pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
                     }
-                    QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
                 } else {
-                    proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                    pixmap = HighLightEffect::generatePixmap(pixmap, &sub, widget);
                 }
+                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
 
             if (textRect.isValid()) {
@@ -3110,10 +3110,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     } else {
                         pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
                     }
-                    QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
                 } else {
-                    proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
+                    pixmap = HighLightEffect::generatePixmap(pixmap, &sub, widget);
                 }
+                QStyle::drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
             return;
         }
