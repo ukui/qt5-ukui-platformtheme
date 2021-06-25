@@ -65,6 +65,11 @@ ProxyStylePlugin::ProxyStylePlugin()
                     else if (styleName == "ukui-white")
                         styleName = "ukui-light";
 
+                    if (styleName == "ukui-dark") {
+                        qApp->setProperty("preferDark", true);
+                    } else {
+                        qApp->setProperty("preferDark", QVariant());
+                    }
                     qApp->setStyle(new ProxyStyle(styleName));
 //                    foreach (auto widget, qApp->allWidgets()) {
 //                        QEvent e(QEvent::StyleChange);
