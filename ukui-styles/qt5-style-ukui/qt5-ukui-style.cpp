@@ -3868,7 +3868,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
-    case PM_ProgressBarChunkWidth: return 9;
     case PM_ToolTipLabelFrameWidth:return 7;
 
     case PM_SliderTickmarkOffset:
@@ -3953,6 +3952,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_SpinBoxFrameWidth:
         return 2;
+
+    case PM_ProgressBarChunkWidth:
+        return 9;
 
     default:
         break;
@@ -4232,28 +4234,6 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         }
         rect = visualRect(option->direction,option->rect,rect);
         return rect;
-    }
-
-    case SE_ProgressBarGroove:
-    case SE_ProgressBarContents:
-    case SE_ProgressBarLabel:
-    {
-        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
-            QRect rect = pb->rect;
-            int cw = proxy()->pixelMetric(QStyle::PM_ProgressBarChunkWidth, option, widget);
-            if(pb->orientation == Qt::Vertical)
-            {
-                rect.setRect(pb->rect.left(), pb->rect.top(), cw * 2, rect.height());
-            }
-            else
-            {
-                rect.setRect(pb->rect.left(), pb->rect.top(), rect.width(), cw * 2);
-            }
-            rect.moveCenter(pb->rect.center());
-            rect = visualRect(pb->direction, pb->rect, rect);
-            return rect;
-        }
-        break;
     }
 
     case SE_TabBarScrollLeftButton:
@@ -4637,6 +4617,13 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         break;
     }
 
+    case SE_ProgressBarGroove:
+    case SE_ProgressBarContents:
+    case SE_ProgressBarLabel:
+    {
+        return option->rect;
+    }
+
     default:
         break;
     }
@@ -4858,6 +4845,21 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             newSize += QSize(buttonWidth + 2 * fw, 0);
             newSize.setWidth(qMax(newSize.width(), 140));
             newSize.setHeight(qMax(newSize.height(), 36));
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_ProgressBar:
+    {
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            if (pb->direction == Qt::Vertical) {
+                newSize.setWidth(newSize.width() - 8);
+                newSize.setHeight(qMax(newSize.height(), 426));
+            } else {
+                newSize.setHeight(newSize.height() - 8);
+                newSize.setWidth(qMax(newSize.width(), 426));
+            }
             return newSize;
         }
         break;
