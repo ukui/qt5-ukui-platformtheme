@@ -2495,236 +2495,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         }
         break;
     }
-//    case CE_ProgressBarGroove:{
-//        const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-//        if (!bar)
-//            return;
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing, true);
-//        painter->setPen(Qt::NoPen);
-//        painter->setBrush(option->palette.button());
-//        int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
-//        bool needAdjustBarWidth = adjustMarignx2 > 0;
-//        bool vertical = (bar->orientation == Qt::Vertical);
-//        auto progressBarGroveRect = option->rect;
-//        if (!vertical) {
-//            if (needAdjustBarWidth) {
-//                progressBarGroveRect.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//            }
-//        } else {
-//            if (needAdjustBarWidth) {
-//                progressBarGroveRect.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//            }
-//        }
-//        painter->drawRoundedRect(progressBarGroveRect, 4, 4);
-//        painter->restore();
-//        return;
-//    }
-//    case CE_ProgressBarContents:{
-//        painter->save();
-//        painter->setRenderHint(QPainter::Antialiasing, true);
-//        if (const QStyleOptionProgressBar *bar = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
-//            //Judgment status
-//            painter->setPen(Qt::NoPen);
-//            bool vertical = false;
-//            bool inverted = false;
-//            bool indeterminate = (bar->minimum == 0 && bar->maximum == 0);
-//            bool complete = bar->progress == bar->maximum;
-
-//            // Get extra style options if version 2
-//            vertical = (bar->orientation == Qt::Vertical);
-//            inverted = bar->invertedAppearance;
-
-//            // If the orientation is vertical, we use a transform to rotate
-//            // the progress bar 90 degrees clockwise.  This way we can use the
-//            // same rendering code for both orientations.
-//            int maxWidth = vertical? option->rect.height(): option->rect.width();
-//            const auto progress = qMax(bar->progress, bar->minimum); // workaround for bug in QProgressBar
-//            const auto totalSteps = qMax(Q_INT64_C(1), qint64(bar->maximum) - bar->minimum);
-//            const auto progressSteps = qint64(progress) - bar->minimum;
-//            const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
-//            int width = indeterminate ? maxWidth : progressBarWidth;
-
-//            QRect progressBar;
-//            painter->setPen(Qt::NoPen);
-
-
-//            int adjustMarignx2 = qMin(option->rect.width(), option->rect.height()) - 16;
-//            bool needAdjustBarWidth = adjustMarignx2 > 0;
-
-//            //Positioning
-//            progressBar = option->rect;
-//            if (!indeterminate) {
-//                if (!inverted) {
-//                    if (!vertical) {
-//                        //progressBar.setRect(option->rect.left()-1, option->rect.top(), width-3,option->rect.height()-7);
-//                        progressBar.setRight(width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//                        }
-//                    } else {
-//                        progressBar.setTop(maxWidth - width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//                        }
-//                    }
-//                } else {
-//                    if (!vertical) {
-//                        progressBar = option->rect;
-//                        progressBar.setLeft(maxWidth - width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(0, adjustMarignx2/2, 0, -adjustMarignx2/2);
-//                        }
-//                    } else {
-//                        progressBar = option->rect;
-//                        progressBar.setBottom(width);
-//                        if (needAdjustBarWidth) {
-//                            progressBar.adjust(adjustMarignx2/2, 0, -adjustMarignx2/2, 0);
-//                        }
-//                    }
-//                }
-//            }
-
-//            //Brush color
-//            if (!indeterminate && width > 0) {
-//                painter->save();
-//                if (!vertical) {
-//                    painter->setPen(Qt::NoPen);
-
-//                    QColor startcolor = option->palette.highlight().color();
-//                    QColor endcolor = option->palette.highlight().color().darker(200);
-//                    QLinearGradient linearGradient(QPoint(option->rect.bottomRight().x(), option->rect.bottomRight().y()),
-//                                                   QPoint(option->rect.bottomLeft().x(), option->rect.bottomLeft().y()));
-//                    linearGradient.setColorAt(1,startcolor);
-//                    linearGradient.setColorAt(0,endcolor);
-//                    painter->setBrush(QBrush(linearGradient));
-
-//                    // painter->setBrush(option->palette.highlight().color());
-
-//                    if (!complete && !indeterminate)
-//                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
-
-//                    painter->drawRoundedRect(progressBar, 4, 4);
-//                } else {
-//                    painter->setPen(Qt::NoPen);
-
-//                    QColor startcolor = option->palette.highlight().color();
-//                    QColor endcolor = option->palette.highlight().color().darker(200);
-//                    QLinearGradient linearGradient(QPoint(option->rect.topLeft()),
-//                                                   QPoint(option->rect.bottomLeft()));
-//                    linearGradient.setColorAt(0,startcolor);
-//                    linearGradient.setColorAt(1,endcolor);
-//                    painter->setBrush(QBrush(linearGradient));
-
-//                    if (!complete && !indeterminate)
-//                        painter->setClipRect(progressBar.adjusted(0, 0, 0, 0));
-
-//                    painter->drawRoundedRect(progressBar, 4, 4);
-//                }
-//                painter->restore();
-//            } else {
-//                //FIXME: implement waiting animation.
-//                //painter->fillRect(option->rect, Qt::red);
-//            }
-//        }
-//        painter->restore();
-//        return;
-//    }
-//    case CE_ProgressBarLabel:{
-//        return;
-//    }
-
-    case CE_ProgressBarGroove:
-    {
-        const bool enable = option->state &State_Enabled;
-        QRect rect = proxy()->subElementRect(SE_ProgressBarGroove,option,widget);
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing, true);
-        painter->setPen(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-        painter->setBrush(option->palette.color(enable ? QPalette::Active : QPalette::Disabled,QPalette::Button));
-        painter->drawRoundedRect(rect,4,4);
-        painter->restore();
-        return;
-    }
-
-    case CE_ProgressBarContents:
-    {
-       if(const QStyleOptionProgressBar* bar = qstyleoption_cast<const QStyleOptionProgressBar*>(option))
-       {
-            QRect rect = proxy()->subElementRect(SE_ProgressBarContents,option,widget);
-            const bool vertical = bar->orientation == Qt::Vertical;
-            const bool inverted = bar->invertedAppearance;
-            qint64 minimum = qint64(bar->minimum);
-            qint64 maximum = qint64(bar->maximum);
-            qint64 progress = qint64(bar->progress);
-            qint64 totalSteps = qMax(Q_INT64_C(1), maximum - minimum);
-            const bool indeterminate = (minimum == maximum);
-            const bool complete = (progress == minimum);
-
-            bool reverse = (!vertical && (bar->direction == Qt::RightToLeft)) || vertical;
-            if(inverted)
-               reverse = !reverse;
-            if(complete)
-               return;
-
-            QColor startColor = option->palette.color(QPalette::Highlight).lighter(125);
-            QColor middleColor = option->palette.color(QPalette::Highlight);
-            QColor endColor = option->palette.color(QPalette::Highlight).darker(110);
-            QRect progressRect = rect;
-            QLinearGradient linearGradient;
-            if(!vertical)
-            {
-                qint64 progressBarWidth = (progress - bar->minimum) * rect.width() / totalSteps;
-                int width = indeterminate ? rect.width() : progressBarWidth;
-                if(!reverse)
-                {
-                    progressRect.setRect(rect.left(),rect.top(),width,rect.height());
-                    linearGradient.setStart(progressRect.topLeft());
-                    linearGradient.setFinalStop(progressRect.topRight());
-                }
-                else
-                {
-                    progressRect.setRect(indeterminate ? rect.left() : rect.right() - width, rect.top(),width, rect.height());
-                    linearGradient.setStart(progressRect.topRight());
-                    linearGradient.setFinalStop(progressRect.topLeft());
-                }
-            }
-            else
-            {
-                qint64 progressBarWidth = (progress - minimum) * rect.height() / totalSteps;
-                int width = indeterminate ? rect.height() : progressBarWidth;
-                if(!inverted)
-                {
-                    progressRect.setRect(rect.left(), indeterminate ? rect.top() : rect.bottom() - width, rect.width(), width);
-                    linearGradient.setStart(progressRect.bottomLeft());
-                    linearGradient.setFinalStop(progressRect.topLeft());
-                }
-                else
-                {
-                    progressRect.setRect(rect.left(),rect.top(),rect.width(),width);
-                    linearGradient.setStart(progressRect.topLeft());
-                    linearGradient.setFinalStop(progressRect.bottomLeft());
-                }
-            }
-
-            linearGradient.setColorAt(0,startColor);
-            linearGradient.setColorAt(0.6,middleColor);
-            linearGradient.setColorAt(1,endColor);
-            painter->save();
-            painter->setRenderHints(QPainter::Antialiasing,true);
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(linearGradient);
-            painter->drawRoundedRect(progressRect,4,4);
-            painter->restore();
-            return;
-        }
-        break;
-    }
-
-    case CE_ProgressBarLabel:
-    {
-        return;
-    }
 
     case CE_ScrollBarSlider:
     {
@@ -3818,6 +3588,162 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             return;
         } break;
 
+    case CE_ProgressBar:
+    {
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            QStyleOptionProgressBar subOption = *pb;
+            subOption.rect = proxy()->subElementRect(SE_ProgressBarGroove, pb, widget);
+            proxy()->drawControl(CE_ProgressBarGroove, &subOption, painter, widget);
+            subOption.rect = proxy()->subElementRect(SE_ProgressBarContents, pb, widget);
+            proxy()->drawControl(CE_ProgressBarContents, &subOption, painter, widget);
+            if (pb->textVisible) {
+                subOption.rect = proxy()->subElementRect(SE_ProgressBarLabel, pb, widget);
+                proxy()->drawControl(CE_ProgressBarLabel, &subOption, painter, widget);
+            }
+            return;
+        }
+        break;
+    }
+
+    case CE_ProgressBarGroove:
+    {
+        const bool enable = option->state & State_Enabled;
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.brush(enable ? QPalette::Active : QPalette::Disabled, QPalette::Button));
+        painter->drawRoundedRect(option->rect, 4, 4);
+        painter->restore();
+        return;
+    }
+
+    case CE_ProgressBarContents:
+    {
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            const auto progress = qMax(pb->progress, pb->minimum); // workaround for bug in QProgressBar
+            if (progress == pb->minimum)
+                return;
+
+            const bool vertical = pb->orientation == Qt::Vertical;
+            const bool inverted = pb->invertedAppearance;
+            const bool indeterminate = (pb->minimum == 0 && pb->maximum == 0);
+
+            QRect rect = pb->rect;
+            int maxWidth = vertical ? pb->rect.height() : pb->rect.width();
+            const auto totalSteps = qMax(Q_INT64_C(1), qint64(pb->maximum) - pb->minimum);
+            const auto progressSteps = qint64(progress) - pb->minimum;
+            const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
+            int len = indeterminate ? maxWidth : progressBarWidth;
+
+            bool reverse = (!vertical && (pb->direction == Qt::RightToLeft)) || vertical;
+            if (inverted)
+                reverse = !reverse;
+
+            QColor startColor = option->palette.color(QPalette::Active, QPalette::Highlight);
+            QColor endColor = highLight_Click();
+            QLinearGradient linearGradient;
+            linearGradient.setColorAt(0, startColor);
+            linearGradient.setColorAt(1, endColor);
+            QRect progressRect;
+            if (indeterminate) {
+
+            } else {
+                if (vertical) {
+                    if (reverse) {
+                        progressRect.setRect(rect.left(), rect.bottom() + 1 - len, rect.width(), len);
+                        linearGradient.setStart(progressRect.bottomLeft());
+                        linearGradient.setFinalStop(progressRect.topLeft());
+                    } else {
+                        progressRect.setRect(rect.x(), rect.top(), rect.width(), len);
+                        linearGradient.setStart(progressRect.topLeft());
+                        linearGradient.setFinalStop(progressRect.bottomLeft());
+                    }
+                } else {
+                    if (reverse) {
+                        progressRect.setRect(rect.right() + 1 - len, rect.top(), len, rect.height());
+                        linearGradient.setStart(progressRect.topRight());
+                        linearGradient.setFinalStop(progressRect.topLeft());
+                    } else {
+                        progressRect.setRect(rect.x(), rect.y(), len, rect.height());
+                        linearGradient.setStart(progressRect.topLeft());
+                        linearGradient.setFinalStop(progressRect.topRight());
+                    }
+                }
+            }
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(linearGradient);
+            painter->drawRoundedRect(progressRect, 4, 4);
+            painter->restore();
+            return;
+        }
+        break;
+    }
+
+    case CE_ProgressBarLabel:
+    {
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            if (pb->textVisible) {
+                const auto progress = qMax(pb->progress, pb->minimum);
+                const bool vertical = pb->orientation == Qt::Vertical;
+                const bool inverted = pb->invertedAppearance;
+                const bool indeterminate = (pb->minimum == 0 && pb->maximum == 0);
+
+                int maxWidth = vertical ? pb->rect.height() : pb->rect.width();
+                const auto totalSteps = qMax(Q_INT64_C(1), qint64(pb->maximum) - pb->minimum);
+                const auto progressSteps = qint64(progress) - pb->minimum;
+                const auto progressBarWidth = progressSteps * maxWidth / totalSteps;
+                int len = indeterminate ? maxWidth : progressBarWidth;
+
+                bool reverse = (!vertical && (pb->direction == Qt::RightToLeft)) || vertical;
+                if (inverted)
+                    reverse = !reverse;
+
+                painter->save();
+                painter->setBrush(Qt::NoBrush);
+                QRect rect = pb->rect;
+                if (pb->orientation == Qt::Vertical) {
+                    rect.setRect(rect.y(), rect.x(), rect.height(), rect.width());
+                    QTransform m;
+                    m.rotate(90);
+                    m.translate(0, -rect.height());
+                    painter->setTransform(m, true);
+                }
+                QRect textRect(rect.x(), rect.y(), pb->fontMetrics.horizontalAdvance(pb->text), rect.height());
+                textRect.moveCenter(rect.center());
+                if (len <= textRect.left()) {
+                    painter->setPen(pb->palette.color(QPalette::Active, QPalette::WindowText));
+                    painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                } else if (len >= textRect.right()) {
+                    painter->setPen(pb->palette.color(QPalette::Active, QPalette::HighlightedText));
+                    painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                } else {
+                    QRect leftRect(textRect.x(), textRect.y(), len - textRect.left(), textRect.height());
+                    QRect rightRect(leftRect.right() + 1, textRect.y(), textRect.right() + 1 - len, textRect.height());
+                    if (reverse) {
+                        leftRect.setRect(textRect.left(), textRect.top(), maxWidth - len - textRect.left(), textRect.height());
+                        rightRect.setRect(leftRect.right() + 1, textRect.top(), textRect.width() - leftRect.width(), textRect.height());
+                        painter->setPen(pb->palette.color(QPalette::Active, QPalette::HighlightedText));
+                        painter->setClipRect(rightRect);
+                        painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                        painter->setPen(pb->palette.color(QPalette::Active, QPalette::WindowText));
+                        painter->setClipRect(leftRect);
+                        painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                    } else {
+                        painter->setPen(pb->palette.color(QPalette::Active, QPalette::WindowText));
+                        painter->setClipRect(rightRect);
+                        painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                        painter->setPen(pb->palette.color(QPalette::Active, QPalette::HighlightedText));
+                        painter->setClipRect(leftRect);
+                        painter->drawText(textRect, pb->text, QTextOption(Qt::AlignAbsolute | Qt::AlignHCenter | Qt::AlignVCenter));
+                    }
+                }
+                painter->resetTransform();
+                painter->restore();
+            }
+            return;
+        }
+        break;
+    }
 
     default:
         return Style::drawControl(element, option, painter, widget);
@@ -4853,7 +4779,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     case CT_ProgressBar:
     {
         if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
-            if (pb->direction == Qt::Vertical) {
+            if (pb->orientation == Qt::Vertical) {
                 newSize.setWidth(newSize.width() - 8);
                 newSize.setHeight(qMax(newSize.height(), 426));
             } else {
