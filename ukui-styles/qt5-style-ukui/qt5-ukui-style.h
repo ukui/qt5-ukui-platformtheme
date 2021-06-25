@@ -124,7 +124,11 @@ private:
     BoxAnimationHelper* m_combobox_animation_helper;
     ShadowHelper *m_shadow_helper;
 
-
+    /*!
+     * \brief m_use_dark_palette
+     * \deprecated
+     * use qApp->property("preferDark") instead. link to: #63026.
+     */
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
 
