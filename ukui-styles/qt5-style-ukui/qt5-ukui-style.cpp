@@ -993,7 +993,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (sunken || on) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#E44C50"));
-                    } else if (useDefaultPalette().contains(qAppName())) {
+                    } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.15);
                         painter->setBrush(color);
@@ -1008,7 +1008,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 } else if (hover) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#F86458"));
-                    } else if (useDefaultPalette().contains(qAppName())) {
+                    } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.1);
                         painter->setBrush(color);
@@ -1047,7 +1047,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (isWindowColoseButton) {
                     hoverColor = QColor("#F86458");
                     sunkenColor = QColor("#E44C50");
-                } else if (useDefaultPalette().contains(qAppName())) {
+                } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
                     hoverColor.setAlphaF(0.1);
                     sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
@@ -1092,14 +1092,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setOpacity(opacity);
                 if (isWindowColoseButton) {
                     painter->setBrush(QColor("#F86458"));
-                } else if (useDefaultPalette().contains(qAppName())) {
+                } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
                 } else {
                     if (isImportant)
                         painter->setBrush(highLight_Hover());
-                    else if (useDefaultPalette().contains(qAppName()))
+                    else if (isWindowButton && useDefaultPalette().contains(qAppName()))
                         painter->setBrush(button_Hover());
                     else if (useButtonPalette || isWindowButton)
                         painter->setBrush(button_Hover());
@@ -1271,7 +1271,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(Qt::NoPen);
             if (sunken || on) {
-                if (useDefaultPalette().contains(qAppName())) {
+                if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.15);
                     painter->setBrush(color);
@@ -1283,7 +1283,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Click());
                 }
             } else if (hover) {
-                if (useDefaultPalette().contains(qAppName())) {
+                if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
@@ -1318,7 +1318,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            if (useDefaultPalette().contains(qAppName())) {
+            if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                 hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
                 hoverColor.setAlphaF(0.1);
                 sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
@@ -1357,7 +1357,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setPen(Qt::NoPen);
             painter->setOpacity(opacity);
-            if (useDefaultPalette().contains(qAppName())) {
+            if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                 QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                 color.setAlphaF(0.1);
                 painter->setBrush(color);
