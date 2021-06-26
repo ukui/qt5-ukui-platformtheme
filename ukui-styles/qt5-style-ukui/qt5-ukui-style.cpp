@@ -2687,11 +2687,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             if (iconRect.isValid()) {
-                if (!(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
+                if (widget && !widget->property("useIconHighlightEffect").isValid()) {
                     if (isImportant || isWindowColoseButton) {
                         pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
-                    } else {
+                    } else if (useButtonPalette || isWindowButton) {
                         pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
+                    } else {
+                        pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
                     }
                 } else {
                     pixmap = HighLightEffect::generatePixmap(pixmap, &sub, widget);
@@ -2863,11 +2865,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     break;
                 }
 
-                if (!(HighLightEffect::isWidgetIconUseHighlightEffect(widget))) {
+                if (widget && !widget->property("useIconHighlightEffect").isValid()) {
                     if (isWindowColoseButton) {
                         pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
-                    } else {
+                    } else if (useButtonPalette || isWindowButton) {
                         pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, &sub, widget);
+                    } else {
+                        pixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, &sub, widget);
                     }
                 } else {
                     pixmap = HighLightEffect::generatePixmap(pixmap, &sub, widget);

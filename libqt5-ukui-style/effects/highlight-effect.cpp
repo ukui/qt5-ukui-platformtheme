@@ -278,6 +278,8 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
 
 QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
     if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
@@ -301,6 +303,8 @@ QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QSt
 
 QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
     if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
@@ -335,6 +339,8 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
 
 QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
     if (!isPixmapPureColor(pixmap) || !(option->state & QStyle::State_Enabled))
         return pixmap;
 
@@ -377,6 +383,8 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
 
 QPixmap HighLightEffect::filledSymbolicColoredGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, EffectMode mode)
 {
+    if (pixmap.isNull())
+        return pixmap;
     if (isPixmapPureColor(pixmap))
         return bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget, mode);
 
@@ -418,6 +426,8 @@ HighLightEffect::HighLightEffect(QObject *parent) : QObject(parent)
 
 QPixmap HighLightEffect::filledSymbolicColoredPixmap(const QPixmap &source, const QColor &baseColor)
 {
+    if (source.isNull())
+        return source;
     QImage img = source.toImage();
     for (int x = 0; x < img.width(); x++) {
         for (int y = 0; y < img.height(); y++) {
