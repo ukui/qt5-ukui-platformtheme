@@ -1666,7 +1666,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(48, 48, 51));
                         } else {
                             painter->setPen(QColor(191, 191, 191));
-                            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Window));
                         }
                     }
                 } else {
@@ -1752,10 +1752,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     } else {
                         if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
                             painter->setPen(QColor(72, 72, 77));
+                            painter->setBrush(QColor(48, 48, 51));
                         } else {
                             painter->setPen(QColor(191, 191, 191));
+                            painter->setBrush(checkbox->palette.color(QPalette::Active, QPalette::Window));
                         }
-                        painter->setBrush(Qt::NoBrush);
                     }
                     painter->drawRoundedRect(rect, x_Radius, y_Radius);
                 }
