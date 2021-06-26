@@ -144,6 +144,11 @@ QStyle *ProxyStylePlugin::create(const QString &key)
                 else if (m_current_style_name == "ukui-white")
                     m_current_style_name = "ukui-light";
 
+                if (m_current_style_name == "ukui-dark") {
+                    qApp->setProperty("preferDark", true);
+                } else {
+                    qApp->setProperty("preferDark", QVariant());
+                }
                 return new ProxyStyle(m_current_style_name);
             }
             for (auto styleName : QStyleFactory::keys()) {
