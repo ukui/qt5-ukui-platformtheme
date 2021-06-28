@@ -188,12 +188,6 @@ MessageBox::MessageBox(QWidget *parent) : QDialog(*new MessageBoxPrivate, parent
 
     d->init();
 
-    MotifWmHints hints;
-    hints.flags = MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS;
-    hints.functions = MWM_FUNC_ALL;
-    hints.decorations = MWM_DECOR_BORDER;
-    XAtomHelper::getInstance()->setWindowMotifHint(winId(), hints);
-
     setContentsMargins(0, 0, 0, 0);
 
     setAttribute(Qt::WA_TranslucentBackground);
@@ -1383,15 +1377,22 @@ void MessageBoxHelper::hide()
 
 bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality windowModality, QWindow *parent)
 {
-    initDialog ();
+    initDialog();
+
+    if (parent) {
+        mMessageBox->move(QPoint((parent->width() - mMessageBox->width()) / 2, (parent->height() - mMessageBox->height()) / 2)
+                          + QPoint(parent->x(), parent->y()));
+    }
+
+    MotifWmHints hints;
+    hints.flags = MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS;
+    hints.functions = MWM_FUNC_ALL;
+    hints.decorations = MWM_DECOR_BORDER;
+    XAtomHelper::getInstance()->setWindowMotifHint(mMessageBox->winId(), hints);
 
     mMessageBox->show();
     mMessageBox->d_func()->updateSize();
 
-    if (parent) {
-        mMessageBox->move(QPoint((parent->width() - mMessageBox->width()) / 2, (parent->height() - mMessageBox->height()) / 2)
-                                 + QPoint(parent->x(), parent->y()));
-    }
     Q_UNUSED(parent);
     Q_UNUSED(windowFlags);
     Q_UNUSED(windowModality);
