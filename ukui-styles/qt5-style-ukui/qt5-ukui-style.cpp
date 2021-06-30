@@ -471,7 +471,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
 QColor Qt5UKUIStyle::button_Click() const
 {
-    if ((qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return QColor(43, 43, 46);
     } else {
         return QColor(217, 217, 217);
@@ -482,7 +482,7 @@ QColor Qt5UKUIStyle::button_Click() const
 
 QColor Qt5UKUIStyle::button_Hover() const
 {
-    if ((qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return QColor(75, 75, 79);
     } else {
         return QColor(235, 235, 235);
@@ -493,7 +493,7 @@ QColor Qt5UKUIStyle::button_Hover() const
 
 QColor Qt5UKUIStyle::button_DisableChecked() const
 {
-    if ((qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return QColor(61, 61, 64);
     } else {
         return QColor(224, 224, 224);
@@ -1603,6 +1603,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             QRectF rect = radiobutton->rect.adjusted(1, 1, -1, -1);
 
+            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool()
+                                                                                      || (m_is_default_style && specialList().contains(qAppName())));
             bool enable = radiobutton->state & State_Enabled;
             bool mouseOver = radiobutton->state & State_MouseOver;
             bool sunKen = radiobutton->state & State_Sunken;
@@ -1629,7 +1631,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::HighlightedText));
                     painter->drawEllipse(childRect);
                 } else {
-                    if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                    if (useDarkPalette) {
                         painter->setPen(QColor(48, 48, 51));
                         painter->setBrush(QColor(28, 28, 30));
                     } else {
@@ -1645,7 +1647,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             } else {
                 if (enable) {
                     if (sunKen) {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(36, 109, 212));
                             painter->setBrush(QColor(6, 35, 97));
                         } else {
@@ -1653,7 +1655,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(179, 221, 255));
                         }
                     } else if (mouseOver) {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(55, 144, 250));
                             painter->setBrush(QColor(9, 53, 153));
                         } else {
@@ -1661,7 +1663,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(219, 240, 255));
                         }
                     } else {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(72, 72, 77));
                             painter->setBrush(QColor(48, 48, 51));
                         } else {
@@ -1670,7 +1672,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         }
                     }
                 } else {
-                    if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                    if (useDarkPalette) {
                         painter->setPen(QColor(48, 48, 51));
                         painter->setBrush(QColor(28, 28, 30));
                     } else {
@@ -1689,6 +1691,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_IndicatorCheckBox:
     {
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
+            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool()
+                                                                                      || (m_is_default_style && specialList().contains(qAppName())));
             bool enable = checkbox->state & State_Enabled;
             bool mouseOver = checkbox->state & State_MouseOver;
             bool sunKen = checkbox->state & State_Sunken;
@@ -1734,7 +1738,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->drawPath(path);
                 } else {
                     if (sunKen) {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(36, 109, 212));
                             painter->setBrush(QColor(6, 35, 97));
                         } else {
@@ -1742,7 +1746,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(179, 221, 255));
                         }
                     } else if (mouseOver) {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(55, 144, 250));
                             painter->setBrush(QColor(9, 53, 153));
                         } else {
@@ -1750,7 +1754,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(QColor(219, 240, 255));
                         }
                     } else {
-                        if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                        if (useDarkPalette) {
                             painter->setPen(QColor(72, 72, 77));
                             painter->setBrush(QColor(48, 48, 51));
                         } else {
@@ -1761,7 +1765,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->drawRoundedRect(rect, x_Radius, y_Radius);
                 }
             } else {
-                if (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName()))) {
+                if (useDarkPalette) {
                     painter->setPen(QColor(48, 48, 51));
                     painter->setBrush(QColor(28, 28, 30));
                 } else {
