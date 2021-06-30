@@ -54,11 +54,6 @@
 
 
 
-/**
- * FIXME:// QMessageBox 无法添加 QCheckbox
- *
- */
-
 enum Button
 {
     Old_Ok = 1, Old_Cancel = 2, Old_Yes = 3, Old_No = 4, Old_Abort = 5, Old_Retry = 6,
@@ -97,7 +92,6 @@ public:
 
     void updateSize();
     int layoutMinimumWidth();
-    void retranslateStrings();
     void detectEscapeButton();
 
     static QMessageBox::StandardButton newButton(int button);
@@ -185,11 +179,8 @@ MessageBox::MessageBox(QWidget *parent) : QDialog(*new MessageBoxPrivate, parent
 
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
-
     d->init();
-
     setContentsMargins(0, 0, 0, 0);
-
     setAttribute(Qt::WA_TranslucentBackground);
 }
 
@@ -198,7 +189,6 @@ MessageBox::~MessageBox()
 
 }
 
-// FIXME:// 不支持此接口
 void MessageBox::setCheckBox(QCheckBox *cb)
 {
     Q_D(MessageBox);
@@ -206,32 +196,7 @@ void MessageBox::setCheckBox(QCheckBox *cb)
     if (cb == d->mCheckbox) {
         return;
     }
-
-    if (d->mCheckbox) {
-        d->mCheckbox->hide();
-        layout()->removeWidget(d->mCheckbox);
-        if (d->mCheckbox->parentWidget() == this) {
-            d->mCheckbox->setParent(nullptr);
-            d->mCheckbox->deleteLater();
-        }
-    }
-
     d->mCheckbox = cb;
-    if (d->mCheckbox) {
-        QSizePolicy sp = d->mCheckbox->sizePolicy();
-        sp.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
-        d->mCheckbox->setSizePolicy(sp);
-        d->mCheckbox->setMaximumWidth(130);
-    }
-
-    d->setupLayout();
-}
-
-QCheckBox *MessageBox::checkBox() const
-{
-    Q_D(const MessageBox);
-
-    return d->mCheckbox;
 }
 
 QMessageBox::Icon MessageBox::icon()
@@ -274,8 +239,7 @@ void MessageBox::setText(const QString& text)
 {
     Q_D(MessageBox);
     d->mLabel->setText(text);
-    d->mLabel->setWordWrap(d->mLabel->textFormat() == Qt::RichText
-                          || (d->mLabel->textFormat() == Qt::AutoText && Qt::mightBeRichText(text)));
+    d->mLabel->setWordWrap(true);
 }
 
 Qt::TextFormat MessageBox::textFormat() const
@@ -322,7 +286,6 @@ QPushButton* MessageBox::addButton(const QString &text, QMessageBox::ButtonRole 
     Q_D(MessageBox);
     QPushButton* pushButton = new QPushButton(text);
     addButton(pushButton, role);
-    d->updateSize();
     return pushButton;
 }
 
@@ -338,9 +301,7 @@ QPushButton *MessageBox::addButton(QMessageBox::StandardButton button)
     if (pushButton) {
         d->mAutoAddOkButton = false;
     }
-
     pushButton->setIcon(QIcon());
-
     return pushButton;
 }
 
@@ -355,7 +316,6 @@ void MessageBox::removeButton(QAbstractButton *button)
         d->mDefaultButton = nullptr;
     }
     d->mButtonBox->removeButton(button);
-    d->updateSize();
 }
 
 QAbstractButton *MessageBox::button(QMessageBox::StandardButton which) const
@@ -395,7 +355,6 @@ void MessageBox::setStandardButtons(QMessageBox::StandardButtons buttons)
     }
 
     d->mAutoAddOkButton = false;
-    d->updateSize();
 }
 
 QMessageBox::StandardButtons MessageBox::standardButtons() const
@@ -511,7 +470,7 @@ void MessageBox::setInformativeText(const QString &text)
             label->setTextInteractionFlags(Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
             label->setAlignment(Qt::AlignTop | Qt::AlignLeft);
             label->setOpenExternalLinks(true);
-            label->setWordWrap(false);
+            label->setWordWrap(true);
             QPalette palette = label->palette();
             palette.setColor(QPalette::Text, palette.color(QPalette::Disabled, QPalette::Text));
             label->setPalette(palette);
@@ -535,7 +494,7 @@ void MessageBox::setDetailedText(const QString &text)
         d->mDetail->hide();
         if (!d->mDetailButton) {
             d->mDetailButton = new QPushButton(this);
-            d->mDetailButton->setText(QObject::tr("Detail"));
+            d->mDetailButton->setText(QObject::tr("Show Details..."));
         }
     } else {
         d->mDetail = nullptr;
@@ -572,16 +531,17 @@ QPixmap MessageBox::standardIcon(QMessageBox::Icon icon)
 
 bool MessageBox::event(QEvent *e)
 {
+    Q_D(MessageBox);
     bool result = QDialog::event(e);
     switch (e->type()) {
-        case QEvent::LayoutRequest:
-            setuplayout();
-            break;
-        case QEvent::LanguageChange:
-            d_func()->retranslateStrings();
-            break;
-        default:
-            break;
+    case QEvent::LayoutRequest:
+        setuplayout();
+        break;
+    case QEvent::FontChange:
+        d->updateSize();
+        break;
+    default:
+        break;
     }
     return result;
 }
@@ -754,10 +714,6 @@ MessageBoxPrivate::~MessageBoxPrivate()
         delete mButtonBox;
     }
 
-    if (nullptr != mCheckbox) {
-        delete mCheckbox;
-    }
-
     if (nullptr != mDetail) {
         delete mDetail;
     }
@@ -799,10 +755,6 @@ void MessageBoxPrivate::init(const QString &title, const QString &text)
     mButtonBox->setCenterButtons(q->style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, q));
     QObject::connect(mButtonBox, SIGNAL(clicked(QAbstractButton*)), q, SLOT(_q_buttonClicked(QAbstractButton*)));
 
-    if (!text.isEmpty()) {
-        q->setText(text);
-    }
-
     q->setModal(true);
     mIcon = QMessageBox::NoIcon;
 
@@ -816,98 +768,54 @@ void MessageBoxPrivate::setupLayout()
     if (q->layout())
         delete q->layout();
 
-    QSize MaxSize(420, 562 + 6);
-    QSize MinSize(380, 142 + 6);
-
     bool hasIcon = mIconLabel->pixmap() && !mIconLabel->pixmap()->isNull();
-    int marge = mMarginLeft + mMarginRight + (hasIcon ? (mIconSize + 8) : 0);
 
     mLabel->setContentsMargins(0, 0, 0, 0);
-    mLabel->setWordWrap(false);
-    mLabel->setMinimumWidth(MinSize.width() - marge);
-    mLabel->setMaximumWidth(MaxSize.width() - marge);
+    mLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mLabel->setWordWrap(true);
 
     if (mInformativeLabel) {
-        mInformativeLabel->setWordWrap(false);
-        mInformativeLabel->setMinimumWidth(MinSize.width() - marge);
-        mInformativeLabel->setMaximumWidth(MaxSize.width() - marge);
+        mInformativeLabel->setContentsMargins(0, 0, 0, 0);
+        mInformativeLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        mInformativeLabel->setWordWrap(true);
     }
 
-    QSize labelSize = mLabel->sizeHint();
-    if (labelSize.width() > mLabel->maximumWidth()) {
-        mLabel->setMinimumWidth(mLabel->maximumWidth());
-        mLabel->setWordWrap(true);
-        contentArea->setFixedWidth(MaxSize.width() - marge);
-    }
-
+    QGridLayout *gridLayout = new QGridLayout;
+    gridLayout->setContentsMargins(0, 0, 0, 32);
+    gridLayout->setHorizontalSpacing(8);
+    gridLayout->setVerticalSpacing(8);
+    if (hasIcon)
+        gridLayout->addWidget(mIconLabel, 0, 0);
+    gridLayout->addWidget(mLabel, 0, hasIcon ? 1 : 0);
     if (mInformativeLabel) {
-        QSize informaSize = mInformativeLabel->sizeHint();
-        if (informaSize.width() > mInformativeLabel->maximumWidth()) {
-            mInformativeLabel->setMinimumWidth(mInformativeLabel->maximumWidth());
-            mInformativeLabel->setWordWrap(true);
-            contentArea->setFixedWidth(MaxSize.width() - marge);
-        }
+        gridLayout->addWidget(mInformativeLabel, 1, hasIcon ? 1 : 0);
     }
 
-    //特殊处理
-    if (contentLayout) {
-        delete contentLayout;
-        contentArea->takeWidget();
-    }
-    contentLayout = new QVBoxLayout();
-    contentLayout->setContentsMargins(0, 0, 0, 0);
-    contentLayout->setSpacing(mWidgetSpace);
-    contentLayout->addWidget(mLabel);
-    if (mInformativeLabel)
-        contentLayout->addWidget(mInformativeLabel);
-    contentWidget->setLayout(contentLayout);
-    contentLayout->activate();
-    contentArea->setWidget(contentWidget);
-
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->setSpacing(48);
     if (mDetail && !mDetail->isHidden()) {
-        mDetail->setFixedSize(MaxSize.width() - mMarginLeft - mMarginRight, mDetailHeight);
-        contentArea->setFixedHeight(qMin(contentArea->sizeHint().height(), 276));
-        contentArea->setFixedWidth(MaxSize.width() - marge);
-    } else {
-        contentArea->setFixedHeight(qMin(contentArea->sizeHint().height(), 444));
+        buttonLayout->setContentsMargins(0, 0, 0, 24);
+    }
+    if (mCheckbox) {
+        buttonLayout->addWidget(mCheckbox, 0, Qt::AlignLeft | Qt::AlignVCenter);
+    }
+    buttonLayout->addWidget(mButtonBox, buttonLayout->count(), Qt::AlignRight | Qt::AlignVCenter);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setContentsMargins(mMarginLeft, mMarginTop, mMarginRight, mMarginBottom);
+    layout->setSpacing(0);
+    layout->addLayout(gridLayout);
+    layout->addLayout(buttonLayout);
+    if (mDetail) {
+        layout->addWidget(mDetail);
     }
 
-    QVBoxLayout *grid = new QVBoxLayout;
-    grid->setContentsMargins(mMarginLeft, mMarginTop, mMarginRight, mMarginBottom);
-    grid->setSpacing(0);
-
-    QGridLayout *contentlayout = new QGridLayout;
-
-    mIconLabel->setContentsMargins(0, 0, 0, 0);
-    if (hasIcon) {
-        contentlayout->addWidget(mIconLabel, 0, 0, 0, 1, Qt::AlignTop);
-        QSpacerItem *indentSpacer = new QSpacerItem(8, mIconSize, QSizePolicy::Fixed, QSizePolicy::Fixed);
-        contentlayout->addItem(indentSpacer, 0, 1, 2, 1);
+    mLabel->setWordWrap(true);
+    if (mInformativeLabel) {
+        mInformativeLabel->setWordWrap(true);
     }
-    mIconLabel->setVisible(hasIcon);
+    q->setLayout(layout);
 
-    contentlayout->addWidget(contentArea, 0, hasIcon ? 2 : 1, 2, 1);
-
-    grid->addLayout(contentlayout);
-
-    QSpacerItem *buttonSpacer = new QSpacerItem(mBtnContent, mBtnContent, QSizePolicy::Fixed, QSizePolicy::Fixed);
-    grid->addItem(buttonSpacer);
-
-//    if (mCheckbox)
-//        grid->addWidget(mCheckbox, 2, 0, 1, 1, Qt::AlignLeft);
-
-    grid->addWidget(mButtonBox);
-
-    if (mDetail && !mDetail->isHidden()) {
-        QSpacerItem *detailSpacer = new QSpacerItem(1, 24, QSizePolicy::Fixed, QSizePolicy::Fixed);
-        grid->addItem(detailSpacer);
-        grid->addWidget(mDetail);
-    }
-
-    q->setLayout(grid);
-    q->setFixedSize(q->sizeHint());
-
-    retranslateStrings();
     updateSize();
 }
 
@@ -915,10 +823,28 @@ void MessageBoxPrivate::updateSize()
 {
     Q_Q(MessageBox);
 
-    if (!q->isVisible())
-        return;
-    contentLayout->activate();
     layout->activate();
+
+    QSize minSize(380, 142 + 14);
+    QSize size;
+    QSize screenSize = QGuiApplication::screenAt(QCursor::pos())->availableGeometry().size();
+    QSize maxSize(screenSize.width() - 100, screenSize.height() - 50);
+    mLabel->setMaximumSize(maxSize);
+
+    mLabel->setWordWrap(true);
+    if (mInformativeLabel) {
+        mInformativeLabel->setMaximumSize(maxSize);
+        mInformativeLabel->setWordWrap(true);
+    }
+
+    q->setContentsMargins(0, 0, 0, 0);
+    q->setMinimumSize(minSize);
+    q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    size.setWidth(qMax(qMin(maxSize.width(), q->sizeHint().width()), 380));
+    size.setHeight(qMax(qMin(maxSize.height(), q->sizeHint().height()), 142 + 14));
+
+    q->setFixedSize(size);
+
     QCoreApplication::removePostedEvents(q, QEvent::LayoutRequest);
 }
 
@@ -935,10 +861,6 @@ void MessageBoxPrivate::_q_buttonClicked(QAbstractButton* button)
     if (mDetailButton && mDetail && button == mDetailButton) {
         mDetail->setHidden(!mDetail->isHidden());
         mDetailButton->setText(mDetail->isHidden() ? QMessageBox::tr("Show Details...") : QMessageBox::tr("Hide Details..."));
-        if (mDetail->isHidden())
-            mDetail->hide();
-        else
-            mDetail->show();
         setupLayout();
     } else {
         setClickedButton(button);
@@ -1114,12 +1036,6 @@ void MessageBoxPrivate::detectEscapeButton()
             mDetectedEscapeButton = button;
         }
     }
-}
-
-void MessageBoxPrivate::retranslateStrings()
-{
-//    if (detailsButton)
-//        detailsButton->setLabel(detailsText->isHidden() ? ShowLabel : HideLabel);
 }
 
 QMessageBox::StandardButton MessageBoxPrivate::newButton(int button)
@@ -1380,6 +1296,24 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
     initDialog();
 
     if (parent) {
+        if (QWidget *p = mMessageBox->find(parent->winId())) {
+            if (p->findChild<QCheckBox *>()) {
+                for (QMessageBox *mb : p->findChildren<QMessageBox *>()) {
+                    if (mb->icon() == options()->icon() && mb->windowTitle() == options()->windowTitle() && mb->text() == options()->text()
+                            && mb->informativeText() == options()->informativeText() && mb->detailedText() == options()->detailedText()) {
+                        if (QCheckBox *cb = mb->findChild<QCheckBox *>()) {
+                            if (mb->layout() && (mb->layout()->indexOf(cb) != -1)) {
+                                mMessageBox->setCheckBox(cb);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    mMessageBox->setuplayout();
+
+    if (parent) {
         mMessageBox->move(QPoint((parent->width() - mMessageBox->width()) / 2, (parent->height() - mMessageBox->height()) / 2)
                           + QPoint(parent->x(), parent->y()));
     }
@@ -1391,7 +1325,6 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
     XAtomHelper::getInstance()->setWindowMotifHint(mMessageBox->winId(), hints);
 
     mMessageBox->show();
-    mMessageBox->d_func()->updateSize();
 
     Q_UNUSED(parent);
     Q_UNUSED(windowFlags);
@@ -1406,9 +1339,7 @@ void MessageBoxHelper::initDialog()
     mMessageBox->setText(options()->text());
     mMessageBox->setInformativeText(options()->informativeText());
     mMessageBox->setDetailedText(options()->detailedText());
-    if (options()->text().isNull() && !options()->windowTitle().isNull())
-        mMessageBox->setText(options()->windowTitle());
-    mMessageBox->d_func()->mOptions = options();
+    mMessageBox->setWindowTitle(options()->windowTitle());
 
     QPlatformDialogHelper::StandardButtons btns = options()->standardButtons();
 
@@ -1432,8 +1363,6 @@ void MessageBoxHelper::initDialog()
         }
         mMessageBox->addButton(ab, QMessageBox::ButtonRole(button.role));
     }
-
-    mMessageBox->setuplayout();
 }
 
 
