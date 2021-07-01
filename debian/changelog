@@ -5,6 +5,13 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
  
+qt5-ukui-platformtheme (1.0.6-7kylin1) v101; urgency=medium
+
+  * 需求6800
+  * 内部测试bug：63913
+
+ -- leichen <leichen@kylinos.cn>  Thu, 01 Jul 2021 10:18:38 +0800
+
 qt5-ukui-platformtheme (1.0.6-6kylin4) v101; urgency=medium
 
   * 内部测试bug：63026 63039 63494 63506
