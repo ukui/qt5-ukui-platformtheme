@@ -5,6 +5,12 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
  
+qt5-ukui-platformtheme (1.0.6-7kylin2) v101; urgency=medium
+
+  * 6527中按钮边距
+
+ -- leichen <leichen@kylinos>  Fri, 02 Jul 2021 19:04:15 +0800
+
 qt5-ukui-platformtheme (1.0.6-7kylin1) v101; urgency=medium
 
   * 需求6800
