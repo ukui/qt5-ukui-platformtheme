@@ -2911,7 +2911,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     case CE_TabBarTabShape:
     {
         if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
-            bool enable = tab->state & State_Enabled;
             bool selected = tab->state & State_Selected;
             bool hover = tab->state & State_MouseOver;
             QRect drawRect = option->rect;
@@ -2972,12 +2971,14 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
             if (selected || hover) {
-                if (fisttab || onlyOne) {
-                    drawRect.adjust(0, 0, tabOverlap, 0);
-                } else if (lastTab) {
-                    drawRect.adjust(-tabOverlap, 0, 0, 0);
-                } else {
-                    drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
+                if (selected) {
+                    if (fisttab || onlyOne) {
+                        drawRect.adjust(0, 0, tabOverlap, 0);
+                    } else if (lastTab) {
+                        drawRect.adjust(-tabOverlap, 0, 0, 0);
+                    } else {
+                        drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
+                    }
                 }
 
                 int TabBarTab_Radius = 6;
@@ -3066,7 +3067,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     } else {
                         painter->drawLine(drawRect.x() + dis, drawRect.top(), drawRect.right() - dis, drawRect.top());
                     }
-                } else if (tab->direction == Qt::RightToLeft){
+                } else if (tab->direction == Qt::RightToLeft) {
                     painter->drawLine(drawRect.x(), drawRect.top() + dis, drawRect.x(), drawRect.bottom() - dis);
                 } else {
                     painter->drawLine(drawRect.right(), drawRect.top() + dis, drawRect.right(), drawRect.bottom() - dis);
