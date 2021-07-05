@@ -207,7 +207,7 @@ QPlatformDialogHelper *Qt5UKUIPlatformTheme::createPlatformDialogHelper(DialogTy
     case QPlatformTheme::ColorDialog:
         return QPlatformTheme::createPlatformDialogHelper(type);
     case QPlatformTheme::MessageDialog:
-        if (qAppName() == "ukui-control-center" || qAppName() == "kybackup")
+        if (qAppName() == "kybackup")
             return nullptr;
         return new MessageBoxHelper;
     default:

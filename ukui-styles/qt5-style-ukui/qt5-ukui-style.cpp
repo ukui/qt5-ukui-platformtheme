@@ -269,7 +269,6 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"ukui-power-manager-tray";
     l<<"kylin-nm";
     l<<"ukui-flash-disk";
-    l<<"indicator-china-weather";
     l<<"kylin-video";
 //    l<<"ukui-bluetooth";
     l<<"mktip";
@@ -279,7 +278,6 @@ const QStringList Qt5UKUIStyle::specialList() const
 const QStringList Qt5UKUIStyle::useDefaultPalette() const
 {
     QStringList l;
-    l<<"kylin-assistant";
     l<<"kybackup";
     l<<"biometric-manager";
     return l;
