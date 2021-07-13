@@ -39,7 +39,7 @@ public:
 QPlatformIntegration* DPlatformIntegrationPlugin::create(const QString& system, const QStringList& parameters, int &argc, char **argv)
 {
 #ifdef Q_OS_LINUX
-    syslog(LOG_ERR, "system = %s", system.toUtf8().data());
+//    syslog(LOG_ERR, "system = %s", system.toUtf8().data());
     if (system == "uxcb" || system == "xcb") {
         return new ukuiPlatformIntegration(parameters, argc, argv);
     }
