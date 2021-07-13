@@ -51,7 +51,7 @@ void ukuiHighDpi::init()
 {
     if (QGuiApplication::testAttribute(Qt::AA_DisableHighDpiScaling)
             // 无有效的xsettings时禁用
-            || !ukuiXcbXSettings::getOwner()
+//            || !ukuiXcbXSettings::getOwner()
             || (qEnvironmentVariableIsSet("QT_SCALE_FACTOR_ROUNDING_POLICY")
                 && qgetenv("QT_SCALE_FACTOR_ROUNDING_POLICY") != "PassThrough")) {
         return;
