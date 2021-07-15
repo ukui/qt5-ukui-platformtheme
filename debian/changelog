@@ -5,6 +5,12 @@ qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 17 Aug 2021 15:26:10 +0800
  
+qt5-ukui-platformtheme (1.0.6-8.1) v101; urgency=medium
+
+  * bug:62661
+
+ -- leichen <leichen@kylinos.cn>  Thu, 15 Jul 2021 09:24:11 +0800
+
 qt5-ukui-platformtheme (1.0.6-7kylin3) v101; urgency=medium
 
   * 6656将控制面板移除平台消息弹窗黑名单
