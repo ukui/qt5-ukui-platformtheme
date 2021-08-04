@@ -1,4 +1,10 @@
-qt5-ukui-platformtheme (1.0.7-1) unstable; urgency=medium
+qt5-ukui-platformtheme (3.1.0-1) focal; urgency=medium
+
+  * New upstream release. Start ukui3.1
+
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 04 Aug 2021 17:55:12 +0800
+
+qt5-ukui-platformtheme (1.0.7-1~0731) focal; urgency=medium
 
   * New upstream release.
   * Update copyright.
