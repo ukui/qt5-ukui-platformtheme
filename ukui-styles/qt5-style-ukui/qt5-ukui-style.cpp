@@ -365,6 +365,9 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 //    case SH_Button_FocusPolicy:
 //        return Qt::TabFocus;
 
+    case SH_Header_ArrowAlignment:
+        return Qt::AlignRight | Qt::AlignVCenter;
+
     default:
         break;
     }
@@ -3780,9 +3783,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MaximumDragDistance:
         return -1;
 
-    case PM_ScrollView_ScrollBarOverlap:
-        return 0;
-
     case PM_MenuPanelWidth:
         return 0;
     case PM_MenuHMargin:
@@ -3800,15 +3800,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
             return 4;
         }
         return 2;
-
-    case PM_HeaderMargin:
-    {
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
-        {
-            return 2;
-        }
-        return 9;
-    }
 
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
@@ -3899,6 +3890,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_ProgressBarChunkWidth:
         return 9;
+
+    case PM_HeaderMargin:
+        return 2;
+    case PM_HeaderMarkSize:
+        return 16;
+    case PM_ScrollView_ScrollBarOverlap:
+        return 0;
 
     default:
         break;
@@ -4577,6 +4575,35 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         return option->rect;
     }
 
+    case SE_HeaderLabel:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            QRect rect = header->rect;
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+            int Header_MarginWidth = 8;
+            rect.adjust(Header_MarginWidth - margin, margin, -Header_MarginWidth + margin, -margin);
+            if (header->sortIndicator != QStyleOptionHeader::None && header->state & State_Horizontal) {
+                int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+                rect.adjust(0, 0, -arrowSize - Header_MarginWidth, 0);
+            }
+            return visualRect(option->direction, header->rect, rect);
+        }
+        break;
+    }
+
+    case SE_HeaderArrow:
+    {
+        if (qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+            int Header_MarginWidth = 8;
+            int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+            QRect rect = option->rect.adjusted(Header_MarginWidth, margin, -Header_MarginWidth, -margin);
+            QRect arrowRect(rect.right() + 1 - arrowSize, rect.y() + (rect.height() - arrowSize) / 2, arrowSize, arrowSize);
+            return visualRect(option->direction, rect, arrowRect);
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4823,6 +4850,40 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 newSize.setHeight(newSize.height() - 8);
                 newSize.setWidth(qMax(newSize.width(), 426));
             }
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_HeaderSection:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            const bool horizontal(header->orientation == Qt::Horizontal);
+            const bool text(!header->text.isEmpty());
+            const bool icon(!header->icon.isNull());
+            int w = header->fontMetrics.size(Qt::TextShowMnemonic, header->text).width();
+            int h = header->fontMetrics.size(Qt::TextShowMnemonic, header->text).height();
+            int Header_MarginWidth = 8;
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+
+            if (icon) {
+                int iconSize = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
+                w += iconSize;
+                h = qMax(iconSize, h);
+                if (text)
+                    w += 8;
+            }
+            if (horizontal && header->sortIndicator != QStyleOptionHeader::None) {
+                int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+                w += arrowSize;
+                h = qMax(arrowSize, h);
+                if (text || icon)
+                    w += 8;
+            }
+            h += margin * 2;
+            w += Header_MarginWidth * 2;
+            newSize.setWidth(w);
+            newSize.setHeight(qMax(h, 36));
             return newSize;
         }
         break;
