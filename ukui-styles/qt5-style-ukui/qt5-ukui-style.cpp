@@ -357,8 +357,6 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return true;
     case SH_ComboBox_Popup:
         return false;
-    case SH_Table_GridLineColor:
-        return option ? option->palette.mid().color().darker().rgb() : 0;
     case SH_ComboBox_AllowWheelScrolling:
         return int(false);
 
@@ -367,6 +365,9 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 
     case SH_Header_ArrowAlignment:
         return Qt::AlignRight | Qt::AlignVCenter;
+
+    case SH_Table_GridLineColor:
+        return option ? option->palette.color(QPalette::Active, QPalette::Midlight).rgb() : 0;
 
     default:
         break;
@@ -548,12 +549,6 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_button_animation_helper->registerWidget(widget);
     }
 
-    if(auto tv = qobject_cast<QTableView*>(widget))
-    {
-       tv->setShowGrid(false);
-       tv->setAlternatingRowColors(true);
-    }
-
     if (widget->inherits("QTipLabel")) {
         auto label = qobject_cast<QLabel *>(widget);
         label->setWordWrap(true);
@@ -616,12 +611,6 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
-
-//    if(auto tv = qobject_cast<QTableView*>(widget))
-//    {
-//       tv->setShowGrid(true);
-//       tv->setAlternatingRowColors(false);
-//    }
 
     if (qobject_cast<QLineEdit *>(widget)) {
         widget->setAttribute(Qt::WA_Hover, false);
@@ -848,16 +837,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             else if (vopt->features & QStyleOptionViewItem::Alternate)
                 painter->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::AlternateBase));
 
-            if(qobject_cast<const QTableView*>(widget) || qobject_cast<const QTableWidget*>(widget))
-            {
-                const int gridHint = proxy()->styleHint(QStyle::SH_Table_GridLineColor, option, widget);
-                const QColor gridColor = static_cast<QRgb>(gridHint);
-                painter->save();
-                painter->setPen(gridColor);
-                painter->setBrush(Qt::NoBrush);
-//                painter->drawLine(vopt->rect.topRight(),vopt->rect.bottomRight());
-                painter->restore();
-            }
            return;
         }
         break;
