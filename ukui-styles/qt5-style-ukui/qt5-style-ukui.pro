@@ -36,7 +36,8 @@ SOURCES += \
     shadow-helper.cpp \
     tab-widget-animation-helper.cpp \
     scrollbar-animation-helper.cpp \
-    qt5-ukui-style-helper.cpp
+    qt5-ukui-style-helper.cpp \
+    view-helper.cpp
 
 HEADERS += \
     box-animation-helper.h \

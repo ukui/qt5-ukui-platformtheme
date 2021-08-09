@@ -41,6 +41,11 @@ class QStyleOptionViewItem;
 #define Style QProxyStyle
 #endif
 
+#include <QFontMetrics>
+#include <QStyleOption>
+#include <private/qtextengine_p.h>
+#include <qmath.h>
+
 /*!
  * \brief The Qt5UKUIStyle class
  * \details
@@ -137,6 +142,10 @@ private:
     QColor button_Click() const;
     QColor button_Hover() const;
     QColor button_DisableChecked() const;
+
+    // view
+    void viewItemLayout(const QStyleOptionViewItem *option,  QRect *checkRect, QRect *pixmapRect, QRect *textRect, bool sizehint) const;
+    QSize viewItemSize(const QStyleOptionViewItem *option, int role) const;
 };
 
 #endif // QT5UKUISTYLE_H

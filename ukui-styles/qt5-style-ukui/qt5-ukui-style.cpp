@@ -3820,6 +3820,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_ScrollView_ScrollBarOverlap:
         return 0;
 
+    case PM_ListViewIconSize:
+        return 16;
+    case PM_IconViewIconSize:
+        return 32;
+    case PM_FocusFrameHMargin:
+        return 3;
+
     default:
         break;
     }
@@ -4506,6 +4513,29 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         break;
     }
 
+    case SE_ItemViewItemCheckIndicator:
+        if (!qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            return proxy()->subElementRect(SE_CheckBoxIndicator, option, widget);
+        }
+        Q_FALLTHROUGH();
+
+    case SE_ItemViewItemDecoration:
+    case SE_ItemViewItemText:
+    case SE_ItemViewItemFocusRect:
+    {
+        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            QRect checkRect, decorationRect, displayRect;
+            viewItemLayout(vi, &checkRect, &decorationRect, &displayRect, false);
+            if (element == SE_ViewItemCheckIndicator)
+                return checkRect;
+            else if (element == SE_ItemViewItemDecoration)
+                return decorationRect;
+            else if (element == SE_ItemViewItemText || element == SE_ItemViewItemFocusRect)
+                return displayRect;
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4786,6 +4816,23 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             w += Header_MarginWidth * 2;
             newSize.setWidth(w);
             newSize.setHeight(qMax(h, 36));
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_ItemViewItem:
+    {
+        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            QRect decorationRect, displayRect, checkRect;
+            viewItemLayout(vi, &checkRect, &decorationRect, &displayRect, true);
+            newSize = (decorationRect | displayRect | checkRect).size();
+
+            int Margin_Width = 4;
+            int Margin_Height = 2;
+            newSize.setWidth(newSize.width() + Margin_Width * 2);
+            newSize.setHeight(qMax(newSize.height() + Margin_Height * 2, 36));
+
             return newSize;
         }
         break;
