@@ -3631,9 +3631,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->setPen(header->palette.color(QPalette::Active, QPalette::Midlight));
             painter->setBrush(Qt::NoBrush);
             if (header->orientation == Qt::Horizontal) {
-                int iconSize = 20;
+                int iconSize = proxy()->pixelMetric(PM_SmallIconSize);
                 int dis = (header->rect.height() - iconSize) / 2;
-                if (header->position != QStyleOptionHeader::End && header->position != QStyleOptionHeader::OnlyOneSection) {
+                if (header->section != 0 || header->position == QStyleOptionHeader::Beginning) {
                     if (header->direction == Qt::LeftToRight) {
                         painter->drawLine(header->rect.right(), header->rect.top() + dis, header->rect.right(), header->rect.bottom() - dis);
                     } else {
