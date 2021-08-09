@@ -570,46 +570,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             return;
         break;
     }
-    case PE_IndicatorBranch: {
-        if (qobject_cast<const QTreeView *>(widget)) {
-            bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
-            bool isSelected = option->state & State_Selected;
-            bool enable = option->state & State_Enabled;
-            QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
-                                                 QPalette::Highlight);
-
-            QColor color2 = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
-                                                  QPalette::HighlightedText);
-
-            if (isSelected || isHover) {
-                if (isHover && !isSelected) {
-                    int h = color.hsvHue();
-                    //int s = color.hsvSaturation();
-                    auto base = option->palette.base().color();
-                    int v = color.value();
-                    color.setHsv(h, base.lightness(), v, 64);
-                }
-                painter->fillRect(option->rect, color);
-                auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
-                QStyleOptionViewItem tmp = *vopt;
-
-                // for now the style paint arrow with highlight text brush when hover
-                // we but don't want to highligh the indicator when hover a view item.
-                if (isSelected) {
-//                    tmp.state.setFlag(QStyle::State_MouseOver);
-                    tmp.state |= QStyle::State_MouseOver;
-                } else {
-//                    tmp.state.setFlag(QStyle::State_MouseOver, false);
-                    tmp.state &= ~QStyle::State_MouseOver;
-                }
-
-                tmp.palette.setColor(tmp.palette.currentColorGroup(), QPalette::Highlight, color2);
-                return Style::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
-            }
-            break;
-        }
-        break;
-    }
 
     case PE_Frame:{
         painter->save();
@@ -1668,6 +1628,26 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             return;
         }
         break;
+    }
+
+    case PE_IndicatorBranch:
+    {
+        if (!(option->state & State_Children)) {
+            return;
+        }
+        QStyleOption subOption = *option;
+        if (proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
+            subOption.state = option->state;
+        else
+            subOption.state = option->state & State_Enabled ? State_Enabled : State_None;
+
+        if (option->state & State_Open) {
+            proxy()->drawPrimitive(PE_IndicatorArrowDown, &subOption, painter, widget);
+        } else {
+            const bool reverse = (option->direction == Qt::RightToLeft);
+            proxy()->drawPrimitive(reverse ? PE_IndicatorArrowLeft : PE_IndicatorArrowRight, &subOption, painter, widget);
+        }
+        return;
     }
 
     case PE_IndicatorViewItemCheck:
@@ -3737,6 +3717,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_FocusFrameHMargin:
         return 3;
 
+    case PM_TreeViewIndentation:
+        return 20;
+
     default:
         break;
     }
@@ -4445,6 +4428,9 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         }
         break;
     }
+
+    case SE_TreeViewDisclosureItem:
+        return option->rect;
 
     default:
         break;
