@@ -367,9 +367,6 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     case SH_Header_ArrowAlignment:
         return Qt::AlignRight | Qt::AlignVCenter;
 
-    case SH_Table_GridLineColor:
-        return option ? option->palette.color(QPalette::Active, QPalette::Midlight).rgb() : 0;
-
     default:
         break;
     }
