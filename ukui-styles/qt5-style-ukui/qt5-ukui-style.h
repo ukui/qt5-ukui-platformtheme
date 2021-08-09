@@ -117,7 +117,6 @@ public:
 
 protected:
     const QStringList useDefaultPalette() const;
-    void viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const;
 
     void realSetWindowSurfaceFormatAlpha(const QWidget *widget) const;
     void realSetMenuTypeToMenu(const QWidget *widget) const;
@@ -144,6 +143,11 @@ private:
     QColor button_DisableChecked() const;
 
     // view
+    QString calculateElidedText(const QString &text, const QTextOption &textOption,
+                                    const QFont &font, const QRect &textRect, const Qt::Alignment valign,
+                                    Qt::TextElideMode textElideMode, int flags,
+                                    bool lastVisibleLineShouldBeElided, QPointF *paintStartPosition) const;
+    void viewItemDrawText(QPainter *painter, const QStyleOptionViewItem *option, const QRect &rect) const;
     void viewItemLayout(const QStyleOptionViewItem *option,  QRect *checkRect, QRect *pixmapRect, QRect *textRect, bool sizehint) const;
     QSize viewItemSize(const QStyleOptionViewItem *option, int role) const;
 };

@@ -81,168 +81,10 @@
 #define COMMERCIAL_VERSION true
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
-//---copy from qcommonstyle
-#include <QTextLayout>
-
-#include <private/qtextengine_p.h>
-
-static QSizeF viewItemTextLayout(QTextLayout &textLayout, int lineWidth, int maxHeight = -1, int *lastVisibleLine = nullptr)
-{
-    if (lastVisibleLine)
-        *lastVisibleLine = -1;
-    qreal height = 0;
-    qreal widthUsed = 0;
-    textLayout.beginLayout();
-    int i = 0;
-    while (true) {
-        QTextLine line = textLayout.createLine();
-        if (!line.isValid())
-            break;
-        line.setLineWidth(lineWidth);
-        line.setPosition(QPointF(0, height));
-        height += line.height();
-        widthUsed = qMax(widthUsed, line.naturalTextWidth());
-        // we assume that the height of the next line is the same as the current one
-        if (maxHeight > 0 && lastVisibleLine && height + line.height() > maxHeight) {
-            const QTextLine nextLine = textLayout.createLine();
-            *lastVisibleLine = nextLine.isValid() ? i : -1;
-            break;
-        }
-        ++i;
-    }
-    textLayout.endLayout();
-    return QSizeF(widthUsed, height);
-}
-
-QString calculateElidedText(const QString &text, const QTextOption &textOption,
-                            const QFont &font, const QRect &textRect, const Qt::Alignment valign,
-                            Qt::TextElideMode textElideMode, int flags,
-                            bool lastVisibleLineShouldBeElided, QPointF *paintStartPosition)
-{
-    QTextLayout textLayout(text, font);
-    textLayout.setTextOption(textOption);
-
-    // In AlignVCenter mode when more than one line is displayed and the height only allows
-    // some of the lines it makes no sense to display those. From a users perspective it makes
-    // more sense to see the start of the text instead something inbetween.
-    const bool vAlignmentOptimization = paintStartPosition && valign.testFlag(Qt::AlignVCenter);
-
-    int lastVisibleLine = -1;
-    viewItemTextLayout(textLayout, textRect.width(), vAlignmentOptimization ? textRect.height() : -1, &lastVisibleLine);
-
-    const QRectF boundingRect = textLayout.boundingRect();
-    // don't care about LTR/RTL here, only need the height
-    const QRect layoutRect = QStyle::alignedRect(Qt::LayoutDirectionAuto, valign,
-                                                 boundingRect.size().toSize(), textRect);
-
-    if (paintStartPosition)
-        *paintStartPosition = QPointF(textRect.x(), layoutRect.top());
-
-    QString ret;
-    qreal height = 0;
-    const int lineCount = textLayout.lineCount();
-    for (int i = 0; i < lineCount; ++i) {
-        const QTextLine line = textLayout.lineAt(i);
-        height += line.height();
-
-        // above visible rect
-        if (height + layoutRect.top() <= textRect.top()) {
-            if (paintStartPosition)
-                paintStartPosition->ry() += line.height();
-            continue;
-        }
-
-        const int start = line.textStart();
-        const int length = line.textLength();
-        const bool drawElided = line.naturalTextWidth() > textRect.width();
-        bool elideLastVisibleLine = lastVisibleLine == i;
-        if (!drawElided && i + 1 < lineCount && lastVisibleLineShouldBeElided) {
-            const QTextLine nextLine = textLayout.lineAt(i + 1);
-            const int nextHeight = height + nextLine.height() / 2;
-            // elide when less than the next half line is visible
-            if (nextHeight + layoutRect.top() > textRect.height() + textRect.top())
-                elideLastVisibleLine = true;
-        }
-
-        QString text = textLayout.text().mid(start, length);
-        if (drawElided || elideLastVisibleLine) {
-            if (elideLastVisibleLine) {
-                if (text.endsWith(QChar::LineSeparator))
-                    text.chop(1);
-                text += QChar(0x2026);
-            }
-            const QStackTextEngine engine(text, font);
-            ret += engine.elidedText(textElideMode, textRect.width(), flags);
-
-            // no newline for the last line (last visible or real)
-            // sometimes drawElided is true but no eliding is done so the text ends
-            // with QChar::LineSeparator - don't add another one. This happened with
-            // arabic text in the testcase for QTBUG-72805
-            if (i < lineCount - 1 &&
-                    !ret.endsWith(QChar::LineSeparator))
-                ret += QChar::LineSeparator;
-        } else {
-            ret += text;
-        }
-
-        // below visible text, can stop
-        if ((height + layoutRect.top() >= textRect.bottom()) ||
-                (lastVisibleLine >= 0 && lastVisibleLine == i))
-            break;
-    }
-    return ret;
-}
-
-QString toolButtonElideText(const QStyleOptionToolButton *option,
-                            const QRect &textRect, int flags)
-{
-//    if (option->fontMetrics.horizontalAdvance(option->text) <= textRect.width())
-    if (option->fontMetrics.width(option->text, -1) <= textRect.width())
-        return option->text;
-
-    QString text = option->text;
-    text.replace('\n', QChar::LineSeparator);
-    QTextOption textOption;
-    textOption.setWrapMode(QTextOption::ManualWrap);
-    textOption.setTextDirection(option->direction);
-
-    return calculateElidedText(text, textOption,
-                               option->font, textRect, Qt::AlignTop,
-                               Qt::ElideMiddle, flags,
-                               false, nullptr);
-}
-
 static QWindow *qt_getWindow(const QWidget *widget)
 {
     return widget ? widget->window()->windowHandle() : 0;
 }
-
-
-
-void Qt5UKUIStyle::viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const
-{
-    const QWidget *widget = option->widget;
-    const int textMargin = proxy()->pixelMetric(QStyle::PM_FocusFrameHMargin, 0, widget) + 1;
-
-    QRect textRect = rect.adjusted(textMargin, 0, -textMargin, 0); // remove width padding
-    const bool wrapText = option->features & QStyleOptionViewItem::WrapText;
-    QTextOption textOption;
-    textOption.setWrapMode(wrapText ? QTextOption::WordWrap : QTextOption::ManualWrap);
-    textOption.setTextDirection(option->direction);
-    textOption.setAlignment(QStyle::visualAlignment(option->direction, option->displayAlignment));
-
-    QPointF paintPosition;
-    const QString newText = calculateElidedText(option->text, textOption,
-                                                option->font, textRect, option->displayAlignment,
-                                                option->textElideMode, 0,
-                                                true, &paintPosition);
-
-    QTextLayout textLayout(newText, option->font);
-    textLayout.setTextOption(textOption);
-    viewItemTextLayout(textLayout, textRect.width());
-    textLayout.draw(p, paintPosition);
-}
-//---copy from qcommonstyle
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle()
@@ -768,55 +610,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
         break;
     }
-    case PE_PanelItemViewItem: {
-        bool isIconView = false;
-        auto opt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
-        if (!opt)
-            return;
-        if (opt) {
-            isIconView = (opt->decorationPosition & QStyleOptionViewItem::Top);
-        }
-        bool isHover = (option->state & State_MouseOver) && (option->state & ~State_Selected);
-        bool isSelected = option->state & State_Selected;
-        bool enable = option->state & State_Enabled;
-        QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
-                                             QPalette::Highlight);
-
-        color.setAlpha(0);
-        if (isHover && !isSelected) {
-            int h = color.hsvHue();
-            //int s = color.hsvSaturation();
-            auto base = option->palette.base().color();
-            int v = color.value();
-            color.setHsv(h, base.lightness(), v, 64);
-        }
-        if (isSelected) {
-            color.setAlpha(255);
-        }
-
-        if ((qobject_cast<const QListView *>(widget) || qobject_cast<const QListWidget *>(widget))
-                && (opt->decorationPosition != QStyleOptionViewItem::Top)) {
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setPen(Qt::transparent);
-            painter->setBrush(color);
-            painter->drawRoundedRect(option->rect, 4, 4);
-            painter->restore();
-            return;
-        }
-
-        if (!isIconView)
-            painter->fillRect(option->rect, color);
-        else {
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setPen(Qt::transparent);
-            painter->setBrush(color);
-            painter->drawRoundedRect(option->rect, 6, 6);
-            painter->restore();
-        }
-        return;
-    }
 
     case PE_Frame:{
         painter->save();
@@ -826,26 +619,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->drawRoundedRect(option->rect,6,6);
         painter->restore();
         return;
-    }
-
-    case PE_PanelItemViewRow:
-    {
-        if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-        {
-            QPalette::ColorGroup cg = (widget ? widget->isEnabled() : (vopt->state & QStyle::State_Enabled))
-                    ? QPalette::Normal : QPalette::Disabled;
-            if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active))
-                cg = QPalette::Inactive;
-
-            if ((vopt->state & QStyle::State_Selected) &&
-                    proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
-                painter->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::Highlight));
-            else if (vopt->features & QStyleOptionViewItem::Alternate)
-                painter->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::AlternateBase));
-
-           return;
-        }
-        break;
     }
 
     case PE_PanelButtonCommand:
@@ -1740,6 +1513,183 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         break;
     }
 
+    case PE_PanelItemViewRow:
+    {
+        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            QPalette::ColorGroup cg = (widget ? widget->isEnabled() : (vi->state & QStyle::State_Enabled))
+                    ? QPalette::Normal : QPalette::Disabled;
+            if (cg == QPalette::Normal && !(vi->state & QStyle::State_Active))
+                cg = QPalette::Inactive;
+
+            int Radius = 4;
+            bool isTree = false;
+            if (qobject_cast<const QTreeView*>(widget))
+                isTree = true;
+            if (isTree) {
+                if (proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget)) {
+                    painter->save();
+                    painter->setPen(Qt::NoPen);
+                    if (vi->state & State_Selected) {
+                        painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
+                        painter->drawRect(vi->rect);
+                    } else if (vi->state & State_Sunken) {
+                        painter->setBrush(highLight_Click());
+                        painter->drawRect(vi->rect);
+                    } else if (vi->state & State_MouseOver) {
+                        painter->setBrush(highLight_Hover());
+                        painter->drawRect(vi->rect);
+                    } else if (vi->features & QStyleOptionViewItem::Alternate) {
+                        painter->setBrush(vi->palette.brush(cg, QPalette::AlternateBase));
+                        painter->drawRect(vi->rect);
+                    }
+                    painter->restore();
+                }
+            } else if (vi->features & QStyleOptionViewItem::Alternate) {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(vi->palette.brush(cg, QPalette::AlternateBase));
+                painter->drawRoundedRect(vi->rect, Radius, Radius);
+            }
+            return;
+        }
+        break;
+    }
+
+    case PE_PanelItemViewItem:
+    {
+        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            bool isIconMode = false;
+            const bool enable = vi->state & State_Enabled;
+            const bool select = vi->state & State_Selected;
+            const bool hover = vi->state & State_MouseOver;
+            const bool sunken = vi->state & State_Sunken;
+            int iconMode_Radius = 6;
+            int Radius = 4;
+
+            if (!enable)
+                return;
+
+            if ((vi->decorationPosition == QStyleOptionViewItem::Top) || (vi->decorationPosition ==  QStyleOptionViewItem::Bottom))
+                isIconMode = true;
+
+            QRect iconRect = proxy()->subElementRect(SE_ItemViewItemDecoration, option, widget);
+            QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, option, widget);
+
+            if (isIconMode) {
+                if (select) {
+                    int Margin_Height = 2;
+                    const int Margin = proxy()->pixelMetric(QStyle::PM_FocusFrameHMargin, option, widget) + 1;
+                    iconRect.setRect(option->rect.x(), option->rect.y(), option->rect.width(), iconRect.height() + Margin + Margin_Height);
+                    textRect.setRect(option->rect.x(), iconRect.bottom() + 1, option->rect.width(), textRect.height() + Margin_Height);
+                    QPainterPath iconPath, textPath;
+                    iconPath.moveTo(iconRect.x(), iconRect.y() + iconMode_Radius);
+                    iconPath.arcTo(iconRect.x(), iconRect.y(), iconMode_Radius * 2, iconMode_Radius * 2, 180, -90);
+                    iconPath.lineTo(iconRect.right() + 1 - iconMode_Radius, iconRect.y());
+                    iconPath.arcTo(iconRect.right() + 1 - iconMode_Radius * 2, iconRect.y(), iconMode_Radius * 2, iconMode_Radius * 2,
+                                   90, -90);
+                    iconPath.lineTo(iconRect.right() + 1, iconRect.bottom() + 1);
+                    iconPath.lineTo(iconRect.left(), iconRect.bottom() + 1);
+                    iconPath.lineTo(iconRect.left(), iconRect.top() + iconMode_Radius);
+
+                    textPath.moveTo(textRect.x(), textRect.y());
+                    textPath.lineTo(textRect.right() + 1, textRect.y());
+                    textPath.lineTo(textRect.right() + 1, textRect.bottom() + 1 - iconMode_Radius);
+                    textPath.arcTo(textRect.right() + 1 - iconMode_Radius * 2, textRect.bottom() + 1 - iconMode_Radius * 2, iconMode_Radius * 2, iconMode_Radius * 2,
+                                   0, -90);
+                    textPath.lineTo(textRect.left() + iconMode_Radius, textRect.bottom() + 1);
+                    textPath.arcTo(textRect.left(), textRect.bottom() + 1 - iconMode_Radius * 2, iconMode_Radius * 2, iconMode_Radius * 2,
+                                   270, -90);
+                    textPath.lineTo(textRect.left(), textRect.top());
+
+                    painter->save();
+                    painter->setPen(Qt::NoPen);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    if (sunken) {
+                        painter->setBrush(button_Click());
+                        painter->drawPath(iconPath);
+                        painter->setBrush(highLight_Click());
+                        painter->drawPath(textPath);
+                    } else if (hover) {
+                        painter->setBrush(button_Hover());
+                        painter->drawPath(iconPath);
+                        painter->setBrush(highLight_Hover());
+                        painter->drawPath(textPath);
+                    } else {
+                        painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Button));
+                        painter->drawPath(iconPath);
+                        painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
+                        painter->drawPath(textPath);
+                    }
+                    painter->restore();
+                } else {
+                    painter->save();
+                    painter->setPen(Qt::NoPen);
+                    if (sunken) {
+                        painter->setBrush(button_Click());
+                        painter->drawRoundedRect(option->rect, iconMode_Radius, iconMode_Radius);
+                    } else if (hover) {
+                        painter->setBrush(button_Hover());
+                        painter->drawRoundedRect(option->rect, iconMode_Radius, iconMode_Radius);
+                    }
+                    painter->restore();
+                }
+            } else {
+                if (vi->backgroundBrush.style() != Qt::NoBrush) {
+                    QPointF oldBO = painter->brushOrigin();
+                    painter->setBrushOrigin(vi->rect.topLeft());
+                    painter->fillRect(vi->rect, vi->backgroundBrush);
+                    painter->setBrushOrigin(oldBO);
+                }
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                bool isTree = false;
+                if (qobject_cast<const QTreeView*>(widget))
+                    isTree = true;
+                QPainterPath path;
+                if (isTree) {
+                    path.addRect(vi->rect);
+                } else {
+                    path.addRoundedRect(vi->rect, Radius, Radius);
+                }
+                if (select) {
+                    painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
+                    painter->drawPath(path);
+                } else if (sunken) {
+                    painter->setBrush(highLight_Click());
+                    painter->drawPath(path);
+                } else if (hover) {
+                    painter->setBrush(highLight_Hover());
+                    painter->drawPath(path);
+                }
+                painter->restore();
+            }
+            if (vi->state & State_HasFocus) {
+
+            }
+            return;
+        }
+        break;
+    }
+
+    case PE_IndicatorViewItemCheck:
+        return proxy()->drawPrimitive(PE_IndicatorCheckBox, option, painter, widget);
+
+    case PE_IndicatorItemViewItemDrop:
+    {
+        QRect rect = option->rect;
+        int Radius = 4;
+        painter->save();
+        painter->setClipRect(rect);
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(option->palette.color(QPalette::Active, QPalette::Highlight));
+        painter->setBrush(Qt::NoBrush);
+        if (option->rect.height() == 0)
+            painter->drawLine(rect.topLeft(), rect.topRight());
+        else
+            painter->drawRoundedRect(rect, Radius, Radius);
+        painter->restore();
+        return;
+    }
+
     default:
         break;
     }
@@ -2333,117 +2283,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     switch (element) {
-    case CE_ItemViewItem: {
-        auto p = painter;
-        auto opt = option;
-        if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(opt)) {
-            p->save();
-            if (p->clipPath().isEmpty())
-                p->setClipRect(opt->rect);
-
-            QRect checkRect = proxy()->subElementRect(SE_ItemViewItemCheckIndicator, vopt, widget);
-            QRect iconRect = proxy()->subElementRect(SE_ItemViewItemDecoration, vopt, widget);
-            QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, vopt, widget);
-
-            // draw the background
-            proxy()->drawPrimitive(PE_PanelItemViewItem, opt, p, widget);
-
-            // draw the check mark
-            if (vopt->features & QStyleOptionViewItem::HasCheckIndicator) {
-                QStyleOptionViewItem option(*vopt);
-                option.rect = checkRect;
-                option.state = option.state & ~QStyle::State_HasFocus;
-
-                switch (vopt->checkState) {
-                case Qt::Unchecked:
-                    option.state |= QStyle::State_Off;
-                    break;
-                case Qt::PartiallyChecked:
-                    option.state |= QStyle::State_NoChange;
-                    break;
-                case Qt::Checked:
-                    option.state |= QStyle::State_On;
-                    break;
-                default:
-                    break;
-                }
-                proxy()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &option, p, widget);
-            }
-
-            // draw the icon
-            QIcon::Mode mode = QIcon::Normal;
-            if (!(vopt->state & QStyle::State_Enabled))
-                mode = QIcon::Disabled;
-            else if (vopt->state & QStyle::State_Selected)
-                mode = QIcon::Selected;
-            QIcon::State state = vopt->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-            //vopt->icon.paint(p, iconRect, vopt->decorationAlignment, mode, state);
-            auto pixmap = vopt->icon.pixmap(vopt->decorationSize,
-                                            mode,
-                                            state);
-
-            QStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, HighLightEffect::generatePixmap(pixmap, vopt, widget));
-//            auto target = pixmap;
-//            if (widget) {
-//                if (widget->property("useIconHighlightEffect").isValid()) {
-//                    qDebug()<<widget->property("useIconHighlightEffect").toInt();
-//                    HighLightEffect::HighLightMode needHandel = HighLightEffect::HighLightMode(widget->property("useIconHighlightEffect").toInt());
-//                    if (needHandel) {
-//                        HighLightEffect::EffectMode mode = HighLightEffect::HighlightOnly;
-//                        if (widget->property("iconHighlightEffectMode").isValid()) {
-//                            auto var = widget->property("iconHighlightEffectMode");
-//                            mode = qvariant_cast<HighLightEffect::EffectMode>(var);
-//                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false, mode);
-//                        } else {
-//                            target = HighLightEffect::generatePixmap(pixmap, vopt, widget, false);
-//                        }
-//                    }
-//                }
-//            }
-//            QStyle::drawItemPixmap(painter, iconRect, vopt->decorationAlignment, target);
-
-            // draw the text
-            if (!vopt->text.isEmpty()) {
-                QPalette::ColorGroup cg = vopt->state & QStyle::State_Enabled
-                        ? QPalette::Normal : QPalette::Disabled;
-                if (cg == QPalette::Normal && !(vopt->state & QStyle::State_Active))
-                    cg = QPalette::Inactive;
-
-                if (vopt->state & QStyle::State_Selected) {
-                    p->setPen(vopt->palette.color(cg, QPalette::HighlightedText));
-                } else {
-                    p->setPen(vopt->palette.color(cg, QPalette::Text));
-                }
-                if (vopt->state & QStyle::State_Editing) {
-                    p->setPen(vopt->palette.color(cg, QPalette::Text));
-                    p->drawRect(textRect.adjusted(0, 0, -1, -1));
-                }
-
-                viewItemDrawText(p, vopt, textRect);
-            }
-
-            // draw the focus rect
-            /*
-            if (vopt->state & QStyle::State_HasFocus) {
-                QStyleOptionFocusRect o;
-                o.QStyleOption::operator=(*vopt);
-                o.rect = proxy()->subElementRect(SE_ItemViewItemFocusRect, vopt, widget);
-                o.state |= QStyle::State_KeyboardFocusChange;
-                o.state |= QStyle::State_Item;
-                QPalette::ColorGroup cg = (vopt->state & QStyle::State_Enabled)
-                        ? QPalette::Normal : QPalette::Disabled;
-                o.backgroundColor = vopt->palette.color(cg, (vopt->state & QStyle::State_Selected)
-                                                        ? QPalette::Highlight : QPalette::Window);
-                proxy()->drawPrimitive(QStyle::PE_FrameFocusRect, &o, p, widget);
-            }
-            */
-
-            p->restore();
-            return;
-        }
-        break;
-    }
-
     case CE_ScrollBarSlider:
     {
         auto animator = m_scrollbar_animation_helper->animator(widget);
@@ -3686,6 +3525,77 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->drawRect(option->rect);
         painter->restore();
         return;
+    }
+
+    case CE_ItemViewItem:
+    {
+        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            painter->save();
+            if (painter->clipPath().isEmpty())
+                painter->setClipRect(option->rect);
+
+            QRect checkRect = proxy()->subElementRect(SE_ItemViewItemCheckIndicator, option, widget);
+            QRect iconRect = proxy()->subElementRect(SE_ItemViewItemDecoration, option, widget);
+            QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, option, widget);
+
+            proxy()->drawPrimitive(PE_PanelItemViewItem, option, painter, widget);
+
+            if (vi->features & QStyleOptionViewItem::HasCheckIndicator) {
+                QStyleOptionButton option;
+                option.rect = checkRect;
+                option.state = vi->state & ~QStyle::State_HasFocus;
+
+                switch (vi->checkState) {
+                case Qt::Unchecked:
+                    option.state |= QStyle::State_Off;
+                    break;
+                case Qt::PartiallyChecked:
+                    option.state |= QStyle::State_NoChange;
+                    break;
+                case Qt::Checked:
+                    option.state |= QStyle::State_On;
+                    break;
+                }
+                proxy()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &option, painter, widget);
+            }
+
+            if (!vi->icon.isNull()) {
+                QIcon::Mode mode = QIcon::Normal;
+                if (!(vi->state & QStyle::State_Enabled))
+                    mode = QIcon::Disabled;
+                else if (vi->state & QStyle::State_Selected)
+                    mode = QIcon::Selected;
+                QIcon::State state = vi->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+                QPixmap pixmap = vi->icon.pixmap(vi->decorationSize, mode, state);
+                QStyle::drawItemPixmap(painter, iconRect, vi->decorationAlignment, pixmap);
+            }
+
+            if (!vi->text.isEmpty()) {
+                QPalette::ColorGroup cg = vi->state & QStyle::State_Enabled
+                        ? QPalette::Normal : QPalette::Disabled;
+                if (cg == QPalette::Normal && !(vi->state & QStyle::State_Active))
+                    cg = QPalette::Inactive;
+
+                if (((vi->decorationPosition == QStyleOptionViewItem::Top) || (vi->decorationPosition ==  QStyleOptionViewItem::Bottom))
+                        && !(vi->state & State_Selected)) {
+                    painter->setPen(vi->palette.color(cg, QPalette::Text));
+                } else if (vi->state & (QStyle::State_Selected | QStyle::State_MouseOver)) {
+                    painter->setPen(vi->palette.color(cg, QPalette::HighlightedText));
+                } else {
+                    painter->setPen(vi->palette.color(cg, QPalette::Text));
+                }
+
+                if (vi->state & QStyle::State_Editing) {
+                    painter->setPen(vi->palette.color(cg, QPalette::Text));
+                    painter->setBrush(QColor(Qt::red));
+                    painter->drawRect(textRect.adjusted(0, 0, -1, -1));
+                }
+                viewItemDrawText(painter, vi, textRect);
+            }
+            painter->restore();
+            return;
+        }
+        break;
     }
 
     default:
