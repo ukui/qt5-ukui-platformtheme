@@ -223,11 +223,6 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 option->state.testFlag(QStyle::State_On) ||
                 option->state.testFlag(QStyle::State_Selected);
 
-        if (qobject_cast<const QAbstractItemView *>(widget)) {
-            if (!option->state.testFlag(QStyle::State_Selected))
-                overOrDown = false;
-        }
-
         if (isEnable && overOrDown) {
             if (fillIconSymbolicColor) {
                 target = filledSymbolicColoredPixmap(pixmap, option->palette.highlightedText().color());
@@ -322,10 +317,6 @@ QPixmap HighLightEffect::hoverGeneratePixmap(const QPixmap &pixmap, const QStyle
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (qobject_cast<const QAbstractItemView *>(widget)) {
-        if (!option->state.testFlag(QStyle::State_Selected))
-            overOrDown = false;
-    }
 
     QPainter p(&target);
     if (overOrDown) {
@@ -361,10 +352,6 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (qobject_cast<const QAbstractItemView *>(widget)) {
-        if (!option->state.testFlag(QStyle::State_Selected))
-            overOrDown = false;
-    }
 
     QPainter p(&target);
     if (overOrDown) {
@@ -405,10 +392,6 @@ QPixmap HighLightEffect::filledSymbolicColoredGeneratePixmap(const QPixmap &pixm
             option->state.testFlag(QStyle::State_Sunken) ||
             option->state.testFlag(QStyle::State_On) ||
             option->state.testFlag(QStyle::State_Selected);
-    if (qobject_cast<const QAbstractItemView *>(widget)) {
-        if (!option->state.testFlag(QStyle::State_Selected))
-            overOrDown = false;
-    }
 
     if (isEnable && overOrDown) {
         return filledSymbolicColoredPixmap(target, hoverColor.isValid() ? hoverColor : option->palette.color(QPalette::HighlightedText));
