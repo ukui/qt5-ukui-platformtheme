@@ -396,7 +396,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
             highlight_dis(233, 233, 233),
             tip_bg(248,248,248),
             tip_font(22,22,22),
-            alternateBase(248,248,248);
+            alternateBase(248,248,248),
+            midlight_bg(217, 217, 217),
+            midlight_dis(230, 230, 230);
 
         if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         //ukui-dark
@@ -412,11 +414,13 @@ QPalette Qt5UKUIStyle::standardPalette() const
         font_di_bg.setAlphaF(0.3);
         button_bg.setRgb(51, 51, 54);
         button_di_bg.setRgb(46, 46, 48);
-        highlight_dis.setRgb(71, 71, 71),
+        highlight_dis.setRgb(71, 71, 71);
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
-    }
+        midlight_bg.setRgb(77, 77, 77);
+        midlight_dis.setRgb(64, 64, 64);
+        }
 
     palette.setBrush(QPalette::Active, QPalette::Window, window_bg);
     palette.setBrush(QPalette::Inactive, QPalette::Window, window_bg);
@@ -465,6 +469,10 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::AlternateBase,alternateBase);
     palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,alternateBase);
     palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
+
+    palette.setBrush(QPalette::Active, QPalette::Midlight, midlight_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Midlight, midlight_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
     return palette;
 }
@@ -3602,9 +3610,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->setPen(header->palette.color(QPalette::Active, QPalette::Midlight));
             painter->setBrush(Qt::NoBrush);
             if (header->orientation == Qt::Horizontal) {
-                int iconSize = proxy()->pixelMetric(PM_SmallIconSize);
+                int iconSize = 20;
                 int dis = (header->rect.height() - iconSize) / 2;
-                if (header->section != 0 || header->position == QStyleOptionHeader::Beginning) {
+                if (header->position != QStyleOptionHeader::End && header->position != QStyleOptionHeader::OnlyOneSection) {
                     if (header->direction == Qt::LeftToRight) {
                         painter->drawLine(header->rect.right(), header->rect.top() + dis, header->rect.right(), header->rect.bottom() - dis);
                     } else {
