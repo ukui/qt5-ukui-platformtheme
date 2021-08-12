@@ -279,14 +279,14 @@ QColor mixColor(const QColor &c1, const QColor &c2, qreal bias)
 
 QColor highLight_Click()
 {
-    return QColor(41, 108, 217);
+    return QColor(36, 109, 212);
 }
 
 
 
 QColor highLight_Hover()
 {
-    return QColor(64, 169, 251);
+    return QColor(55, 144, 250);
 }
 
 
