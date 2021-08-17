@@ -1801,6 +1801,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(Qt::NoPen);
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 }
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                 painter->restore();
             } else {
@@ -1813,6 +1814,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(Qt::NoBrush);
+                    painter->setRenderHint(QPainter::Antialiasing,true);
                     painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                     painter->restore();
                 }
@@ -1824,6 +1826,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
                                      1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(Qt::NoBrush);
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
                 painter->restore();
             }
@@ -1873,6 +1876,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                    painter->setRenderHint(QPainter::Antialiasing, true);
                     painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                     painter->restore();
                 } else {
@@ -1887,6 +1891,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
                                              1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing, true);
                         painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
                         painter->restore();
                     }
