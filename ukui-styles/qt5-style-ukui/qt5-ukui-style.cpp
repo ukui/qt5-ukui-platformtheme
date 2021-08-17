@@ -357,13 +357,17 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
         return true;
     case SH_ComboBox_Popup:
         return false;
-    case SH_Table_GridLineColor:
-        return option ? option->palette.mid().color().darker().rgb() : 0;
     case SH_ComboBox_AllowWheelScrolling:
         return int(false);
 
 //    case SH_Button_FocusPolicy:
 //        return Qt::TabFocus;
+
+    case SH_Header_ArrowAlignment:
+        return Qt::AlignRight | Qt::AlignVCenter;
+
+    case SH_Table_GridLineColor:
+        return option ? option->palette.color(QPalette::Active, QPalette::Midlight).rgb() : 0;
 
     default:
         break;
@@ -392,7 +396,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
             highlight_dis(233, 233, 233),
             tip_bg(248,248,248),
             tip_font(22,22,22),
-            alternateBase(248,248,248);
+            alternateBase(248,248,248),
+            midlight_bg(217, 217, 217),
+            midlight_dis(230, 230, 230);
 
         if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         //ukui-dark
@@ -408,11 +414,13 @@ QPalette Qt5UKUIStyle::standardPalette() const
         font_di_bg.setAlphaF(0.3);
         button_bg.setRgb(51, 51, 54);
         button_di_bg.setRgb(46, 46, 48);
-        highlight_dis.setRgb(71, 71, 71),
+        highlight_dis.setRgb(71, 71, 71);
         tip_bg.setRgb(61,61,65);
         tip_font.setRgb(232,232,232);
         alternateBase.setRgb(36,35,40);
-    }
+        midlight_bg.setRgb(77, 77, 77);
+        midlight_dis.setRgb(64, 64, 64);
+        }
 
     palette.setBrush(QPalette::Active, QPalette::Window, window_bg);
     palette.setBrush(QPalette::Inactive, QPalette::Window, window_bg);
@@ -461,6 +469,10 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setBrush(QPalette::AlternateBase,alternateBase);
     palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,alternateBase);
     palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
+
+    palette.setBrush(QPalette::Active, QPalette::Midlight, midlight_bg);
+    palette.setBrush(QPalette::Inactive, QPalette::Midlight, midlight_bg);
+    palette.setBrush(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
     return palette;
 }
@@ -545,12 +557,6 @@ void Qt5UKUIStyle::polish(QWidget *widget)
         m_button_animation_helper->registerWidget(widget);
     }
 
-    if(auto tv = qobject_cast<QTableView*>(widget))
-    {
-       tv->setShowGrid(false);
-       tv->setAlternatingRowColors(true);
-    }
-
     if (widget->inherits("QTipLabel")) {
         auto label = qobject_cast<QLabel *>(widget);
         label->setWordWrap(true);
@@ -613,12 +619,6 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     {
         m_button_animation_helper->unregisterWidget(widget);
     }
-
-//    if(auto tv = qobject_cast<QTableView*>(widget))
-//    {
-//       tv->setShowGrid(true);
-//       tv->setAlternatingRowColors(false);
-//    }
 
     if (qobject_cast<QLineEdit *>(widget)) {
         widget->setAttribute(Qt::WA_Hover, false);
@@ -830,67 +830,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
-//    case PE_IndicatorHeaderArrow: //Here is the arrow drawing of the table box
-
-//        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
-//            painter->save();
-//            painter->setRenderHint(QPainter::Antialiasing,true);
-//            painter->setBrush(Qt::NoBrush);
-//            if(option->state & State_Enabled){
-//                painter->setPen(QPen(option->palette.foreground().color(), 1.1));
-//                if (option->state & State_MouseOver) {
-//                    painter->setPen(QPen(option->palette.color(QPalette::Highlight), 1.1));
-//                }
-//            }
-//            else {
-//                painter->setPen(QPen(option->palette.color(QPalette::Text), 1.1));
-//            }
-//            QPolygon points(4);
-//            //Add 8 to center vertically
-//            int x = option->rect.x()+8;
-//            int y = option->rect.y()+8;
-
-//            int w = 8;
-//            int h =  4;
-//            x += (option->rect.width() - w) / 2;
-//            y += (option->rect.height() - h) / 2;
-//            if (header->sortIndicator & QStyleOptionHeader::SortUp) {
-//                points[0] = QPoint(x, y);
-//                points[1] = QPoint(x + w / 2, y + h);
-//                points[2] = QPoint(x + w / 2, y + h);
-//                points[3] = QPoint(x + w, y);
-//            } else if (header->sortIndicator & QStyleOptionHeader::SortDown) {
-//                points[0] = QPoint(x, y + h);
-//                points[1] = QPoint(x + w / 2, y);
-//                points[2] = QPoint(x + w / 2, y);
-//                points[3] = QPoint(x + w, y + h);
-//            }
-//            painter->drawLine(points[0],  points[1] );
-//            painter->drawLine(points[2],  points[3] );
-//            painter->restore();
-//            return;
-//        }
-
-    case PE_IndicatorHeaderArrow:
-    {
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
-        {
-            QStyleOption opt = *option;
-            opt.state = header->state & State_Enabled ? State_Enabled : State_None;
-            opt.rect = header->rect;
-            if(header->sortIndicator & QStyleOptionHeader::SortUp)
-            {
-                proxy()->drawPrimitive(PE_IndicatorArrowUp,&opt,painter,widget);
-            }
-            else if(header->sortIndicator & QStyleOptionHeader::SortDown)
-            {
-                proxy()->drawPrimitive(PE_IndicatorArrowDown,&opt,painter,widget);
-            }
-            return;
-        }
-        break;
-    }
-
     case PE_PanelItemViewRow:
     {
         if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
@@ -906,16 +845,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             else if (vopt->features & QStyleOptionViewItem::Alternate)
                 painter->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::AlternateBase));
 
-            if(qobject_cast<const QTableView*>(widget) || qobject_cast<const QTableWidget*>(widget))
-            {
-                const int gridHint = proxy()->styleHint(QStyle::SH_Table_GridLineColor, option, widget);
-                const QColor gridColor = static_cast<QRgb>(gridHint);
-                painter->save();
-                painter->setPen(gridColor);
-                painter->setBrush(Qt::NoBrush);
-//                painter->drawLine(vopt->rect.topRight(),vopt->rect.bottomRight());
-                painter->restore();
-            }
            return;
         }
         break;
@@ -1489,6 +1418,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
                                      2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                 painter->restore();
             } else {
@@ -1503,6 +1433,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
                                          1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(Qt::NoBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
                     painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
                     painter->restore();
                 }
@@ -1800,6 +1731,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         return;
     }
 
+    case PE_IndicatorHeaderArrow:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            if (header->sortIndicator == QStyleOptionHeader::SortDown)
+                return proxy()->drawPrimitive(PE_IndicatorArrowDown, header, painter, widget);
+            if (header->sortIndicator == QStyleOptionHeader::SortUp)
+                return proxy()->drawPrimitive(PE_IndicatorArrowUp, header, painter, widget);
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -1859,6 +1801,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(Qt::NoPen);
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 }
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                 painter->restore();
             } else {
@@ -1871,6 +1814,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(Qt::NoBrush);
+                    painter->setRenderHint(QPainter::Antialiasing,true);
                     painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                     painter->restore();
                 }
@@ -1882,6 +1826,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
                                      1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(Qt::NoBrush);
+                painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
                 painter->restore();
             }
@@ -1931,6 +1876,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                    painter->setRenderHint(QPainter::Antialiasing, true);
                     painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                     painter->restore();
                 } else {
@@ -1945,6 +1891,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                         painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
                                              1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing, true);
                         painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
                         painter->restore();
                     }
@@ -3169,131 +3116,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         break;
     }
 
-    case CE_Header:
-    {
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
-        {
-            painter->save();
-            painter->setClipRect(option->rect);
-            proxy()->drawControl(CE_HeaderSection, header, painter, widget);
-            QStyleOptionHeader subopt = *header;
-            subopt.rect = proxy()->subElementRect(SE_HeaderLabel, header, widget);
-            if (subopt.rect.isValid())
-                proxy()->drawControl(CE_HeaderLabel, &subopt, painter, widget);
-            if (header->sortIndicator != QStyleOptionHeader::None)
-            {
-                subopt.rect = proxy()->subElementRect(SE_HeaderArrow, option, widget);
-                proxy()->drawPrimitive(PE_IndicatorHeaderArrow, &subopt, painter, widget);
-            }
-            painter->restore();
-            return;
-        }
-        break;
-    }
-
-    case CE_HeaderSection:
-    {
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)){
-
-            bool mouse = header->state &  QStyle::State_MouseOver;
-            bool select = header->state & QStyle::State_Sunken;
-            bool on = header->state & QStyle::State_On;
-            bool roundedRight = false;
-            //角落控件控制
-            const bool isCorner( widget && widget->inherits( "QTableCornerButton" ) );
-            //控件方向判断
-            const bool reverseLayout( option->direction == Qt::LeftToRight );
-            //对控件位置判断
-            if(header->section == QStyleOptionHeader::Middle){
-                roundedRight = true;
-            }else if(header->section == QStyleOptionHeader::Beginning){
-                roundedRight = true;
-            }
-
-            painter->save();
-            painter->setPen(Qt::transparent);
-            //tree头部表格控制
-            const auto view = qobject_cast<const QHeaderView*>(widget);
-            if (view) {
-                auto treeView = qobject_cast<const QTreeView*>(view->parent());
-                if (treeView){
-                    painter->setBrush(header->palette.color(QPalette::Base));
-                    painter->drawRect(header->rect);
-                    if(!isCorner){
-                        if(roundedRight){
-                            painter->setPen(option->palette.color(QPalette::Button).darker(110));
-                            if(reverseLayout){
-                                if(header->orientation == Qt::Horizontal){
-                                    painter->drawLine(header->rect.right(),header->rect.top()+4,header->rect.right(),header->rect.bottom()-4);
-                                }
-                            }else{
-                                if(header->orientation == Qt::Horizontal){
-                                    painter->drawLine(header->rect.left(),header->rect.top()+4,header->rect.left(),header->rect.bottom()-4);
-                                }
-                            }
-                        }
-                    }
-                    painter->restore();
-                    return;
-                }
-            }
-
-            painter->setBrush(header->palette.color(QPalette::Button).lighter(105));
-            painter->drawRect(header->rect);
-            if(on){
-                painter->setBrush(header->palette.color(QPalette::Button).darker(105));
-            }
-            if(mouse){
-                painter->setBrush(header->palette.color(QPalette::Button));
-            }
-            if(select){
-                painter->setBrush(header->palette.color(QPalette::Button).darker(105));
-            }
-            QPainterPath path_indicator1;
-            path_indicator1.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3),4,4);
-            painter->drawPath(path_indicator1);
-
-
-            //根据不同位置绘制外观
-            if(!isCorner){
-                if(roundedRight){
-                    painter->setPen(option->palette.color(QPalette::Button).darker(110));
-                    if(reverseLayout){
-                        if(header->orientation == Qt::Horizontal){
-                            painter->drawLine(header->rect.right(),header->rect.top()+4,header->rect.right(),header->rect.bottom()-4);
-                        }
-                    }else{
-                        if(header->orientation == Qt::Horizontal){
-                            painter->drawLine(header->rect.left(),header->rect.top()+4,header->rect.left(),header->rect.bottom()-4);
-                        }
-                    }
-                }
-            }
-
-            painter->restore();
-            return;
-        }
-        break;
-    }
-
-    case CE_HeaderEmptyArea:{
-        bool enable = option->state & QStyle::State_Enabled;
-        painter->fillRect(option->rect,option->palette.color(enable ? QPalette::Active : QPalette::Disabled,
-                                                             QPalette::Button).lighter(105));
-        const auto view = qobject_cast<const QHeaderView*>(widget);
-        if (view) {
-            auto treeView = qobject_cast<const QTreeView*>(view->parent());
-            if (treeView){
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(option->palette.color(QPalette::Base));
-                painter->drawRect(option->rect);
-                painter->restore();
-                return;
-            }
-        }
-        break;
-    }
-
     case CE_SizeGrip:
     {
         /*
@@ -3690,6 +3512,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(linearGradient);
+            painter->setRenderHint(QPainter::Antialiasing, true);
             painter->drawRoundedRect(progressRect, 4, 4);
             painter->restore();
             return;
@@ -3763,6 +3586,95 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         break;
     }
 
+    case CE_Header:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            QRegion clipRegion = painter->clipRegion();
+            painter->setClipRect(option->rect);
+            proxy()->drawControl(CE_HeaderSection, option, painter, widget);
+            QStyleOptionHeader subopt = *header;
+            subopt.rect = proxy()->subElementRect(SE_HeaderLabel, header, widget);
+            if (subopt.rect.isValid())
+                proxy()->drawControl(CE_HeaderLabel, &subopt, painter, widget);
+            if (header->sortIndicator != QStyleOptionHeader::None) {
+                subopt.rect = proxy()->subElementRect(SE_HeaderArrow, option, widget);
+                proxy()->drawPrimitive(PE_IndicatorHeaderArrow, &subopt, painter, widget);
+            }
+            painter->setClipRegion(clipRegion);
+            return;
+        }
+        break;
+    }
+
+    case CE_HeaderSection:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            const bool enable = header->state & State_Enabled;
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(header->palette.brush(enable ? QPalette::Active : QPalette::Disabled, QPalette::Base));
+            painter->drawRect(header->rect);
+
+            painter->setPen(header->palette.color(QPalette::Active, QPalette::Midlight));
+            painter->setBrush(Qt::NoBrush);
+            if (header->orientation == Qt::Horizontal) {
+                int iconSize = 20;
+                int dis = (header->rect.height() - iconSize) / 2;
+                if (header->position != QStyleOptionHeader::End && header->position != QStyleOptionHeader::OnlyOneSection) {
+                    if (header->direction == Qt::LeftToRight) {
+                        painter->drawLine(header->rect.right(), header->rect.top() + dis, header->rect.right(), header->rect.bottom() - dis);
+                    } else {
+                        painter->drawLine(header->rect.left(), header->rect.top() + dis, header->rect.left(), header->rect.bottom() - dis);
+                    }
+                }
+            }
+            painter->restore();
+            return;
+        }
+        break;
+    }
+
+    case CE_HeaderLabel:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            QRect rect = header->rect;
+            QRect textRect = header->rect;
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+            textRect.adjust(margin, 0, -margin, -0);
+
+            int iconSize = proxy()->pixelMetric(PM_SmallIconSize);
+            if (!header->icon.isNull()) {
+                QPixmap pixmap = header->icon.pixmap(iconSize, iconSize, header->state & State_Enabled ? QIcon::Normal : QIcon::Disabled);
+                QRect iconRect(textRect.x(), textRect.y() + (textRect.height() - iconSize) / 2, iconSize, iconSize);
+                textRect.setRect(iconRect.right() + 1 + 8, textRect.y(), textRect.width() - iconRect.width() - 8, textRect.height());
+                iconRect = visualRect(header->direction, rect, iconRect);
+                textRect = visualRect(header->direction, rect, textRect);
+                painter->drawPixmap(iconRect, pixmap);
+            }
+
+            if (header->state & QStyle::State_On) {
+                QFont font = painter->font();
+                font.setBold(true);
+                painter->setFont(font);
+            }
+            proxy()->drawItemText(painter, textRect, header->textAlignment | Qt::AlignVCenter, header->palette,
+                                  (header->state & State_Enabled), header->text, QPalette::ButtonText);
+            return;
+        }
+        break;
+    }
+
+    case CE_HeaderEmptyArea:
+    {
+        const bool enable = option->state & State_Enabled;
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(option->palette.brush(enable ? QPalette::Active : QPalette::Disabled, QPalette::Base));
+        painter->drawRect(option->rect);
+        painter->restore();
+        return;
+    }
+
     default:
         return Style::drawControl(element, option, painter, widget);
     }
@@ -3779,9 +3691,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_MaximumDragDistance:
         return -1;
-
-    case PM_ScrollView_ScrollBarOverlap:
-        return 0;
 
     case PM_MenuPanelWidth:
         return 0;
@@ -3800,15 +3709,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
             return 4;
         }
         return 2;
-
-    case PM_HeaderMargin:
-    {
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option))
-        {
-            return 2;
-        }
-        return 9;
-    }
 
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
@@ -3899,6 +3799,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_ProgressBarChunkWidth:
         return 9;
+
+    case PM_HeaderMargin:
+        return 2;
+    case PM_HeaderMarkSize:
+        return 16;
+    case PM_ScrollView_ScrollBarOverlap:
+        return 0;
 
     default:
         break;
@@ -4160,26 +4067,6 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
 QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
     switch (element) {
-    case SE_HeaderArrow:
-    {
-        const int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
-        QRect rect;
-        const int right = option->rect.right();
-        const int height = option->rect.height();
-        const int top = option->rect.top();
-        const int bottom = option->rect.bottom();
-        if(option->state & State_Horizontal)
-        {
-            rect.setRect(right-height+margin,top+margin,option->rect.height()-2*margin,option->rect.height()-2*margin);
-        }
-        else
-        {
-            rect.setRect(option->rect.width()+margin,bottom-option->rect.width()+margin,option->rect.width()-2*margin,option->rect.width()-2*margin);
-        }
-        rect = visualRect(option->direction,option->rect,rect);
-        return rect;
-    }
-
     case SE_TabBarScrollLeftButton:
     {
         const bool verticalTabs = option->rect.width() < option->rect.height();
@@ -4577,6 +4464,35 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         return option->rect;
     }
 
+    case SE_HeaderLabel:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            QRect rect = header->rect;
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+            int Header_MarginWidth = 8;
+            rect.adjust(Header_MarginWidth - margin, margin, -Header_MarginWidth + margin, -margin);
+            if (header->sortIndicator != QStyleOptionHeader::None && header->state & State_Horizontal) {
+                int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+                rect.adjust(0, 0, -arrowSize - Header_MarginWidth, 0);
+            }
+            return visualRect(option->direction, header->rect, rect);
+        }
+        break;
+    }
+
+    case SE_HeaderArrow:
+    {
+        if (qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+            int Header_MarginWidth = 8;
+            int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+            QRect rect = option->rect.adjusted(Header_MarginWidth, margin, -Header_MarginWidth, -margin);
+            QRect arrowRect(rect.right() + 1 - arrowSize, rect.y() + (rect.height() - arrowSize) / 2, arrowSize, arrowSize);
+            return visualRect(option->direction, rect, arrowRect);
+        }
+        break;
+    }
+
     default:
         break;
     }
@@ -4823,6 +4739,40 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 newSize.setHeight(newSize.height() - 8);
                 newSize.setWidth(qMax(newSize.width(), 426));
             }
+            return newSize;
+        }
+        break;
+    }
+
+    case CT_HeaderSection:
+    {
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            const bool horizontal(header->orientation == Qt::Horizontal);
+            const bool text(!header->text.isEmpty());
+            const bool icon(!header->icon.isNull());
+            int w = header->fontMetrics.size(Qt::TextShowMnemonic, header->text).width();
+            int h = header->fontMetrics.size(Qt::TextShowMnemonic, header->text).height();
+            int Header_MarginWidth = 8;
+            int margin = proxy()->pixelMetric(QStyle::PM_HeaderMargin, option, widget);
+
+            if (icon) {
+                int iconSize = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
+                w += iconSize;
+                h = qMax(iconSize, h);
+                if (text)
+                    w += 8;
+            }
+            if (horizontal && header->sortIndicator != QStyleOptionHeader::None) {
+                int arrowSize = proxy()->pixelMetric(QStyle::PM_HeaderMarkSize, option, widget);
+                w += arrowSize;
+                h = qMax(arrowSize, h);
+                if (text || icon)
+                    w += 8;
+            }
+            h += margin * 2;
+            w += Header_MarginWidth * 2;
+            newSize.setWidth(w);
+            newSize.setHeight(qMax(h, 36));
             return newSize;
         }
         break;
