@@ -2555,7 +2555,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     {
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             const bool enable = button->state & State_Enabled;
-            const bool text = !button->text.isNull();
+            const bool text = !button->text.isEmpty();
             const bool icon = !button->icon.isNull();
 
             bool isWindowButton = false;
@@ -2698,7 +2698,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     useButtonPalette = widget->property("useButtonPalette").toBool();
             }
 
-            const bool text = !tb->text.isNull();
+            const bool text = !tb->text.isEmpty();
             const bool icon = !tb->icon.isNull();
             const bool arrow = tb->features & QStyleOptionToolButton::MenuButtonPopup;
             const bool ha = tb->features & QStyleOptionToolButton::Arrow;
@@ -3050,7 +3050,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
 
-            if (!comboBox->currentText.isNull() && !comboBox->editable) {
+            if (!comboBox->currentText.isEmpty() && !comboBox->editable) {
                 proxy()->drawItemText(painter, editRect, visualAlignment(option->direction, Qt::AlignLeft | Qt::AlignVCenter),
                                       option->palette, option->state & State_Enabled, comboBox->currentText);
             }
@@ -4411,7 +4411,7 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     {
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             const bool icon = !button->icon.isNull();
-            const bool text = !button->text.isNull();
+            const bool text = !button->text.isEmpty();
             QRect rect = option->rect;
             int Margin_Height = 2;
             int ToolButton_MarginWidth = 10;
@@ -4621,7 +4621,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     {
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             const bool icon = !tb->icon.isNull();
-            const bool text = !tb->text.isNull();
+            const bool text = !tb->text.isEmpty();
             int w = size.width();
             int h = size.height();
             int Margin_Height = 2;
@@ -4665,7 +4665,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     {
         if (const QStyleOptionButton *button = qstyleoption_cast<const QStyleOptionButton *>(option)) {
             const bool icon = !button->icon.isNull();
-            const bool text = !button->text.isNull();
+            const bool text = !button->text.isEmpty();
             int w = size.width();
             int h = size.height();
             int Margin_Height = 2;
