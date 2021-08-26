@@ -269,7 +269,6 @@ const QStringList Qt5UKUIStyle::specialList() const
     l<<"ukui-power-manager-tray";
     l<<"kylin-nm";
     l<<"ukui-flash-disk";
-    l<<"kylin-video";
 //    l<<"ukui-bluetooth";
     l<<"mktip";
     return l;
