@@ -33,6 +33,8 @@
 
 #include <QX11Info>
 
+#include <QApplication>
+
 #include <QDebug>
 
 #define INNERRECT_WIDTH 1
@@ -70,12 +72,56 @@ void ShadowHelper::registerWidget(QWidget *widget)
 {
     widget->removeEventFilter(this);
 
+    bool needCreateShadowInstantly = false;
     if (isWidgetNeedDecoShadow(widget)) {
         widget->installEventFilter(this);
+        needCreateShadowInstantly = true;
     } else {
         if (widget && widget->inherits("QComboBoxPrivateContainer")) {
             widget->installEventFilter(this);
+            needCreateShadowInstantly = true;
         }
+    }
+    if (!widget->isVisible()) {
+        needCreateShadowInstantly = false;
+    }
+    if (needCreateShadowInstantly) {
+        auto shadowColor = widget->palette().text().color();
+
+        int shadowBorder = widget->property("customShadowWidth").toInt();
+        bool ok = false;
+        qreal darkness = widget->property("customShadowDarkness").toReal(&ok);
+        if (!ok) {
+            darkness = 1.0;
+        }
+        QVector4D radius = qvariant_cast<QVector4D>(widget->property("customShadowRadius"));
+        QVector4D margins = qvariant_cast<QVector4D>(widget->property("customShadowMargins"));
+
+        if (auto tmp = m_shadows.value(widget)) {
+            if (tmp->isCreated()) {
+                m_shadows.remove(widget);
+                tmp->destroy();
+                tmp->deleteLater();
+            }
+        }
+
+        auto shadow = getShadow(shadowColor, shadowBorder, darkness, radius.x(), radius.y(), radius.z(), radius.w());
+        shadow->setPadding(QMargins(margins.x(), margins.y(), margins.z(), margins.w()));
+        shadow->setWindow(widget->windowHandle());
+        shadow->create();
+
+        //qInfo()<<"try set custom shadow"<<shadowBorder<<darkness<<radius<<margins;
+
+        m_shadows.insert(widget, shadow);
+
+        connect(widget, &QWidget::destroyed, this, [=](){
+            if (auto shadowToBeDelete = m_shadows.value(widget)) {
+                if (shadowToBeDelete->isCreated())
+                    shadowToBeDelete->destroy();
+                shadowToBeDelete->deleteLater();
+                m_shadows.remove(widget);
+            }
+        });
     }
 }
 
@@ -269,10 +315,14 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
         auto widget = qobject_cast<QWidget *>(watched);
         if (QX11Info::isPlatformX11() && event->type() == QEvent::Show) {
             if (watched->property("useCustomShadow").toBool() && widget->isTopLevel()) {
-                auto shadowColor = widget->palette().shadow().color();
+                auto shadowColor = widget->palette().text().color();
 
                 int shadowBorder = widget->property("customShadowWidth").toInt();
-                qreal darkness = widget->property("customShadowDarkness").toReal();
+                bool ok = false;
+                qreal darkness = widget->property("customShadowDarkness").toReal(&ok);
+                if (!ok) {
+                    darkness = 1.0;
+                }
                 QVector4D radius = qvariant_cast<QVector4D>(widget->property("customShadowRadius"));
                 QVector4D margins = qvariant_cast<QVector4D>(widget->property("customShadowMargins"));
 
@@ -309,7 +359,7 @@ bool ShadowHelper::eventFilter(QObject *watched, QEvent *event)
                     m_shadows.remove(widget);
                 }
 
-                auto shadowColor = widget->palette().shadow().color();
+                auto shadowColor = widget->palette().text().color();
 
                 auto shadow = getShadow(shadowColor, 15, 0.5, 6, 6, 6, 6);
                 shadow->setPadding(QMargins(15, 15, 15, 15));
