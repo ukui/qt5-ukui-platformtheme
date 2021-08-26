@@ -113,6 +113,9 @@ void BlurHelper::registerWidget(QWidget *widget)
     if (!QX11Info::isPlatformX11())
         return;
 
+    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
+        return;
+
     if (!widget)
         return;
 
@@ -154,6 +157,9 @@ void BlurHelper::registerWidget(QWidget *widget)
 void BlurHelper::unregisterWidget(QWidget *widget)
 {
     if (!QX11Info::isPlatformX11())
+        return;
+
+    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
         return;
 
     if (!widget)
