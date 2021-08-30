@@ -62,10 +62,10 @@
                 Globally enable or disable custom highlight color.
             </description>
         </key>
-        <key type="s" name="custom-highlight-color">
-            <default>"#3D6BE5"</default>
-            <summary>Custom highlight color</summary>
-            <description>Set custom highlight color for UKUI desktop environment.</description>
+        <key type="s" name="theme-color">
+            <default>"daybreakBlue"</default>
+            <summary> theme color</summary>
+            <description>Set theme color for UKUI desktop environment.</description>
         </key>
         <key type="b" name="cursor-blink">
             <default>true</default>

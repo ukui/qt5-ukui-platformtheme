@@ -75,9 +75,6 @@ private:
 
     ApplicationStyleSettings *m_app_style_settings;
 
-    bool m_use_custom_highlight_color = false;
-    QColor m_custom_highlight_color;
-
     bool m_blink_cursor = true;
     int m_blink_cursor_time = 1200;
 };

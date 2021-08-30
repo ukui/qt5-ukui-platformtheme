@@ -277,20 +277,6 @@ QColor mixColor(const QColor &c1, const QColor &c2, qreal bias)
 
 
 
-QColor highLight_Click()
-{
-    return QColor(36, 109, 212);
-}
-
-
-
-QColor highLight_Hover()
-{
-    return QColor(55, 144, 250);
-}
-
-
-
 void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
                       const QRect &rect, QPainter *painter, const QWidget *widget)
 {

@@ -142,6 +142,13 @@ private:
     QColor button_Hover() const;
     QColor button_DisableChecked() const;
 
+    QColor highLight_Click() const;
+    QColor highLight_Hover() const;
+    mutable QColor mHighLightClick;
+    mutable QColor mHighLightHover;
+
+    void setThemeColor(QString themeColor, QPalette &palette) const;
+
     // view
     QString calculateElidedText(const QString &text, const QTextOption &textOption,
                                     const QFont &font, const QRect &textRect, const Qt::Alignment valign,

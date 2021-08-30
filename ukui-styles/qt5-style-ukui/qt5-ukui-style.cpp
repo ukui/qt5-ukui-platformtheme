@@ -100,6 +100,24 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_combobox_animation_helper = new BoxAnimationHelper(this);
     m_animation_helper = new ProgressBarAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
+
+    if (auto settings = UKUIStyleSettings::globalInstance()) {
+        QString themeColor = settings->get("themeColor").toString();
+        QPalette palette = qApp->palette();
+        setThemeColor(themeColor, palette);
+        connect(settings, &QGSettings::changed, this, [=](const QString &key) {
+            if (key == "themeColor") {
+                QString themeColor = settings->get("themeColor").toString();
+                QPalette palette = qApp->palette();
+                setThemeColor(themeColor, palette);
+                qApp->setPalette(palette);
+                emit qApp->paletteChanged(palette);
+            }
+        });
+    } else {
+        mHighLightClick = QColor(36, 109, 212);
+        mHighLightHover = QColor(55, 144, 250);
+    }
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -217,8 +235,10 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     }
     return Style::styleHint(hint, option, widget, returnData);
 }
+
 void Qt5UKUIStyle::polish(QPalette &palette){
     palette = standardPalette();
+
     return Style::polish(palette);
 }
 
@@ -398,9 +418,15 @@ QPalette Qt5UKUIStyle::standardPalette() const
     palette.setColor(QPalette::PlaceholderText, placeholderText);
 #endif
 
-    palette.setBrush(QPalette::Active, QPalette::Midlight, midlight_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Midlight, midlight_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Midlight, midlight_dis);
+    if (auto settings = UKUIStyleSettings::globalInstance()) {
+        QString themeColor = settings->get("themeColor").toString();
+        setThemeColor(themeColor, palette);
+    } else {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
+        mHighLightClick = QColor(36, 109, 212);
+        mHighLightHover = QColor(55, 144, 250);
+    }
 
     return palette;
 }
@@ -435,6 +461,67 @@ QColor Qt5UKUIStyle::button_DisableChecked() const
         return QColor(61, 61, 64);
     } else {
         return QColor(224, 224, 224);
+    }
+}
+
+
+
+QColor Qt5UKUIStyle::highLight_Click() const
+{
+    return mHighLightClick;
+}
+
+
+
+QColor Qt5UKUIStyle::highLight_Hover() const
+{
+    return mHighLightHover;
+}
+
+
+
+void Qt5UKUIStyle::setThemeColor(QString themeColor, QPalette &palette) const
+{
+    if (themeColor == "daybreakBlue") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
+        mHighLightClick = QColor(36, 109, 212);
+        mHighLightHover = QColor(55, 144, 250);
+    } else if (themeColor == "jamPurple") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(114, 46, 209));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(114, 46, 209));
+        mHighLightClick = QColor(114, 46, 209);
+        mHighLightHover = QColor(83, 29, 171);
+    } else if (themeColor == "magenta") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(235, 48, 150));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(235, 48, 150));
+        mHighLightClick = QColor(196, 29, 127);
+        mHighLightHover = QColor(235, 48, 150);
+    } else if (themeColor == "sunRed") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(243, 34, 45));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(243, 34, 45));
+        mHighLightClick = QColor(204, 18, 34);
+        mHighLightHover = QColor(243, 34, 45);
+    } else if (themeColor == "sunsetOrange") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(246, 140, 39));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(246, 140, 39));
+        mHighLightClick = QColor(207, 105, 23);
+        mHighLightHover = QColor(246, 140, 39);
+    } else if (themeColor == "dustGold") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(249, 197, 61));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(249, 197, 61));
+        mHighLightClick = QColor(212, 157, 40);
+        mHighLightHover = QColor(249, 197, 61);
+    } else if (themeColor == "polarGreen") {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(82, 196, 41));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(82, 196, 41));
+        mHighLightClick = QColor(56, 158, 25);
+        mHighLightHover = QColor(82, 196, 41);
+    } else {
+        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
+        mHighLightClick = QColor(36, 109, 212);
+        mHighLightHover = QColor(55, 144, 250);
     }
 }
 
