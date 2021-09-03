@@ -1,3 +1,21 @@
+qt5-ukui-platformtheme (1.0.6-9.9) v101; urgency=medium
+
+  * bug:76302 77286 76703 76689
+
+ -- leichen <leichen@kylinos.cn>  Fri, 03 Sep 2021 10:10:17 +0800
+
+qt5-ukui-platformtheme (1.0.6-9.7) v101; urgency=medium
+
+  * bug:76540 76555 76611
+
+ -- leichen <leichen@kylinos.cn>  Fri, 03 Sep 2021 10:09:38 +0800
+
+qt5-ukui-platformtheme (1.0.6-9.6) v101; urgency=medium
+
+  * bug:75193 74592 72943 72922
+
+ -- leichen <leichen@kylionos.cn>  Fri, 03 Sep 2021 10:07:27 +0800
+
 qt5-ukui-platformtheme (1.0.6-9.4) v101; urgency=medium
 
   * 将麒麟影音移出使用默认主题名单
