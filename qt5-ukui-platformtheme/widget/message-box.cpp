@@ -114,17 +114,7 @@ public:
     QLabel*                                             mIconLabel;                 // qt 显示图标
     QDialogButtonBox*                                   mButtonBox;                 // qt 按钮框
     QPushButton*                                        mDetailButton;              // 详细情况按钮
-    QWidget *contentWidget;
-    QVBoxLayout *contentLayout;
-    QScrollArea *contentArea;
-//    MessageBoxDetailsText *detailsText;
-
-    QLayout*                                            mMainLayout;                // 主布局
-    QLayout*                                            mDetailLayout;              // 详细信息
-    QLayout*                                            mButtonLayout;              // 按钮整体布局
-    QLayout*                                            mButtonLayout1;             // 复选框按钮
-    QLayout*                                            mButtonLayout2;             // 按钮
-    QLayout*                                            mContentLayout;             // 内容布局
+    QPushButton *mCloseButtton;
 
     QByteArray                                          mMemberToDisconnectOnClose;
     QByteArray                                          mSignalToDisconnectOnClose;
@@ -138,7 +128,6 @@ public:
     QPushButton*                                        mDefaultButton;
     QAbstractButton*                                    mClickedButton;             // 复选框按钮
 
-    bool                                                mHTML;                      // 文档内容是 html 还是 纯文本
     bool                                                mCompatMode;
     bool                                                mShowDetail;                // 是否显示详细信息
     bool                                                mAutoAddOkButton;
@@ -150,27 +139,6 @@ public:
 private:
     int                             mRadius = 0;
     int                             mIconSize = 24;
-
-    int                             mMinWidth = 380;
-    int                             mMinHeight = 142;
-    int                             mMaxWidth = 420;
-    int                             mMaxHeight = 562;
-
-    int                             mBtnContent = 32;                               // 底部按钮 与 内容框之间的间隔
-    int                             mWidgetSpace = 8;
-
-    int                             mMarginLeft = 24;
-    int                             mMarginTop = 32;
-    int                             mMarginRight = 24;
-    int                             mMarginBottom = 24;
-
-    int                             mDetailHeight = 144;
-    int                             mDelButton = 24;
-
-    int                             mButtonHeight = 30;
-    int                             mButtonWidth = 80;
-    int                             mSpace = 8;
-
 };
 
 MessageBox::MessageBox(QWidget *parent) : QDialog(*new MessageBoxPrivate, parent, Qt::MSWindowsFixedSizeDialogHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint)
@@ -239,7 +207,6 @@ void MessageBox::setText(const QString& text)
 {
     Q_D(MessageBox);
     d->mLabel->setText(text);
-    d->mLabel->setWordWrap(true);
 }
 
 Qt::TextFormat MessageBox::textFormat() const
@@ -252,8 +219,6 @@ void MessageBox::setTextFormat(Qt::TextFormat format)
 {
     Q_D(MessageBox);
     d->mLabel->setTextFormat(format);
-    d->mLabel->setWordWrap(format == Qt::RichText
-                    || (format == Qt::AutoText && Qt::mightBeRichText(d->mLabel->text())));
 }
 
 Qt::TextInteractionFlags MessageBox::textInteractionFlags() const
@@ -470,15 +435,9 @@ void MessageBox::setInformativeText(const QString &text)
             label->setTextInteractionFlags(Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, nullptr, this)));
             label->setAlignment(Qt::AlignTop | Qt::AlignLeft);
             label->setOpenExternalLinks(true);
-            label->setWordWrap(true);
             QPalette palette = label->palette();
             palette.setColor(QPalette::Text, palette.color(QPalette::Disabled, QPalette::Text));
             label->setPalette(palette);
-            connect(qApp, &QApplication::paletteChanged, this, [=]() {
-                QPalette palette = label->palette();
-                palette.setColor(QPalette::Text, palette.color(QPalette::Disabled, QPalette::Text));
-                label->setPalette(palette);
-            });
             d->mInformativeLabel = label;
         }
         d->mInformativeLabel->setText(text);
@@ -494,7 +453,7 @@ void MessageBox::setDetailedText(const QString &text)
         d->mDetail->hide();
         if (!d->mDetailButton) {
             d->mDetailButton = new QPushButton(this);
-            d->mDetailButton->setText(QObject::tr("Show Details..."));
+            d->mDetailButton->setText(QMessageBox::tr("Show Details..."));
         }
     } else {
         d->mDetail = nullptr;
@@ -535,11 +494,24 @@ bool MessageBox::event(QEvent *e)
     bool result = QDialog::event(e);
     switch (e->type()) {
     case QEvent::LayoutRequest:
-        setuplayout();
+    {
+        d->updateSize();
         break;
+    }
+
     case QEvent::FontChange:
         d->updateSize();
         break;
+
+    case QEvent::ApplicationPaletteChange:
+    {
+        if (d->mInformativeLabel) {
+            QPalette palette = QGuiApplication::palette();
+            palette.setColor(QPalette::Text, palette.color(QPalette::Disabled, QPalette::Text));
+            d->mInformativeLabel->setPalette(palette);
+        }
+    }
+
     default:
         break;
     }
@@ -727,22 +699,11 @@ void MessageBoxPrivate::init(const QString &title, const QString &text)
 {
     Q_Q(MessageBox);
 
-    mHTML = false;
-
     mLabel = new QLabel;
     mLabel->setObjectName(QLatin1String("ukui_msgbox_label"));
     mLabel->setTextInteractionFlags(Qt::TextInteractionFlags(q->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, 0, q)));
     mLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     mLabel->setOpenExternalLinks(true);
-
-    contentArea = new QScrollArea;
-    contentArea->setBackgroundRole(QPalette::Base);
-    contentArea->setAutoFillBackground(true);
-    contentArea->setFrameShape(QFrame::NoFrame);
-
-    contentWidget = new QWidget;
-
-    contentLayout = new QVBoxLayout();
 
     mIconLabel = new QLabel;
     mIconLabel->setObjectName(QLatin1String("ukui_msgbox_icon_label"));
@@ -754,6 +715,16 @@ void MessageBoxPrivate::init(const QString &title, const QString &text)
     mButtonBox->setObjectName(QLatin1String("ukui_msgbox_buttonbox"));
     mButtonBox->setCenterButtons(q->style()->styleHint(QStyle::SH_MessageBox_CenterButtons, nullptr, q));
     QObject::connect(mButtonBox, SIGNAL(clicked(QAbstractButton*)), q, SLOT(_q_buttonClicked(QAbstractButton*)));
+
+    mCloseButtton = new QPushButton(q);
+    mCloseButtton->setFlat(true);
+    mCloseButtton->setProperty("isWindowButton", 0x2);
+    mCloseButtton->setIcon(QIcon::fromTheme("window-close-symbolic"));
+    mCloseButtton->setIconSize(QSize(16, 16));
+    mCloseButtton->setFixedSize(32, 32);
+    QObject::connect(mCloseButtton, &QPushButton::clicked, q, [=]() {
+        q->close();
+    });
 
     q->setModal(true);
     mIcon = QMessageBox::NoIcon;
@@ -770,22 +741,12 @@ void MessageBoxPrivate::setupLayout()
 
     bool hasIcon = mIconLabel->pixmap() && !mIconLabel->pixmap()->isNull();
 
-    mLabel->setContentsMargins(0, 0, 0, 0);
-    mLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mLabel->setWordWrap(true);
-
-    if (mInformativeLabel) {
-        mInformativeLabel->setContentsMargins(0, 0, 0, 0);
-        mInformativeLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        mInformativeLabel->setWordWrap(true);
-    }
-
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 32);
     gridLayout->setHorizontalSpacing(8);
     gridLayout->setVerticalSpacing(8);
     if (hasIcon)
-        gridLayout->addWidget(mIconLabel, 0, 0);
+        gridLayout->addWidget(mIconLabel, 0, 0, Qt::AlignTop);
     gridLayout->addWidget(mLabel, 0, hasIcon ? 1 : 0);
     if (mInformativeLabel) {
         gridLayout->addWidget(mInformativeLabel, 1, hasIcon ? 1 : 0);
@@ -795,25 +756,34 @@ void MessageBoxPrivate::setupLayout()
     buttonLayout->setSpacing(48);
     if (mDetail && !mDetail->isHidden()) {
         buttonLayout->setContentsMargins(0, 0, 0, 24);
+    } else {
+        buttonLayout->setContentsMargins(0, 0, 0, 0);
     }
+    buttonLayout->setSizeConstraint(QLayout::SetNoConstraint);
     if (mCheckbox) {
         buttonLayout->addWidget(mCheckbox, 0, Qt::AlignLeft | Qt::AlignVCenter);
     }
-    buttonLayout->addWidget(mButtonBox, buttonLayout->count(), Qt::AlignRight | Qt::AlignVCenter);
+    if (mButtonBox->layout()) {
+        mButtonBox->layout()->setSpacing(10);
+    }
+
+    buttonLayout->addWidget(mButtonBox, 0, Qt::AlignRight | Qt::AlignVCenter);
+
+    QVBoxLayout *contentLayout = new QVBoxLayout;
+    contentLayout->setContentsMargins(20, 0 , 20, 20);
+    contentLayout->setSpacing(0);
+    contentLayout->addLayout(gridLayout);
+    contentLayout->addLayout(buttonLayout);
+    if (mDetail) {
+        contentLayout->addWidget(mDetail);
+    }
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(mMarginLeft, mMarginTop, mMarginRight, mMarginBottom);
-    layout->setSpacing(0);
-    layout->addLayout(gridLayout);
-    layout->addLayout(buttonLayout);
-    if (mDetail) {
-        layout->addWidget(mDetail);
-    }
+    layout->setContentsMargins(4, 4, 4, 4);
+    layout->setSpacing(4);
+    layout->addWidget(mCloseButtton, 0, Qt::AlignRight);
+    layout->addLayout(contentLayout);
 
-    mLabel->setWordWrap(true);
-    if (mInformativeLabel) {
-        mInformativeLabel->setWordWrap(true);
-    }
     q->setLayout(layout);
 
     updateSize();
@@ -823,25 +793,42 @@ void MessageBoxPrivate::updateSize()
 {
     Q_Q(MessageBox);
 
-    layout->activate();
+    if (q->layout() == nullptr)
+        return;
 
-    QSize minSize(380, 142 + 14);
-    QSize size;
-    QSize screenSize = QGuiApplication::screenAt(QCursor::pos())->availableGeometry().size();
-    QSize maxSize(screenSize.width() - 100, screenSize.height() - 50);
-    mLabel->setMaximumSize(maxSize);
+    q->layout()->activate();
 
-    mLabel->setWordWrap(true);
-    if (mInformativeLabel) {
-        mInformativeLabel->setMaximumSize(maxSize);
-        mInformativeLabel->setWordWrap(true);
+    while (mButtonBox->layout()->count() < mButtonBox->buttons().count() + 1) {
+        QEvent event(QEvent::StyleChange);
+        QGuiApplication::sendEvent(mButtonBox, &event);
     }
 
+    QSize minSize(424, 156);
+    QSize size;
+    QSize screenSize = QGuiApplication::screenAt(QCursor::pos())->availableGeometry().size();
+    QSize maxSize(screenSize.width() * 0.8, screenSize.height() * 0.8);
+
+    mLabel->setWordWrap(false);
+    if (mInformativeLabel) {
+        mInformativeLabel->setWordWrap(false);
+    }
+
+    q->layout()->activate();
+
+    if (q->sizeHint().width() > qMax(mButtonBox->sizeHint().width() + 24 + 24, 452)) {
+        mLabel->setWordWrap(true);
+        if (mInformativeLabel) {
+            mInformativeLabel->setWordWrap(true);
+        }
+    }
+
+    q->layout()->activate();
+
     q->setContentsMargins(0, 0, 0, 0);
-    q->setMinimumSize(minSize);
     q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    size.setWidth(qMax(qMin(maxSize.width(), q->sizeHint().width()), 380));
-    size.setHeight(qMax(qMin(maxSize.height(), q->sizeHint().height()), 142 + 14));
+    size.setWidth(qMax(qMin(maxSize.width(), q->sizeHint().width()), minSize.width()));
+    size.setHeight(qMax(qMin(maxSize.height(), q->layout()->hasHeightForWidth() ? q->layout()->totalHeightForWidth(size.width())
+                                                                                : q->layout()->totalMinimumSize().height()), minSize.height()));
 
     q->setFixedSize(size);
 
@@ -1357,7 +1344,7 @@ void MessageBoxHelper::initDialog()
     for (QMessageDialogOptions::CustomButton button : options()->customButtons()) {
         QAbstractButton *ab = static_cast<QAbstractButton *>(button.button);
         if (ab) {
-            if (!ab->text().isEmpty() && ab->text() == "Show Details..." || ab->text() == "Hide Details...")
+            if (!ab->text().isEmpty() && ab->text() == QMessageBox::tr("Show Details...") || ab->text() == QMessageBox::tr("Hide Details..."))
                 continue;
             ab->setIcon(QIcon());
         }
