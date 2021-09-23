@@ -15,7 +15,7 @@ TARGET = qt5-ukui-platformtheme
 TEMPLATE = lib
 CONFIG += plugin
 CONFIG += c++11 link_pkgconfig
-PKGCONFIG += gsettings-qt
+PKGCONFIG += gsettings-qt Qt5XdgIconLoader
 
 include(../libqt5-ukui-style/libqt5-ukui-style.pri)
 

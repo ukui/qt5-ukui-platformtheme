@@ -30,6 +30,8 @@
 #include <QApplication>
 #include <QTimer>
 
+#include <qt5xdgiconloader/3.4.0/private/xdgiconloader/xdgiconloader_p.h>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QFileInfo>
 #include <QIcon>
@@ -177,6 +179,11 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
         break;
     }
     return QPlatformTheme::themeHint(hint);
+}
+
+QIconEngine *Qt5UKUIPlatformTheme::createIconEngine(const QString &iconName) const
+{
+    return new XdgIconLoaderEngine(iconName);
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))

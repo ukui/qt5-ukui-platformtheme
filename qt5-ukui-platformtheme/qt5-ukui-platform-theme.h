@@ -67,6 +67,8 @@ public:
     virtual const QFont *font(Font type = SystemFont) const;
     virtual QVariant themeHint(ThemeHint hint) const;
 
+    virtual QIconEngine *createIconEngine(const QString &iconName) const;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
     virtual bool usePlatformNativeDialog(DialogType type) const;
     virtual QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const;
