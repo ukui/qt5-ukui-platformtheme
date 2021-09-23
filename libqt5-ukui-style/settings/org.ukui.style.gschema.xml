@@ -80,4 +80,11 @@
             <description>The interval of text cursor blink.</description>
         </key>
     </schema>
+    <schema id="com.ukui.style">
+        <key type="s" name="palette-type">
+             <default> "FollowSystem" </default>
+             <summary>application palette type.</summary>
+             <description>Palette type of application. Have LightPalette DarkPalette FollowSystem.</description>
+        </key>
+    </schema>
 </schemalist>
