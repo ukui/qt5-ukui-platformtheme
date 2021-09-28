@@ -29,6 +29,7 @@ class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 class ButtonAnimationHelper;
 class BoxAnimationHelper;
+class ProgressBarAnimationHelper;
 class ShadowHelper;
 
 class QStyleOptionViewItem;
@@ -123,6 +124,7 @@ private:
     ButtonAnimationHelper*  m_button_animation_helper;
     BoxAnimationHelper* m_combobox_animation_helper;
     ShadowHelper *m_shadow_helper;
+    ProgressBarAnimationHelper *m_animation_helper;
 
     /*!
      * \brief m_use_dark_palette

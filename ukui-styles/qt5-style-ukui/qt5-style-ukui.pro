@@ -29,6 +29,8 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
     box-animation-helper.cpp \
     button-animation-helper.cpp \
+    progressbar-animation-helper.cpp \
+    progressbar-animation.cpp \
         qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
     shadow-helper.cpp \
@@ -39,6 +41,8 @@ SOURCES += \
 HEADERS += \
     box-animation-helper.h \
     button-animation-helper.h \
+    progressbar-animation-helper.h \
+    progressbar-animation.h \
         qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \
     shadow-helper.h \

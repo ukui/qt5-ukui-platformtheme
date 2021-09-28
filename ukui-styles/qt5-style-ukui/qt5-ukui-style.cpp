@@ -39,9 +39,10 @@
 #include "button-animation-helper.h"
 #include "button-animator.h"
 #include "box-animation-helper.h"
-
 #include "animator-iface.h"
 #include "animation-helper.h"
+#include "progressbar-animation-helper.h"
+#include "progressbar-animation.h"
 #include "shadow-helper.h"
 
 #include "highlight-effect.h"
@@ -255,6 +256,7 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
+    m_animation_helper = new ProgressBarAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
 }
 
@@ -3459,8 +3461,6 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
     {
         if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
             const auto progress = qMax(pb->progress, pb->minimum); // workaround for bug in QProgressBar
-            if (progress == pb->minimum)
-                return;
 
             const bool vertical = pb->orientation == Qt::Vertical;
             const bool inverted = pb->invertedAppearance;
@@ -3483,31 +3483,48 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             linearGradient.setColorAt(0, startColor);
             linearGradient.setColorAt(1, endColor);
             QRect progressRect;
+            int diff = 0;
             if (indeterminate) {
-
-            } else {
-                if (vertical) {
-                    if (reverse) {
-                        progressRect.setRect(rect.left(), rect.bottom() + 1 - len, rect.width(), len);
-                        linearGradient.setStart(progressRect.bottomLeft());
-                        linearGradient.setFinalStop(progressRect.topLeft());
-                    } else {
-                        progressRect.setRect(rect.x(), rect.top(), rect.width(), len);
-                        linearGradient.setStart(progressRect.topLeft());
-                        linearGradient.setFinalStop(progressRect.bottomLeft());
+                len = 56;
+                double currentValue = 0;
+                if (QVariantAnimation *animation = m_animation_helper->animation(option->styleObject)) {
+                    currentValue = animation->currentValue().toDouble();
+                    if (animation->currentTime() == 0) {
+                        animation->setDirection(QAbstractAnimation::Forward);
+                        animation->start();
+                    } else if (animation->currentTime() == animation->totalDuration()) {
+                        animation->setDirection(QAbstractAnimation::Backward);
+                        animation->start();
                     }
                 } else {
-                    if (reverse) {
-                        progressRect.setRect(rect.right() + 1 - len, rect.top(), len, rect.height());
-                        linearGradient.setStart(progressRect.topRight());
-                        linearGradient.setFinalStop(progressRect.topLeft());
-                    } else {
-                        progressRect.setRect(rect.x(), rect.y(), len, rect.height());
-                        linearGradient.setStart(progressRect.topLeft());
-                        linearGradient.setFinalStop(progressRect.topRight());
-                    }
+                    m_animation_helper->startAnimation(new ProgressBarAnimation(option->styleObject));
+                }
+                diff = currentValue * (maxWidth - len);
+            } else {
+                m_animation_helper->stopAnimation(option->styleObject);
+            }
+            if (vertical) {
+                if (reverse) {
+                    progressRect.setRect(rect.left(), rect.bottom() + 1 - len - diff, rect.width(), len);
+                    linearGradient.setStart(progressRect.bottomLeft());
+                    linearGradient.setFinalStop(progressRect.topLeft());
+                } else {
+                    progressRect.setRect(rect.x(), rect.top() + diff, rect.width(), len);
+                    linearGradient.setStart(progressRect.topLeft());
+                    linearGradient.setFinalStop(progressRect.bottomLeft());
+                }
+            } else {
+                if (reverse) {
+                    progressRect.setRect(rect.right() + 1 - len - diff, rect.top(), len, rect.height());
+                    linearGradient.setStart(progressRect.topRight());
+                    linearGradient.setFinalStop(progressRect.topLeft());
+                } else {
+                    progressRect.setRect(rect.x() + diff, rect.y(), len, rect.height());
+                    linearGradient.setStart(progressRect.topLeft());
+                    linearGradient.setFinalStop(progressRect.topRight());
                 }
             }
+
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(linearGradient);
