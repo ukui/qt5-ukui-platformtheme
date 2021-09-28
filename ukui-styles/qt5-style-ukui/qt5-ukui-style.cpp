@@ -332,9 +332,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
         hightight_dis.setRgb(46, 46, 48);
         highLightText_dis.setRgb(77, 77, 77);
         alternateBase_at.setRgb(38, 38, 38);
-        noRale_at.setRgb(51, 51, 51),
-        noRole_iat.setRgb(51, 51, 51),
-        noRole_dis.setRgb(60, 60, 64),
+        noRale_at.setRgb(51, 51, 51);
+        noRole_iat.setRgb(51, 51, 51);
+        noRole_dis.setRgb(60, 60, 64);
         toolTipBase.setRgb(38, 38, 38);
         toolTipText.setRgb(217, 217, 217);
         placeholderText.setRgb(166, 166, 166);
