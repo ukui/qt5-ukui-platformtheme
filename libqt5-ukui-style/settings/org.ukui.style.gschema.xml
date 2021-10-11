@@ -1,9 +1,14 @@
 <schemalist>
     <schema id="org.ukui.style" path="/org/ukui/style/" gettext-domain="style">
         <key type="s" name="style-name">
-            <default>"ukui"</default>
+            <default>"ukui-fashion"</default>
             <summary>Current Qt Style</summary>
-            <description>Set default style for UKUI desktop environment.</description>
+            <description>Set style for UKUI desktop environment. Have ukui-classical ukui-default ukui-fashion</description>
+        </key>
+        <key type="s" name="palette-name">
+            <default>"ukui-light"</default>
+            <summary>Current Qt Style</summary>
+            <description>Set palette for UKUI desktop environment. Have ukui-default ukui-light ukui-dark</description>
         </key>
         <key type="s" name="icon-theme-name">
             <default>"ukui"</default>

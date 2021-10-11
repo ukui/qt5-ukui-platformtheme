@@ -45,6 +45,7 @@ class QStyleOptionViewItem;
 #include <QStyleOption>
 #include <private/qtextengine_p.h>
 #include <qmath.h>
+#include <QGSettings>
 
 /*!
  * \brief The Qt5UKUIStyle class
@@ -131,12 +132,12 @@ private:
     ProgressBarAnimationHelper *m_animation_helper;
 
     /*!
-     * \brief m_use_dark_palette
+     * \brief m_drak_palette
      * \deprecated
      * use qApp->property("preferDark") instead. link to: #63026.
      */
-    bool m_use_dark_palette = false;
-    bool m_is_default_style = true;
+    bool m_drak_palette = false;
+    bool m_default_palette = false;
 
     QColor button_Click() const;
     QColor button_Hover() const;
@@ -148,6 +149,13 @@ private:
     mutable QColor mHighLightHover;
 
     void setThemeColor(QString themeColor, QPalette &palette) const;
+
+    void updatePalette();
+    void changePaletteName();
+    void changePaletteType();
+    void controlPalette();
+
+    QGSettings *paletteSettings = nullptr;
 
     // view
     QString calculateElidedText(const QString &text, const QTextOption &textOption,

@@ -38,86 +38,6 @@ using namespace UKUI;
 
 ProxyStylePlugin::ProxyStylePlugin()
 {
-    if (QGSettings::isSchemaInstalled("com.ukui.style")) {
-        connect(qApp, &QApplication::organizationNameChanged, this, [=]() {
-            if (QGSettings::isSchemaInstalled("com.ukui.style")) {
-                const QString &orgName = qApp->organizationName();
-                const QString &appName = qApp->applicationName();
-
-                if (!(orgName.isEmpty()) && !(appName.isEmpty())) {
-                    paletteSettings = new QGSettings("com.ukui.style", QString("/ukui/%2/%3/").arg(orgName, appName).toLocal8Bit());
-                }
-
-                if (paletteSettings != nullptr) {
-                    const QString palette_type = paletteSettings->get("paletteType").toString();
-                    if (palette_type == "LightPalette") {
-                        qApp->setProperty("preferDark", QVariant());
-                        qApp->setStyle(new ProxyStyle("ukui-light"));
-                    } else if (palette_type == "DarkPalette") {
-                        qApp->setProperty("preferDark", true);
-                        qApp->setStyle(new ProxyStyle("ukui-dark"));
-                    }
-
-                    connect(paletteSettings, &QGSettings::changed, this, [=](const QString &key) {
-                        if (key == "paletteType") {
-                            const QString palette_type = paletteSettings->get("paletteType").toString();
-                            if (palette_type == "LightPalette") {
-                                qApp->setProperty("preferDark", QVariant());
-                                qApp->setStyle(new ProxyStyle("ukui-light"));
-                                return;
-                            } else if (palette_type == "DarkPalette") {
-                                qApp->setProperty("preferDark", true);
-                                qApp->setStyle(new ProxyStyle("ukui-dark"));
-                                return;
-                            } else {
-                                if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-                                    auto settings = UKUIStyleSettings::globalInstance();
-
-                                    //We should not swich a application theme which use internal style.
-                                    if (QApplication::style()->inherits("InternalStyle"))
-                                        return;
-
-                                    auto appStyleSettings = ApplicationStyleSettings::getInstance();
-                                    if (appStyleSettings->currentStyleStretagy() != ApplicationStyleSettings::Default)
-                                        return;
-
-                                    auto styleName = settings->get("styleName").toString();
-                                    if (styleName == "ukui-default" || styleName == "ukui-dark" || styleName == "ukui-white"
-                                            || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui") {
-                                        if (styleName == "ukui")
-                                            styleName = "ukui-default";
-                                        else if (styleName == "ukui-black")
-                                            styleName = "ukui-dark";
-                                        else if (styleName == "ukui-white")
-                                            styleName = "ukui-light";
-
-                                        if (styleName == "ukui-dark") {
-                                            qApp->setProperty("preferDark", true);
-                                        } else {
-                                            qApp->setProperty("preferDark", QVariant());
-                                        }
-                                        qApp->setStyle(new ProxyStyle(styleName));
-                                        return;
-                                    }
-                                    for (auto keys : QStyleFactory::keys()) {
-                                        if (styleName.toLower() == keys.toLower()) {
-                                            qApp->setStyle(new QProxyStyle(styleName));
-                                            return;
-                                        }
-                                    }
-                                    qApp->setStyle(new ProxyStyle("ukui-default"));
-                                    return;
-                                }
-                            }
-                        }
-                    });
-                } else {
-
-                }
-            }
-        });
-    }
-
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
@@ -134,80 +54,32 @@ ProxyStylePlugin::ProxyStylePlugin()
                 if (appStyleSettings->currentStyleStretagy() != ApplicationStyleSettings::Default)
                     return;
 
-                if (paletteSettings) {
-                    const QString palette_type = paletteSettings->get("paletteType").toString();
-                    if (palette_type == "LightPalette") {
-                        return;
-                    } else if (palette_type == "DarkPalette") {
-                        return;
-                    }
-                }
-
                 auto styleName = settings->get("styleName").toString();
 
                 if (styleName == "ukui-default" || styleName == "ukui-dark" || styleName == "ukui-white"
-                        || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui") {
-                    if (styleName == "ukui")
-                        styleName = "ukui-default";
-                    else if (styleName == "ukui-black")
-                        styleName = "ukui-dark";
-                    else if (styleName == "ukui-white")
-                        styleName = "ukui-light";
+                        || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui")
+                    styleName = "ukui-default";
 
-                    if (styleName == "ukui-dark") {
-                        qApp->setProperty("preferDark", true);
-                    } else {
-                        qApp->setProperty("preferDark", QVariant());
-                    }
+                if (styleName == "ukui-default") {
+                    settings->set("paletteName", "ukui-default");
                     qApp->setStyle(new ProxyStyle(styleName));
-//                    foreach (auto widget, qApp->allWidgets()) {
-//                        QEvent e(QEvent::StyleChange);
-//                        QApplication::sendEvent(widget, &e);
-//                        widget->repaint();
-//                    }
-                    return;
+                } else if (styleName == "ukui-classical") {
+                    settings->set("paletteName", "ukui-light");
+                    qApp->setStyle(new ProxyStyle(styleName));
+                } else if (styleName == "ukui-fashion") {
+                    settings->set("paletteName", "ukui-light");
+                    qApp->setStyle(new ProxyStyle(styleName));
                 }
 
                 for (auto keys : QStyleFactory::keys()) {
                     if (styleName.toLower() == keys.toLower()) {
                         qApp->setStyle(new QProxyStyle(styleName));
-//                    foreach (auto widget, qApp->allWidgets()) {
-//                        QEvent e(QEvent::StyleChange);
-//                        QApplication::sendEvent(widget, &e);
-//                        widget->repaint();
-//                    }
                         return;
                     }
                 }
 
                 qApp->setStyle(new QProxyStyle("fusion"));
                 return;
-
-                QPalette palette = QApplication::palette();
-                /*!
-                  \todo implemet palette switch.
-                  */
-                switch (appStyleSettings->currentColorStretagy()) {
-                case ApplicationStyleSettings::System: {
-                    break;
-                }
-                case ApplicationStyleSettings::Bright: {
-                    break;
-                }
-                case ApplicationStyleSettings::Dark: {
-                    break;
-                }
-                default:
-                    break;
-                }
-                QApplication::setPalette(palette);
-            }
-
-            if (key == "systemPalette") {
-                onSystemPaletteChanged();
-            }
-            if (key == "useSystemPalette") {
-                onSystemPaletteChanged();
             }
         });
     }
@@ -224,23 +96,9 @@ QStyle *ProxyStylePlugin::create(const QString &key)
 
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
-            if (m_current_style_name == "ukui-default" || m_current_style_name == "ukui-dark"
-                    || m_current_style_name == "ukui-white" || m_current_style_name == "ukui-black"
-                    || m_current_style_name == "ukui-light" || m_current_style_name == "ukui") {
-                if (m_current_style_name == "ukui")
-                    m_current_style_name = "ukui-default";
-                else if (m_current_style_name == "ukui-black")
-                    m_current_style_name = "ukui-dark";
-                else if (m_current_style_name == "ukui-white")
-                    m_current_style_name = "ukui-light";
-
-                if (m_current_style_name == "ukui-dark") {
-                    qApp->setProperty("preferDark", true);
-                } else {
-                    qApp->setProperty("preferDark", QVariant());
-                }
+            if (m_current_style_name == "ukui-classical" || m_current_style_name == "ukui-default"
+                    || m_current_style_name == "ukui-fashion")
                 return new ProxyStyle(m_current_style_name);
-            }
             for (auto styleName : QStyleFactory::keys()) {
                 if (styleName.toLower() == m_current_style_name.toLower())
                     return new QProxyStyle(m_current_style_name);

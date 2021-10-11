@@ -24,7 +24,6 @@
 #define PROXYSTYLEPLUGIN_H
 
 #include <QStylePlugin>
-#include <QGSettings>
 
 namespace UKUI {
 
@@ -48,7 +47,6 @@ public slots:
 
 private:
     QString m_current_style_name;
-    QGSettings *paletteSettings = nullptr;
 };
 
 }

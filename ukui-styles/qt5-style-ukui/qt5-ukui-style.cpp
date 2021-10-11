@@ -92,14 +92,17 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle()
 Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
 #endif
 {
-    m_is_default_style = useDefault;
-    m_use_dark_palette = dark;
+    m_default_palette = useDefault;
+    m_drak_palette = dark;
+
     m_tab_animation_helper = new TabWidgetAnimationHelper(this);
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
     m_button_animation_helper = new ButtonAnimationHelper(this);
     m_combobox_animation_helper = new BoxAnimationHelper(this);
     m_animation_helper = new ProgressBarAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
+
+    controlPalette();
 
     if (auto settings = UKUIStyleSettings::globalInstance()) {
         QString themeColor = settings->get("themeColor").toString();
@@ -301,7 +304,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
            toolTipText(38, 38, 38),
            placeholderText(38, 38, 38);
 
-    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
         windowText_at.setRgb(217, 217, 217);
         windowText_iat.setRgb(217, 217, 217);
         windowText_dis.setRgb(77, 77, 77);
@@ -435,7 +438,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
 QColor Qt5UKUIStyle::button_Click() const
 {
-    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
         return QColor(75, 75, 79);
     } else {
         return QColor(217, 217, 217);
@@ -446,7 +449,7 @@ QColor Qt5UKUIStyle::button_Click() const
 
 QColor Qt5UKUIStyle::button_Hover() const
 {
-    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
         return QColor(55, 55, 59);
     } else {
         return QColor(230, 230, 230);
@@ -457,7 +460,7 @@ QColor Qt5UKUIStyle::button_Hover() const
 
 QColor Qt5UKUIStyle::button_DisableChecked() const
 {
-    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
         return QColor(61, 61, 64);
     } else {
         return QColor(224, 224, 224);
@@ -476,6 +479,128 @@ QColor Qt5UKUIStyle::highLight_Click() const
 QColor Qt5UKUIStyle::highLight_Hover() const
 {
     return mHighLightHover;
+}
+
+
+
+void Qt5UKUIStyle::updatePalette()
+{
+    QPalette palette;
+    this->polish(palette);
+    qApp->setPalette(palette);
+    emit qApp->paletteChanged(palette);
+}
+
+
+
+void Qt5UKUIStyle::changePaletteName()
+{
+    if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+        auto settings = UKUIStyleSettings::globalInstance();
+        connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
+            if (key == "paletteName") {
+                if (paletteSettings != nullptr) {
+                    QString palette_type = paletteSettings->get("paletteType").toString();
+                    if (palette_type == "LightPalette" || palette_type == "DarkPalette")
+                        return;
+                }
+                QString palette_name = settings->get("paletteName").toString();
+                if (palette_name == "ukui-default") {
+                    if (settings->get("styleName").toString() == "ukui-default") {
+                        m_default_palette = true;
+                    } else {
+                        m_default_palette = false;
+                    }
+                    m_drak_palette = false;
+                } else if (palette_name == "ukui-dark") {
+                    m_default_palette = false;
+                    m_drak_palette = true;
+                } else if (palette_name == "ukui-light") {
+                    m_default_palette = false;
+                    m_drak_palette = false;
+                }
+                updatePalette();
+            }
+        });
+    }
+}
+
+
+
+void Qt5UKUIStyle::changePaletteType()
+{
+    if (paletteSettings != nullptr) {
+        const QString palette_type = paletteSettings->get("paletteType").toString();
+        connect(paletteSettings, &QGSettings::changed, this, [=](const QString &key) {
+            if (key == "paletteType") {
+                const QString palette_type = paletteSettings->get("paletteType").toString();
+                if (palette_type == "LightPalette") {
+                    m_default_palette = false;
+                    m_drak_palette = false;
+                } else if (palette_type == "DarkPalette") {
+                    m_default_palette = false;
+                    m_drak_palette = true;
+                } else if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+                    auto settings = UKUIStyleSettings::globalInstance();
+                    QString palette_name = settings->get("paletteName").toString();
+                    if (palette_name == "ukui-default") {
+                        if (settings->get("styleName").toString() == "ukui-default") {
+                            m_default_palette = true;
+                        } else {
+                            m_default_palette = false;
+                        }
+                        m_drak_palette = false;
+                    } else if (palette_name == "ukui-dark") {
+                        m_default_palette = false;
+                        m_drak_palette = true;
+                    } else if (palette_name == "ukui-light") {
+                        m_default_palette = false;
+                        m_drak_palette = false;
+                    }
+                }
+                updatePalette();
+            }
+        });
+
+        if (palette_type == "LightPalette") {
+            m_default_palette = false;
+            m_drak_palette = false;
+        } else if (palette_type == "DarkPalette") {
+            m_default_palette = false;
+            m_drak_palette = true;
+        } else {
+            return;
+        }
+        QPalette palette;
+        this->polish(palette);
+        qApp->setPalette(palette);
+    }
+}
+
+
+
+void Qt5UKUIStyle::controlPalette()
+{
+    changePaletteName();
+    if (paletteSettings != nullptr) {
+        changePaletteType();
+    } else if (QGSettings::isSchemaInstalled("com.ukui.style")) {
+        const QString &orgName = qApp->organizationName();
+        const QString &appName = qApp->applicationName();
+        if (!(orgName.isEmpty()) && !(appName.isEmpty())) {
+            paletteSettings = new QGSettings("com.ukui.style", QString("/ukui/%2/%3/").arg(orgName, appName).toLocal8Bit(), this);
+            changePaletteType();
+        } else {
+            connect(qApp, &QApplication::organizationNameChanged, this, [=]() {
+                const QString &orgName = qApp->organizationName();
+                const QString &appName = qApp->applicationName();
+                if (!(orgName.isEmpty()) && !(appName.isEmpty())) {
+                    paletteSettings = new QGSettings("com.ukui.style", QString("/ukui/%2/%3/").arg(orgName, appName).toLocal8Bit(), this);
+                    changePaletteType();
+                }
+            });
+        }
+    }
 }
 
 
@@ -1438,8 +1563,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             QRectF rect = radiobutton->rect.adjusted(1, 1, -1, -1);
 
-            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool()
-                                                                                      || (m_is_default_style && specialList().contains(qAppName())));
+            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (m_drak_palette
+                                                                                      || (m_default_palette && specialList().contains(qAppName())));
             bool enable = radiobutton->state & State_Enabled;
             bool mouseOver = radiobutton->state & State_MouseOver;
             bool sunKen = radiobutton->state & State_Sunken;
@@ -1526,8 +1651,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_IndicatorCheckBox:
     {
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
-            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool()
-                                                                                      || (m_is_default_style && specialList().contains(qAppName())));
+            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (m_drak_palette
+                                                                                      || (m_default_palette && specialList().contains(qAppName())));
             bool enable = checkbox->state & State_Enabled;
             bool mouseOver = checkbox->state & State_MouseOver;
             bool sunKen = checkbox->state & State_Sunken;
