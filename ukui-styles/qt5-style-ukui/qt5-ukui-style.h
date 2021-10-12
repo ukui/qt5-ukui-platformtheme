@@ -34,6 +34,8 @@ class ShadowHelper;
 
 class QStyleOptionViewItem;
 
+class KAbstractStyleParameters;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 #include<private/qfusionstyle_p.h>
 #define Style QFusionStyle
@@ -56,7 +58,7 @@ class Qt5UKUIStyle : public Style
 {
     Q_OBJECT
 public:
-    explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true);
+    explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true, QString type = "fashion");
 
     const QStringList specialList() const;
 
@@ -138,6 +140,9 @@ private:
      */
     bool m_drak_palette = false;
     bool m_default_palette = false;
+    QString m_type = "fashion";
+
+    bool isUseDarkPalette() const;
 
     QColor button_Click() const;
     QColor button_Hover() const;
@@ -156,6 +161,9 @@ private:
     void controlPalette();
 
     QGSettings *paletteSettings = nullptr;
+
+    // KAbstractStyleParameters
+    KAbstractStyleParameters *sp = nullptr;
 
     // view
     QString calculateElidedText(const QString &text, const QTextOption &textOption,

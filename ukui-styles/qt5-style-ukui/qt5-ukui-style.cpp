@@ -47,6 +47,8 @@
 
 #include "highlight-effect.h"
 
+#include "kabstract-style-parameters.h"
+
 #include <QIcon>
 #include <QStyleOptionViewItem>
 #include <QAbstractItemView>
@@ -87,13 +89,14 @@ static QWindow *qt_getWindow(const QWidget *widget)
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QFusionStyle()
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault, QString type) : QFusionStyle()
 #else
-Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
+Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault, QString type) : QProxyStyle("fusion")
 #endif
 {
     m_default_palette = useDefault;
     m_drak_palette = dark;
+    m_type = type;
 
     m_tab_animation_helper = new TabWidgetAnimationHelper(this);
     m_scrollbar_animation_helper = new ScrollBarAnimationHelper(this);
@@ -101,6 +104,14 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_combobox_animation_helper = new BoxAnimationHelper(this);
     m_animation_helper = new ProgressBarAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
+
+    if (m_type == "default") {
+        sp = new KDefaultStyleParameters(this);
+    } else if (m_type == "classical") {
+        sp = new KClassicalStyleParameters(this);
+    } else {
+        sp = new KFashionStyleParameters(this);
+    }
 
     controlPalette();
 
@@ -118,8 +129,8 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
             }
         });
     } else {
-        mHighLightClick = QColor(36, 109, 212);
-        mHighLightHover = QColor(55, 144, 250);
+        mHighLightHover = sp->HL_Blue_Hover;
+        mHighLightClick = sp->HL_Blue_Click;
     }
 }
 
@@ -248,212 +259,39 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
-    QColor windowText_at(38, 38, 38),
-           windowText_iat(38, 38, 38),
-           windowText_dis(166, 166, 166),
-           button_at(230, 230, 230),
-           button_iat(230, 230, 230),
-           button_dis(233, 233, 233),
-           light_at(255, 255, 255),
-           light_iat(255, 255, 255),
-           light_dis(242, 242, 242),
-           midlight_at(217, 217, 217),
-           midlight_iat(217, 217, 217),
-           midlight_dis(230, 230, 230),
-           dark_at(77, 77, 77),
-           dark_iat(77, 77, 77),
-           dark_dis(64, 64, 64),
-           mid_at(115, 115, 115),
-           mid_iat(115, 115, 115),
-           mid_dis(102, 102, 102),
-           text_at(38, 38, 38),
-           text_iat(38, 38, 38),
-           text_dis(140, 140, 140),
-           brightText_at(89, 89, 89),
-           brightText_iat(89, 89, 89),
-           brightText_dis(77, 77, 77),
-           buttonText_at(38, 38, 38),
-           buttonText_iat(38, 38, 38),
-           buttonText_dis(179, 179, 179),
-           base_at(255, 255, 255),
-           base_iat(245, 245, 245),
-           base_dis(237, 237, 237),
-           window_at(245, 245, 245),
-           window_iat(237, 237, 237),
-           window_dis(230, 230, 230),
-           shadow_at(214, 214, 214),
-           shadow_iat(214, 214, 214),
-           shadow_dis(201, 201, 201),
-           highLight_at(55, 144, 250),
-           highLight_iat(55, 144, 250),
-           hightight_dis(233, 233, 233),
-           highLightText_at(255, 255, 255),
-           highLightText_iat(255, 255, 255),
-           highLightText_dis(179, 179, 179),
-           link_at(55, 144, 250),
-           link_iat(55, 144, 250),
-           link_dis(55, 144, 250),
-           linkVisited_at(114, 46, 209),
-           linkVisited_iat(114, 46, 209),
-           linkVisited_dis(114, 46, 209),
-           alternateBase_at(244, 245, 245),
-           noRale_at(240, 240, 240),
-           noRole_iat(240, 240, 240),
-           noRole_dis(217, 217, 217),
-           toolTipBase(255, 255, 255),
-           toolTipText(38, 38, 38),
-           placeholderText(38, 38, 38);
-
-    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
-        windowText_at.setRgb(217, 217, 217);
-        windowText_iat.setRgb(217, 217, 217);
-        windowText_dis.setRgb(77, 77, 77);
-        button_at.setRgb(55, 55, 59);
-        button_iat.setRgb(55, 55, 59);
-        button_dis.setRgb(46, 46, 48);
-        midlight_at.setRgb(77, 77, 77);
-        midlight_iat.setRgb(77, 77, 77);
-        midlight_dis.setRgb(64, 64, 64);
-        dark_at.setRgb(38, 38, 38);
-        dark_iat.setRgb(38, 38, 38);
-        dark_dis.setRgb(26, 26, 26);
-        text_at.setRgb(217, 217, 217);
-        text_iat.setRgb(217, 217, 217);
-        text_dis.setRgb(77, 77, 77);
-        brightText_at.setRgb(255, 255, 255);
-        brightText_iat.setRgb(255, 255, 255);
-        brightText_dis.setRgb(77, 77, 77);
-        buttonText_at.setRgb(217, 217, 217);
-        buttonText_iat.setRgb(217, 217, 217);
-        buttonText_dis.setRgb(76, 76, 79);
-        base_at.setRgb(18, 18, 18);
-        base_iat.setRgb(28, 28, 28);
-        base_dis.setRgb(36, 36, 36);
-        window_at.setRgb(35, 36, 38);
-        window_iat.setRgb(26, 26, 26);
-        window_dis.setRgb(18, 18, 18);
-        hightight_dis.setRgb(46, 46, 48);
-        highLightText_dis.setRgb(77, 77, 77);
-        alternateBase_at.setRgb(38, 38, 38);
-        noRale_at.setRgb(51, 51, 51);
-        noRole_iat.setRgb(51, 51, 51);
-        noRole_dis.setRgb(60, 60, 64);
-        toolTipBase.setRgb(38, 38, 38);
-        toolTipText.setRgb(217, 217, 217);
-        placeholderText.setRgb(166, 166, 166);
-    }
-
-    palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Button, button_at);
-    palette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Light, light_at);
-    palette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Dark, dark_at);
-    palette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Mid, mid_at);
-    palette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Text, text_at);
-    palette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
-
-    palette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
-
-    palette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Base, base_at);
-    palette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Window, window_at);
-    palette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
-    palette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
-
-    palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
-
-    palette.setColor(QPalette::Active, QPalette::Link, link_at);
-    palette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
-
-    palette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
-
-    palette.setColor(QPalette::AlternateBase, alternateBase_at);
-
-    palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
-    palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
-    palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
-
-    palette.setColor(QPalette::ToolTipBase, toolTipBase);
-
-    palette.setColor(QPalette::ToolTipText, toolTipText);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setColor(QPalette::PlaceholderText, placeholderText);
-#endif
+    sp->setPalette(palette, isUseDarkPalette());
 
     if (auto settings = UKUIStyleSettings::globalInstance()) {
         QString themeColor = settings->get("themeColor").toString();
         setThemeColor(themeColor, palette);
     } else {
-        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
-        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
-        mHighLightClick = QColor(36, 109, 212);
-        mHighLightHover = QColor(55, 144, 250);
+        palette.setColor(QPalette::Active, QPalette::Highlight, sp->HL_Blue_Default);
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, sp->HL_Blue_Default);
+        mHighLightHover = sp->HL_Blue_Hover;
+        mHighLightClick = sp->HL_Blue_Click;
     }
 
     return palette;
 }
 
 
+bool Qt5UKUIStyle::isUseDarkPalette() const
+{
+    return (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName()))));
+}
+
+
 
 QColor Qt5UKUIStyle::button_Click() const
 {
-    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
-        return QColor(75, 75, 79);
-    } else {
-        return QColor(217, 217, 217);
-    }
+    return sp->button_click(isUseDarkPalette());
 }
 
 
 
 QColor Qt5UKUIStyle::button_Hover() const
 {
-    if (!useDefaultPalette().contains(qAppName()) && (m_drak_palette || (m_default_palette && specialList().contains(qAppName())))) {
-        return QColor(55, 55, 59);
-    } else {
-        return QColor(230, 230, 230);
-    }
+    return sp->button_hover(isUseDarkPalette());
 }
 
 
@@ -608,10 +446,10 @@ void Qt5UKUIStyle::controlPalette()
 void Qt5UKUIStyle::setThemeColor(QString themeColor, QPalette &palette) const
 {
     if (themeColor == "daybreakBlue") {
-        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
-        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
-        mHighLightClick = QColor(36, 109, 212);
-        mHighLightHover = QColor(55, 144, 250);
+        palette.setColor(QPalette::Active, QPalette::Highlight, sp->HL_Blue_Default);
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, sp->HL_Blue_Default);
+        mHighLightHover = sp->HL_Blue_Hover;
+        mHighLightClick = sp->HL_Blue_Click;
     } else if (themeColor == "jamPurple") {
         palette.setColor(QPalette::Active, QPalette::Highlight, QColor(114, 46, 209));
         palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(114, 46, 209));
@@ -643,10 +481,10 @@ void Qt5UKUIStyle::setThemeColor(QString themeColor, QPalette &palette) const
         mHighLightClick = QColor(56, 158, 25);
         mHighLightHover = QColor(82, 196, 41);
     } else {
-        palette.setColor(QPalette::Active, QPalette::Highlight, QColor(55, 144, 250));
-        palette.setColor(QPalette::Inactive, QPalette::Highlight, QColor(55, 144, 250));
-        mHighLightClick = QColor(36, 109, 212);
-        mHighLightHover = QColor(55, 144, 250);
+        palette.setColor(QPalette::Active, QPalette::Highlight, sp->HL_Blue_Default);
+        palette.setColor(QPalette::Inactive, QPalette::Highlight, sp->HL_Blue_Default);
+        mHighLightHover = sp->HL_Blue_Hover;
+        mHighLightClick = sp->HL_Blue_Click;
     }
 }
 
@@ -889,8 +727,6 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             const bool hover = button->state & State_MouseOver;
             const bool sunken = button->state & State_Sunken;
             const bool on = button->state & State_On;
-            qreal x_Radius = 4;
-            qreal y_Radius = 4;
             bool isWindowButton = false;
             bool isWindowColoseButton = false;
             bool isImportant = false;
@@ -927,7 +763,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 else
                     painter->setBrush(option->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -940,7 +776,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 else
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
             }
 
@@ -950,7 +786,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 if (sunken || on) {
                     if (isWindowColoseButton) {
-                        painter->setBrush(QColor("#E44C50"));
+                        painter->setBrush(sp->ColoseButton_Click);
                     } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.15);
@@ -965,7 +801,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     }
                 } else if (hover) {
                     if (isWindowColoseButton) {
-                        painter->setBrush(QColor("#F86458"));
+                        painter->setBrush(sp->ColoseButton_Hover);
                     } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.1);
@@ -979,7 +815,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                             painter->setBrush(highLight_Hover());
                     }
                 }
-                painter->drawRoundedRect(button->rect, x_Radius, y_Radius);
+                painter->drawRoundedRect(button->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1003,8 +839,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 if (isWindowColoseButton) {
-                    hoverColor = QColor("#F86458");
-                    sunkenColor = QColor("#E44C50");
+                    hoverColor = sp->ColoseButton_Hover;
+                    sunkenColor = sp->ColoseButton_Click;
                 } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
                     hoverColor.setAlphaF(0.1);
@@ -1024,7 +860,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
                 painter->setBrush(mixColor(hoverColor, sunkenColor, opacity));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1049,7 +885,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setOpacity(opacity);
                 if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#F86458"));
+                    painter->setBrush(sp->ColoseButton_Hover);
                 } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
@@ -1064,7 +900,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     else
                         painter->setBrush(highLight_Hover());
                 }
-                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1210,7 +1046,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             else
                 painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
             painter->restore();
             return;
         }
@@ -1220,7 +1056,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Active, QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
             painter->restore();
         }
 
@@ -1234,7 +1070,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#E44C50"));
+                    painter->setBrush(sp->ColoseButton_Click);
                 } else if (isWindowButton || useButtonPalette) {
                     painter->setBrush(button_Click());
                 } else {
@@ -1246,14 +1082,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
-                    painter->setBrush(QColor("#F86458"));
+                    painter->setBrush(sp->ColoseButton_Hover);
                 } else if (isWindowButton || useButtonPalette) {
                     painter->setBrush(button_Hover());
                 } else {
                     painter->setBrush(highLight_Hover());
                 }
             }
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
             painter->restore();
             return;
         }
@@ -1282,8 +1118,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
                 sunkenColor.setAlphaF(0.15);
             } else if (isWindowColoseButton) {
-                hoverColor = QColor("#F86458");
-                sunkenColor = QColor("#E44C50");
+                hoverColor = sp->ColoseButton_Hover;
+                sunkenColor = sp->ColoseButton_Click;
             } else if (isWindowButton || useButtonPalette){
                 hoverColor = button_Hover();
                 sunkenColor = button_Click();
@@ -1292,7 +1128,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 sunkenColor = highLight_Click();
             }
             painter->setBrush(mixColor(hoverColor, sunkenColor, opacity));
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
             painter->restore();
             return;
         }
@@ -1320,13 +1156,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 color.setAlphaF(0.1);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
-                painter->setBrush(QColor("#F86458"));
+                painter->setBrush(sp->ColoseButton_Hover);
             } else if (isWindowButton || useButtonPalette){
                 painter->setBrush(button_Hover());
             } else {
                 painter->setBrush(highLight_Hover());
             }
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
             painter->restore();
             return;
         }
@@ -2822,8 +2658,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             const bool ha = tb->features & QStyleOptionToolButton::Arrow;
             const bool enable = tb->state & State_Enabled;
             QFontMetrics fm = tb->fontMetrics;
-            int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
+            int Margin_Height = sp->Button_MarginHeight;
+            int ToolButton_MarginWidth = sp->ToolButton_MarginWidth;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
 
             int iconWidth = (icon || ha) ? tb->iconSize.width() : 0;
@@ -3986,13 +3822,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 16;
 
     case PM_ButtonIconSize:
-        return 16;
+        return sp->Button_IconSize;
     case PM_ButtonMargin:
-        return 16;
+        return sp->Button_MarginWidth;
     case PM_MenuButtonIndicator:
-        return 16;
+        return sp->Button_IndicatorSize;
     case PM_ButtonDefaultIndicator:
-        return 0;
+        return sp->Button_DefaultIndicatorSize;
 
     case PM_ComboBoxFrameWidth:
         return 2;
@@ -4164,21 +4000,20 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
     {
         if (const QStyleOptionToolButton *tb = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
             int mbi = proxy()->pixelMetric(PM_MenuButtonIndicator, tb, widget);
-            int MarginWidth = 10;
             QRect rect = tb->rect;
             switch (subControl) {
             case SC_ToolButton:
             {
                 if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
                         == QStyleOptionToolButton::MenuButtonPopup)
-                    rect.adjust(0, 0, - (mbi + MarginWidth), 0);
+                    rect.adjust(0, 0, - (mbi + sp->ToolButton_MarginWidth), 0);
                 break;
             }
             case SC_ToolButtonMenu:
             {
                 if ((tb->features & (QStyleOptionToolButton::MenuButtonPopup | QStyleOptionToolButton::PopupDelay))
                         == QStyleOptionToolButton::MenuButtonPopup)
-                    rect.adjust(rect.width() - (mbi + MarginWidth), 0, 0, 0);
+                    rect.adjust(rect.width() - (mbi + sp->ToolButton_MarginWidth), 0, 0, 0);
                 break;
             }
             default:
@@ -4627,15 +4462,13 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
             const bool icon = !button->icon.isNull();
             const bool text = !button->text.isEmpty();
             QRect rect = option->rect;
-            int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
             if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
                 rect.adjust(Button_MarginWidth, 0, -Button_MarginWidth, 0);
             } else if (!text && icon && !(button->features & QStyleOptionButton::HasMenu)) {
 
             } else {
-                rect.adjust(ToolButton_MarginWidth, Margin_Height, -ToolButton_MarginWidth, -Margin_Height);
+                rect.adjust(sp->ToolButton_MarginWidth, sp->Button_MarginHeight, -sp->ToolButton_MarginWidth, -sp->Button_MarginHeight);
             }
             if (button->features & (QStyleOptionButton::AutoDefaultButton | QStyleOptionButton::DefaultButton)) {
                 int dbw = proxy()->pixelMetric(PM_ButtonDefaultIndicator, option, widget);
@@ -4864,15 +4697,13 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             const bool text = !tb->text.isEmpty();
             int w = size.width();
             int h = size.height();
-            int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
             if (tb->toolButtonStyle == Qt::ToolButtonTextOnly && !(tb->features & QStyleOptionToolButton::MenuButtonPopup)) {
                 w += Button_MarginWidth * 2;
             } else {
-                w += ToolButton_MarginWidth * 2;
+                w += sp->ToolButton_MarginWidth * 2;
             }
-            h += Margin_Height * 2;
+            h += sp->Button_MarginHeight * 2;
 
             if (tb->toolButtonStyle != Qt::ToolButtonIconOnly) {
                 QFontMetrics fm = tb->fontMetrics;
@@ -4891,11 +4722,11 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             }
             if (tb->features & QStyleOptionToolButton::MenuButtonPopup) {
                 w += 8;
-                newSize.setWidth(w > 60 ? w : 60);
+                newSize.setWidth(w > sp->ToolButton_DefaultWidth ? w : sp->ToolButton_DefaultWidth);
             } else {
-                newSize.setWidth(w > 36 ? w : 36);
+                newSize.setWidth(w > sp->IconButton_DefaultWidth ? w : sp->IconButton_DefaultWidth);
             }
-            newSize.setHeight(h > 36 ? h : 36);
+            newSize.setHeight(h > sp->Button_DefaultHeight ? h : sp->Button_DefaultHeight);
             return newSize;
         }
         break;
@@ -4908,15 +4739,13 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             const bool text = !button->text.isEmpty();
             int w = size.width();
             int h = size.height();
-            int Margin_Height = 2;
-            int ToolButton_MarginWidth = 10;
             int Button_MarginWidth = proxy()->pixelMetric(PM_ButtonMargin, option, widget);
             if (text && !icon && !(button->features & QStyleOptionButton::HasMenu)) {
                 w += Button_MarginWidth * 2;
             } else {
-                w += ToolButton_MarginWidth * 2;
+                w += sp->ToolButton_MarginWidth * 2;
             }
-            h += Margin_Height * 2;
+            h += sp->Button_MarginHeight * 2;
 
             int spacing = 0;
             if (text && icon)
@@ -4934,8 +4763,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 h += dbw;
             }
 
-            newSize.setWidth(w > 96 ? w : 96);
-            newSize.setHeight(h > 36 ? h : 36);
+            newSize.setWidth(w > sp->Button_DefaultWidth ? w : sp->Button_DefaultWidth);
+            newSize.setHeight(h > sp->Button_DefaultHeight ? h : sp->Button_DefaultHeight);
             return newSize;
         }
         break;

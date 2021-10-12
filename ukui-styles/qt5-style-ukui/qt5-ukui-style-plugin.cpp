@@ -65,15 +65,19 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     //FIXME:
     bool dark = false;
     bool useDefault = false;
-    if (key == "ukui-dark") {
-        qDebug()<<"use ukui-black";
-        dark = true;
-    } else if (key == "ukui-light") {
-        qDebug()<<"use ukui-white";
-    } else {
+    QString type = "fashion";
+
+    if (key == "ukui-default") {
+        dark = false;
         useDefault = true;
+        type = "default";
+    } else if (key == "ukui-classical") {
+        dark = false;
+        useDefault = false;
+        type = "classical";
     }
-    return new Qt5UKUIStyle(dark, useDefault);
+
+    return new Qt5UKUIStyle(dark, useDefault, type);
 }
 
 const QStringList Qt5UKUIStylePlugin::blackList()

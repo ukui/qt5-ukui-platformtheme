@@ -29,6 +29,7 @@ DEFINES += QT_NO_DEBUG_OUTPUT
 SOURCES += \
     box-animation-helper.cpp \
     button-animation-helper.cpp \
+    kabstract-style-parameters.cpp \
     progressbar-animation-helper.cpp \
     progressbar-animation.cpp \
         qt5-ukui-style-plugin.cpp \
@@ -42,6 +43,7 @@ SOURCES += \
 HEADERS += \
     box-animation-helper.h \
     button-animation-helper.h \
+    kabstract-style-parameters.h \
     progressbar-animation-helper.h \
     progressbar-animation.h \
         qt5-ukui-style-plugin.h \
