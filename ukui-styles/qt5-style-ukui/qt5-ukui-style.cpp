@@ -910,77 +910,77 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     }
 
     case PE_PanelTipLabel://UKUI Tip  style: Open ground glass
-        {
-            if (widget && widget->isEnabled()) {
-                QStyleOption opt = *option;
+    {
+        if (widget && widget->isEnabled()) {
+            QStyleOption opt = *option;
 
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing);
-                QPainterPath rectPath;
-                rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), 4, 4);
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing);
+            QPainterPath rectPath;
+            rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), sp->radius, sp->radius);
 
-                // Draw a black floor
-                QPixmap pixmap(option->rect.size());
-                pixmap.fill(Qt::transparent);
-                QPainter pixmapPainter(&pixmap);
-                pixmapPainter.setRenderHint(QPainter::Antialiasing);
-                pixmapPainter.setPen(Qt::transparent);
-                pixmapPainter.setBrush(Qt::black);
-                pixmapPainter.drawPath(rectPath);
-                pixmapPainter.end();
+            // Draw a black floor
+            QPixmap pixmap(option->rect.size());
+            pixmap.fill(Qt::transparent);
+            QPainter pixmapPainter(&pixmap);
+            pixmapPainter.setRenderHint(QPainter::Antialiasing);
+            pixmapPainter.setPen(Qt::transparent);
+            pixmapPainter.setBrush(Qt::black);
+            pixmapPainter.drawPath(rectPath);
+            pixmapPainter.end();
 
-                // Blur the black background
-                QImage img = pixmap.toImage();
-                qt_blurImage(img, 4, false, false);
+            // Blur the black background
+            QImage img = pixmap.toImage();
+            qt_blurImage(img, 4, false, false);
 
-                // Dig out the center part
-                pixmap = QPixmap::fromImage(img);
-                QPainter pixmapPainter2(&pixmap);
-                pixmapPainter2.setRenderHint(QPainter::Antialiasing);
-                pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
-                pixmapPainter2.setPen(Qt::transparent);
-                pixmapPainter2.setBrush(Qt::transparent);
-                pixmapPainter2.drawPath(rectPath);
+            // Dig out the center part
+            pixmap = QPixmap::fromImage(img);
+            QPainter pixmapPainter2(&pixmap);
+            pixmapPainter2.setRenderHint(QPainter::Antialiasing);
+            pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
+            pixmapPainter2.setPen(Qt::transparent);
+            pixmapPainter2.setBrush(Qt::transparent);
+            pixmapPainter2.drawPath(rectPath);
 
-                // Shadow rendering
-                painter->drawPixmap(option->rect, pixmap, pixmap.rect());
+            // Shadow rendering
+            painter->drawPixmap(option->rect, pixmap, pixmap.rect());
 
-                //This is the beginning of drawing the bottom of the prompt box
-                auto color = opt.palette.color(QPalette::ToolTipBase);
-                if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-                    auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-                    color.setAlphaF(opacity);
-                }
-
-                if (qApp->property("blurEnable").isValid()) {
-                    bool blurEnable = qApp->property("blurEnable").toBool();
-                    if (!blurEnable) {
-                        color.setAlphaF(1);
-                    }
-                }
-
-                opt.palette.setColor(QPalette::ToolTipBase, color);
-                painter->setRenderHint(QPainter::Antialiasing);
-                QPen pen(opt.palette.toolTipBase().color().darker(150), 1);
-                pen.setCapStyle(Qt::RoundCap);
-                pen.setJoinStyle(Qt::RoundJoin);
-                painter->setPen(Qt::transparent);
-                painter->setBrush(color);
-
-                QPainterPath path;
-                auto region = widget->mask();
-                if (region.isEmpty()) {
-                    path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), 4, 4);
-                } else {
-                    path.addRegion(region);
-                }
-
-                painter->drawPath(path);
-                painter->restore();
-                return;
+            //This is the beginning of drawing the bottom of the prompt box
+            auto color = opt.palette.color(QPalette::ToolTipBase);
+            if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
+                auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
+                color.setAlphaF(opacity);
             }
-            return Style::drawPrimitive(element, option, painter, widget);
+
+            if (qApp->property("blurEnable").isValid()) {
+                bool blurEnable = qApp->property("blurEnable").toBool();
+                if (!blurEnable) {
+                    color.setAlphaF(1);
+                }
+            }
+
+            opt.palette.setColor(QPalette::ToolTipBase, color);
+            painter->setRenderHint(QPainter::Antialiasing);
+            QPen pen(opt.palette.toolTipBase().color().darker(150), 1);
+            pen.setCapStyle(Qt::RoundCap);
+            pen.setJoinStyle(Qt::RoundJoin);
+            painter->setPen(Qt::transparent);
+            painter->setBrush(color);
+
+            QPainterPath path;
+            auto region = widget->mask();
+            if (region.isEmpty()) {
+                path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), sp->radius, sp->radius);
+            } else {
+                path.addRegion(region);
+            }
+
+            painter->drawPath(path);
+            painter->restore();
+            return;
         }
+        break;
+    }
 
     case PE_FrameStatusBar://UKUI Status style
     {
