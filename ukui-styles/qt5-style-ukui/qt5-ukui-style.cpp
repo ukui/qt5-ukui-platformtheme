@@ -701,7 +701,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case QStyle::PE_PanelMenu:
     case QStyle::PE_FrameMenu:
     {
-        return drawMenuPrimitive(option, painter, widget);
+        return this->drawMenuPrimitive(option, painter, widget);
     }
     case PE_FrameFocusRect: {
         if (qobject_cast<const QAbstractItemView *>(widget))
@@ -3142,14 +3142,12 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             QRect drawRect = menuItem->rect;
             if (menuItem->menuItemType == QStyleOptionMenuItem::Separator) {
-                int SepMenuItem_Margin = 8;
                 painter->save();
-                QBrush SepBrush = menuItem->palette.brush(QPalette::Active, QPalette::Text);
+                QBrush SepBrush = menuItem->palette.brush(QPalette::Active, QPalette::Midlight);
                 painter->setPen(QPen(SepBrush, 1, Qt::SolidLine, Qt::RoundCap));
                 painter->setBrush(Qt::NoBrush);
-                painter->setOpacity(0.1);
-                painter->drawLine(QPointF(drawRect.left() + SepMenuItem_Margin, drawRect.center().y()),
-                                  QPointF(drawRect.right() - SepMenuItem_Margin, drawRect.center().y()));
+                painter->drawLine(QPointF(drawRect.left() + sp->MenuItemSeparator_MarginWidth, drawRect.center().y()),
+                                  QPointF(drawRect.right() - sp->MenuItemSeparator_MarginWidth, drawRect.center().y()));
                 painter->restore();
                 return;
             }
@@ -3158,19 +3156,16 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             const bool sunken(menuItem->state & State_Sunken);
             const bool selected(menuItem->state & State_Selected);
             const bool layout(menuItem->direction == Qt::LeftToRight);
-            int MenuItem_xRadius = 2;
-            int MenuItem_yRadius = 2;
             if (enable && (selected | hover | sunken)) {
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(menuItem->palette.brush(QPalette::Active, QPalette::Highlight));
-                painter->drawRoundedRect(drawRect, MenuItem_xRadius, MenuItem_yRadius);
+                painter->drawRoundedRect(drawRect, sp->MenuItem_Radius, sp->MenuItem_Radius);
                 painter->restore();
             }
             int MenuItem_Spacing = 8;
-            int MenuItem_VMargin = 3;
-            drawRect = drawRect.adjusted(8, MenuItem_VMargin, -8, -MenuItem_VMargin);//去除item边框
+            drawRect = drawRect.adjusted(8, sp->MenuItem_MarginHeight, -8, -sp->MenuItem_MarginHeight);//去除item边框
 
             if (menuItem->menuHasCheckableItems) {
                 const bool checked = menuItem->checked;
@@ -3732,14 +3727,14 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return -1;
 
     case PM_MenuPanelWidth:
-        return 0;
+        return sp->Menu_MarginPanelWidth;
     case PM_MenuHMargin:
-        return (4 + 5);
+        return sp->Menu_MarginWidth;
     case PM_MenuVMargin:
-        return (4 + 5);
+        return sp->Menu_MarginHeight;
 
     case PM_SmallIconSize:
-        return 16;
+        return sp->SmallIcon_Size;
 
     case PM_SubMenuOverlap:return 2;
 
@@ -4603,18 +4598,14 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 w += proxy()->pixelMetric(PM_IndicatorWidth, option, widget) + MenuItem_Spacing;
                 newSize.setHeight(qMax(newSize.height(), proxy()->pixelMetric(PM_IndicatorHeight, option, widget)));
 
-                int MenuItem_HMargin = 12 + 4;
-                int MenuItem_VMargin = 3;
-                w +=  MenuItem_HMargin;
-                newSize.setWidth(qMax(w, 152));
-                newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 30));
+                newSize.setWidth(qMax(w + sp->MenuItem_MarginWidth, sp->MenuItem_DefaultWidght));
+                newSize.setHeight(qMax(newSize.height() + sp->MenuItem_MarginHeight * 2, sp->MenuItem_DefaultHeight));
                 return newSize;
             }
 
             case QStyleOptionMenuItem::Separator:
             {
-                int SepMenuItem_HMargin = 4;
-                newSize.setHeight(SepMenuItem_HMargin * 2 + 1);
+                newSize.setHeight(sp->MenuItemSeparator_MarginHeight * 2 + 1);
                 return newSize;
             }
 

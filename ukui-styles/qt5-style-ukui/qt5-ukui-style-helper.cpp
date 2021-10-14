@@ -21,126 +21,19 @@
  */
 
 #include "qt5-ukui-style-helper.h"
-#include "ukui-style-settings.h"
 
 #include <QPainter>
 #include <QStyleOption>
 #include <QWidget>
 #include <QPainterPath>
 
-#include <KWindowEffects>
 
-#include <QApplication>
-
-#include <QDebug>
-#include "black-list.h"
-
-extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
 static inline qreal mixQreal(qreal a, qreal b, qreal bias)
 {
     return a + (b - a) * bias;
 }
 
-void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
-{
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing,true);
-    auto palette = option->palette;
-    bool enable = option->state.testFlag(QStyle::State_Enabled);
-    bool hover = option->state.testFlag(QStyle::State_MouseOver);
-    if (enable) {
-        if (hover) {
-            painter->setBrush(palette.brush(QPalette::Normal, QPalette::Highlight));
-        } else {
-            painter->setBrush(palette.brush(QPalette::Normal, QPalette::Base));
-        }
-    } else {
-        painter->setBrush(palette.brush(QPalette::Disabled, QPalette::Base));
-    }
-    // painter->setFont(QColor(252,255,0));
-    painter->drawRoundedRect(option->rect.adjusted(+1,+1,-1,-1),4,4);
-    painter->restore();
-}
-
-void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
-{
-    int Menu_xRadius = 4;
-    int Menu_yRadius = 4;
-    int rander = 5;
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing);
-    QPainterPath rectPath;
-    rectPath.addRoundedRect(option->rect.adjusted(+rander, +rander, -rander, -rander), Menu_xRadius, Menu_yRadius);
-
-    // Draw a black floor
-    QPixmap pixmap(option->rect.size());
-    pixmap.fill(Qt::transparent);
-    QPainter pixmapPainter(&pixmap);
-    pixmapPainter.setRenderHint(QPainter::Antialiasing);
-    pixmapPainter.setPen(Qt::transparent);
-    pixmapPainter.setBrush(Qt::black);
-    pixmapPainter.drawPath(rectPath);
-    pixmapPainter.end();
-
-    // Blur the black background
-    QImage img = pixmap.toImage();
-    qt_blurImage(img, Menu_xRadius, false, false);
-
-    // Dig out the center part
-    pixmap = QPixmap::fromImage(img);
-    QPainter pixmapPainter2(&pixmap);
-    pixmapPainter2.setRenderHint(QPainter::Antialiasing);
-    pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
-    pixmapPainter2.setPen(Qt::transparent);
-    pixmapPainter2.setBrush(Qt::transparent);
-    pixmapPainter2.drawPath(rectPath);
-
-    // Shadow rendering
-    painter->drawPixmap(option->rect, pixmap, pixmap.rect());
-
-    //That's when I started drawing the frame floor
-    QStyleOption opt = *option;
-    auto color = opt.palette.color(QPalette::Base);
-    if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-        auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-        color.setAlphaF(opacity);
-    }
-
-    if (qApp->property("blurEnable").isValid()) {
-        bool blurEnable = qApp->property("blurEnable").toBool();
-        if (!blurEnable) {
-            color.setAlphaF(1);
-        }
-    }
-
-    //if blur effect is not supported, do not use transparent color.
-    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) || blackAppListWithBlurHelper().contains(qAppName())) {
-        color.setAlphaF(1);
-    }
-
-    opt.palette.setColor(QPalette::Base, color);
-
-    QPen pen(opt.palette.color(QPalette::Normal, QPalette::Dark), 1);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setJoinStyle(Qt::RoundJoin);
-    painter->setPen(Qt::transparent);
-    painter->setBrush(color);
-
-    QPainterPath path;
-    QRegion region;
-    if (widget)
-        region = widget->mask();
-    if (region.isEmpty())
-        path.addRoundedRect(opt.rect.adjusted(+rander, +rander, -rander,-rander), Menu_xRadius, Menu_yRadius);
-    else
-        path.addRegion(region);
-
-    //painter->drawPolygon(path.toFillPolygon().toPolygon());
-    painter->drawPath(path);
-    painter->restore();
-    return;
-}
 
 
 const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radius_y)

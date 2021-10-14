@@ -165,6 +165,9 @@ private:
     // KAbstractStyleParameters
     KAbstractStyleParameters *sp = nullptr;
 
+    // menu
+    void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+
     // view
     QString calculateElidedText(const QString &text, const QTextOption &textOption,
                                     const QFont &font, const QRect &textRect, const Qt::Alignment valign,

@@ -32,11 +32,16 @@ KAbstractStyleParameters::KAbstractStyleParameters(QObject *parent)
 KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 6;
+
     HL_Blue_Default = QColor(55, 144, 250);
     HL_Blue_Hover = QColor(55, 144, 250);
     HL_Blue_Click = QColor(36, 109, 212);
+
     ColoseButton_Hover = QColor(243, 34, 45);
     ColoseButton_Click = QColor(204, 18, 34);
+
+    Menu_Radius = 8;
+    MenuItem_Radius = 6;
 }
 
 
@@ -263,6 +268,9 @@ KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractSty
 
     ColoseButton_Hover = QColor("#F86458");
     ColoseButton_Click = QColor("#E44C50");
+
+    Menu_Radius = 4;
+    MenuItem_Radius = 2;
 }
 
 

@@ -30,6 +30,7 @@ SOURCES += \
     box-animation-helper.cpp \
     button-animation-helper.cpp \
     kabstract-style-parameters.cpp \
+    menu-helper.cpp \
     progressbar-animation-helper.cpp \
     progressbar-animation.cpp \
         qt5-ukui-style-plugin.cpp \

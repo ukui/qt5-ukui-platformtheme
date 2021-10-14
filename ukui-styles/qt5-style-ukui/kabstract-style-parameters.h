@@ -48,6 +48,9 @@ public:
     // radius
     int radius = 6;
 
+    // common
+    int SmallIcon_Size = 16;
+
     // button
     int Button_MarginHeight = 2;
     int ToolButton_MarginWidth = 10;
@@ -61,6 +64,21 @@ public:
     int IconButton_DefaultWidth = 36;
     QColor ColoseButton_Hover = QColor(243, 34, 45);
     QColor ColoseButton_Click = QColor(204, 18, 34);
+
+    // menu
+    int Menu_MarginHeight = 4 + 5;
+    int Menu_MarginWidth = 4 + 5;
+    int Menu_MarginPanelWidth = 0;
+    int Menu_Radius = 8;
+
+    // menu-item
+    int MenuItem_MarginHeight = 2;
+    int MenuItem_MarginWidth = 12 + 4;
+    int MenuItemSeparator_MarginHeight = 4;
+    int MenuItemSeparator_MarginWidth = 4;
+    int MenuItem_DefaultHeight = 36;
+    int MenuItem_DefaultWidght = 152;
+    int MenuItem_Radius = 6;
 };
 
 
@@ -75,7 +93,6 @@ public:
     QColor button_default(bool isDark) override;
     QColor button_hover(bool isDark) override;
     QColor button_click(bool isDark) override;
-
 };
 
 
