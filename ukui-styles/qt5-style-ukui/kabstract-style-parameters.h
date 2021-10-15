@@ -79,6 +79,10 @@ public:
     int MenuItem_DefaultHeight = 36;
     int MenuItem_DefaultWidght = 152;
     int MenuItem_Radius = 6;
+
+    // scrollbar
+    int ScroolBar_Width = 16;
+    int ScroolBar_Height = 68;
 };
 
 

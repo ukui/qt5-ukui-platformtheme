@@ -1821,9 +1821,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             if (widget && widget->property("drawScrollBarGroove").isValid() && (!widget->property("drawScrollBarGroove").toBool())) {
 
             } else {
+                const bool active = bar->state & State_Active;
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(bar->palette.brush(QPalette::Active, QPalette::Base));
+                painter->setBrush(bar->palette.brush(active ? QPalette::Active : QPalette::Inactive, QPalette::Base));
                 painter->drawRect(bar->rect);
                 painter->restore();
             }
@@ -3718,11 +3719,9 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 {
     switch (metric) {
     case PM_ScrollBarExtent:
-        return 16;
-
+        return sp->ScroolBar_Width;
     case PM_ScrollBarSliderMin:
-        return 26;
-
+        return sp->ScroolBar_Height;
     case PM_MaximumDragDistance:
         return -1;
 
@@ -3865,7 +3864,7 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             const QRect rect = bar->rect;
             const bool horizontal = bar->orientation == Qt::Horizontal;
             int distance = 4;
-            int maxlen = horizontal ? rect.width() - distance: rect.height() - distance;
+            int maxlen = horizontal ? rect.width() - distance : rect.height() - distance;
             int sliderlen = 0;
             if (bar->maximum != bar->minimum) {
                 uint range = bar->maximum - bar->minimum;
