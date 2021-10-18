@@ -3400,7 +3400,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->save();
         painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.brush(enable ? QPalette::Active : QPalette::Disabled, QPalette::Button));
-        painter->drawRoundedRect(option->rect, 4, 4);
+        painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
         painter->restore();
         return;
     }
@@ -3477,7 +3477,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             painter->setPen(Qt::NoPen);
             painter->setBrush(linearGradient);
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(progressRect, 4, 4);
+            painter->drawRoundedRect(progressRect, sp->radius, sp->radius);
             painter->restore();
             return;
         }
@@ -4792,10 +4792,10 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
             if (pb->orientation == Qt::Vertical) {
                 newSize.setWidth(newSize.width() - 8);
-                newSize.setHeight(qMax(newSize.height(), 426));
+                newSize.setHeight(qMax(newSize.height(), sp->ProgressBar_DefaultLangth));
             } else {
                 newSize.setHeight(newSize.height() - 8);
-                newSize.setWidth(qMax(newSize.width(), 426));
+                newSize.setWidth(qMax(newSize.width(), sp->ProgressBar_DefaultLangth));
             }
             return newSize;
         }

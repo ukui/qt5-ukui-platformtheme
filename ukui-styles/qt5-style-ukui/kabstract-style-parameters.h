@@ -83,6 +83,9 @@ public:
     // scrollbar
     int ScroolBar_Width = 16;
     int ScroolBar_Height = 68;
+
+    // progressbar
+    int ProgressBar_DefaultLangth = 388;
 };
 
 
