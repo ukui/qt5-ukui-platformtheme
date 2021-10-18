@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets widgets-private KWindowSystem gui gui-private x11extras
+QT       += widgets widgets-private KWindowSystem gui gui-private x11extras dbus
 
 TARGET = qt5-style-ukui
 TEMPLATE = lib

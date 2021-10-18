@@ -33,6 +33,7 @@ class ProgressBarAnimationHelper;
 class ShadowHelper;
 
 class QStyleOptionViewItem;
+class QDBusInterface;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 #include<private/qfusionstyle_p.h>
@@ -134,9 +135,15 @@ private:
     bool m_use_dark_palette = false;
     bool m_is_default_style = true;
 
+    bool m_is_tablet_mode = false;
+    QDBusInterface *m_statusManagerDBus = nullptr;
+
     QColor button_Click() const;
     QColor button_Hover() const;
     QColor button_DisableChecked() const;
+
+private Q_SLOTS:
+    void updateTabletModeValue(bool isTabletMode);
 };
 
 #endif // QT5UKUISTYLE_H
