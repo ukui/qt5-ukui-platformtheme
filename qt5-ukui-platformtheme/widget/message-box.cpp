@@ -718,6 +718,7 @@ void MessageBoxPrivate::init(const QString &title, const QString &text)
 
     mCloseButtton = new QPushButton(q);
     mCloseButtton->setFlat(true);
+    mCloseButtton->setFocusPolicy(Qt::NoFocus);
     mCloseButtton->setProperty("isWindowButton", 0x2);
     mCloseButtton->setIcon(QIcon::fromTheme("window-close-symbolic"));
     mCloseButtton->setIconSize(QSize(16, 16));
@@ -1311,6 +1312,13 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
     hints.decorations = MWM_DECOR_BORDER;
     XAtomHelper::getInstance()->setWindowMotifHint(mMessageBox->winId(), hints);
 
+    foreach (QAbstractButton *ab, mMessageBox->buttons()) {
+        if (QPushButton *pb = qobject_cast<QPushButton *>(ab)) {
+            if (pb->isDefault()) {
+                mMessageBox->setDefaultButton(pb);
+            }
+        }
+    }
     mMessageBox->show();
 
     Q_UNUSED(parent);
