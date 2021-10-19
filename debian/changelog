@@ -1,3 +1,10 @@
+qt5-ukui-platformtheme (1.0.6-10.3) v101; urgency=medium
+
+  * bug:82683 【文件管理器】【PTOF】文件管理器删除文件，出现弹窗按下enter键，文件未删除
+  * tasks:53358（协助处理，不需要单独验证）  【平板】【触摸屏】平板单指点击功能
+
+ -- leichen <leichen@kylinos.cn>  Tue, 19 Oct 2021 15:25:27 +0800
+
 qt5-ukui-platformtheme (1.0.6-10.2) v101; urgency=medium
 
   * bug:81801
