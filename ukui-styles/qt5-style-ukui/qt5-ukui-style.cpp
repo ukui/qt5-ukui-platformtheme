@@ -78,6 +78,13 @@
 
 #include <private/qlineedit_p.h>
 
+#include <QDBusInterface>
+#include <QDBusMessage>
+#include <QDBusConnection>
+#include <QDBusReply>
+
+#define DBUS_STATUS_MANAGER_IF "com.kylin.statusmanager.interface"
+
 #define COMMERCIAL_VERSION true
 extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
@@ -258,6 +265,21 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
     m_combobox_animation_helper = new BoxAnimationHelper(this);
     m_animation_helper = new ProgressBarAnimationHelper(this);
     m_shadow_helper = new ShadowHelper(this);
+
+    //dbus
+    m_statusManagerDBus = new QDBusInterface(DBUS_STATUS_MANAGER_IF, "/" ,DBUS_STATUS_MANAGER_IF,QDBusConnection::sessionBus(),this);
+    qDebug() << "[TabletMode::initGSettings] init statusManagerDBus:" << m_statusManagerDBus->isValid();
+    if (m_statusManagerDBus) {
+        QDBusReply<bool> message_a = m_statusManagerDBus->call("get_current_tabletmode");
+        if (message_a.isValid()) {
+            m_is_tablet_mode = message_a.value();
+        }
+
+        if (m_statusManagerDBus->isValid()) {
+            //平板模式切换
+            connect(m_statusManagerDBus, SIGNAL(mode_change_signal(bool)), this, SLOT(updateTabletModeValue(bool)));
+        }
+    }
 }
 
 const QStringList Qt5UKUIStyle::specialList() const
@@ -369,6 +391,9 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
 
     case SH_Table_GridLineColor:
         return option ? option->palette.color(QPalette::Active, QPalette::Midlight).rgb() : 0;
+
+    case SH_ItemView_ActivateItemOnSingleClick:
+        return m_is_tablet_mode;
 
     default:
         break;
@@ -511,7 +536,16 @@ QColor Qt5UKUIStyle::button_DisableChecked() const
     }
 }
 
+void Qt5UKUIStyle::updateTabletModeValue(bool isTabletMode)
+{
+    m_is_tablet_mode = isTabletMode;
 
+    qApp->setPalette(qGuiApp->palette());
+    QEvent event(QEvent::ApplicationPaletteChange);
+    foreach (QWidget *widget, qApp->allWidgets()) {
+        qApp->sendEvent(widget, &event);
+    }
+}
 
 void Qt5UKUIStyle::polish(QWidget *widget)
 {
