@@ -85,7 +85,12 @@ public:
     int ScroolBar_Height = 68;
 
     // progressbar
-    int ProgressBar_DefaultLangth = 388;
+    int ProgressBar_DefaultLength = 388;
+
+    // slider
+    int Slider_DefaultLength = 94;
+    int Slider_Length = 20;
+    int Slider_GrooveLength = 4;
 };
 
 
