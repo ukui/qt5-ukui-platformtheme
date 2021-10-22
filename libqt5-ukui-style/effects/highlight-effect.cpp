@@ -146,7 +146,6 @@ const QColor HighLightEffect::getCurrentSymbolicColor()
             QColor color = img.pixelColor(x, y);
             if (color.alpha() > 0) {
                 symbolic_color = color;
-                qDebug()<<"current symbol color:"<<color.name()<<QColor(Qt::gray).name();
                 return color;
             }
         }

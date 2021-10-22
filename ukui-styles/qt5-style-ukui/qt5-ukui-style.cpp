@@ -268,7 +268,6 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
 
     //dbus
     m_statusManagerDBus = new QDBusInterface(DBUS_STATUS_MANAGER_IF, "/" ,DBUS_STATUS_MANAGER_IF,QDBusConnection::sessionBus(),this);
-    qDebug() << "[TabletMode::initGSettings] init statusManagerDBus:" << m_statusManagerDBus->isValid();
     if (m_statusManagerDBus) {
         QDBusReply<bool> message_a = m_statusManagerDBus->call("get_current_tabletmode");
         if (message_a.isValid()) {

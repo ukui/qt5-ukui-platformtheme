@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
     w.show();
 
     QFontDatabase db;
-    qDebug()<<db.systemFont(QFontDatabase::GeneralFont);
 
     return a.exec();
 }

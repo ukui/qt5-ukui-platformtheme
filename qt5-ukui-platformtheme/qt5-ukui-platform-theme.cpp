@@ -73,7 +73,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         QApplication::setFont(m_system_font);
 
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
-            qDebug()<<key<<"changed";
             if (key == "iconThemeName") {
                 QString icontheme = settings->get("icon-theme-name").toString();
                 if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
@@ -156,7 +155,6 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
         return QStringList()<<"ukui";
 
     case QPlatformTheme::SystemIconThemeName: {
-        qDebug()<<"request icon theme name";
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             if (auto settings = UKUIStyleSettings::globalInstance()) {
                 QString icontheme = settings->get("icon-theme-name").toString();

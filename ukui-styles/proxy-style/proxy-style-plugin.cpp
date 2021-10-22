@@ -42,7 +42,6 @@ ProxyStylePlugin::ProxyStylePlugin()
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
             if (key == "styleName") {
-                qDebug()<<"style name changed";
                 if (blackList().contains(qAppName()) || qAppName() == "biometric-manager" || qAppName() == "kylin-software-center.py")
                     return;
 
@@ -128,7 +127,6 @@ QStyle *ProxyStylePlugin::create(const QString &key)
 {
     if (blackList().contains(qAppName()))
         return new QProxyStyle("fusion");
-    qDebug()<<"create"<<key;
     if (key == "ukui") {
         //FIXME:
         //get current style, fusion for invalid.
