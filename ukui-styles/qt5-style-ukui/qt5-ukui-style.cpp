@@ -1919,7 +1919,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(slider->palette.brush(QPalette::Active, QPalette::Highlight));
+                painter->setBrush(hColor);
                 painter->drawEllipse(handle);
                 painter->restore();
             }
