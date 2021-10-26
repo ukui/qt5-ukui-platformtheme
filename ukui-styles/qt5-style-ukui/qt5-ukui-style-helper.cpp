@@ -43,9 +43,19 @@ const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radi
     return path.toFillPolygon().toPolygon();
 }
 
-qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
+
+
+qreal calcRadial(const QStyleOptionSlider *dial, int position)
 {
-    const int currentSliderPosition = dial->upsideDown ? postion : (dial->maximum - postion);
+    int currentSliderPosition = position;
+    if (!dial->upsideDown) {
+        if (position == dial->minimum)
+            currentSliderPosition = dial->maximum;
+        else if (position == dial->maximum)
+            currentSliderPosition = dial->minimum;
+        else
+            currentSliderPosition = dial->maximum - position;
+    }
     qreal a = 0;
     if (dial->maximum == dial->minimum)
         a = M_PI / 2;
@@ -55,6 +65,8 @@ qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
         a = (M_PI * 8 - (currentSliderPosition - dial->minimum) * 10 * M_PI / (dial->maximum - dial->minimum)) / 6;
     return a;
 }
+
+
 
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
 {
@@ -83,15 +95,9 @@ QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
                                          : (M_PI * 8 - i * 10 * M_PI / notches) / 6;
         qreal s = qSin(angle);
         qreal c = qCos(angle);
-        if (i == 0 || (((ns * i) % (dial->pageStep ? dial->pageStep : 1)) == 0)) {
-            poly[2 * i] = QPointF(xc + (r + 1 - offset) * c,
-                                  yc - (r + 1 - offset) * s);
-            poly[2 * i + 1] = QPointF(xc + r * c, yc - r * s);
-        } else {
-            poly[2 * i] = QPointF(xc + (r + 1 - smallLineSize) * c,
-                                  yc - (r + 1 - smallLineSize) * s);
-            poly[2 * i + 1] = QPointF(xc + r * c, yc -r * s);
-        }
+        poly[2 * i] = QPointF(xc + (r + 0.5 - smallLineSize) * c,
+                              yc - (r + 0.5 - smallLineSize) * s);
+        poly[2 * i + 1] = QPointF(xc + r * c, yc - r * s);
     }
     return poly;
 }
