@@ -1,3 +1,9 @@
+qt5-ukui-platformtheme (1.0.6-11.1) v101; urgency=medium
+
+  * tasks:58507 【平板】【触摸屏】Intel教育版本功能代码迁移到SP1中/qt触摸插件代码迁移
+
+ -- leichen <leichen@kylinos.cn>  Fri, 29 Oct 2021 09:06:56 +0800
+
 qt5-ukui-platformtheme (1.0.6-10.3) v101; urgency=medium
 
   * bug:82683 【文件管理器】【PTOF】文件管理器删除文件，出现弹窗按下enter键，文件未删除
