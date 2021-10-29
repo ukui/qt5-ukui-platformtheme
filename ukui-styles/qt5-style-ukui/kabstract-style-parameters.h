@@ -44,12 +44,14 @@ public:
     virtual QColor button_default(bool isDark) = 0;
     virtual QColor button_hover(bool isDark) = 0;
     virtual QColor button_click(bool isDark) = 0;
+    virtual QColor radiobutton_default(bool isDark) = 0;
 
     // radius
     int radius = 6;
 
     // common
     int SmallIcon_Size = 16;
+    int IconButton_Distance = 8;
 
     // button
     int Button_MarginHeight = 2;
@@ -91,6 +93,19 @@ public:
     int Slider_DefaultLength = 94;
     int Slider_Length = 20;
     int Slider_GrooveLength = 4;
+
+    // radiobutton
+    int ExclusiveIndicator_Width = 16;
+    int ExclusiveIndicator_Height = 16;
+    int RadioButtonLabel_Spacing = 8;
+    int RadioButton_DefaultHeight = 36;
+    int RadioButton_OnLength = 6;
+
+    // checkbox
+    int Indicator_Width = 16;
+    int Indicator_Height = 16;
+    int CheckBox_DefaultHeight = 36;
+    int CheckBox_Radius = 4;
 };
 
 
@@ -105,6 +120,7 @@ public:
     QColor button_default(bool isDark) override;
     QColor button_hover(bool isDark) override;
     QColor button_click(bool isDark) override;
+    QColor radiobutton_default(bool isDark) override;
 };
 
 
@@ -119,6 +135,7 @@ public:
     QColor button_default(bool isDark) override;
     QColor button_hover(bool isDark) override;
     QColor button_click(bool isDark) override;
+    QColor radiobutton_default(bool isDark) override;
 };
 
 
@@ -133,6 +150,7 @@ public:
     QColor button_default(bool isDark) override;
     QColor button_hover(bool isDark) override;
     QColor button_click(bool isDark) override;
+    QColor radiobutton_default(bool isDark) override;
 };
 
 #endif // KABSTRACTSTYLEPARAMETERS_H

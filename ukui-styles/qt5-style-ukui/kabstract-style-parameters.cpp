@@ -259,6 +259,19 @@ QColor KFashionStyleParameters::button_click(bool isDark)
 
 
 
+QColor KFashionStyleParameters::radiobutton_default(bool isDark)
+{
+    if (isDark) {
+        return QColor(77, 77, 77);
+    } else {
+        return QColor(166, 166, 166);
+    }
+}
+
+
+
+
+
 KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 4;
@@ -272,7 +285,6 @@ KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractSty
     Menu_Radius = 4;
     MenuItem_Radius = 2;
 }
-
 
 
 
@@ -510,9 +522,24 @@ QColor KDefaultStyleParameters::button_click(bool isDark)
 
 
 
+
+QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
+{
+    if (isDark) {
+        return QColor(77, 77, 77);
+    } else {
+        return QColor(166, 166, 166);
+    }
+}
+
+
+
+
+
 KClassicalStyleParameters::KClassicalStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 0;
+    CheckBox_Radius = 0;
 }
 
 
@@ -726,5 +753,16 @@ QColor KClassicalStyleParameters::button_click(bool isDark)
         return QColor(75, 75, 79);
     } else {
         return QColor(217, 217, 217);
+    }
+}
+
+
+
+QColor KClassicalStyleParameters::radiobutton_default(bool isDark)
+{
+    if (isDark) {
+        return QColor(77, 77, 77);
+    } else {
+        return QColor(166, 166, 166);
     }
 }

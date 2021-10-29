@@ -1399,8 +1399,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionButton* radiobutton = qstyleoption_cast<const QStyleOptionButton*>(option)) {
             QRectF rect = radiobutton->rect.adjusted(1, 1, -1, -1);
 
-            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (m_drak_palette
-                                                                                      || (m_default_palette && specialList().contains(qAppName())));
+            const bool useDarkPalette = this->isUseDarkPalette();
             bool enable = radiobutton->state & State_Enabled;
             bool mouseOver = radiobutton->state & State_MouseOver;
             bool sunKen = radiobutton->state & State_Sunken;
@@ -1411,31 +1410,26 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             if (On) {
                 if (enable) {
                     if (sunKen) {
-                        painter->setPen(QColor(25, 101, 207));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(highLight_Click());
                     } else if (mouseOver) {
-                        painter->setPen(QColor(36, 109, 212));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(highLight_Hover());
                     } else {
-                        painter->setPen(QColor(36, 109, 212));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::Highlight));
                     }
                     painter->drawEllipse(rect);
-                    QRectF childRect(rect.x(), rect.y(), 6, 6);
+                    QRectF childRect(rect.x(), rect.y(), sp->RadioButton_OnLength, sp->RadioButton_OnLength);
                     childRect.moveCenter(rect.center());
                     painter->setPen(Qt::NoPen);
                     painter->setBrush(radiobutton->palette.brush(QPalette::Active, QPalette::HighlightedText));
                     painter->drawEllipse(childRect);
                 } else {
-                    if (useDarkPalette) {
-                        painter->setPen(QColor(48, 48, 51));
-                        painter->setBrush(QColor(28, 28, 30));
-                    } else {
-                        painter->setPen(QColor(224, 224, 224));
-                        painter->setBrush(QColor(233, 233, 233));
-                    }
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(radiobutton->palette.brush(QPalette::Disabled, QPalette::Button));
                     painter->drawEllipse(rect);
-                    QRectF childRect(rect.x(), rect.y(), 6, 6);
+                    QRectF childRect(rect.x(), rect.y(), sp->RadioButton_OnLength, sp->RadioButton_OnLength);
                     childRect.moveCenter(rect.center());
                     painter->setBrush(radiobutton->palette.brush(QPalette::Disabled, QPalette::ButtonText));
                     painter->drawEllipse(childRect);
@@ -1443,38 +1437,19 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             } else {
                 if (enable) {
                     if (sunKen) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(6, 35, 97));
-                        } else {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(179, 221, 255));
-                        }
+                        painter->setPen(useDarkPalette ? option->palette.color(QPalette::Disabled, QPalette::Mid)
+                                                       : option->palette.color(QPalette::Active, QPalette::Mid));
+                        painter->setBrush(sp->button_click(useDarkPalette));
                     } else if (mouseOver) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(55, 144, 250));
-                            painter->setBrush(QColor(9, 53, 153));
-                        } else {
-                            painter->setPen(QColor(97, 173, 255));
-                            painter->setBrush(QColor(219, 240, 255));
-                        }
+                        painter->setPen(sp->radiobutton_default(useDarkPalette));
+                        painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                     } else {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(72, 72, 77));
-                            painter->setBrush(QColor(48, 48, 51));
-                        } else {
-                            painter->setPen(QColor(191, 191, 191));
-                            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Window));
-                        }
+                        painter->setPen(sp->radiobutton_default(useDarkPalette));
+                        painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                     }
                 } else {
-                    if (useDarkPalette) {
-                        painter->setPen(QColor(48, 48, 51));
-                        painter->setBrush(QColor(28, 28, 30));
-                    } else {
-                        painter->setPen(QColor(224, 224, 224));
-                        painter->setBrush(QColor(233, 233, 233));
-                    }
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(option->palette.brush(QPalette::Disabled, QPalette::Button));
                 }
                 painter->drawEllipse(rect);
             }
@@ -1487,8 +1462,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_IndicatorCheckBox:
     {
         if (const QStyleOptionButton *checkbox = qstyleoption_cast<const QStyleOptionButton*>(option)) {
-            const bool useDarkPalette = !useDefaultPalette().contains(qAppName()) && (m_drak_palette
-                                                                                      || (m_default_palette && specialList().contains(qAppName())));
+            const bool useDarkPalette = this->isUseDarkPalette();
             bool enable = checkbox->state & State_Enabled;
             bool mouseOver = checkbox->state & State_MouseOver;
             bool sunKen = checkbox->state & State_Sunken;
@@ -1498,17 +1472,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QRectF rect = checkbox->rect;
             int width = rect.width();
             int heigth = rect.height();
-            int x_Radius = 4;
-            int y_Radius = 4;
 
             QPainterPath path;
             if (on) {
-                path.moveTo(width/4 + checkbox->rect.left(), heigth/2 + checkbox->rect.top());
-                path.lineTo(width*0.45 + checkbox->rect.left(), heigth*3/4 + checkbox->rect.top());
-                path.lineTo(width*3/4 + checkbox->rect.left(), heigth/4 + checkbox->rect.top());
+                path.moveTo(width / 4 + checkbox->rect.left(), heigth / 2 + checkbox->rect.top());
+                path.lineTo(width * 0.45 + checkbox->rect.left(), heigth * 3 / 4 + checkbox->rect.top());
+                path.lineTo(width * 3 / 4 + checkbox->rect.left(), heigth / 4 + checkbox->rect.top());
             } else if (noChange){
-                path.moveTo(rect.left() + width/4, rect.center().y());
-                path.lineTo(rect.right() - width/4 , rect.center().y());
+                path.moveTo(rect.left() + width / 4, rect.center().y());
+                path.lineTo(rect.right() - width / 4 , rect.center().y());
             }
 
             painter->save();
@@ -1517,16 +1489,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             if (enable) {
                 if (on | noChange) {
                     if (sunKen) {
-                        painter->setPen(QColor(25, 101, 207));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(highLight_Click());
                     } else if (mouseOver) {
-                        painter->setPen(QColor(36, 109, 212));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(highLight_Hover());
                     } else {
-                        painter->setPen(QColor(36, 109, 212));
+                        painter->setPen(Qt::NoPen);
                         painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Highlight));
                     }
-                    painter->drawRoundedRect(rect, x_Radius, y_Radius);
+                    painter->drawRoundedRect(rect, sp->CheckBox_Radius, sp->CheckBox_Radius);
 
                     painter->setPen(QPen(checkbox->palette.brush(QPalette::Active, QPalette::HighlightedText), 2,
                                          Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -1534,41 +1506,22 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->drawPath(path);
                 } else {
                     if (sunKen) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(6, 35, 97));
-                        } else {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(179, 221, 255));
-                        }
+                        painter->setPen(useDarkPalette ? option->palette.color(QPalette::Disabled, QPalette::Mid)
+                                                       : option->palette.color(QPalette::Active, QPalette::Mid));
+                        painter->setBrush(sp->button_click(useDarkPalette));
                     } else if (mouseOver) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(55, 144, 250));
-                            painter->setBrush(QColor(9, 53, 153));
-                        } else {
-                            painter->setPen(QColor(97, 173, 255));
-                            painter->setBrush(QColor(219, 240, 255));
-                        }
+                        painter->setPen(sp->radiobutton_default(useDarkPalette));
+                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Button));
                     } else {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(72, 72, 77));
-                            painter->setBrush(QColor(48, 48, 51));
-                        } else {
-                            painter->setPen(QColor(191, 191, 191));
-                            painter->setBrush(checkbox->palette.color(QPalette::Active, QPalette::Window));
-                        }
+                        painter->setPen(sp->radiobutton_default(useDarkPalette));
+                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Button));
                     }
-                    painter->drawRoundedRect(rect, x_Radius, y_Radius);
+                    painter->drawRoundedRect(rect, sp->CheckBox_Radius, sp->CheckBox_Radius);
                 }
             } else {
-                if (useDarkPalette) {
-                    painter->setPen(QColor(48, 48, 51));
-                    painter->setBrush(QColor(28, 28, 30));
-                } else {
-                    painter->setPen(QColor(224, 224, 224));
-                    painter->setBrush(QColor(233, 233, 233));
-                }
-                painter->drawRoundedRect(rect, x_Radius, y_Radius);
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(checkbox->palette.brush(QPalette::Disabled, QPalette::Button));
+                painter->drawRoundedRect(rect, sp->CheckBox_Radius, sp->CheckBox_Radius);
                 if (on | noChange) {
                     painter->setPen(QPen(checkbox->palette.brush(QPalette::Disabled, QPalette::ButtonText), 2,
                                          Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -2926,11 +2879,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (!button->icon.isNull()) {
                 pixmap = button->icon.pixmap(button->iconSize, enable ? QIcon::Normal : QIcon::Disabled);
                 proxy()->drawItemPixmap(painter, button->rect, alignment, pixmap);
-                int spacing = 8;
                 if (button->direction == Qt::RightToLeft)
-                    textRect.setRight(textRect.right() - button->iconSize.width() - spacing);
+                    textRect.setRight(textRect.right() - button->iconSize.width() - sp->IconButton_Distance);
                 else
-                    textRect.setLeft(textRect.left() + button->iconSize.width() + spacing);
+                    textRect.setLeft(textRect.left() + button->iconSize.width() + sp->IconButton_Distance);
             }
             if (!button->text.isEmpty()){
                 proxy()->drawItemText(painter, textRect, alignment | Qt::TextShowMnemonic,
@@ -3687,15 +3639,15 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 0;
 
     case PM_ExclusiveIndicatorWidth:
-        return 16;
+        return sp->ExclusiveIndicator_Width;
     case PM_ExclusiveIndicatorHeight:
-        return 16;
+        return sp->ExclusiveIndicator_Height;
     case PM_RadioButtonLabelSpacing:
-        return 8;
+        return sp->RadioButtonLabel_Spacing;
     case PM_IndicatorWidth:
-        return 16;
+        return sp->Indicator_Width;
     case PM_IndicatorHeight:
-        return 16;
+        return sp->Indicator_Height;
 
     case PM_ButtonIconSize:
         return sp->Button_IconSize;
@@ -4532,7 +4484,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             if (!button->icon.isNull())
                 spacing += 4;
             newSize.setWidth(newSize.width() + w + spacing);
-            newSize.setHeight(qMax(qMax(newSize.height(), h), 36));
+            newSize.setHeight(qMax(qMax(newSize.height(), h), sp->RadioButton_DefaultHeight));
             return newSize;
         }
         break;
@@ -4547,7 +4499,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             if (!button->icon.isNull())
                 spacing += 4;
             newSize.setWidth(newSize.width() + w + spacing);
-            newSize.setHeight(qMax(qMax(newSize.height(), h), 36));
+            newSize.setHeight(qMax(qMax(newSize.height(), h), sp->CheckBox_DefaultHeight));
             return newSize;
         }
         break;
