@@ -41,6 +41,8 @@
 
 #include <QDebug>
 
+#include <QLibrary>
+
 using namespace UKUI;
 
 ProxyStyle::ProxyStyle(const QString &key) : QProxyStyle(key == nullptr? "fusion": key)
@@ -165,6 +167,13 @@ int ProxyStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWid
 
 void ProxyStyle::polish(QWidget *widget)
 {
+    QLibrary gestureLib("libqt5-gesture-extensions");
+    if (widget && gestureLib.load()) {
+        typedef void (*RegisterFun) (QWidget*, QObject*);
+        auto fun = (RegisterFun) gestureLib.resolve("registerWidget");
+        fun(widget, widget);
+    }
+
     if (!baseStyle()->inherits("Qt5UKUIStyle"))
         return QProxyStyle::polish(widget);
 
@@ -220,6 +229,13 @@ void ProxyStyle::polish(QWidget *widget)
 
 void ProxyStyle::unpolish(QWidget *widget)
 {
+    QLibrary gestureLib("libqt5-gesture-extensions");
+    if (widget && gestureLib.load()) {
+        typedef void (*UnRegisterFun) (QWidget*, QObject*);
+        auto fun = (UnRegisterFun) gestureLib.resolve("unregisterWidget");
+        fun(widget, widget);
+    }
+
     if (!baseStyle()->inherits("Qt5UKUIStyle"))
         return QProxyStyle::unpolish(widget);
 
