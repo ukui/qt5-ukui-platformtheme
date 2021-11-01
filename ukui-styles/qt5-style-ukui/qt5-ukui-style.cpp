@@ -1249,7 +1249,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         // Conflict with qspinbox and so on, The widget text cannot use this style
         if (widget) {
             if (widget->parentWidget())
-                if (widget->parentWidget()->inherits("QDoubleSpinBox")|| widget->parentWidget()->inherits("QSpinBox")
+                if (widget->parentWidget()->inherits("QDoubleSpinBox") || widget->parentWidget()->inherits("QSpinBox")
                         || widget->parentWidget()->inherits("QComboBox") || widget->parentWidget()->inherits("QDateTimeEdit"))
                 {
                     return;
@@ -1265,7 +1265,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(f->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1275,7 +1275,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1286,24 +1286,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                                      2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
                 painter->restore();
             } else {
                 QStyleOptionButton button;
                 button.state = option->state & ~(State_Sunken | State_On);
                 button.rect = option->rect;
                 proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
-
-                if (f->state & State_MouseOver) {
-                    QRectF rect = f->rect;
-                    painter->save();
-                    painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
-                                         1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                    painter->setBrush(Qt::NoBrush);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
-                    painter->restore();
-                }
             }
             return;
         }
@@ -1886,14 +1875,13 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (const QStyleOptionComboBox *comboBox = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             const bool enable = comboBox->state & State_Enabled;
             const bool on = comboBox->state & State_On;
-            const bool hover = comboBox->state & State_MouseOver;
 
             if (!enable) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(comboBox->palette.brush(QPalette::Disabled, QPalette::Button));
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
                 return;
             }
@@ -1908,8 +1896,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(Qt::NoPen);
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 }
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
                 painter->restore();
             } else {
                 QStyleOptionButton button;
@@ -1921,21 +1909,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(Qt::NoBrush);
-                    painter->setRenderHint(QPainter::Antialiasing,true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
                     painter->restore();
                 }
-            }
-
-            if (hover) {
-                QRectF rect = comboBox->rect;
-                painter->save();
-                painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
-                                     1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                painter->setBrush(Qt::NoBrush);
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
-                painter->restore();
             }
 
             return;
@@ -3659,7 +3636,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return sp->Button_DefaultIndicatorSize;
 
     case PM_ComboBoxFrameWidth:
-        return 2;
+        return sp->ComboBox_FrameWidth;
 
     case PM_SpinBoxFrameWidth:
         return 2;
@@ -4316,7 +4293,6 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
             } else {
                 rect.adjust(f->lineWidth + 4, f->lineWidth, -(f->lineWidth + 4), -f->lineWidth);
             }
-
             return rect;
         }
         break;
@@ -4445,8 +4421,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     {
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             newSize += QSize(f->lineWidth * 2 + 8, f->lineWidth * 2);
-            newSize.setWidth(qMax(newSize.width(), 140));
-            newSize.setHeight(qMax(newSize.height(), 36));
+            newSize.setWidth(qMax(newSize.width(), sp->LineEdit_DefaultWidth));
+            newSize.setHeight(qMax(newSize.height(), sp->LineEdit_DefaultHeight));
             return newSize;
         }
         break;
@@ -4592,8 +4568,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             int indicator = proxy()->pixelMetric(PM_MenuButtonIndicator, option, widget);
             int comboBox_Margin = proxy()->pixelMetric(PM_ComboBoxFrameWidth, option, widget);
             int comboBox_MarginWidth = 8 + 8 + 8 + 4;
-            newSize.setWidth(qMax(newSize.width() + indicator + comboBox_MarginWidth, 160));
-            newSize.setHeight(qMax(newSize.height() + comboBox_Margin, 36));
+            newSize.setWidth(qMax(newSize.width() + indicator + comboBox_MarginWidth, sp->ComboBox_DefaultWidth));
+            newSize.setHeight(qMax(newSize.height() + comboBox_Margin * 2, sp->ComboBox_DefaultHeight));
             return newSize;
         }
         break;

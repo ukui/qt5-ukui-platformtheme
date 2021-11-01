@@ -106,6 +106,15 @@ public:
     int Indicator_Height = 16;
     int CheckBox_DefaultHeight = 36;
     int CheckBox_Radius = 4;
+
+    // lineedit
+    int LineEdit_DefaultWidth = 160;
+    int LineEdit_DefaultHeight = 36;
+
+    // combobox
+    int ComboBox_DefaultWidth = 160;
+    int ComboBox_DefaultHeight = 36;
+    int ComboBox_FrameWidth = 2;
 };
 
 
