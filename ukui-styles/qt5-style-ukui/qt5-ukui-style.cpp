@@ -1924,7 +1924,6 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     {
         if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
             bool enable = sb->state & State_Enabled;
-            bool hover = enable && (sb->state & State_MouseOver);
             bool up = sb->activeSubControls == SC_SpinBoxUp;
             bool down = sb->activeSubControls == SC_SpinBoxDown;
             bool focus = sb->state & State_HasFocus;
@@ -1941,67 +1940,44 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(sb->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
-                painter->restore();
-            } else if (sb->stepEnabled == QAbstractSpinBox::StepNone) {
-                upOption.state = State_Enabled;
-                downOption.state = State_Enabled;
-                painter->save();
-                painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(sb->palette.brush(QPalette::Active, QPalette::Button));
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
             } else {
-                upOption.state |= State_Enabled;
-                downOption.state |= State_Enabled;
                 if (focus) {
                     painter->save();
                     painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
                     painter->restore();
                 } else {
                     QStyleOptionButton button;
                     button.state = option->state & ~(State_Sunken | State_On);
                     button.rect = option->rect;
                     proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
-
-                    if (hover) {
-                        QRectF rect = sb->rect;
-                        painter->save();
-                        painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
-                                             1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                        painter->setBrush(Qt::NoBrush);
-                        painter->setRenderHint(QPainter::Antialiasing, true);
-                        painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
-                        painter->restore();
-                    }
                 }
             }
 
-            int radius = 4;
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(Qt::NoBrush);
             if (sb->subControls & (SC_SpinBoxUp | SC_SpinBoxDown)) {
                 if (sb->stepEnabled & QAbstractSpinBox::StepUpEnabled) {
                     QPainterPath upPath;
-                    upPath.moveTo(upRect.left(), upRect.top() + radius);
-                    upPath.arcTo(upRect.left(), upRect.top(), radius * 2, radius * 2, 180, -90);
-                    upPath.lineTo(upRect.right() - radius, upRect.top());
-                    upPath.arcTo(upRect.right() + 1 - 2 * radius, upRect.top(), radius * 2, radius * 2, 90, -90);
+                    upPath.moveTo(upRect.left(), upRect.top() + sp->radius);
+                    upPath.arcTo(upRect.left(), upRect.top(), sp->radius * 2, sp->radius * 2, 180, -90);
+                    upPath.lineTo(upRect.right() - sp->radius, upRect.top());
+                    upPath.arcTo(upRect.right() + 1 - 2 * sp->radius, upRect.top(), sp->radius * 2, sp->radius * 2, 90, -90);
                     upPath.lineTo(upRect.right() + 1, upRect.bottom());
                     upPath.lineTo(upRect.left(), upRect.bottom());
-                    upPath.lineTo(upRect.left(), upRect.top() - radius);
+                    upPath.lineTo(upRect.left(), upRect.top() - sp->radius);
                     upOption.state |= State_Enabled;
                     if (up) {
-                        painter->setBrush(sb->palette.brush(QPalette::Active, QPalette::Highlight));
+                        painter->setBrush(this->highLight_Hover());
                         upOption.state |= State_MouseOver;
                         if (option->state & State_Sunken) {
-                            painter->setBrush(highLight_Click());
+                            painter->setBrush(this->highLight_Click());
                             upOption.state |= State_Sunken;
                         }
                         painter->drawPath(upPath);
@@ -2012,26 +1988,29 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
 
                 if (sb->stepEnabled & QAbstractSpinBox::StepDownEnabled) {
                     QPainterPath downPath;
-                    downPath.moveTo(downRect.left(), downRect.bottom() - radius);
-                    downPath.arcTo(downRect.left(), downRect.bottom() - radius * 2, radius * 2, radius * 2, 180, 90);
-                    downPath.lineTo(downRect.right() - radius, downRect.bottom());
-                    downPath.arcTo(downRect.right() + 1 - radius * 2, downRect.bottom() - radius * 2, radius * 2, radius * 2, 270, 90);
+                    downPath.moveTo(downRect.left(), downRect.bottom() - sp->radius);
+                    downPath.arcTo(downRect.left(), downRect.bottom() - sp->radius * 2, sp->radius * 2, sp->radius * 2, 180, 90);
+                    downPath.lineTo(downRect.right() - sp->radius, downRect.bottom());
+                    downPath.arcTo(downRect.right() + 1 - sp->radius * 2, downRect.bottom() - sp->radius * 2, sp->radius * 2, sp->radius * 2, 270, 90);
                     downPath.lineTo(downRect.right() + 1, downRect.top());
                     downPath.lineTo(downRect.left(), downRect.top());
-                    downPath.lineTo(downRect.left(), downRect.bottom() - radius);
+                    downPath.lineTo(downRect.left(), downRect.bottom() - sp->radius);
                     downOption.state |= State_Enabled;
-                    painter->setBrush(Qt::NoBrush);
-                    painter->setBrush(sb->palette.brush(QPalette::Active, QPalette::Highlight));
                     if (down) {
-                        painter->setBrush(sb->palette.brush(QPalette::Active, QPalette::Highlight));
+                        painter->setBrush(this->highLight_Hover());
                         downOption.state |= State_MouseOver;
                         if (option->state & State_Sunken) {
-                            painter->setBrush(highLight_Click());
+                            painter->setBrush(this->highLight_Click());
                             downOption.state |= State_Sunken;
                         }
                         painter->drawPath(downPath);
                     }
                 } else {
+                    downOption.state = State_None;
+                }
+
+                if (!enable) {
+                    upOption.state = State_None;
                     downOption.state = State_None;
                 }
 
@@ -3639,7 +3618,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return sp->ComboBox_FrameWidth;
 
     case PM_SpinBoxFrameWidth:
-        return 2;
+        return sp->SpinBox_FrameWidth;
 
     case PM_ProgressBarChunkWidth:
         return 9;
@@ -4581,8 +4560,8 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             const int buttonWidth = (sb->subControls & (QStyle::SC_SpinBoxUp | QStyle::SC_SpinBoxDown)) != 0 ? 32 : 0;
             const int fw = sb->frame ? proxy()->pixelMetric(PM_SpinBoxFrameWidth, sb, widget) : 0;
             newSize += QSize(buttonWidth + 2 * fw, 0);
-            newSize.setWidth(qMax(newSize.width(), 140));
-            newSize.setHeight(qMax(newSize.height(), 36));
+            newSize.setWidth(qMax(newSize.width(), sp->SpinBox_DefaultWidth));
+            newSize.setHeight(qMax(newSize.height(), sp->SpinBox_DefaultHeight));
             return newSize;
         }
         break;

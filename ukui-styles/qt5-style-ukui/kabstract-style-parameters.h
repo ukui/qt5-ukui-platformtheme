@@ -115,6 +115,11 @@ public:
     int ComboBox_DefaultWidth = 160;
     int ComboBox_DefaultHeight = 36;
     int ComboBox_FrameWidth = 2;
+
+    // spinbox
+    int SpinBox_DefaultWidth = 160;
+    int SpinBox_DefaultHeight = 36;
+    int SpinBox_FrameWidth = 2;
 };
 
 
