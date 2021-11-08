@@ -1,3 +1,9 @@
+qt5-ukui-platformtheme (1.0.6-11.3) v101; urgency=medium
+
+  * bug:89248 【控制面板】【显示】修改分辨率/刷新率/方向，将鼠标放置在弹出来确认框的“不保存”上，当倒计时改变，“不保存”上的选中状态就会消失
+
+ -- leichen <leichen@kylionos.cn>  Mon, 08 Nov 2021 16:35:25 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.2) v101; urgency=medium
 
   * bug:73506 【需求-6527】【主题框架】select-下拉菜单中内容与左右边框的间距尺寸过小，不符合设计
