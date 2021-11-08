@@ -59,7 +59,6 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
 
 QStyle *Qt5UKUIStylePlugin::create(const QString &key)
 {
-    qDebug()<<"Qt5UKUIStyle create"<<qAppName()<<key;
     if (blackList().contains(qAppName()))
         return new Style;
     //FIXME:

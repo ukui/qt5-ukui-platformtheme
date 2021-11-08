@@ -125,7 +125,6 @@ ProxyStylePlugin::ProxyStylePlugin()
 
 QStyle *ProxyStylePlugin::create(const QString &key)
 {
-    qDebug()<<"ProxyStyle create"<<qAppName()<<key;
     if (blackList().contains(qAppName()))
         return new QProxyStyle("fusion");
     if (key == "ukui") {
