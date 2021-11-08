@@ -268,7 +268,6 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault) : QProxyStyle("fusion")
 
     //dbus
     m_statusManagerDBus = new QDBusInterface(DBUS_STATUS_MANAGER_IF, "/" ,DBUS_STATUS_MANAGER_IF,QDBusConnection::sessionBus(),this);
-    qDebug() << "[TabletMode::initGSettings] init statusManagerDBus:" << m_statusManagerDBus->isValid();
     if (m_statusManagerDBus) {
         QDBusReply<bool> message_a = m_statusManagerDBus->call("get_current_tabletmode");
         if (message_a.isValid()) {
@@ -379,7 +378,7 @@ int Qt5UKUIStyle::styleHint(QStyle::StyleHint hint, const QStyleOption *option, 
     case SH_UnderlineShortcut:
         return true;
     case SH_ComboBox_Popup:
-        return false;
+        return true;
     case SH_ComboBox_AllowWheelScrolling:
         return int(false);
 
@@ -756,6 +755,17 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 {
     switch (element) {
     case QStyle::PE_PanelMenu:
+    {
+        if (qobject_cast<const QFrame*>(widget)) {
+            painter->save();
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->restore();
+            return;
+        }
+    }
     case QStyle::PE_FrameMenu:
     {
         return drawMenuPrimitive(option, painter, widget);
@@ -1836,7 +1846,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setPen(Qt::NoPen);
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 }
-                painter->setRenderHint(QPainter::Antialiasing,true);
+                painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
                 painter->restore();
             } else {
@@ -1862,7 +1872,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                                      1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(Qt::NoBrush);
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
+                painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), 4, 4);
                 painter->restore();
             }
 
@@ -3240,8 +3250,26 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             const bool sunken(menuItem->state & State_Sunken);
             const bool selected(menuItem->state & State_Selected);
             const bool layout(menuItem->direction == Qt::LeftToRight);
-            int MenuItem_xRadius = 2;
-            int MenuItem_yRadius = 2;
+            bool isComboBox = qobject_cast<const QComboBox*>(widget);
+
+            int MenuItem_xRadius = isComboBox ? 4 : 2;
+            int MenuItem_yRadius = isComboBox ? 4 : 2;
+
+            //if it's combobox popup, then repaint backgroud by base color
+            if (enable && isComboBox) {
+                painter->save();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(menuItem->palette.brush(QPalette::Active, QPalette::Base));
+                painter->drawRect(drawRect);
+                painter->restore();
+            }
+
+            //if it's comobobox popup, set combobox popup size rect
+            if (isComboBox) {
+                int MenuItem_HMargin = proxy()->pixelMetric(PM_MenuVMargin, option, widget);
+                drawRect.adjust(MenuItem_HMargin, 0, -MenuItem_HMargin, 0);
+            }
+
             if (enable && (selected | hover | sunken)) {
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing);
@@ -3252,72 +3280,77 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
             int MenuItem_Spacing = 8;
             int MenuItem_VMargin = 3;
-            drawRect = drawRect.adjusted(8, MenuItem_VMargin, -8, -MenuItem_VMargin);//去除item边框
+            int MenuItem_HMargin = 8;
+            //去除item边框
+            drawRect = drawRect.adjusted(MenuItem_HMargin, MenuItem_VMargin, -MenuItem_HMargin, -MenuItem_VMargin);
 
-            if (menuItem->menuHasCheckableItems) {
-                const bool checked = menuItem->checked;
-                if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
-                    if (checked) {
-//                        QStyleOptionButton radioOption;
-//                        radioOption.QStyleOption::operator=(*option);
-//                        radioOption.rect = drawRect;
-//                        radioOption.state |= State_On;
-//                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
-//                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
-                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                        QIcon icon = QIcon::fromTheme("dialog-ok");
-                        QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
-                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
-                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                        painter->save();
-                        painter->setPen(Qt::NoPen);
-                        painter->setBrush(Qt::NoBrush);
-                        painter->drawPixmap(iconRect, drawPixmap);
-                        painter->restore();
+            //Checkable items draw
+            if (!isComboBox) {
+                if (menuItem->menuHasCheckableItems) {
+                    const bool checked = menuItem->checked;
+                    if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
+                        if (checked) {
+    //                        QStyleOptionButton radioOption;
+    //                        radioOption.QStyleOption::operator=(*option);
+    //                        radioOption.rect = drawRect;
+    //                        radioOption.state |= State_On;
+    //                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
+    //                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
+                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                            QIcon icon = QIcon::fromTheme("dialog-ok");
+                            QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
+                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                            painter->save();
+                            painter->setPen(Qt::NoPen);
+                            painter->setBrush(Qt::NoBrush);
+                            painter->drawPixmap(iconRect, drawPixmap);
+                            painter->restore();
+                        }
+                    } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
+                        if (checked) {
+                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                            QIcon icon = QIcon::fromTheme("dialog-ok");
+                            QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                            painter->save();
+                            painter->setPen(Qt::NoPen);
+                            painter->setBrush(Qt::NoBrush);
+                            painter->drawPixmap(iconRect, drawPixmap);
+                            painter->restore();
+                        }
                     }
-                } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
-                    if (checked) {
-                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                        QIcon icon = QIcon::fromTheme("dialog-ok");
-                        QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
-                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                }
+
+                if (menuItem->maxIconWidth != 0 && menuItem->checkType == QStyleOptionMenuItem::NotCheckable) {
+                    int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                    if (!menuItem->icon.isNull()) {
+                        QSize iconSize(smallIconSize, smallIconSize);
+                        QIcon::Mode mode =  enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+                        QIcon::State state = menuItem->checked ? QIcon::On : QIcon::Off;
+                        QPixmap pixmap = menuItem->icon.pixmap(iconSize, mode, state);
+                        QPixmap target = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - smallIconSize)/2, smallIconSize, smallIconSize);
                         iconRect = visualRect(menuItem->direction, drawRect, iconRect);
                         painter->save();
-                        painter->setPen(Qt::NoPen);
+                        painter->setPen(menuItem->palette.color(QPalette::Active, QPalette::Text));
                         painter->setBrush(Qt::NoBrush);
-                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->drawPixmap(iconRect, target);
                         painter->restore();
                     }
                 }
-            }
 
-            if (menuItem->maxIconWidth != 0 && menuItem->checkType == QStyleOptionMenuItem::NotCheckable) {
-                int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                if (!menuItem->icon.isNull()) {
-                    QSize iconSize(smallIconSize, smallIconSize);
-                    QIcon::Mode mode =  enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
-                    QIcon::State state = menuItem->checked ? QIcon::On : QIcon::Off;
-                    QPixmap pixmap = menuItem->icon.pixmap(iconSize, mode, state);
-                    QPixmap target = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                    QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - smallIconSize)/2, smallIconSize, smallIconSize);
-                    iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                    painter->save();
-                    painter->setPen(menuItem->palette.color(QPalette::Active, QPalette::Text));
-                    painter->setBrush(Qt::NoBrush);
-                    painter->drawPixmap(iconRect, target);
-                    painter->restore();
+                if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
+                    int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                    drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(iconWidth + MenuItem_Spacing, 0, 0, 0));
+                } else {
+                    drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
                 }
-            }
-
-            if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
-                int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(iconWidth + MenuItem_Spacing, 0, 0, 0));
-            } else {
-                drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
             }
 
             if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu) {
@@ -3332,6 +3365,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 proxy()->drawPrimitive(layout ? PE_IndicatorArrowRight : PE_IndicatorArrowLeft, &indOption, painter, widget);
                 drawRect = visualRect(menuItem->direction, drawRect, drawRect.adjusted(0, 0, -(indWidth + MenuItem_Spacing), 0));
             }
+
+            //set text rect
+            MenuItem_HMargin = 4;
+            drawRect = drawRect.adjusted(MenuItem_HMargin, 0, -MenuItem_HMargin, 0);
 
             if (!menuItem->text.isEmpty()) {
                 QString text = menuItem->text;
@@ -3359,7 +3396,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         textToDraw_flags |= Qt::AlignRight;
                     else
                         textToDraw_flags |= Qt::AlignLeft;
-                    painter->drawText(drawRect.adjusted(0, 0, 0, -2), textToDraw_flags, textToDraw);
+                    painter->drawText(drawRect, textToDraw_flags, textToDraw);
                 }
 
                 QFont font = menuItem->font;
@@ -3372,7 +3409,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     text_flags |= Qt::AlignLeft;
                 else
                     text_flags |= Qt::AlignRight;
-                painter->drawText(drawRect.adjusted(0, 0, 0, -2), text_flags, text);
+                painter->drawText(drawRect, text_flags, text);
                 painter->restore();
             }
             return;
@@ -3747,7 +3784,13 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuHMargin:
         return (4 + 5);
     case PM_MenuVMargin:
+    {
+        if (qobject_cast<const QComboBox*>(widget)) {
+            //conbobox pupop Margin size has default 1px
+            return (4 - 1);
+        }
         return (4 + 5);
+    }
 
     case PM_SmallIconSize:
         return 16;
@@ -4560,16 +4603,23 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
     switch (ct) {
     case CT_MenuItem: {
         if (const QStyleOptionMenuItem *menuItem = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+            bool isComboBox = qobject_cast<const QComboBox*>(widget);
             int w = newSize.width();
             int MenuItem_Spacing = 8;
-            if (menuItem->text.contains(QLatin1Char('\t')))
+            if (menuItem->text.contains(QLatin1Char('\t'))) {
                 w += 20;
+            }
 
             switch (menuItem->menuItemType) {
             case QStyleOptionMenuItem::SubMenu:
             case QStyleOptionMenuItem::Normal:
             case QStyleOptionMenuItem::DefaultItem:
             {
+                //Combobox popup menu item
+                if (isComboBox) {
+                    newSize.setHeight(menuItem->fontMetrics.height());
+                }
+
                 if (menuItem->menuHasCheckableItems || menuItem->maxIconWidth != 0) {
                     int iconWidth = proxy()->pixelMetric(QStyle::PM_SmallIconSize, option, widget);
                     w += iconWidth + MenuItem_Spacing;
@@ -4585,7 +4635,14 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 int MenuItem_VMargin = 3;
                 w +=  MenuItem_HMargin;
                 newSize.setWidth(qMax(w, 152));
-                newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 30));
+
+                if (isComboBox) {
+                    //Minimum height 36 or 56
+                    newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 36));
+                } else {
+                    newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 30));
+                }
+
                 return newSize;
             }
 

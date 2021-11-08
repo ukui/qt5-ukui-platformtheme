@@ -67,10 +67,6 @@ GestureHelper::GestureHelper(QObject *parent) : QObject(parent)
     m_slide_type = QGestureRecognizer::registerRecognizer(m_slider);
     m_zoom_type = QGestureRecognizer::registerRecognizer(m_zoomer);
 
-    qDebug()<<"gesture helper";
-
-    qDebug()<<m_slide_type<<"ttt";
-    qDebug()<<m_zoom_type<<"sss";
 }
 
 GestureHelper::~GestureHelper()

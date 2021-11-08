@@ -38,7 +38,6 @@ Qt5UKUIStylePlugin::Qt5UKUIStylePlugin(QObject *parent) :
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
 //        QTimer::singleShot(1000, this, [=](){
-            qDebug()<<"update symbolic color";
             QString inconTheme = settings->get("iconThemeName").toString();
             if (inconTheme == "ukui-icon-theme-classical" || inconTheme == "ukui-classical") {
                 HighLightEffect::setSymoblicColor(QColor(128, 128, 128, 255));
@@ -66,10 +65,9 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     bool dark = false;
     bool useDefault = false;
     if (key == "ukui-dark") {
-        qDebug()<<"use ukui-black";
         dark = true;
     } else if (key == "ukui-light") {
-        qDebug()<<"use ukui-white";
+
     } else {
         useDefault = true;
     }

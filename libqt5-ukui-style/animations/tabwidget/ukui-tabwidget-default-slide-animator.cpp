@@ -236,7 +236,6 @@ bool DefaultSlideAnimator::filterStackedWidget(QObject *obj, QEvent *e)
     switch (e->type()) {
     case QEvent::ChildAdded:
     case QEvent::ChildRemoved: {
-        qDebug()<<"added/removed"<<obj;
         if (obj->objectName() == "qt_tabwidget_stackedwidget") {
             QChildEvent *ce = static_cast<QChildEvent *>(e);
             if (!ce->child()->isWidgetType())
