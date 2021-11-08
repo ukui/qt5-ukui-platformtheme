@@ -1,3 +1,10 @@
+qt5-ukui-platformtheme (1.0.6-11.2) v101; urgency=medium
+
+  * bug:73506 【需求-6527】【主题框架】select-下拉菜单中内容与左右边框的间距尺寸过小，不符合设计
+  * bug:78794 【安全中心】建议弹框时不要输出无关信息
+
+ -- leichen <leichen@kylinos.cn>  Mon, 08 Nov 2021 10:12:14 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.1) v101; urgency=medium
 
   * tasks:58507 【平板】【触摸屏】Intel教育版本功能代码迁移到SP1中/qt触摸插件代码迁移
