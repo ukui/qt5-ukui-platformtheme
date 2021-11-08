@@ -240,6 +240,9 @@ void MessageBox::addButton(QAbstractButton *button, QMessageBox::ButtonRole role
         return;
     }
 
+    if (d->mButtonBox->buttons().contains(button))
+        return;
+
     removeButton(button);
     d->mButtonBox->addButton(button, (QDialogButtonBox::ButtonRole)role);
     d->mCustomButtonList.append(button);
