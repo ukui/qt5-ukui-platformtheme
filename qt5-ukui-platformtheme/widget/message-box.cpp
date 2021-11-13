@@ -800,6 +800,10 @@ void MessageBoxPrivate::updateSize()
     if (q->layout() == nullptr)
         return;
 
+    if (QGuiApplication::screenAt(QCursor::pos()) == nullptr) {
+        return;
+    }
+
     q->layout()->activate();
 
     while (mButtonBox->layout()->count() < mButtonBox->buttons().count() + 1) {
@@ -1285,6 +1289,8 @@ void MessageBoxHelper::hide()
 bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality windowModality, QWindow *parent)
 {
     initDialog();
+
+    mMessageBox->setWindowModality(windowModality);
 
     if (parent) {
         if (QWidget *p = mMessageBox->find(parent->winId())) {
