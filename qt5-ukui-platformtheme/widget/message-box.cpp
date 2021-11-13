@@ -1290,7 +1290,7 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
 {
     initDialog();
 
-    mMessageBox->setWindowModality(windowModality);
+//    mMessageBox->setWindowModality(windowModality);
 
     if (parent) {
         if (QWidget *p = mMessageBox->find(parent->winId())) {
