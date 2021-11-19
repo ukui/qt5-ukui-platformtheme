@@ -115,6 +115,24 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *e)
     case QEvent::MouseMove: {
         //if (QWidget::mouseGrabber()) return false;
         QMouseEvent *event = static_cast<QMouseEvent*>(e);
+
+        /*! \note In x11, accuracy of the MouseEvent translated from TouchEvent is not
+         *  consistent with the accuracy of the native MouseEvent(TouchEvent is a decimal
+         *  and MouseEvent is an integer).
+         *  When the touch is pressed, if the mouse clicks the right button, Qt will think that
+         *  the positions of the two clicks are inconsistent, and will send a MouseMoveEvent,
+         *  the source of this MouseMoveEvent is not MouseEventSynthesizedByQt, so this MouseMoveEvent
+         *  will not tirgger w->grabMouse(), window will be grabbed by kwin but no TouchEndEvent is received
+         *  Therefore, the MouseMoveEvent is filtered out here if the moving distance is too small.
+         *  \return return true because some borderless windows handle window dragging separately,
+         *  if return false will cause these windows to behave abnormally
+         *  \author wangweinan@kylinos.cn
+        */
+        if (qAbs(event->pos().x() - m_start_point.x()) < 2 ||
+            qAbs(event->pos().y() - m_start_point.y()) < 2) {
+            return true;
+        }
+
         //move request
         mouseMoveEvent(obj, event);
         return false;
@@ -179,6 +197,10 @@ void WindowManager::mouseMoveEvent(QObject *obj, QMouseEvent *e)
 
         if (e->source() == Qt::MouseEventSynthesizedByQt) {
             if (!w->mouseGrabber()) {
+                //! \note Under XI, grabMouse will grab touch devices at the same time.
+                //! When the touch device grabbing changes, xserver will send TouchEndEvent
+                //! to the client that monitors the touch sequence.
+                //! \see qtbase QXcbConnection::xi2SetMouseGrabEnabled
                 w->grabMouse();
                 w->releaseMouse();
             }
