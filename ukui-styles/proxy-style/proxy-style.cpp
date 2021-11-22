@@ -279,10 +279,4 @@ void ProxyStyle::unpolish(QWidget *widget)
 void ProxyStyle::polish(QPalette &pal)
 {
     QProxyStyle::polish(pal);
-
-//    if (m_use_custom_highlight_color) {
-//        pal.setColor(QPalette::Active, QPalette::Highlight, m_custom_highlight_color);
-//        pal.setColor(QPalette::Inactive, QPalette::Highlight, m_custom_highlight_color);
-//        pal.setColor(QPalette::Disabled, QPalette::Highlight, Qt::transparent);
-//    }
 }

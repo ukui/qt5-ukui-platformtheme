@@ -21,126 +21,19 @@
  */
 
 #include "qt5-ukui-style-helper.h"
-#include "ukui-style-settings.h"
 
 #include <QPainter>
 #include <QStyleOption>
 #include <QWidget>
 #include <QPainterPath>
 
-#include <KWindowEffects>
 
-#include <QApplication>
-
-#include <QDebug>
-#include "black-list.h"
-
-extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
 
 static inline qreal mixQreal(qreal a, qreal b, qreal bias)
 {
     return a + (b - a) * bias;
 }
 
-void drawComboxPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
-{
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing,true);
-    auto palette = option->palette;
-    bool enable = option->state.testFlag(QStyle::State_Enabled);
-    bool hover = option->state.testFlag(QStyle::State_MouseOver);
-    if (enable) {
-        if (hover) {
-            painter->setBrush(palette.brush(QPalette::Normal, QPalette::Highlight));
-        } else {
-            painter->setBrush(palette.brush(QPalette::Normal, QPalette::Base));
-        }
-    } else {
-        painter->setBrush(palette.brush(QPalette::Disabled, QPalette::Base));
-    }
-    // painter->setFont(QColor(252,255,0));
-    painter->drawRoundedRect(option->rect.adjusted(+1,+1,-1,-1),4,4);
-    painter->restore();
-}
-
-void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget)
-{
-    int Menu_xRadius = 4;
-    int Menu_yRadius = 4;
-    int rander = 5;
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing);
-    QPainterPath rectPath;
-    rectPath.addRoundedRect(option->rect.adjusted(+rander, +rander, -rander, -rander), Menu_xRadius, Menu_yRadius);
-
-    // Draw a black floor
-    QPixmap pixmap(option->rect.size());
-    pixmap.fill(Qt::transparent);
-    QPainter pixmapPainter(&pixmap);
-    pixmapPainter.setRenderHint(QPainter::Antialiasing);
-    pixmapPainter.setPen(Qt::transparent);
-    pixmapPainter.setBrush(Qt::black);
-    pixmapPainter.drawPath(rectPath);
-    pixmapPainter.end();
-
-    // Blur the black background
-    QImage img = pixmap.toImage();
-    qt_blurImage(img, Menu_xRadius, false, false);
-
-    // Dig out the center part
-    pixmap = QPixmap::fromImage(img);
-    QPainter pixmapPainter2(&pixmap);
-    pixmapPainter2.setRenderHint(QPainter::Antialiasing);
-    pixmapPainter2.setCompositionMode(QPainter::CompositionMode_Clear);
-    pixmapPainter2.setPen(Qt::transparent);
-    pixmapPainter2.setBrush(Qt::transparent);
-    pixmapPainter2.drawPath(rectPath);
-
-    // Shadow rendering
-    painter->drawPixmap(option->rect, pixmap, pixmap.rect());
-
-    //That's when I started drawing the frame floor
-    QStyleOption opt = *option;
-    auto color = opt.palette.color(QPalette::Base);
-    if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
-        auto opacity = UKUIStyleSettings::globalInstance()->get("menuTransparency").toInt()/100.0;
-        color.setAlphaF(opacity);
-    }
-
-    if (qApp->property("blurEnable").isValid()) {
-        bool blurEnable = qApp->property("blurEnable").toBool();
-        if (!blurEnable) {
-            color.setAlphaF(1);
-        }
-    }
-
-    //if blur effect is not supported, do not use transparent color.
-    if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) || blackAppListWithBlurHelper().contains(qAppName())) {
-        color.setAlphaF(1);
-    }
-
-    opt.palette.setColor(QPalette::Base, color);
-
-    QPen pen(opt.palette.color(QPalette::Normal, QPalette::Dark), 1);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setJoinStyle(Qt::RoundJoin);
-    painter->setPen(Qt::transparent);
-    painter->setBrush(color);
-
-    QPainterPath path;
-    QRegion region;
-    if (widget)
-        region = widget->mask();
-    if (region.isEmpty())
-        path.addRoundedRect(opt.rect.adjusted(+rander, +rander, -rander,-rander), Menu_xRadius, Menu_yRadius);
-    else
-        path.addRegion(region);
-
-    //painter->drawPolygon(path.toFillPolygon().toPolygon());
-    painter->drawPath(path);
-    painter->restore();
-    return;
-}
 
 
 const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radius_y)
@@ -150,9 +43,19 @@ const QRegion getRoundedRectRegion(const QRect &rect, qreal radius_x, qreal radi
     return path.toFillPolygon().toPolygon();
 }
 
-qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
+
+
+qreal calcRadial(const QStyleOptionSlider *dial, int position)
 {
-    const int currentSliderPosition = dial->upsideDown ? postion : (dial->maximum - postion);
+    int currentSliderPosition = position;
+    if (!dial->upsideDown) {
+        if (position == dial->minimum)
+            currentSliderPosition = dial->maximum;
+        else if (position == dial->maximum)
+            currentSliderPosition = dial->minimum;
+        else
+            currentSliderPosition = dial->maximum - position;
+    }
     qreal a = 0;
     if (dial->maximum == dial->minimum)
         a = M_PI / 2;
@@ -162,6 +65,8 @@ qreal calcRadialPos(const QStyleOptionSlider *dial, int postion)
         a = (M_PI * 8 - (currentSliderPosition - dial->minimum) * 10 * M_PI / (dial->maximum - dial->minimum)) / 6;
     return a;
 }
+
+
 
 QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
 {
@@ -190,15 +95,9 @@ QPolygonF calcLines(const QStyleOptionSlider *dial, int offset)
                                          : (M_PI * 8 - i * 10 * M_PI / notches) / 6;
         qreal s = qSin(angle);
         qreal c = qCos(angle);
-        if (i == 0 || (((ns * i) % (dial->pageStep ? dial->pageStep : 1)) == 0)) {
-            poly[2 * i] = QPointF(xc + (r + 1 - offset) * c,
-                                  yc - (r + 1 - offset) * s);
-            poly[2 * i + 1] = QPointF(xc + r * c, yc - r * s);
-        } else {
-            poly[2 * i] = QPointF(xc + (r + 1 - smallLineSize) * c,
-                                  yc - (r + 1 - smallLineSize) * s);
-            poly[2 * i + 1] = QPointF(xc + r * c, yc -r * s);
-        }
+        poly[2 * i] = QPointF(xc + (r + 0.5 - smallLineSize) * c,
+                              yc - (r + 0.5 - smallLineSize) * s);
+        poly[2 * i + 1] = QPointF(xc + r * c, yc - r * s);
     }
     return poly;
 }
@@ -273,20 +172,6 @@ QColor mixColor(const QColor &c1, const QColor &c2, qreal bias)
     qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
 
     return QColor::fromRgbF(r, g, b, a);
-}
-
-
-
-QColor highLight_Click()
-{
-    return QColor(41, 108, 217);
-}
-
-
-
-QColor highLight_Hover()
-{
-    return QColor(64, 169, 251);
 }
 
 

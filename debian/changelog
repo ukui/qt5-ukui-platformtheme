@@ -1,3 +1,15 @@
+qt5-ukui-platformtheme (3.1.2-1.1) v101; urgency=medium
+
+  * 还原主题框架原来的gsetting，并结合UKUI3.1进行适配
+
+ -- xibowen <xibowen@kylinos.cn>  Sun, 21 Nov 2021 15:11:08 +0800
+
+qt5-ukui-platformtheme (3.1.2-1.0) v101; urgency=medium
+
+  * 需求55235~55247：主题框架3.1需求修改
+
+ -- xibowen <xibowen@kylinos.cn>  Thu, 18 Nov 2021 19:15:28 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.5) v101; urgency=medium
 
   * bug:88670:【控制面板】【必现】125%缩放比1920*1080分辨率情况下，将分辨率修改为最低分辨率1024*768，控制面板闪退

@@ -34,6 +34,7 @@ class ShadowHelper;
 
 class QStyleOptionViewItem;
 class QDBusInterface;
+class KAbstractStyleParameters;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
 #include<private/qfusionstyle_p.h>
@@ -41,6 +42,12 @@ class QDBusInterface;
 #else
 #define Style QProxyStyle
 #endif
+
+#include <QFontMetrics>
+#include <QStyleOption>
+#include <private/qtextengine_p.h>
+#include <qmath.h>
+#include <QGSettings>
 
 /*!
  * \brief The Qt5UKUIStyle class
@@ -51,7 +58,7 @@ class Qt5UKUIStyle : public Style
 {
     Q_OBJECT
 public:
-    explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true);
+    explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true, QString type = "fashion");
 
     const QStringList specialList() const;
 
@@ -113,7 +120,6 @@ public:
 
 protected:
     const QStringList useDefaultPalette() const;
-    void viewItemDrawText(QPainter *p, const QStyleOptionViewItem *option, const QRect &rect) const;
 
     void realSetWindowSurfaceFormatAlpha(const QWidget *widget) const;
     void realSetMenuTypeToMenu(const QWidget *widget) const;
@@ -128,19 +134,51 @@ private:
     ProgressBarAnimationHelper *m_animation_helper;
 
     /*!
-     * \brief m_use_dark_palette
+     * \brief m_drak_palette
      * \deprecated
      * use qApp->property("preferDark") instead. link to: #63026.
      */
-    bool m_use_dark_palette = false;
-    bool m_is_default_style = true;
+    bool m_drak_palette = false;
+    bool m_default_palette = false;
+    QString m_type = "fashion";
 
     bool m_is_tablet_mode = false;
     QDBusInterface *m_statusManagerDBus = nullptr;
 
+    bool isUseDarkPalette() const;
+
     QColor button_Click() const;
     QColor button_Hover() const;
     QColor button_DisableChecked() const;
+
+    QColor highLight_Click() const;
+    QColor highLight_Hover() const;
+    mutable QColor mHighLightClick;
+    mutable QColor mHighLightHover;
+
+    void setThemeColor(QString themeColor, QPalette &palette) const;
+
+    void updatePalette();
+    void changePaletteName();
+    void changePaletteType();
+    void controlPalette();
+
+    QGSettings *paletteSettings = nullptr;
+
+    // KAbstractStyleParameters
+    KAbstractStyleParameters *sp = nullptr;
+
+    // menu
+    void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+
+    // view
+    QString calculateElidedText(const QString &text, const QTextOption &textOption,
+                                    const QFont &font, const QRect &textRect, const Qt::Alignment valign,
+                                    Qt::TextElideMode textElideMode, int flags,
+                                    bool lastVisibleLineShouldBeElided, QPointF *paintStartPosition) const;
+    void viewItemDrawText(QPainter *painter, const QStyleOptionViewItem *option, const QRect &rect) const;
+    void viewItemLayout(const QStyleOptionViewItem *option,  QRect *checkRect, QRect *pixmapRect, QRect *textRect, bool sizehint) const;
+    QSize viewItemSize(const QStyleOptionViewItem *option, int role) const;
 
 private Q_SLOTS:
     void updateTabletModeValue(bool isTabletMode);

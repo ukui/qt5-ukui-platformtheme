@@ -64,14 +64,21 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     //FIXME:
     bool dark = false;
     bool useDefault = false;
-    if (key == "ukui-dark") {
-        dark = true;
-    } else if (key == "ukui-light") {
+    QString type = "fashion";
 
+    if (key == "ukui-light") {
+        dark = false;
+        useDefault = false;
+    } else if (key == "ukui-dark") {
+        dark = true;
+        useDefault = false;
     } else {
         useDefault = true;
     }
-    return new Qt5UKUIStyle(dark, useDefault);
+
+    type = "classical";
+
+    return new Qt5UKUIStyle(dark, useDefault, type);
 }
 
 const QStringList Qt5UKUIStylePlugin::blackList()
