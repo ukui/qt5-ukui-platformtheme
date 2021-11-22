@@ -4636,6 +4636,11 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 w +=  MenuItem_HMargin;
                 newSize.setWidth(qMax(w, 152));
 
+                if(newSize.width() > widget->maximumWidth()) {
+                    //size no more than max size.At least set size 1
+                    newSize.setWidth((widget->maximumWidth() - 20 > 1)?widget->maximumWidth() - 20 : 1);
+                }
+
                 if (isComboBox) {
                     //Minimum height 36 or 56
                     newSize.setHeight(qMax(newSize.height() + MenuItem_VMargin * 2, 36));
