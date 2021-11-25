@@ -758,7 +758,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         painter->setRenderHint(QPainter::Antialiasing);
         painter->setPen(QPen(option->palette.color(QPalette::Normal, QPalette::Dark), 1));
         painter->setBrush(Qt::NoBrush);
-        painter->drawRoundedRect(option->rect,6,6);
+        painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
         painter->restore();
         return;
     }
@@ -2198,7 +2198,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(option->palette.color(QPalette::Base));
-                painter->drawRoundedRect(groupContents,4,4);
+                painter->drawRoundedRect(groupContents, sp->radius, sp->radius);
                 painter->restore();
 
             }
