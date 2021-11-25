@@ -35,6 +35,8 @@ static const QStringList blackAppList() {
     l<<"Ime Setting";
 //    l<<"kylin-user-guide";
     l<<"biometric-authentication";
+    l<<"qtcreator";
+
     return l;
 }
 

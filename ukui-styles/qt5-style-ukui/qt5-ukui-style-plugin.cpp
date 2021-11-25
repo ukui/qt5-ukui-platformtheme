@@ -76,7 +76,7 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
         useDefault = true;
     }
 
-    type = "classical";
+    type = "fashion";
 
     return new Qt5UKUIStyle(dark, useDefault, type);
 }

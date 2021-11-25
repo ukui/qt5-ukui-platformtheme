@@ -69,6 +69,7 @@ public:
 
     // menu
     int Menu_MarginHeight = 4 + 5;
+    int Menu_Combobox_Popup_MarginHeight = 4 - 1;
     int Menu_MarginWidth = 4 + 5;
     int Menu_MarginPanelWidth = 0;
     int Menu_Radius = 8;
@@ -120,6 +121,10 @@ public:
     int SpinBox_DefaultWidth = 160;
     int SpinBox_DefaultHeight = 36;
     int SpinBox_FrameWidth = 2;
+
+    // tabbar
+    int TabBar_DefaultWidth = 168;
+    int TabBar_DefaultHeight = 40;
 };
 
 

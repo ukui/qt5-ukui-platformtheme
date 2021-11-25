@@ -1257,7 +1257,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(twf->palette.brush(QPalette::Active, QPalette::Base));
-            painter->drawRect(option->rect.adjusted(0, 0, 0, 0));
+            painter->drawRect(option->rect);
             painter->restore();
             return;
         }
@@ -2693,6 +2693,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
+            painter->setRenderHint(QPainter::Antialiasing, true);
             if (selected || hover) {
                 if (selected) {
                     if (fisttab || onlyOne) {
@@ -2704,7 +2705,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     }
                 }
 
-                int TabBarTab_Radius = 6;
+                int TabBarTab_Radius = sp->radius;
                 QPainterPath path;
                 path.moveTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
                 path.arcTo(QRect(drawRect.left(), drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, 90);
@@ -2720,9 +2721,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
 
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
-                if (hover && !selected)
-                    painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
-                                               tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
+                if (hover && !selected) {
+//                    painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
+//                                               tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
+                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
+
+                }
+
                 painter->drawPath(path);
             } else {
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
@@ -2777,7 +2782,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 QPixmap drawPixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, option, widget);
                 painter->drawPixmap(iconRect.x(), iconRect.y(), drawPixmap);
             }
+
             proxy()->drawItemText(painter, textRect, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::WindowText);
+
             if (!(tab->state & State_Selected)) {
                 int dis = ((verticalTabs ? drawRect.width() : drawRect.height()) - iconSize) / 2;
                 painter->save();
@@ -3581,7 +3588,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     {
         if (qobject_cast<const QComboBox*>(widget)) {
             //conbobox pupop Margin size has default 1px
-            return (4 - 1);
+            return sp->Menu_Combobox_Popup_MarginHeight;
         }
         return sp->Menu_MarginHeight;
     }
@@ -4502,11 +4509,11 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
 
             if (tab->shape == QTabBar::RoundedWest || tab->shape == QTabBar::RoundedEast
                     || tab->shape == QTabBar::TriangularWest || tab->shape == QTabBar::TriangularEast) {
-                newSize.setHeight(qMax(newSize.height() + padding, 168));
-                newSize.setWidth(qMax(newSize.width(), 36));
+                newSize.setHeight(qMax(newSize.height() + padding, sp->TabBar_DefaultWidth));
+                newSize.setWidth(qMax(newSize.width(), sp->TabBar_DefaultHeight));
             } else {
-                newSize.setWidth(qMax(newSize.width() + padding, 168));
-                newSize.setHeight(qMax(newSize.height(), 36));
+                newSize.setWidth(qMax(newSize.width() + padding, sp->TabBar_DefaultWidth));
+                newSize.setHeight(qMax(newSize.height(), sp->TabBar_DefaultHeight));
             }
             return newSize;
         }
