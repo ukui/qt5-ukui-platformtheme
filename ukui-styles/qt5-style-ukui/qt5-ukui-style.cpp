@@ -1603,7 +1603,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             if (cg == QPalette::Normal && !(vi->state & QStyle::State_Active))
                 cg = QPalette::Inactive;
 
-            int Radius = 4;
+            int Radius = sp->radius;
             bool isTree = false;
             if (qobject_cast<const QTreeView*>(widget))
                 isTree = true;
@@ -1618,7 +1618,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         painter->setBrush(highLight_Click());
                         painter->drawRect(vi->rect);
                     } else if (vi->state & State_MouseOver) {
-                        painter->setBrush(highLight_Hover());
+//                        painter->setBrush(highLight_Hover());
+                        painter->setBrush(vi->palette.brush(QPalette::Disabled, QPalette::Midlight));
                         painter->drawRect(vi->rect);
                     } else if (vi->features & QStyleOptionViewItem::Alternate) {
                         painter->setBrush(vi->palette.brush(cg, QPalette::AlternateBase));
@@ -1644,8 +1645,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             const bool select = vi->state & State_Selected;
             const bool hover = vi->state & State_MouseOver;
             const bool sunken = vi->state & State_Sunken;
-            int iconMode_Radius = 6;
-            int Radius = 4;
+            int iconMode_Radius = sp->radius;
 
             if (!enable)
                 return;
@@ -1723,15 +1723,18 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                bool isTree = false;
-                if (qobject_cast<const QTreeView*>(widget))
-                    isTree = true;
                 QPainterPath path;
-                if (isTree) {
+                if (qobject_cast<const QTreeView*>(widget) || qobject_cast<const QTreeWidget*>(widget)) {
                     path.addRect(vi->rect);
-                } else {
-                    path.addRoundedRect(vi->rect, Radius, Radius);
+                } else if(qobject_cast<const QListView *>(widget) || qobject_cast<const QListWidget *>(widget)){
+                    path.addRoundedRect(vi->rect, sp->radius, sp->radius);
+                } else if(qobject_cast<const QTableView *>(widget) || qobject_cast<const QTableWidget *>(widget)){
+                    path.addRoundedRect(vi->rect, sp->radius, sp->radius);
                 }
+                else {
+                    path.addRect(vi->rect);
+                }
+
                 if (select) {
                     painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
                     painter->drawPath(path);
@@ -1739,7 +1742,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Click());
                     painter->drawPath(path);
                 } else if (hover) {
-                    painter->setBrush(highLight_Hover());
+                    if (qobject_cast<const QTableView *>(widget) || qobject_cast<const QTableWidget *>(widget)) {
+                        painter->setBrush(highLight_Hover());
+                    } else {
+                        painter->setBrush(vi->palette.brush(QPalette::Disabled, QPalette::Midlight));
+                    }
                     painter->drawPath(path);
                 }
                 painter->restore();
@@ -1754,22 +1761,52 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
 
     case PE_IndicatorBranch:
     {
-        if (!(option->state & State_Children)) {
-            return;
-        }
-        QStyleOption subOption = *option;
-        if (proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
-            subOption.state = option->state;
-        else
-            subOption.state = option->state & State_Enabled ? State_Enabled : State_None;
+        if (qobject_cast<const QTreeView *>(widget)) {
+            bool isHover = option->state & State_MouseOver;
+            bool isSelected = option->state & State_Selected;
+            bool enable = option->state & State_Enabled;
+            QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
+                                                 QPalette::Highlight);
 
-        if (option->state & State_Open) {
-            proxy()->drawPrimitive(PE_IndicatorArrowDown, &subOption, painter, widget);
-        } else {
-            const bool reverse = (option->direction == Qt::RightToLeft);
-            proxy()->drawPrimitive(reverse ? PE_IndicatorArrowLeft : PE_IndicatorArrowRight, &subOption, painter, widget);
+            QColor color2 = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
+                                                  QPalette::HighlightedText);
+
+            if (isSelected || isHover) {
+                if (isHover && !isSelected) {
+                    color = option->palette.color(QPalette::Disabled, QPalette::Midlight);
+                }
+                painter->fillRect(option->rect, color);
+                auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
+                QStyleOptionViewItem tmp = *vopt;
+
+                // for now the style paint arrow with highlight text brush when hover
+                // we but don't want to highligh the indicator when hover a view item.
+                if (isHover) {
+                    tmp.state &= ~QStyle::State_MouseOver;
+                }
+
+                tmp.palette.setColor(tmp.palette.currentColorGroup(), QPalette::Highlight, color2);
+                return Style::drawPrimitive(PE_IndicatorBranch, &tmp, painter, widget);
+            }
+            break;
         }
-        return;
+
+//        if (!(option->state & State_Children)) {
+//            return;
+//        }
+//        QStyleOption subOption = *option;
+//        if (proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, option, widget))
+//            subOption.state = option->state;
+//        else
+//            subOption.state = option->state & State_Enabled ? State_Enabled : State_None;
+
+//        if (option->state & State_Open) {
+//            proxy()->drawPrimitive(PE_IndicatorArrowDown, &subOption, painter, widget);
+//        } else {
+//            const bool reverse = (option->direction == Qt::RightToLeft);
+//            proxy()->drawPrimitive(reverse ? PE_IndicatorArrowLeft : PE_IndicatorArrowRight, &subOption, painter, widget);
+//        }
+//        return;
     }
 
     case PE_IndicatorViewItemCheck:
@@ -3534,7 +3571,15 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     mode = QIcon::Selected;
                 QIcon::State state = vi->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
                 QPixmap pixmap = vi->icon.pixmap(vi->decorationSize, mode, state);
-                QStyle::drawItemPixmap(painter, iconRect, vi->decorationAlignment, pixmap);
+
+                QStyleOptionViewItem tmp = *vi;
+                //listitem state of MouseOver use color gray.so icon shouldn't use highlight effect.Except table wight and table list
+                if((vi->state & QStyle::State_MouseOver) && !(vi->state & QStyle::State_Selected) &&
+                        (!qobject_cast<const QTableView *>(widget)) && (!qobject_cast<const QTableWidget *>(widget))) {
+                    tmp.state &= ~QStyle::State_MouseOver;
+                }
+
+                QStyle::drawItemPixmap(painter, iconRect, tmp.decorationAlignment, HighLightEffect::generatePixmap(pixmap, &tmp, widget));
             }
 
             if (!vi->text.isEmpty()) {
@@ -3546,7 +3591,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 if (((vi->decorationPosition == QStyleOptionViewItem::Top) || (vi->decorationPosition ==  QStyleOptionViewItem::Bottom))
                         && !(vi->state & State_Selected)) {
                     painter->setPen(vi->palette.color(cg, QPalette::Text));
-                } else if (vi->state & (QStyle::State_Selected | QStyle::State_MouseOver)) {
+                } else if (vi->state & (QStyle::State_Selected)) {
                     painter->setPen(vi->palette.color(cg, QPalette::HighlightedText));
                 } else {
                     painter->setPen(vi->palette.color(cg, QPalette::Text));
@@ -3717,7 +3762,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_IconViewIconSize:
         return 32;
     case PM_FocusFrameHMargin:
-        return 3;
+        return 2;
 
     case PM_TreeViewIndentation:
         return 20;
@@ -4728,22 +4773,22 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
         break;
     }
 
-    case CT_ItemViewItem:
-    {
-        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
-            QRect decorationRect, displayRect, checkRect;
-            viewItemLayout(vi, &checkRect, &decorationRect, &displayRect, true);
-            newSize = (decorationRect | displayRect | checkRect).size();
+//    case CT_ItemViewItem:
+//    {
+//        if (const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+//            QRect decorationRect, displayRect, checkRect;
+//            viewItemLayout(vi, &checkRect, &decorationRect, &displayRect, true);
+//            newSize = (decorationRect | displayRect | checkRect).size();
 
-            int Margin_Width = 4;
-            int Margin_Height = 2;
-            newSize.setWidth(newSize.width() + Margin_Width * 2);
-            newSize.setHeight(qMax(newSize.height() + Margin_Height * 2, 36));
+//            int Margin_Width = 4;
+//            int Margin_Height = 2;
+//            newSize.setWidth(newSize.width() + Margin_Width * 2);
+//            newSize.setHeight(qMax(newSize.height() + Margin_Height * 2, 36));
 
-            return newSize;
-        }
-        break;
-    }
+//            return newSize;
+//        }
+//        break;
+//    }
 
     default:
         break;
