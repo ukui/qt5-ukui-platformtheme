@@ -1,3 +1,11 @@
+qt5-ukui-platformtheme (3.1.2-1.2) v101; urgency=medium
+
+  * 修改主题框架所有空间都是直角的问题
+  * 完成UKUI3.1需求QFrame的开发
+  * 完成UKUI3.1需求list、table、tree控件的开发
+
+ -- xibowen <xibowen@kylinos.cn>  Sun, 28 Nov 2021 14:38:08 +0800
+
 qt5-ukui-platformtheme (3.1.2-1.1) v101; urgency=medium
 
   * 还原主题框架原来的gsetting，并结合UKUI3.1进行适配
