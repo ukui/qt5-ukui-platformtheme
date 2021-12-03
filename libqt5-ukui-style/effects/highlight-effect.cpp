@@ -157,10 +157,15 @@ const QColor HighLightEffect::getCurrentSymbolicColor()
     return symbolic_color;
 }
 
-const QColor HighLightEffect::defaultStyleDark()
+const QColor HighLightEffect::defaultStyleDark(const QWidget *widget)
 {
     auto windowText = qApp->palette().windowText().color();
     qreal h, s, v;
+
+    if (widget) {
+        windowText = widget->palette().windowText().color();
+    }
+
     windowText.getHsvF(&h, &s, &v);
     return QColor::fromHsvF(h, s*0.85, v, 0.7);
 }
@@ -190,7 +195,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
                 option->state & QStyle::State_Sunken) {
             p.fillRect(target.rect(), option->palette.highlightedText());
         } else {
-                p.fillRect(target.rect(), mode ? option->palette.text() : defaultStyleDark());
+                p.fillRect(target.rect(), mode ? option->palette.text() : defaultStyleDark(widget));
         }
         return target;
     }
@@ -258,7 +263,7 @@ QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOptio
             p.setRenderHint(QPainter::Antialiasing);
             p.setRenderHint(QPainter::SmoothPixmapTransform);
             p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-            p.fillRect(target.rect(), mode ? option->palette.text() : defaultStyleDark());
+            p.fillRect(target.rect(), mode ? option->palette.text() : defaultStyleDark(widget));
             return target;
         }
     } else if (hlmode == ordinaryHighLight) {
@@ -301,7 +306,7 @@ QPixmap HighLightEffect::ordinaryGeneratePixmap(const QPixmap &pixmap, const QSt
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    p.fillRect(target.rect(), color.isValid() ? color : (mode ? option->palette.text() : defaultStyleDark()));
+    p.fillRect(target.rect(), color.isValid() ? color : (mode ? option->palette.text() : defaultStyleDark(widget)));
     return target;
 }
 
@@ -380,7 +385,7 @@ QPixmap HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(const QPixmap &pixma
         p.setRenderHint(QPainter::Antialiasing);
         p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        p.fillRect(target.rect(), defaultColor.isValid() ? defaultColor : (mode ? option->palette.text() : defaultStyleDark()));
+        p.fillRect(target.rect(), defaultColor.isValid() ? defaultColor : (mode ? option->palette.text() : defaultStyleDark(widget)));
     }
     return target;
 }
@@ -417,7 +422,7 @@ QPixmap HighLightEffect::filledSymbolicColoredGeneratePixmap(const QPixmap &pixm
     if (isEnable && overOrDown) {
         return filledSymbolicColoredPixmap(target, hoverColor.isValid() ? hoverColor : option->palette.color(QPalette::HighlightedText));
     } else {
-        return filledSymbolicColoredPixmap(target, defaultColor.isValid() ? defaultColor : (mode ? option->palette.color(QPalette::Text) : defaultStyleDark()));
+        return filledSymbolicColoredPixmap(target, defaultColor.isValid() ? defaultColor : (mode ? option->palette.color(QPalette::Text) : defaultStyleDark(widget)));
     }
 
     return target;

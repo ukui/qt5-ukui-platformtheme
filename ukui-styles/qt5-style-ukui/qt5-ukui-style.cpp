@@ -909,6 +909,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             bool isWindowColoseButton = false;
             bool isImportant = false;
             bool useButtonPalette = false;
+            bool isbutton = true;
             if (widget) {
                 if (widget->property("isWindowButton").isValid()) {
                     if (widget->property("isWindowButton").toInt() == 0x01)
@@ -923,8 +924,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     useButtonPalette = widget->property("useButtonPalette").toBool();
 
                 if (qobject_cast<const QComboBox*>(widget) || qobject_cast<const QLineEdit*>(widget)
-                        || qobject_cast<const QAbstractSpinBox*>(widget))
+                        || qobject_cast<const QAbstractSpinBox*>(widget)) {
                     useButtonPalette = true;
+                    isbutton = false;
+                }
             }
 
             if (!enable) {
@@ -953,6 +956,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Highlight));
                 else
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
+
                 painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
@@ -962,7 +966,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing,true);
                 painter->setPen(Qt::NoPen);
-                if (sunken || on) {
+                if ((sunken || on) && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#E44C50"));
                     } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
@@ -977,7 +981,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         else
                             painter->setBrush(highLight_Click());
                     }
-                } else if (hover) {
+                } else if (hover && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#F86458"));
                     } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
@@ -1010,6 +1014,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         animator->setAnimatorDirectionForward("SunKen",false);
                         animator->startAnimator("SunKen");
                     }
+                }
+
+                if (!isbutton) {
+                    return;
                 }
 
                 QColor hoverColor, sunkenColor;
@@ -1056,6 +1064,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     if (opacity == 1.0) {
                         animator->startAnimator("MouseOver");
                     }
+                }
+
+                if (!isbutton) {
+                    return;
                 }
 
                 painter->save();
@@ -1470,6 +1482,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 QStyleOptionButton button;
                 button.state = option->state & ~(State_Sunken | State_On);
                 button.rect = option->rect;
+                button.palette = option->palette;
                 proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
 
                 if (f->state & State_MouseOver) {
@@ -1853,6 +1866,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 QStyleOptionButton button;
                 button.state = option->state;
                 button.rect = option->rect;
+                button.palette = option->palette;
                 proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
                 if (on) {
                     painter->save();
@@ -1928,6 +1942,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     QStyleOptionButton button;
                     button.state = option->state & ~(State_Sunken | State_On);
                     button.rect = option->rect;
+                    button.palette = option->palette;
                     proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
 
                     if (hover) {
