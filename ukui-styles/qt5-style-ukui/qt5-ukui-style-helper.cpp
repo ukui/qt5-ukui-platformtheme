@@ -114,6 +114,12 @@ void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWid
         }
     }
 
+    if (widget) {
+        if (widget->property("useSystemStyleBlur").isValid() && !widget->property("useSystemStyleBlur").toBool()) {
+            color.setAlphaF(1);
+        }
+    }
+
     //if blur effect is not supported, do not use transparent color.
     if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) || blackAppListWithBlurHelper().contains(qAppName())) {
         color.setAlphaF(1);
