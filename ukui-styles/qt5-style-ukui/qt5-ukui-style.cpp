@@ -668,9 +668,20 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
     if (QApplication::desktopSettingsAware() && !QIcon::themeName().isEmpty()) {
         switch (standardIcon) {
         case SP_FileDialogListView:
+        {
             return QIcon::fromTheme(QLatin1String("view-list-symbolic"));
+        }break;
+
         case SP_FileDialogDetailedView:
+        {
             return QIcon::fromTheme(QLatin1String("view-grid-symbolic"));
+        }break;
+
+        case SP_ToolBarHorizontalExtensionButton:
+        {
+            //toolbar horizontal extension button icon
+            return QIcon::fromTheme(QLatin1String("ukui-end-symbolic"));
+        }break;
 
         default:
             break;
