@@ -86,6 +86,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                 m_stack = stack;
                 //watch stack widget
                 m_tmp_page->setParent(m_stack);
+                m_tmp_page->resize(m_stack->size());
                 m_stack->installEventFilter(this);
                 break;
             }
@@ -111,6 +112,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         //m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
 
                         QPixmap pixmap(m_stack->size());
+                        pixmap.fill(Qt::transparent);
 
                         /*
                          * This way some widget such as QFrame.
@@ -135,8 +137,10 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 
                         if (qobject_cast<QWidget *>(previous_widget)) {
                             QPixmap previous_pixmap(m_stack->size());
+                            previous_pixmap.fill(Qt::transparent);
                             QPalette palette = previous_widget->palette();
                             QPalette palette_save = previous_widget->palette();
+
                             /*
                              * This use QPalette::Base to replace QPalette::Window, Mabey have unknow bug.
                             */
