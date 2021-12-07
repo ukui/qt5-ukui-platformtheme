@@ -143,6 +143,7 @@ private:
     QColor button_DisableChecked() const;
     QColor highLight_Click(const QStyleOption *option) const;
     QColor highLight_Hover(const QStyleOption *option) const;
+    QColor item_Hover(const QStyleOption *option) const;
 
 private Q_SLOTS:
     void updateTabletModeValue(bool isTabletMode);

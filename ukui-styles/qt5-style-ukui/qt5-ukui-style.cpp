@@ -640,7 +640,16 @@ QPalette Qt5UKUIStyle::standardPalette() const
 }
 
 
-
+/*
+    FIX ME:
+    button_Click
+    button_Hover
+    button_DisableChecked
+    highLight_Click
+    highLight_Hover
+    item_Hover
+    Need use palette.And it should use same way to get color between light model and dark model
+*/
 QColor Qt5UKUIStyle::button_Click(const QStyleOption *option) const
 {
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
@@ -648,12 +657,10 @@ QColor Qt5UKUIStyle::button_Click(const QStyleOption *option) const
 
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return mixColor(button, mix, 0.05);
-    } else {
-        return mixColor(button, mix, 0.2);
     }
+    return mixColor(button, mix, 0.2);
+
 }
-
-
 
 QColor Qt5UKUIStyle::button_Hover( const QStyleOption *option) const
 {
@@ -662,22 +669,18 @@ QColor Qt5UKUIStyle::button_Hover( const QStyleOption *option) const
 
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return mixColor(button, mix, 0.2);
-    } else {
-        return mixColor(button, mix, 0.05);
     }
+    return mixColor(button, mix, 0.05);
+
 }
-
-
 
 QColor Qt5UKUIStyle::button_DisableChecked() const
 {
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return QColor(61, 61, 64);
-    } else {
-        return QColor(224, 224, 224);
     }
+    return QColor(224, 224, 224);
 }
-
 
 QColor Qt5UKUIStyle::highLight_Click(const QStyleOption *option) const
 {
@@ -686,9 +689,9 @@ QColor Qt5UKUIStyle::highLight_Click(const QStyleOption *option) const
 
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return mixColor(highlight, mix, 0.05);
-    } else {
-        return mixColor(highlight, mix, 0.2);
     }
+    return mixColor(highlight, mix, 0.2);
+
 }
 
 QColor Qt5UKUIStyle::highLight_Hover(const QStyleOption *option) const
@@ -698,11 +701,23 @@ QColor Qt5UKUIStyle::highLight_Hover(const QStyleOption *option) const
 
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         return mixColor(highlight, mix, 0.2);
-    } else {
-        return mixColor(highlight, mix, 0.05);
     }
+    return mixColor(highlight, mix, 0.05);
+
 }
 
+QColor Qt5UKUIStyle::item_Hover( const QStyleOption *option) const
+{
+    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        color.setAlphaF(0.15);
+    } else {
+        color.setAlphaF(0.05);
+    }
+
+    return color;
+}
 
 
 void Qt5UKUIStyle::updateTabletModeValue(bool isTabletMode)
@@ -968,12 +983,20 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                                                   QPalette::HighlightedText);
 
             if (isSelected || isHover) {
-                if (isHover && !isSelected) {
-                    int h = color.hsvHue();
-                    //int s = color.hsvSaturation();
-                    auto base = option->palette.base().color();
-                    int v = color.value();
-                    color.setHsv(h, base.lightness(), v, 64);
+//                if (isHover && !isSelected) {
+//                    int h = color.hsvHue();
+//                    //int s = color.hsvSaturation();
+//                    auto base = option->palette.base().color();
+//                    int v = color.value();
+//                    color.setHsv(h, base.lightness(), v, 64);
+//                }
+
+                if (isSelected) {
+                    color.setAlpha(255);
+                }  else if (isHover) {
+                    color = item_Hover(option);
+                } else {
+                    color.setAlpha(0);
                 }
                 painter->fillRect(option->rect, color);
                 auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option);
@@ -1010,16 +1033,24 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         QColor color = option->palette.color(enable? QPalette::Active: QPalette::Disabled,
                                              QPalette::Highlight);
 
-        color.setAlpha(0);
-        if (isHover && !isSelected) {
-            int h = color.hsvHue();
-            //int s = color.hsvSaturation();
-            auto base = option->palette.base().color();
-            int v = color.value();
-            color.setHsv(h, base.lightness(), v, 64);
-        }
+//        color.setAlpha(0);
+//        if (isHover && !isSelected) {
+//            int h = color.hsvHue();
+//            //int s = color.hsvSaturation();
+//            auto base = option->palette.base().color();
+//            int v = color.value();
+//            color.setHsv(h, base.lightness(), v, 64);
+//        }
+//        if (isSelected) {
+//            color.setAlpha(255);
+//        }
+
         if (isSelected) {
             color.setAlpha(255);
+        } else if (isHover) {
+            color = item_Hover(option);
+        } else {
+            color.setAlpha(0);
         }
 
         if ((qobject_cast<const QListView *>(widget) || qobject_cast<const QListWidget *>(widget))
@@ -3181,9 +3212,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->drawPath(path);
             } else {
                 if (hover) {
-                    QColor color = tab->palette.color(QPalette::Active, QPalette::BrightText);
-                    color.setAlphaF(0.1);
-                    painter->setBrush(color);
+                    painter->setBrush(item_Hover(option));
                 } else {
                     painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
                 }
