@@ -407,7 +407,7 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
-    //ukui-light
+//    ukui-light palette UKUI3.0
     QColor  window_bg(245 , 245, 245),
             window_no_bg(237 ,237, 237),
             base_bg(255, 255, 255),
@@ -914,8 +914,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             const bool hover = button->state & State_MouseOver;
             const bool sunken = button->state & State_Sunken;
             const bool on = button->state & State_On;
-            qreal x_Radius = 4;
-            qreal y_Radius = 4;
+            qreal x_Radius = 6;
+            qreal y_Radius = 6;
             bool isWindowButton = false;
             bool isWindowColoseButton = false;
             bool isImportant = false;
@@ -1460,13 +1460,15 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             const bool enable = f->state & State_Enabled;
             const bool focus = f->state & State_HasFocus;
+            qreal x_Radius = 6;
+            qreal y_Radius = 6;
 
             if (!enable) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(f->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
@@ -1476,7 +1478,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
@@ -1487,7 +1489,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                                      2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                 painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
                 painter->restore();
             } else {
                 QStyleOptionButton button;
@@ -1496,16 +1498,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 button.palette = option->palette;
                 proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
 
-                if (f->state & State_MouseOver) {
-                    QRectF rect = f->rect;
-                    painter->save();
-                    painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
-                                         1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                    painter->setBrush(Qt::NoBrush);
-                    painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
-                    painter->restore();
-                }
+//                if (f->state & State_MouseOver) {
+//                    QRectF rect = f->rect;
+//                    painter->save();
+//                    painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
+//                                         1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//                    painter->setBrush(Qt::NoBrush);
+//                    painter->setRenderHint(QPainter::Antialiasing, true);
+//                    painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
+//                    painter->restore();
+//                }
             }
             return;
         }
@@ -1849,13 +1851,15 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             const bool enable = comboBox->state & State_Enabled;
             const bool on = comboBox->state & State_On;
             const bool hover = comboBox->state & State_MouseOver;
+            qreal x_Radius = 6;
+            qreal y_Radius = 6;
 
             if (!enable) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(comboBox->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
                 return;
             }
@@ -1871,7 +1875,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
                 }
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
                 painter->restore();
             } else {
                 QStyleOptionButton button;
@@ -1885,19 +1889,27 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(Qt::NoBrush);
                     painter->setRenderHint(QPainter::Antialiasing,true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
                     painter->restore();
                 }
             }
-
+//            if (hover) {
+//                QRectF rect = comboBox->rect;
+//                painter->save();
+//                painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
+//                                     1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//                painter->setBrush(Qt::NoBrush);
+//                painter->setRenderHint(QPainter::Antialiasing,true);
+//                painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
+//                painter->restore();
+//            }
             if (hover) {
                 QRectF rect = comboBox->rect;
                 painter->save();
-                painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
-                                     1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                painter->setBrush(Qt::NoBrush);
-                painter->setRenderHint(QPainter::Antialiasing,true);
-                painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), 4, 4);
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Midlight));
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->drawRoundedRect(rect, x_Radius, y_Radius);
                 painter->restore();
             }
 
@@ -1914,6 +1926,8 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             bool up = sb->activeSubControls == SC_SpinBoxUp;
             bool down = sb->activeSubControls == SC_SpinBoxDown;
             bool focus = sb->state & State_HasFocus;
+            qreal x_Radius = 6;
+            qreal y_Radius = 6;
             QRect upRect = proxy()->subControlRect(CC_SpinBox, sb, SC_SpinBoxUp, widget);
             QRect downRect = proxy()->subControlRect(CC_SpinBox, sb, SC_SpinBoxDown, widget);
 
@@ -1927,7 +1941,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(sb->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
             } else if (sb->stepEnabled == QAbstractSpinBox::StepNone) {
                 upOption.state = State_Enabled;
@@ -1936,7 +1950,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(sb->palette.brush(QPalette::Active, QPalette::Button));
-                painter->drawRoundedRect(option->rect, 4, 4);
+                painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
                 painter->restore();
             } else {
                 upOption.state |= State_Enabled;
@@ -1947,7 +1961,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                                          2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), 4, 4);
+                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
                     painter->restore();
                 } else {
                     QStyleOptionButton button;
@@ -1956,20 +1970,20 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     button.palette = option->palette;
                     proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
 
-                    if (hover) {
-                        QRectF rect = sb->rect;
-                        painter->save();
-                        painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
-                                             1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                        painter->setBrush(Qt::NoBrush);
-                        painter->setRenderHint(QPainter::Antialiasing, true);
-                        painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 4, 4);
-                        painter->restore();
-                    }
+//                    if (hover) {
+//                        QRectF rect = sb->rect;
+//                        painter->save();
+//                        painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
+//                                             1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//                        painter->setBrush(Qt::NoBrush);
+//                        painter->setRenderHint(QPainter::Antialiasing, true);
+//                        painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
+//                        painter->restore();
+//                    }
                 }
             }
 
-            int radius = 4;
+            int radius = 6;
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(Qt::NoBrush);
@@ -3278,8 +3292,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             const bool layout(menuItem->direction == Qt::LeftToRight);
             bool isComboBox = qobject_cast<const QComboBox*>(widget);
 
-            int MenuItem_xRadius = isComboBox ? 4 : 2;
-            int MenuItem_yRadius = isComboBox ? 4 : 2;
+            int MenuItem_xRadius = 6;
+            int MenuItem_yRadius = 6;
 
             //if it's combobox popup, then repaint backgroud by base color
             if (enable && isComboBox) {
@@ -3311,47 +3325,46 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             drawRect = drawRect.adjusted(MenuItem_HMargin, MenuItem_VMargin, -MenuItem_HMargin, -MenuItem_VMargin);
 
             //Checkable items draw
-            if (!isComboBox) {
-                if (menuItem->menuHasCheckableItems) {
-                    const bool checked = menuItem->checked;
-                    if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
-                        if (checked) {
-    //                        QStyleOptionButton radioOption;
-    //                        radioOption.QStyleOption::operator=(*option);
-    //                        radioOption.rect = drawRect;
-    //                        radioOption.state |= State_On;
-    //                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
-    //                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
-                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                            QIcon icon = QIcon::fromTheme("dialog-ok");
-                            QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
-                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
-                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                            painter->save();
-                            painter->setPen(Qt::NoPen);
-                            painter->setBrush(Qt::NoBrush);
-                            painter->drawPixmap(iconRect, drawPixmap);
-                            painter->restore();
-                        }
-                    } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
-                        if (checked) {
-                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                            QIcon icon = QIcon::fromTheme("dialog-ok");
-                            QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
-                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
-                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                            painter->save();
-                            painter->setPen(Qt::NoPen);
-                            painter->setBrush(Qt::NoBrush);
-                            painter->drawPixmap(iconRect, drawPixmap);
-                            painter->restore();
-                        }
+            if (menuItem->menuHasCheckableItems) {
+                const bool checked = menuItem->checked;
+                if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
+                    if (checked) {
+//                        QStyleOptionButton radioOption;
+//                        radioOption.QStyleOption::operator=(*option);
+//                        radioOption.rect = drawRect;
+//                        radioOption.state |= State_On;
+//                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
+//                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
+                    }
+                } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
+                    if (checked) {
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
                     }
                 }
+            }
 
                 if (menuItem->maxIconWidth != 0 && menuItem->checkType == QStyleOptionMenuItem::NotCheckable) {
                     int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
@@ -3377,7 +3390,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 } else {
                     drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
                 }
-            }
+
 
             if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu) {
                 int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
