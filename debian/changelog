@@ -1,3 +1,11 @@
+qt5-ukui-platformtheme (1.0.6-11.8) v101; urgency=medium
+
+  * BUG93845,BUG92312，修改lineedit、spinbox与combobox三态符合设计规范
+  * 修改combobox的下拉菜单没有check标识的问题
+  * 修改lineedit、spinbox、combobox与qmenuitem的圆角问题
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 08 Dec 2021 15:47:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.7) v101; urgency=medium
 
   * 修改combobx,editline,spinbox配置调色板后不生效的问题
