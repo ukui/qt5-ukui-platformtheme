@@ -302,6 +302,8 @@ const QStringList Qt5UKUIStyle::useDefaultPalette() const
     QStringList l;
     l<<"kybackup";
     l<<"biometric-manager";
+    l<<"kylin-video";
+
     return l;
 }
 
