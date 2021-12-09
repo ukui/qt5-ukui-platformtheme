@@ -409,97 +409,231 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
-//    ukui-light palette UKUI3.0
-    QColor  window_bg(245 , 245, 245),
-            window_no_bg(237 ,237, 237),
-            base_bg(255, 255, 255),
-            base_no_bg(245, 245, 245),
-            font_bg(0,0,0),
-            font_br_bg(255,255,255),
-            font_di_bg(0, 0, 0, 76),
-            button_bg(230, 230, 230),
-            button_di_bg(233,233,233),
-            highlight_bg(55,144,250),
-            highlight_dis(233, 233, 233),
-            tip_bg(248,248,248),
-            tip_font(22,22,22),
-            alternateBase(248,248,248),
-            midlight_bg(217, 217, 217),
-            midlight_dis(230, 230, 230);
 
-        if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
-        //ukui-dark
-        window_bg.setRgb(31, 32, 34);
-        window_no_bg.setRgb(26 , 26, 26);
-        base_bg.setRgb(18, 18, 18);
-        base_no_bg.setRgb(28, 28, 28);
-        font_bg.setRgb(255,255,255);
-        font_bg.setAlphaF(0.9);
-        font_br_bg.setRgb(255,255,255);
-        font_br_bg.setAlphaF(0.9);
-        font_di_bg.setRgb(255,255,255);
-        font_di_bg.setAlphaF(0.3);
-        button_bg.setRgb(51, 51, 54);
-        button_di_bg.setRgb(46, 46, 48);
-        highlight_dis.setRgb(71, 71, 71);
-        tip_bg.setRgb(61,61,65);
-        tip_font.setRgb(232,232,232);
-        alternateBase.setRgb(36,35,40);
-        midlight_bg.setRgb(77, 77, 77);
-        midlight_dis.setRgb(64, 64, 64);
-        }
+    //ukui-light palette UKUI3.1
+    QColor windowText_at(38, 38, 38),
+           windowText_iat(38, 38, 38),
+           windowText_dis(166, 166, 166),
+           button_at(230, 230, 230),
+           button_iat(230, 230, 230),
+           button_dis(233, 233, 233),
+           light_at(255, 255, 255),
+           light_iat(255, 255, 255),
+           light_dis(242, 242, 242),
+           midlight_at(218, 218, 218),
+           midlight_iat(218, 218, 218),
+           midlight_dis(230, 230, 230),
+           dark_at(77, 77, 77),
+           dark_iat(77, 77, 77),
+           dark_dis(64, 64, 64),
+           mid_at(115, 115, 115),
+           mid_iat(115, 115, 115),
+           mid_dis(102, 102, 102),
+           text_at(38, 38, 38),
+           text_iat(38, 38, 38),
+           text_dis(140, 140, 140),
+           brightText_at(89, 89, 89),
+           brightText_iat(89, 89, 89),
+           brightText_dis(77, 77, 77),
+           buttonText_at(38, 38, 38),
+           buttonText_iat(38, 38, 38),
+           buttonText_dis(179, 179, 179),
+           base_at(255, 255, 255),
+           base_iat(245, 245, 245),
+           base_dis(237, 237, 237),
+           window_at(245, 245, 245),
+           window_iat(237, 237, 237),
+           window_dis(230, 230, 230),
+           shadow_at(0, 0, 0, 16),
+           shadow_iat(0, 0, 0, 16),
+           shadow_dis(0, 0, 0, 21),
+//           shadow_at(214, 214, 214),
+//           shadow_iat(214, 214, 214),
+//           shadow_dis(201, 201, 201),
+           highLight_at(55, 144, 250),
+           highLight_iat(55, 144, 250),
+           highLight_dis(233, 233, 233),
+           highLightText_at(255, 255, 255),
+           highLightText_iat(255, 255, 255),
+           highLightText_dis(179, 179, 179),
+           link_at(55, 144, 250),
+           link_iat(55, 144, 250),
+           link_dis(55, 144, 250),
+           linkVisited_at(114, 46, 209),
+           linkVisited_iat(114, 46, 209),
+           linkVisited_dis(114, 46, 209),
+           alternateBase_at(245, 245, 245),
+           alternateBase_iat(245, 245, 245),
+           alternateBase_dis(245, 245, 245),
+           noRale_at(240, 240, 240),
+           noRole_iat(240, 240, 240),
+           noRole_dis(217, 217, 217),
+           toolTipBase_at(255, 255, 255),
+           toolTipBase_iat(255, 255, 255),
+           toolTipBase_dis(255, 255, 255),
+           toolTipText_at(38, 38, 38),
+           toolTipText_iat(38, 38, 38),
+           toolTipText_dis(38, 38, 38),
+           placeholderText_at(38, 38, 38),
+           placeholderText_iat(38, 38, 38),
+           placeholderText_dis(38, 38, 38);
 
-    palette.setBrush(QPalette::Active, QPalette::Window, window_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Window, window_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Window, window_no_bg);
+    //ukui-dark
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        windowText_at.setRgb(217, 217, 217);
+        windowText_iat.setRgb(217, 217, 217);
+        windowText_dis.setRgb(77, 77, 77);
+        button_at.setRgb(55, 55, 59);
+        button_iat.setRgb(55, 55, 59);
+        button_dis.setRgb(46, 46, 48);
+        light_at.setRgb(255, 255, 255),
+        light_iat.setRgb(255, 255, 255),
+        light_dis.setRgb(242, 242, 242),
+        midlight_at.setRgb(95, 95, 98);
+        midlight_iat.setRgb(95, 95, 98);
+        midlight_dis.setRgb(79, 79, 82);
+        dark_at.setRgb(38, 38, 38);
+        dark_iat.setRgb(38, 38, 38);
+        dark_dis.setRgb(26, 26, 26);
+        mid_at.setRgb(115, 115, 115);
+        mid_iat.setRgb(115, 115, 115);
+        mid_dis.setRgb(102, 102, 102);
+        text_at.setRgb(217, 217, 217);
+        text_iat.setRgb(217, 217, 217);
+        text_dis.setRgb(77, 77, 77);
+        brightText_at.setRgb(255, 255, 255);
+        brightText_iat.setRgb(255, 255, 255);
+        brightText_dis.setRgb(77, 77, 77);
+        buttonText_at.setRgb(217, 217, 217);
+        buttonText_iat.setRgb(217, 217, 217);
+        buttonText_dis.setRgb(76, 76, 79);
+        base_at.setRgb(18, 18, 18);
+        base_iat.setRgb(28, 28, 28);
+        base_dis.setRgb(36, 36, 36);
+        window_at.setRgb(35, 36, 38);
+        window_iat.setRgb(26, 26, 26);
+        window_dis.setRgb(18, 18, 18);
+        shadow_at.setRgb(0, 0, 0, 16),
+        shadow_iat.setRgb(0, 0, 0, 16),
+        shadow_dis.setRgb(0, 0, 0, 21),
+//        shadow_at.setRgb(214, 214, 214);
+//        shadow_iat.setRgb(214, 214, 214);
+//        shadow_dis.setRgb(201, 201, 201);
+        highLight_at.setRgb(55, 144, 250);
+        highLight_iat.setRgb(55, 144, 250);
+        highLight_dis.setRgb(46, 46, 48);
+        highLightText_at.setRgb(255, 255, 255);
+        highLightText_iat.setRgb(255, 255, 255);
+        highLightText_dis.setRgb(77, 77, 77);
+        link_at.setRgb(55, 144, 250);
+        link_iat.setRgb(55, 144, 250);
+        link_dis.setRgb(55, 144, 250);
+        linkVisited_at.setRgb(114, 46, 209);
+        linkVisited_iat.setRgb(114, 46, 209);
+        linkVisited_dis.setRgb(114, 46, 209);
+        alternateBase_at.setRgb(38, 38, 38);
+        alternateBase_iat.setRgb(38, 38, 38);
+        alternateBase_dis.setRgb(38, 38, 38);
+        noRale_at.setRgb(51, 51, 51);
+        noRole_iat.setRgb(51, 51, 51);
+        noRole_dis.setRgb(60, 60, 64);
+        toolTipBase_at.setRgb(38, 38, 38);
+        toolTipBase_iat.setRgb(38, 38, 38);
+        toolTipBase_dis.setRgb(38, 38, 38);
+        toolTipText_at.setRgb(217, 217, 217);
+        toolTipText_iat.setRgb(217, 217, 217);
+        toolTipText_dis.setRgb(217, 217, 217);
+        placeholderText_at.setRgb(166, 166, 166);
+        placeholderText_iat.setRgb(166, 166, 166);
+        placeholderText_dis.setRgb(166, 166, 166);
+    }
 
-    palette.setBrush(QPalette::WindowText,font_bg);
-    palette.setBrush(QPalette::Active,QPalette::WindowText,font_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::WindowText,font_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::WindowText,font_di_bg);
+    palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
+    palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
 
-    palette.setBrush(QPalette::Active, QPalette::Base, base_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Base, base_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Base, base_no_bg);
+    palette.setColor(QPalette::Active, QPalette::Button, button_at);
+    palette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
 
-    palette.setBrush(QPalette::Text,font_bg);
-    palette.setBrush(QPalette::Active,QPalette::Text,font_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::Text,font_di_bg);
+    palette.setColor(QPalette::Active, QPalette::Light, light_at);
+    palette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
 
-    //Cursor placeholder
+    palette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
+    palette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Dark, dark_at);
+    palette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Mid, mid_at);
+    palette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Text, text_at);
+    palette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
+
+    palette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
+    palette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
+
+    palette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
+    palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Base, base_at);
+    palette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Window, window_at);
+    palette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
+    palette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
+    palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Highlight, highLight_dis);
+
+    palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
+    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
+
+    palette.setColor(QPalette::Active, QPalette::Link, link_at);
+    palette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
+    palette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
+
+    palette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
+    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
+    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
+
+    palette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
+    palette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
+
+    palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
+    palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
+    palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
+
+    palette.setColor(QPalette::Active, QPalette::ToolTipBase, toolTipBase_at);
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, toolTipBase_iat);
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, toolTipBase_dis);
+
+    palette.setColor(QPalette::Active, QPalette::ToolTipText, toolTipText_at);
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipText, toolTipText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipText, toolTipText_dis);
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setBrush(QPalette::PlaceholderText,font_di_bg);
+    palette.setColor(QPalette::Active, QPalette::PlaceholderText, placeholderText_at);
+    palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholderText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, placeholderText_dis);
 #endif
 
-    palette.setBrush(QPalette::ToolTipBase,tip_bg);
-    palette.setBrush(QPalette::ToolTipText,tip_font);
-
-    palette.setBrush(QPalette::Active, QPalette::Highlight, highlight_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Highlight, highlight_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Highlight, highlight_dis);
-
-    palette.setBrush(QPalette::HighlightedText,font_br_bg);
-
-    palette.setBrush(QPalette::BrightText,font_br_bg);
-    palette.setBrush(QPalette::Active,QPalette::BrightText,font_br_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::BrightText,font_br_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::BrightText,font_di_bg);
-
-    palette.setBrush(QPalette::Active, QPalette::Button, button_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Button, button_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Button, button_di_bg);
-
-    palette.setBrush(QPalette::ButtonText,font_bg);
-    palette.setBrush(QPalette::Inactive,QPalette::ButtonText,font_bg);
-    palette.setBrush(QPalette::Disabled,QPalette::ButtonText,font_di_bg);
-
-    palette.setBrush(QPalette::AlternateBase,alternateBase);
-    palette.setBrush(QPalette::Inactive,QPalette::AlternateBase,alternateBase);
-    palette.setBrush(QPalette::Disabled,QPalette::AlternateBase,button_di_bg);
-
-    palette.setBrush(QPalette::Active, QPalette::Midlight, midlight_bg);
-    palette.setBrush(QPalette::Inactive, QPalette::Midlight, midlight_bg);
-    palette.setBrush(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
     return palette;
 }
