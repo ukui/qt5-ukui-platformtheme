@@ -1,3 +1,10 @@
+qt5-ukui-platformtheme (1.0.6-11.9) v101; urgency=medium
+
+  * 主题框架使用UKUI3.1调色板规范
+  * BUG76681，麒麟影音加入透明按钮列表
+
+ -- xibowen <xibowen@kylinos.cn>  Thu, 09 Dec 2021 09:47:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.8) v101; urgency=medium
 
   * BUG93845,BUG92312，修改lineedit、spinbox与combobox三态符合设计规范
