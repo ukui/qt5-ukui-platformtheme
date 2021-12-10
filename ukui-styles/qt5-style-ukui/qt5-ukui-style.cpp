@@ -432,9 +432,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
            text_at(38, 38, 38),
            text_iat(38, 38, 38),
            text_dis(140, 140, 140),
-           brightText_at(89, 89, 89),
-           brightText_iat(89, 89, 89),
-           brightText_dis(77, 77, 77),
+           brightText_at(0, 0, 0),
+           brightText_iat(0, 0, 0),
+           brightText_dis(0, 0, 0),
            buttonText_at(38, 38, 38),
            buttonText_iat(38, 38, 38),
            buttonText_dis(179, 179, 179),
@@ -503,7 +503,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
         text_dis.setRgb(77, 77, 77);
         brightText_at.setRgb(255, 255, 255);
         brightText_iat.setRgb(255, 255, 255);
-        brightText_dis.setRgb(77, 77, 77);
+        brightText_dis.setRgb(255, 255, 255);
         buttonText_at.setRgb(217, 217, 217);
         buttonText_iat.setRgb(217, 217, 217);
         buttonText_dis.setRgb(76, 76, 79);
@@ -547,6 +547,11 @@ QPalette Qt5UKUIStyle::standardPalette() const
         placeholderText_iat.setRgb(166, 166, 166);
         placeholderText_dis.setRgb(166, 166, 166);
     }
+
+    //color brightext use %35 opacity
+    brightText_at.setAlphaF(0.65);
+    brightText_iat.setAlphaF(0.65);
+    brightText_dis.setAlphaF(0.65);
 
     palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
     palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
