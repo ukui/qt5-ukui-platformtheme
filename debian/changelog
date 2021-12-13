@@ -1,3 +1,11 @@
+qt5-ukui-platformtheme (1.0.6-12.1) v101; urgency=medium
+
+  * 依据设计师要求，修改主题框架UKUI3.1调色板
+  * 修稿tabbar鼠标悬停效果样式
+  * BUG96270，修改checkbox使用调色板里的颜色值
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 13 Dec 2021 09:50:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.9) v101; urgency=medium
 
   * 主题框架使用UKUI3.1调色板规范
