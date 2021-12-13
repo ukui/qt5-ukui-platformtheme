@@ -444,9 +444,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
            window_at(245, 245, 245),
            window_iat(237, 237, 237),
            window_dis(230, 230, 230),
-           shadow_at(0, 0, 0, 16),
-           shadow_iat(0, 0, 0, 16),
-           shadow_dis(0, 0, 0, 21),
+           shadow_at(0, 0, 0, 255 * 0.16),
+           shadow_iat(0, 0, 0, 255 * 0.16),
+           shadow_dis(0, 0, 0, 255 * 0.21),
 //           shadow_at(214, 214, 214),
 //           shadow_iat(214, 214, 214),
 //           shadow_dis(201, 201, 201),
@@ -474,9 +474,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
            toolTipText_at(38, 38, 38),
            toolTipText_iat(38, 38, 38),
            toolTipText_dis(38, 38, 38),
-           placeholderText_at(38, 38, 38),
-           placeholderText_iat(38, 38, 38),
-           placeholderText_dis(38, 38, 38);
+           placeholderText_at(0, 0, 0, 255 * 0.35),
+           placeholderText_iat(0, 0, 0, 255 * 0.35),
+           placeholderText_dis(0, 0, 0, 255 * 0.3);
 
     //ukui-dark
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
@@ -513,15 +513,15 @@ QPalette Qt5UKUIStyle::standardPalette() const
         window_at.setRgb(35, 36, 38);
         window_iat.setRgb(26, 26, 26);
         window_dis.setRgb(18, 18, 18);
-        shadow_at.setRgb(0, 0, 0, 16),
-        shadow_iat.setRgb(0, 0, 0, 16),
-        shadow_dis.setRgb(0, 0, 0, 21),
+        shadow_at.setRgb(0, 0, 0, 255 * 0.16),
+        shadow_iat.setRgb(0, 0, 0, 255 * 0.16),
+        shadow_dis.setRgb(0, 0, 0, 255 * 0.21),
 //        shadow_at.setRgb(214, 214, 214);
 //        shadow_iat.setRgb(214, 214, 214);
 //        shadow_dis.setRgb(201, 201, 201);
         highLight_at.setRgb(55, 144, 250);
         highLight_iat.setRgb(55, 144, 250);
-        highLight_dis.setRgb(46, 46, 48);
+        highLight_dis.setRgb(46, 46, 46);
         highLightText_at.setRgb(255, 255, 255);
         highLightText_iat.setRgb(255, 255, 255);
         highLightText_dis.setRgb(77, 77, 77);
@@ -536,22 +536,17 @@ QPalette Qt5UKUIStyle::standardPalette() const
         alternateBase_dis.setRgb(38, 38, 38);
         noRale_at.setRgb(51, 51, 51);
         noRole_iat.setRgb(51, 51, 51);
-        noRole_dis.setRgb(60, 60, 64);
+        noRole_dis.setRgb(60, 60, 60);
         toolTipBase_at.setRgb(38, 38, 38);
         toolTipBase_iat.setRgb(38, 38, 38);
         toolTipBase_dis.setRgb(38, 38, 38);
         toolTipText_at.setRgb(217, 217, 217);
         toolTipText_iat.setRgb(217, 217, 217);
         toolTipText_dis.setRgb(217, 217, 217);
-        placeholderText_at.setRgb(166, 166, 166);
-        placeholderText_iat.setRgb(166, 166, 166);
-        placeholderText_dis.setRgb(166, 166, 166);
+        placeholderText_at.setRgb(255, 255, 255, 255 * 0.35);
+        placeholderText_iat.setRgb(255, 255, 255, 255 * 0.35);
+        placeholderText_dis.setRgb(255, 255, 255, 255 * 0.3);
     }
-
-    //color brightext use %35 opacity
-    brightText_at.setAlphaF(0.65);
-    brightText_iat.setAlphaF(0.65);
-    brightText_dis.setAlphaF(0.65);
 
     palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
     palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
@@ -1861,14 +1856,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             if (enable) {
                 if (on | noChange) {
+                    QColor pan_color = checkbox->palette.color(QPalette::BrightText);
+                    pan_color.setAlphaF(0.1);
+                    painter->setPen(pan_color);
                     if (sunKen) {
-                        painter->setPen(QColor(25, 101, 207));
                         painter->setBrush(highLight_Click());
                     } else if (mouseOver) {
-                        painter->setPen(QColor(36, 109, 212));
                         painter->setBrush(highLight_Hover());
                     } else {
-                        painter->setPen(QColor(36, 109, 212));
                         painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Highlight));
                     }
                     painter->drawRoundedRect(rect, x_Radius, y_Radius);
@@ -1879,40 +1874,23 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->drawPath(path);
                 } else {
                     if (sunKen) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(6, 35, 97));
-                        } else {
-                            painter->setPen(QColor(36, 109, 212));
-                            painter->setBrush(QColor(179, 221, 255));
-                        }
+                        painter->setPen(checkbox->palette.color(QPalette::Active, QPalette::Mid));
+                        QColor sunken_color = checkbox->palette.color(QPalette::BrightText);
+                        sunken_color.setAlphaF(1);
+                        painter->setBrush(mixColor(checkbox->palette.color(QPalette::Active, QPalette::ToolTipBase), sunken_color, 0.2));
                     } else if (mouseOver) {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(55, 144, 250));
-                            painter->setBrush(QColor(9, 53, 153));
-                        } else {
-                            painter->setPen(QColor(97, 173, 255));
-                            painter->setBrush(QColor(219, 240, 255));
-                        }
+                        painter->setPen(checkbox->palette.color(QPalette::Disabled, QPalette::WindowText));
+                        QColor hover_color = checkbox->palette.color(QPalette::BrightText);
+                        hover_color.setAlphaF(1);
+                        painter->setBrush(mixColor(checkbox->palette.color(QPalette::Active, QPalette::ToolTipBase), hover_color, 0.1));
                     } else {
-                        if (useDarkPalette) {
-                            painter->setPen(QColor(72, 72, 77));
-                            painter->setBrush(QColor(48, 48, 51));
-                        } else {
-                            painter->setPen(QColor(191, 191, 191));
-                            painter->setBrush(checkbox->palette.color(QPalette::Active, QPalette::Window));
-                        }
+                        painter->setPen(checkbox->palette.color(QPalette::Disabled, QPalette::WindowText));
+                        painter->setBrush(checkbox->palette.color(QPalette::Active, QPalette::ToolTipBase));
                     }
                     painter->drawRoundedRect(rect, x_Radius, y_Radius);
                 }
             } else {
-                if (useDarkPalette) {
-                    painter->setPen(QColor(48, 48, 51));
-                    painter->setBrush(QColor(28, 28, 30));
-                } else {
-                    painter->setPen(QColor(224, 224, 224));
-                    painter->setBrush(QColor(233, 233, 233));
-                }
+                painter->setBrush(checkbox->palette.color(QPalette::Disabled, QPalette::Button));
                 painter->drawRoundedRect(rect, x_Radius, y_Radius);
                 if (on | noChange) {
                     painter->setPen(QPen(checkbox->palette.brush(QPalette::Disabled, QPalette::ButtonText), 2,
@@ -3150,28 +3128,30 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     } else {
                         drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
                     }
+                    QPainterPath path;
+                    int TabBarTab_Radius = 6;
+                    path.moveTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
+                    path.arcTo(QRect(drawRect.left(), drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, 90);
+                    path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
+                    path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
+                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, -90);
+                    path.lineTo(drawRect.right() + TabBarTab_Radius, drawRect.bottom());
+                    path.arcTo(QRect(drawRect.right(), drawRect.bottom() - TabBarTab_Radius * 2,
+                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, -90);
+                    path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
+                    path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.top(),
+                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, 90);
+                    path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
+
+                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
+                    painter->drawPath(path);
                 }
 
-                int TabBarTab_Radius = 6;
-                QPainterPath path;
-                path.moveTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
-                path.arcTo(QRect(drawRect.left(), drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, 90);
-                path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
-                path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
-                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, -90);
-                path.lineTo(drawRect.right() + TabBarTab_Radius, drawRect.bottom());
-                path.arcTo(QRect(drawRect.right(), drawRect.bottom() - TabBarTab_Radius * 2,
-                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, -90);
-                path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
-                path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.top(),
-                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, 90);
-                path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
-
-                painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
-                if (hover && !selected)
+                else if (hover) {
                     painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
                                                tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
-                painter->drawPath(path);
+                    painter->drawRect(drawRect);
+                }
             } else {
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
                 painter->drawRect(drawRect);
