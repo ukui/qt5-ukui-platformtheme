@@ -138,8 +138,8 @@ private:
     bool m_is_tablet_mode = false;
     QDBusInterface *m_statusManagerDBus = nullptr;
 
-    QColor button_Click() const;
-    QColor button_Hover() const;
+    QColor button_Click(const QStyleOption *option) const;
+    QColor button_Hover(const QStyleOption *option) const;
     QColor button_DisableChecked() const;
 
 private Q_SLOTS:
