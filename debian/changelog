@@ -1,3 +1,12 @@
+qt5-ukui-platformtheme (1.0.6-12.2) v101; urgency=medium
+
+  * 调整UKUI3.1 text disable颜色色值
+  * BUG97700,BUG97680,麒麟影音移除特别列表，单独对麒麟影音添加透明按钮使用判断
+  * 修改三态规范，按照设计要求使用色板混色处理
+  * BUG93773,修改tabbar圆角问题
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 15 Dec 2021 19:00:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-12.1) v101; urgency=medium
 
   * 依据设计师要求，修改主题框架UKUI3.1调色板
