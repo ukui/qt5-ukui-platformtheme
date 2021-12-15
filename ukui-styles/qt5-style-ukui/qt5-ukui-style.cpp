@@ -431,7 +431,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
            mid_dis(102, 102, 102),
            text_at(38, 38, 38),
            text_iat(38, 38, 38),
-           text_dis(140, 140, 140),
+           text_dis(0, 0, 0, 255 * 0.3),
            brightText_at(0, 0, 0),
            brightText_iat(0, 0, 0),
            brightText_dis(0, 0, 0),
@@ -500,7 +500,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
         mid_dis.setRgb(102, 102, 102);
         text_at.setRgb(217, 217, 217);
         text_iat.setRgb(217, 217, 217);
-        text_dis.setRgb(77, 77, 77);
+        text_dis.setRgb(255, 255, 255, 255 * 0.3);
         brightText_at.setRgb(255, 255, 255);
         brightText_iat.setRgb(255, 255, 255);
         brightText_dis.setRgb(255, 255, 255);
