@@ -3117,43 +3117,86 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
-            if (selected || hover) {
-                if (selected) {
-                    if (fisttab || onlyOne) {
-                        drawRect.adjust(0, 0, tabOverlap, 0);
-                    } else if (lastTab) {
-                        drawRect.adjust(-tabOverlap, 0, 0, 0);
-                    } else {
-                        drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
-                    }
-                    QPainterPath path;
-                    int TabBarTab_Radius = 6;
-                    path.moveTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
-                    path.arcTo(QRect(drawRect.left(), drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, 90);
-                    path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
-                    path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
-                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, -90);
-                    path.lineTo(drawRect.right() + TabBarTab_Radius, drawRect.bottom());
-                    path.arcTo(QRect(drawRect.right(), drawRect.bottom() - TabBarTab_Radius * 2,
-                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, -90);
-                    path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
-                    path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.top(),
-                                     TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, 90);
-                    path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
-
-                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
-                    painter->drawPath(path);
+            if (selected) {
+                if (fisttab || onlyOne) {
+                    drawRect.adjust(0, 0, tabOverlap, 0);
+                } else if (lastTab) {
+                    drawRect.adjust(-tabOverlap, 0, 0, 0);
+                } else {
+                    drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
                 }
 
-                else if (hover) {
+                QPainterPath path;
+                int TabBarTab_Radius = 6;
+                path.moveTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
+                path.arcTo(QRect(drawRect.left(), drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, 90);
+                path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
+                path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
+                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, -90);
+                path.lineTo(drawRect.right() + TabBarTab_Radius, drawRect.bottom());
+                path.arcTo(QRect(drawRect.right(), drawRect.bottom() - TabBarTab_Radius * 2,
+                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, -90);
+                path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
+                path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.top(),
+                                 TabBarTab_Radius * 2, TabBarTab_Radius * 2), 0, 90);
+                path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
+
+                painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
+                painter->drawPath(path);
+            } else {
+                if (hover) {
                     painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
                                                tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
+                } else {
+                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
+                }
+
+                if (widget != NULL && qobject_cast<const QTabBar*>(widget)) {
+                    const auto *tabbar = qobject_cast<const QTabBar*>(widget);
+                    int select_index = tabbar->currentIndex();
+                    int now_index = tabbar->tabAt(QPoint(drawRect.x(),drawRect.y()));
+                    if (select_index - now_index == 1) {
+                        //select rect left
+                        drawRect.adjust(0, 0, tabOverlap, 0);
+
+                        QPainterPath path;
+                        int TabBarTab_Radius = 6;
+                        path.moveTo(drawRect.left(), drawRect.top());
+                        path.lineTo(drawRect.left(), drawRect.bottom());
+                        path.lineTo(drawRect.right() - TabBarTab_Radius, drawRect.bottom());
+                        path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, 90);
+                        path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
+                        path.arcTo(QRect(drawRect.right(), drawRect.top(),
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 180, -90);
+                        path.lineTo(drawRect.left(), drawRect.top());
+
+                        painter->drawPath(path);
+
+                    } else if(select_index - now_index == -1) {
+                        //select rect right
+                        drawRect.adjust(0, 0, tabOverlap, 0);
+
+                        QPainterPath path;
+                        int TabBarTab_Radius = 6;
+                        path.moveTo(drawRect.right(), drawRect.bottom());
+                        path.lineTo(drawRect.right(), drawRect.top());
+                        path.lineTo(drawRect.left() - TabBarTab_Radius, drawRect.top());
+                        path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, -90);
+                        path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
+                        path.arcTo(QRect(drawRect.left(), drawRect.bottom() - TabBarTab_Radius * 2,
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 180, 90);
+                        path.lineTo(drawRect.right(), drawRect.bottom());
+
+                        painter->drawPath(path);
+                    } else {
+                        painter->drawRect(drawRect);
+                    }
+                } else {
                     painter->drawRect(drawRect);
                 }
-            } else {
-                painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
-                painter->drawRect(drawRect);
             }
+
             painter->restore();
             return;
         }
