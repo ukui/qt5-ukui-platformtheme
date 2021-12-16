@@ -413,7 +413,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
     //ukui-light palette UKUI3.1
     QColor windowText_at(38, 38, 38),
            windowText_iat(38, 38, 38),
-           windowText_dis(166, 166, 166),
+           windowText_dis(0, 0, 0, 255 * 0.3),
            button_at(230, 230, 230),
            button_iat(230, 230, 230),
            button_dis(233, 233, 233),
@@ -482,7 +482,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         windowText_at.setRgb(217, 217, 217);
         windowText_iat.setRgb(217, 217, 217);
-        windowText_dis.setRgb(77, 77, 77);
+        windowText_dis.setRgb(255, 255, 255, 255 * 0.3);
         button_at.setRgb(55, 55, 59);
         button_iat.setRgb(55, 55, 59);
         button_dis.setRgb(46, 46, 48);
