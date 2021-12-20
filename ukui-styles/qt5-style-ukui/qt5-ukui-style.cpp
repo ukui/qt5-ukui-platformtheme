@@ -646,7 +646,11 @@ QColor Qt5UKUIStyle::button_Click(const QStyleOption *option) const
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
-    return mixColor(button, mix, 0.2);
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        return mixColor(button, mix, 0.05);
+    } else {
+        return mixColor(button, mix, 0.2);
+    }
 }
 
 
@@ -656,7 +660,11 @@ QColor Qt5UKUIStyle::button_Hover( const QStyleOption *option) const
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
-    return mixColor(button, mix, 0.05);
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        return mixColor(button, mix, 0.2);
+    } else {
+        return mixColor(button, mix, 0.05);
+    }
 }
 
 
@@ -669,6 +677,33 @@ QColor Qt5UKUIStyle::button_DisableChecked() const
         return QColor(224, 224, 224);
     }
 }
+
+
+QColor Qt5UKUIStyle::highLight_Click(const QStyleOption *option) const
+{
+    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
+    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        return mixColor(highlight, mix, 0.05);
+    } else {
+        return mixColor(highlight, mix, 0.2);
+    }
+}
+
+QColor Qt5UKUIStyle::highLight_Hover(const QStyleOption *option) const
+{
+    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
+    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
+        return mixColor(highlight, mix, 0.2);
+    } else {
+        return mixColor(highlight, mix, 0.05);
+    }
+}
+
+
 
 void Qt5UKUIStyle::updateTabletModeValue(bool isTabletMode)
 {
@@ -3146,8 +3181,9 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->drawPath(path);
             } else {
                 if (hover) {
-                    painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
-                                               tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
+                    QColor color = tab->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.1);
+                    painter->setBrush(color);
                 } else {
                     painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
                 }
@@ -4892,10 +4928,10 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             if (tab->shape == QTabBar::RoundedWest || tab->shape == QTabBar::RoundedEast
                     || tab->shape == QTabBar::TriangularWest || tab->shape == QTabBar::TriangularEast) {
                 newSize.setHeight(qMax(newSize.height() + padding, 168));
-                newSize.setWidth(qMax(newSize.width(), 36));
+                newSize.setWidth(qMax(newSize.width(), 40));
             } else {
                 newSize.setWidth(qMax(newSize.width() + padding, 168));
-                newSize.setHeight(qMax(newSize.height(), 36));
+                newSize.setHeight(qMax(newSize.height(), 40));
             }
             return newSize;
         }

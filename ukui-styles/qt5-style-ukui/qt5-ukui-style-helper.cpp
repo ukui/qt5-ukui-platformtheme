@@ -282,27 +282,6 @@ QColor mixColor(const QColor &c1, const QColor &c2, qreal bias)
 }
 
 
-
-QColor highLight_Click(const QStyleOption *option)
-{
-    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
-    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
-
-    return mixColor(highlight, mix, 0.2);
-}
-
-
-
-QColor highLight_Hover(const QStyleOption *option)
-{
-    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
-    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
-
-    return mixColor(highlight, mix, 0.05);
-}
-
-
-
 void drawArrow(const QStyle *style, const QStyleOptionToolButton *toolbutton,
                       const QRect &rect, QPainter *painter, const QWidget *widget)
 {
