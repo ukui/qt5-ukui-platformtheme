@@ -1313,7 +1313,7 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
                           + QPoint(parent->x(), parent->y()));
     }
 
-    mMessageBox->setWindowModality(windowModality);
+    //mMessageBox->setWindowModality(windowModality);
 
     MotifWmHints hints;
     hints.flags = MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS;
