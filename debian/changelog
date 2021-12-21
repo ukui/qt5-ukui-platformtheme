@@ -1,3 +1,14 @@
+qt5-ukui-platformtheme (1.0.6-12.3) v101; urgency=medium
+
+  * BUG97140,96897,96220，暂时屏蔽QMessagebox模态同步配置，规避控制面板倒计时QMessagebox显示问题
+  * BUG97875，调整Windowstext调色板色值
+  * 根据设计稿修改控件三态颜色
+  * BUG97929，98043，根据设计稿，修改list、table、tabbar、tree控件的三态颜色样式
+  * 调整tabbar在设置颜色透明度下的动画效果
+  * 根据设计稿，调整tarbbar的最小高度
+
+ -- xibowen <xibowen@kylinos.cn>  Tue, 21 Dec 2021 15:28:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-12.2) v101; urgency=medium
 
   * 调整UKUI3.1 text disable颜色色值
