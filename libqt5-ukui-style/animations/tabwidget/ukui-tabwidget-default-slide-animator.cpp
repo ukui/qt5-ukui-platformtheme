@@ -69,11 +69,6 @@ DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation 
  * stack widget. Then it will watched their event waiting for preparing and doing a animation.
  */
 
-static inline qreal mixQreal(qreal a, qreal b, qreal bias)
-{
-    return a + (b - a) * bias;
-}
-
 bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 {
     if (w) {
@@ -103,7 +98,10 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             watchSubPage(w->widget(i));
         }
 
+        m_tmp_page->setAttribute(Qt::WA_TranslucentBackground, m_bound_widget->testAttribute(Qt::WA_TranslucentBackground));
+
         previous_widget = m_bound_widget->currentWidget();
+        pervIndex = m_bound_widget->currentIndex();
 
         connect(w, &QTabWidget::currentChanged, this, [=](int index){
                     this->stop();
@@ -118,6 +116,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         //m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
 
                         QPixmap pixmap(m_stack->size());
+                        pixmap.fill(QColor(Qt::transparent));
 
                         /*
                          * This way some widget such as QFrame.
@@ -143,28 +142,16 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         if (qobject_cast<QWidget *>(previous_widget)) {
                             QPixmap previous_pixmap(m_stack->size());
                             previous_pixmap.fill(QColor(Qt::transparent));
-                            QPalette palette = previous_widget->palette();
+                            QPalette palette = m_bound_widget->palette();
                             QPalette palette_save = previous_widget->palette();
-
-                            /*
-                            * Use opacity mixing color to replace QPalette::Window when color set alpha.
-                            * Purpose to cover button painting
-                            * Fix ME::
-                            * Should ignore the paintevent when switch the tabwidget animation,advising by LanYue
-                            */
-                            QColor win = palette.color(QPalette::Window);
-                            QColor base = palette.color(QPalette::Base);
-                            qreal r = mixQreal(win.redF(),   base.redF(),   base.alphaF());
-                            qreal g = mixQreal(win.greenF(), base.greenF(), base.alphaF());
-                            qreal b = mixQreal(win.blueF(),  base.blueF(),  base.alphaF());
-                            qreal a = 1;
-//                            palette.setBrush(QPalette::Window, QColor(Qt::transparent));
-                            palette.setBrush(QPalette::Window, QColor::fromRgbF(r, g, b, a));
 
                             /*
                              * This use QPalette::Base to replace QPalette::Window, Mabey have unknow bug.
                             */
-//                            palette.setBrush(QPalette::Window, palette.brush(QPalette::Base));
+                            if (!m_bound_widget->testAttribute(Qt::WA_TranslucentBackground)) {
+                                previous_widget->render(&previous_pixmap);
+                            }
+                            palette.setBrush(QPalette::Window, palette.brush(QPalette::Base));
                             previous_widget->setPalette(palette);
                             previous_widget->render(&previous_pixmap);
                             previous_widget->setPalette(palette_save);
@@ -252,6 +239,7 @@ bool DefaultSlideAnimator::filterTabWidget(QObject *obj, QEvent *e)
     if (e->type() == QEvent::Close) {
         this->unboundTabWidget();
     }
+
     return false;
 }
 
@@ -340,6 +328,7 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             QPainter p(w);
             auto value = this->currentValue().toDouble();
             p.setRenderHints(QPainter::Antialiasing);
+            p.setCompositionMode(QPainter::CompositionMode_Source);
 
             //do a horizon slide.
             auto prevSrcRect = QRectF(m_previous_pixmap.rect());
