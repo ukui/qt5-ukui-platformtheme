@@ -3212,7 +3212,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->drawPath(path);
             } else {
                 if (hover) {
-                    painter->setBrush(item_Hover(option));
+                    QColor hover_color = option->palette.color(QPalette::Active, QPalette::Window);
+                    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+                    painter->setBrush(mixColor(hover_color, mix, 0.1));
                 } else {
                     painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
                 }
@@ -3573,6 +3576,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         painter->save();
                         painter->setPen(Qt::NoPen);
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
                         painter->drawPixmap(iconRect, drawPixmap);
                         painter->restore();
                     }
@@ -3588,6 +3592,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         painter->save();
                         painter->setPen(Qt::NoPen);
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
                         painter->drawPixmap(iconRect, drawPixmap);
                         painter->restore();
                     }
@@ -3607,6 +3612,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         painter->save();
                         painter->setPen(menuItem->palette.color(QPalette::Active, QPalette::Text));
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
                         painter->drawPixmap(iconRect, target);
                         painter->restore();
                     }
