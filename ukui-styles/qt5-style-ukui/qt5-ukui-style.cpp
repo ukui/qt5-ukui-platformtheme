@@ -1433,6 +1433,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         const bool sunken = option->state & State_Sunken;
         const bool hover = option->state & State_MouseOver;
         const bool on = option->state & State_On;
+        qreal x_Radius = 6;
+        qreal y_Radius = 6;
 
         if (!enable) {
             if (animator) {
@@ -1448,7 +1450,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             else
                 painter->setBrush(option->palette.color(QPalette::Disabled, QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
             painter->restore();
             return;
         }
@@ -1458,7 +1460,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.color(QPalette::Active, QPalette::Button));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
             painter->restore();
         }
 
@@ -1491,7 +1493,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Hover(option));
                 }
             }
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
             painter->restore();
             return;
         }
@@ -1530,7 +1532,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 sunkenColor = highLight_Click(option);
             }
             painter->setBrush(mixColor(hoverColor, sunkenColor, opacity));
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
             painter->restore();
             return;
         }
@@ -1564,7 +1566,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             } else {
                 painter->setBrush(highLight_Hover(option));
             }
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, x_Radius, y_Radius);
             painter->restore();
             return;
         }
