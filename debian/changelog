@@ -1,3 +1,12 @@
+qt5-ukui-platformtheme (1.0.6-12.5) v101; urgency=medium
+
+  * BUG100013，按照设计稿调整toolbutton圆角为6
+  * 按照设计师要求，调整Windowstext下inactive状态的颜色
+  * tabbar添加分割线协议，应用可以配置属性来调整是否使用tabbar分割线
+  * 修改默认图标主题为寻光
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 29 Dec 2021 17:52:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-12.4) v101; urgency=medium
 
   * BUG93795,89836,99012修改tabwidget切换动画的问题
