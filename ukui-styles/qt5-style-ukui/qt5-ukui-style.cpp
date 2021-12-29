@@ -3177,13 +3177,13 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 drawRect.adjust(0, 0, 0, 1);
             }
 
-            bool rtlHorTabs = (tab->direction == Qt::RightToLeft
-                               && (tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth));
-            bool fisttab = ((!rtlHorTabs && tab->position == QStyleOptionTab::Beginning)
-                            || (rtlHorTabs && tab->position == QStyleOptionTab::End));
-            bool lastTab = ((!rtlHorTabs && tab->position == QStyleOptionTab::End)
-                            || (rtlHorTabs && tab->position == QStyleOptionTab::Beginning));
-            bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
+//            bool rtlHorTabs = (tab->direction == Qt::RightToLeft
+//                               && (tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth));
+//            bool fisttab = ((!rtlHorTabs && tab->position == QStyleOptionTab::Beginning)
+//                            || (rtlHorTabs && tab->position == QStyleOptionTab::End));
+//            bool lastTab = ((!rtlHorTabs && tab->position == QStyleOptionTab::End)
+//                            || (rtlHorTabs && tab->position == QStyleOptionTab::Beginning));
+//            bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
             if (selected) {
@@ -3282,6 +3282,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int iconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
             bool verticalTabs = tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::RoundedWest
                     || tab->shape == QTabBar::TriangularEast || tab->shape == QTabBar::TriangularWest;
+            bool useSeparateLine = true;
             uint alignment = Qt::AlignLeft | Qt::AlignVCenter;
             if (proxy()->styleHint(SH_UnderlineShortcut, option, widget))
                 alignment |= Qt::TextShowMnemonic;
@@ -3293,6 +3294,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QRect textRect;
             tabLayout(tab, widget, proxy(), &textRect, &iconRect);
             textRect = proxy()->subElementRect(SE_TabBarTabText, option, widget);
+
+            if (widget && widget->property("useTabbarSeparateLine").isValid() && (!widget->property("useTabbarSeparateLine").toBool())){
+                useSeparateLine = false;
+            }
 
             painter->save();
             if (verticalTabs) {
@@ -3320,26 +3325,31 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->drawPixmap(iconRect.x(), iconRect.y(), drawPixmap);
             }
             proxy()->drawItemText(painter, textRect, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::WindowText);
-            if (!(tab->state & State_Selected)) {
-                int dis = ((verticalTabs ? drawRect.width() : drawRect.height()) - iconSize) / 2;
-                painter->save();
-                painter->resetTransform();
-                painter->setPen(tab->palette.color(QPalette::Active, QPalette::Midlight));
-                painter->setBrush(Qt::NoBrush);
-                if (verticalTabs) {
-                    if (tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::TriangularEast) {
-                        painter->drawLine(drawRect.x() + dis, drawRect.bottom(), drawRect.right() - dis, drawRect.bottom());
-                    } else {
-                        painter->drawLine(drawRect.x() + dis, drawRect.top(), drawRect.right() - dis, drawRect.top());
-                    }
-                } else if (tab->direction == Qt::RightToLeft) {
-                    painter->drawLine(drawRect.x(), drawRect.top() + dis, drawRect.x(), drawRect.bottom() - dis);
-                } else {
-                    painter->drawLine(drawRect.right(), drawRect.top() + dis, drawRect.right(), drawRect.bottom() - dis);
-                }
-                painter->restore();
-            }
             painter->restore();
+
+            //draw separate line
+            if (useSeparateLine) {
+                if (!(tab->state & State_Selected)) {
+                    int dis = ((verticalTabs ? drawRect.width() : drawRect.height()) - iconSize) / 2;
+                    painter->save();
+                    painter->resetTransform();
+                    painter->setPen(tab->palette.color(QPalette::Active, QPalette::Midlight));
+                    painter->setBrush(Qt::NoBrush);
+                    if (verticalTabs) {
+                        if (tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::TriangularEast) {
+                            painter->drawLine(drawRect.x() + dis, drawRect.bottom(), drawRect.right() - dis, drawRect.bottom());
+                        } else {
+                            painter->drawLine(drawRect.x() + dis, drawRect.top(), drawRect.right() - dis, drawRect.top());
+                        }
+                    } else if (tab->direction == Qt::RightToLeft) {
+                        painter->drawLine(drawRect.x(), drawRect.top() + dis, drawRect.x(), drawRect.bottom() - dis);
+                    } else {
+                        painter->drawLine(drawRect.right(), drawRect.top() + dis, drawRect.right(), drawRect.bottom() - dis);
+                    }
+                    painter->restore();
+                }
+            }
+
             return;
         }
         break;
