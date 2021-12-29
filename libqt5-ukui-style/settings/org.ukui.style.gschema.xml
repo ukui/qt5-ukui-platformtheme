@@ -6,7 +6,7 @@
             <description>Set default style for UKUI desktop environment.</description>
         </key>
         <key type="s" name="icon-theme-name">
-            <default>"ukui-icon-theme-default"</default>
+            <default>"ukui-icon-theme-lightseeking"</default>
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.</description>
         </key>

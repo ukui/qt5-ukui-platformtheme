@@ -75,10 +75,12 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             if (key == "iconThemeName") {
                 QString icontheme = settings->get("icon-theme-name").toString();
-                if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
+                if (icontheme == "ukui") {
                     icontheme = "ukui-icon-theme-default";
-                else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
+                }
+                else if (icontheme == "ukui-classical") {
                     icontheme = "ukui-icon-theme-classical";
+                }
 
                 QIcon::setThemeName(icontheme);
 
@@ -156,10 +158,12 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             if (auto settings = UKUIStyleSettings::globalInstance()) {
                 QString icontheme = settings->get("icon-theme-name").toString();
-                if (icontheme == "ukui-icon-theme-default" || icontheme == "ukui")
+                if (icontheme == "ukui") {
                     return QStringList()<<"ukui-icon-theme-default";
-                else if (icontheme == "ukui-icon-theme-classical" || icontheme == "ukui-classical")
+                }
+                else if (icontheme == "ukui-classical") {
                     return QStringList()<<"ukui-icon-theme-classical";
+                }
                 return QStringList()<<icontheme;
             }
         }
