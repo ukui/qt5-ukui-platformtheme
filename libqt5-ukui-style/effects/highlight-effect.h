@@ -69,7 +69,7 @@ public:
     static void setWidgetIconFillSymbolicColor(QWidget *widget, bool fill);
 
     static const QColor getCurrentSymbolicColor();
-    static const QColor defaultStyleDark();
+    static const QColor defaultStyleDark(const QStyleOption *option);
 
     static QPixmap generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, bool force = false, EffectMode mode = HighlightOnly);
     static QPixmap ordinaryGeneratePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget = nullptr, EffectMode mode = HighlightOnly);
