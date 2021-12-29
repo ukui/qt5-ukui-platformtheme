@@ -412,7 +412,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
 
     //ukui-light palette UKUI3.1
     QColor windowText_at(38, 38, 38),
-           windowText_iat(38, 38, 38),
+           windowText_iat(0, 0, 0, 255 * 0.55),
            windowText_dis(0, 0, 0, 255 * 0.3),
            button_at(230, 230, 230),
            button_iat(230, 230, 230),
@@ -481,7 +481,7 @@ QPalette Qt5UKUIStyle::standardPalette() const
     //ukui-dark
     if (!useDefaultPalette().contains(qAppName()) && (qApp->property("preferDark").toBool() || (m_is_default_style && specialList().contains(qAppName())))) {
         windowText_at.setRgb(217, 217, 217);
-        windowText_iat.setRgb(217, 217, 217);
+        windowText_iat.setRgb(255, 255, 255, 255 * 0.55);
         windowText_dis.setRgb(255, 255, 255, 255 * 0.3);
         button_at.setRgb(55, 55, 59);
         button_iat.setRgb(55, 55, 59);
@@ -3187,13 +3187,15 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
             if (selected) {
-                if (fisttab || onlyOne) {
-                    drawRect.adjust(0, 0, tabOverlap, 0);
-                } else if (lastTab) {
-                    drawRect.adjust(-tabOverlap, 0, 0, 0);
-                } else {
-                    drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
-                }
+//                if (fisttab || onlyOne) {
+//                    drawRect.adjust(0, 0, tabOverlap, 0);
+//                } else if (lastTab) {
+//                    drawRect.adjust(-tabOverlap, 0, 0, 0);
+//                } else {
+//                    drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
+//                }
+                drawRect.adjust(0, 0, tabOverlap, 0);
+
 
                 QPainterPath path;
                 int TabBarTab_Radius = 6;
