@@ -462,9 +462,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
            linkVisited_at(114, 46, 209),
            linkVisited_iat(114, 46, 209),
            linkVisited_dis(114, 46, 209),
-           alternateBase_at(245, 245, 245),
-           alternateBase_iat(245, 245, 245),
-           alternateBase_dis(245, 245, 245),
+           alternateBase_at(235, 235, 235),
+           alternateBase_iat(235, 235, 235),
+           alternateBase_dis(235, 235, 235),
            noRale_at(240, 240, 240),
            noRole_iat(240, 240, 240),
            noRole_dis(217, 217, 217),
@@ -1181,7 +1181,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if ((sunken || on) && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#E44C50"));
-                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.15);
                         painter->setBrush(color);
@@ -1196,7 +1196,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 } else if (hover && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#F86458"));
-                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                         QColor color = button->palette.color(QPalette::Base);
                         color.setAlphaF(0.1);
                         painter->setBrush(color);
@@ -1239,7 +1239,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (isWindowColoseButton) {
                     hoverColor = QColor("#F86458");
                     sunkenColor = QColor("#E44C50");
-                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                     hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
                     hoverColor.setAlphaF(0.1);
                     sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
@@ -1288,14 +1288,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setOpacity(opacity);
                 if (isWindowColoseButton) {
                     painter->setBrush(QColor("#F86458"));
-                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
                 } else {
                     if (isImportant)
                         painter->setBrush(highLight_Hover(option));
-                    else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video"))
+                    else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video"))
                         painter->setBrush(button_Hover(option));
                     else if (useButtonPalette || isWindowButton)
                         painter->setBrush(button_Hover(option));
@@ -1469,7 +1469,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(Qt::NoPen);
             if (sunken || on) {
-                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.15);
                     painter->setBrush(color);
@@ -1481,7 +1481,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Click(option));
                 }
             } else if (hover) {
-                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                     QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                     color.setAlphaF(0.1);
                     painter->setBrush(color);
@@ -1516,7 +1516,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                 hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
                 hoverColor.setAlphaF(0.1);
                 sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
@@ -1555,7 +1555,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setPen(Qt::NoPen);
             painter->setOpacity(opacity);
-            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-video")) {
+            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                 QColor color = option->palette.color(QPalette::Active, QPalette::Base);
                 color.setAlphaF(0.1);
                 painter->setBrush(color);
