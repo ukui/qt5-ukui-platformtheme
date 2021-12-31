@@ -462,9 +462,9 @@ QPalette Qt5UKUIStyle::standardPalette() const
            linkVisited_at(114, 46, 209),
            linkVisited_iat(114, 46, 209),
            linkVisited_dis(114, 46, 209),
-           alternateBase_at(235, 235, 235),
-           alternateBase_iat(235, 235, 235),
-           alternateBase_dis(235, 235, 235),
+           alternateBase_at(245, 245, 245),
+           alternateBase_iat(245, 245, 245),
+           alternateBase_dis(245, 245, 245),
            noRale_at(240, 240, 240),
            noRole_iat(240, 240, 240),
            noRole_dis(217, 217, 217),
@@ -957,7 +957,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, 6, 6);
             painter->restore();
             return;
         }
@@ -1059,7 +1059,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing);
             painter->setPen(Qt::transparent);
             painter->setBrush(color);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, 6, 6);
             painter->restore();
             return;
         }
@@ -1905,8 +1905,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QRectF rect = checkbox->rect;
             int width = rect.width();
             int heigth = rect.height();
-            int x_Radius = 4;
-            int y_Radius = 4;
+            int x_Radius = 6;
+            int y_Radius = 6;
 
             QPainterPath path;
             if (on) {
@@ -3810,7 +3810,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
         painter->save();
         painter->setPen(Qt::NoPen);
         painter->setBrush(option->palette.brush(enable ? QPalette::Active : QPalette::Disabled, QPalette::Button));
-        painter->drawRoundedRect(option->rect, 4, 4);
+        painter->drawRoundedRect(option->rect, 6, 6);
         painter->restore();
         return;
     }
