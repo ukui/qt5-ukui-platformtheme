@@ -1183,7 +1183,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         painter->setBrush(QColor("#E44C50"));
                     } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                         QColor color = button->palette.color(QPalette::Base);
-                        color.setAlphaF(0.15);
+                        color.setAlphaF(0.28);
                         painter->setBrush(color);
                     } else {
                         if (isImportant)
@@ -1197,8 +1197,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     if (isWindowColoseButton) {
                         painter->setBrush(QColor("#F86458"));
                     } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                        QColor color = button->palette.color(QPalette::Base);
-                        color.setAlphaF(0.1);
+                        QColor color = button->palette.color(QPalette::BrightText);
+                        color.setAlphaF(0.15);
                         painter->setBrush(color);
                     } else {
                         if (isImportant)
@@ -1240,10 +1240,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     hoverColor = QColor("#F86458");
                     sunkenColor = QColor("#E44C50");
                 } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                    hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
-                    hoverColor.setAlphaF(0.1);
-                    sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
-                    sunkenColor.setAlphaF(0.15);
+                    hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    hoverColor.setAlphaF(0.15);
+                    sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    sunkenColor.setAlphaF(0.28);
                 } else {
                     if (isImportant) {
                         hoverColor = highLight_Hover(option);
@@ -1289,8 +1289,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (isWindowColoseButton) {
                     painter->setBrush(QColor("#F86458"));
                 } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.1);
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else {
                     if (isImportant)
@@ -1470,8 +1470,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             if (sunken || on) {
                 if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.15);
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.28);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(QColor("#E44C50"));
@@ -1482,8 +1482,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
             } else if (hover) {
                 if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.1);
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(QColor("#F86458"));
@@ -1517,10 +1517,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
             if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
-                hoverColor.setAlphaF(0.1);
-                sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
-                sunkenColor.setAlphaF(0.15);
+                hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                hoverColor.setAlphaF(0.15);
+                sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                sunkenColor.setAlphaF(0.28);
             } else if (isWindowColoseButton) {
                 hoverColor = QColor("#F86458");
                 sunkenColor = QColor("#E44C50");
@@ -1556,8 +1556,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setOpacity(opacity);
             if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
-                QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                color.setAlphaF(0.1);
+                QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                color.setAlphaF(0.15);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
                 painter->setBrush(QColor("#F86458"));
