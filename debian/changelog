@@ -1,3 +1,11 @@
+qt5-ukui-platformtheme (1.0.6-12.6) v101; urgency=medium
+
+  * 调整透明按钮三态颜色
+  * 麒麟传书加入使用透明按钮队列
+  * 调整checkbox,progressbar,viewitem,QFrame圆角为6
+
+ -- xibowen <xibowen@kylinos.cn>  Fri, 31 Dec 2021 17:56:46 +0800
+
 qt5-ukui-platformtheme (1.0.6-12.5) v101; urgency=medium
 
   * BUG100013，按照设计稿调整toolbutton圆角为6
