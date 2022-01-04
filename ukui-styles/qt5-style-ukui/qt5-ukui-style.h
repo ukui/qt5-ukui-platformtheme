@@ -150,6 +150,10 @@ private:
     QColor button_Click() const;
     QColor button_Hover() const;
     QColor button_DisableChecked() const;
+    QColor highLight_Click(const QStyleOption *option) const;
+    QColor highLight_Hover(const QStyleOption *option) const;
+    QColor item_Hover(const QStyleOption *option) const;
+
 
     QColor highLight_Click() const;
     QColor highLight_Hover() const;

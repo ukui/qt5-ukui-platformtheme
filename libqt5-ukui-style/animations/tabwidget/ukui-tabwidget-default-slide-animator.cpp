@@ -68,6 +68,7 @@ DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation 
  * When do a tab widget binding, animator will create a tmp child page for tab widget's
  * stack widget. Then it will watched their event waiting for preparing and doing a animation.
  */
+
 bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 {
     if (w) {
@@ -86,6 +87,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                 m_stack = stack;
                 //watch stack widget
                 m_tmp_page->setParent(m_stack);
+                m_tmp_page->resize(m_stack->size());
                 m_stack->installEventFilter(this);
                 break;
             }
@@ -96,7 +98,10 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
             watchSubPage(w->widget(i));
         }
 
+        m_tmp_page->setAttribute(Qt::WA_TranslucentBackground, m_bound_widget->testAttribute(Qt::WA_TranslucentBackground));
+
         previous_widget = m_bound_widget->currentWidget();
+        pervIndex = m_bound_widget->currentIndex();
 
         connect(w, &QTabWidget::currentChanged, this, [=](int index){
                     this->stop();
@@ -111,6 +116,7 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
                         //m_bound_widget->currentWidget()->width(), m_bound_widget->currentWidget()->height()));
 
                         QPixmap pixmap(m_stack->size());
+                        pixmap.fill(QColor(Qt::transparent));
 
                         /*
                          * This way some widget such as QFrame.
@@ -135,11 +141,16 @@ bool DefaultSlideAnimator::bindTabWidget(QTabWidget *w)
 
                         if (qobject_cast<QWidget *>(previous_widget)) {
                             QPixmap previous_pixmap(m_stack->size());
-                            QPalette palette = previous_widget->palette();
+                            previous_pixmap.fill(QColor(Qt::transparent));
+                            QPalette palette = m_bound_widget->palette();
                             QPalette palette_save = previous_widget->palette();
+
                             /*
                              * This use QPalette::Base to replace QPalette::Window, Mabey have unknow bug.
                             */
+                            if (!m_bound_widget->testAttribute(Qt::WA_TranslucentBackground)) {
+                                previous_widget->render(&previous_pixmap);
+                            }
                             palette.setBrush(QPalette::Window, palette.brush(QPalette::Base));
                             previous_widget->setPalette(palette);
                             previous_widget->render(&previous_pixmap);
@@ -228,6 +239,7 @@ bool DefaultSlideAnimator::filterTabWidget(QObject *obj, QEvent *e)
     if (e->type() == QEvent::Close) {
         this->unboundTabWidget();
     }
+
     return false;
 }
 
@@ -316,6 +328,7 @@ bool DefaultSlideAnimator::filterTmpPage(QObject *obj, QEvent *e)
             QPainter p(w);
             auto value = this->currentValue().toDouble();
             p.setRenderHints(QPainter::Antialiasing);
+            p.setCompositionMode(QPainter::CompositionMode_Source);
 
             //do a horizon slide.
             auto prevSrcRect = QRectF(m_previous_pixmap.rect());

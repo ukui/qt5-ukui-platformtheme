@@ -1290,8 +1290,6 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
 {
     initDialog();
 
-//    mMessageBox->setWindowModality(windowModality);
-
     if (parent) {
         if (QWidget *p = mMessageBox->find(parent->winId())) {
             if (p->findChild<QCheckBox *>()) {
@@ -1314,6 +1312,8 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
         mMessageBox->move(QPoint((parent->width() - mMessageBox->width()) / 2, (parent->height() - mMessageBox->height()) / 2)
                           + QPoint(parent->x(), parent->y()));
     }
+
+    //mMessageBox->setWindowModality(windowModality);
 
     MotifWmHints hints;
     hints.flags = MWM_HINTS_FUNCTIONS | MWM_HINTS_DECORATIONS;

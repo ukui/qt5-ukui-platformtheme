@@ -178,6 +178,8 @@ const QStringList Qt5UKUIStyle::useDefaultPalette() const
     QStringList l;
     l<<"kybackup";
     l<<"biometric-manager";
+//    l<<"kylin-video";
+
     return l;
 }
 
@@ -645,9 +647,20 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
     if (QApplication::desktopSettingsAware() && !QIcon::themeName().isEmpty()) {
         switch (standardIcon) {
         case SP_FileDialogListView:
+        {
             return QIcon::fromTheme(QLatin1String("view-list-symbolic"));
+        }break;
+
         case SP_FileDialogDetailedView:
+        {
             return QIcon::fromTheme(QLatin1String("view-grid-symbolic"));
+        }break;
+
+        case SP_ToolBarHorizontalExtensionButton:
+        {
+            //toolbar horizontal extension button icon
+            return QIcon::fromTheme(QLatin1String("ukui-end-symbolic"));
+        }break;
 
         default:
             break;
@@ -738,7 +751,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
             painter->setRenderHint(QPainter::Antialiasing, true);
-            painter->drawRoundedRect(option->rect, 4, 4);
+            painter->drawRoundedRect(option->rect, 6, 6);
             painter->restore();
             return;
         }
@@ -822,6 +835,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Highlight));
                 else
                     painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
+
                 painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
                 painter->restore();
@@ -834,9 +848,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if ((sunken || on) && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(sp->ColoseButton_Click);
-                    } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
+                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
                         QColor color = button->palette.color(QPalette::Base);
-                        color.setAlphaF(0.15);
+                        color.setAlphaF(0.28);
                         painter->setBrush(color);
                     } else {
                         if (isImportant)
@@ -849,9 +863,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 } else if (hover && isbutton) {
                     if (isWindowColoseButton) {
                         painter->setBrush(sp->ColoseButton_Hover);
-                    } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                        QColor color = button->palette.color(QPalette::Base);
-                        color.setAlphaF(0.1);
+                    } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                        QColor color = button->palette.color(QPalette::BrightText);
+                        color.setAlphaF(0.15);
                         painter->setBrush(color);
                     } else {
                         if (isImportant)
@@ -892,11 +906,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (isWindowColoseButton) {
                     hoverColor = sp->ColoseButton_Hover;
                     sunkenColor = sp->ColoseButton_Click;
-                } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                    hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
-                    hoverColor.setAlphaF(0.1);
-                    sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
-                    sunkenColor.setAlphaF(0.15);
+                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                    hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    hoverColor.setAlphaF(0.15);
+                    sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    sunkenColor.setAlphaF(0.28);
                 } else {
                     if (isImportant) {
                         hoverColor = highLight_Hover();
@@ -941,14 +955,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setOpacity(opacity);
                 if (isWindowColoseButton) {
                     painter->setBrush(sp->ColoseButton_Hover);
-                } else if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.1);
+                } else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else {
                     if (isImportant)
                         painter->setBrush(highLight_Hover());
-                    else if (isWindowButton && useDefaultPalette().contains(qAppName()))
+                    else if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video"))
                         painter->setBrush(button_Hover());
                     else if (useButtonPalette || isWindowButton)
                         painter->setBrush(button_Hover());
@@ -1120,9 +1134,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(Qt::NoPen);
             if (sunken || on) {
-                if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.15);
+                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.28);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(sp->ColoseButton_Click);
@@ -1132,9 +1146,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Click());
                 }
             } else if (hover) {
-                if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                    color.setAlphaF(0.1);
+                if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                    color.setAlphaF(0.15);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(sp->ColoseButton_Hover);
@@ -1167,11 +1181,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setRenderHint(QPainter::Antialiasing,true);
-            if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                hoverColor = option->palette.color(QPalette::Active, QPalette::Base);
-                hoverColor.setAlphaF(0.1);
-                sunkenColor = option->palette.color(QPalette::Active, QPalette::Base);
-                sunkenColor.setAlphaF(0.15);
+            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                hoverColor.setAlphaF(0.15);
+                sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
+                sunkenColor.setAlphaF(0.28);
             } else if (isWindowColoseButton) {
                 hoverColor = sp->ColoseButton_Hover;
                 sunkenColor = sp->ColoseButton_Click;
@@ -1206,9 +1220,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setRenderHint(QPainter::Antialiasing,true);
             painter->setPen(Qt::NoPen);
             painter->setOpacity(opacity);
-            if (isWindowButton && useDefaultPalette().contains(qAppName())) {
-                QColor color = option->palette.color(QPalette::Active, QPalette::Base);
-                color.setAlphaF(0.1);
+            if (isWindowButton && (useDefaultPalette().contains(qAppName()) || qAppName() == "kylin-ipmsg" || qAppName() == "kylin-video")) {
+                QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
+                color.setAlphaF(0.15);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
                 painter->setBrush(sp->ColoseButton_Hover);
@@ -1968,6 +1982,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (const QStyleOptionComboBox *comboBox = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             const bool enable = comboBox->state & State_Enabled;
             const bool on = comboBox->state & State_On;
+            const bool hover = comboBox->state & State_MouseOver;
 
             if (!enable) {
                 painter->save();
@@ -2008,6 +2023,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     painter->restore();
                 }
             }
+//            if (hover) {
+//                QRectF rect = comboBox->rect;
+//                painter->save();
+//                painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
+//                                     1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//                painter->setBrush(Qt::NoBrush);
+//                painter->setRenderHint(QPainter::Antialiasing,true);
+//                painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
+//                painter->restore();
+//            }
+            
 
             return;
         }
@@ -2051,6 +2077,17 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     button.rect = option->rect;
                     button.palette = option->palette;
                     proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
+
+//                    if (hover) {
+//                        QRectF rect = sb->rect;
+//                        painter->save();
+//                        painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
+//                                             1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//                        painter->setBrush(Qt::NoBrush);
+//                        painter->setRenderHint(QPainter::Antialiasing, true);
+//                        painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
+//                        painter->restore();
+//                    }
                 }
             }
 
@@ -2735,26 +2772,24 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 drawRect.adjust(0, 0, 0, 1);
             }
 
-            bool rtlHorTabs = (tab->direction == Qt::RightToLeft
-                               && (tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth));
-            bool fisttab = ((!rtlHorTabs && tab->position == QStyleOptionTab::Beginning)
-                            || (rtlHorTabs && tab->position == QStyleOptionTab::End));
-            bool lastTab = ((!rtlHorTabs && tab->position == QStyleOptionTab::End)
-                            || (rtlHorTabs && tab->position == QStyleOptionTab::Beginning));
-            bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
+//            bool rtlHorTabs = (tab->direction == Qt::RightToLeft
+//                               && (tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth));
+//            bool fisttab = ((!rtlHorTabs && tab->position == QStyleOptionTab::Beginning)
+//                            || (rtlHorTabs && tab->position == QStyleOptionTab::End));
+//            bool lastTab = ((!rtlHorTabs && tab->position == QStyleOptionTab::End)
+//                            || (rtlHorTabs && tab->position == QStyleOptionTab::Beginning));
+//            bool onlyOne = tab->position == QStyleOptionTab::OnlyOneTab;
 
             int tabOverlap = proxy()->pixelMetric(PM_TabBarTabOverlap, option, widget);
-            painter->setRenderHint(QPainter::Antialiasing, true);
-            if (selected || hover) {
-                if (selected) {
-                    if (fisttab || onlyOne) {
-                        drawRect.adjust(0, 0, tabOverlap, 0);
-                    } else if (lastTab) {
-                        drawRect.adjust(-tabOverlap, 0, 0, 0);
-                    } else {
-                        drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
-                    }
-                }
+            if (selected) {
+//                if (fisttab || onlyOne) {
+//                    drawRect.adjust(0, 0, tabOverlap, 0);
+//                } else if (lastTab) {
+//                    drawRect.adjust(-tabOverlap, 0, 0, 0);
+//                } else {
+//                    drawRect.adjust(-tabOverlap, 0, tabOverlap, 0);
+//                }
+                drawRect.adjust(0, 0, tabOverlap, 0);
 
                 int TabBarTab_Radius = sp->radius;
                 QPainterPath path;
@@ -2772,18 +2807,63 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 path.lineTo(drawRect.left() + TabBarTab_Radius, drawRect.top());
 
                 painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Base));
-                if (hover && !selected) {
-//                    painter->setBrush(mixColor(tab->palette.color(QPalette::Active, QPalette::Base),
-//                                               tab->palette.color(QPalette::Active, QPalette::Window), 0.6));
-                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
-
-                }
-
                 painter->drawPath(path);
             } else {
-                painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
-                painter->drawRect(drawRect);
+                if (hover) {
+                    QColor hover_color = option->palette.color(QPalette::Active, QPalette::Window);
+                    QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+                    painter->setBrush(mixColor(hover_color, mix, 0.1));
+                } else {
+                    painter->setBrush(tab->palette.brush(QPalette::Active, QPalette::Window));
+                }
+
+                if (widget != NULL && qobject_cast<const QTabBar*>(widget)) {
+                    const auto *tabbar = qobject_cast<const QTabBar*>(widget);
+                    int select_index = tabbar->currentIndex();
+                    int now_index = tabbar->tabAt(QPoint(drawRect.x(),drawRect.y()));
+                    if (select_index - now_index == 1) {
+                        //select rect left
+                        drawRect.adjust(0, 0, tabOverlap, 0);
+
+                        QPainterPath path;
+                        int TabBarTab_Radius = 6;
+                        path.moveTo(drawRect.left(), drawRect.top());
+                        path.lineTo(drawRect.left(), drawRect.bottom());
+                        path.lineTo(drawRect.right() - TabBarTab_Radius, drawRect.bottom());
+                        path.arcTo(QRect(drawRect.right() - TabBarTab_Radius * 2, drawRect.bottom() - TabBarTab_Radius * 2,
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 270, 90);
+                        path.lineTo(drawRect.right(), drawRect.top() + TabBarTab_Radius);
+                        path.arcTo(QRect(drawRect.right(), drawRect.top(),
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 180, -90);
+                        path.lineTo(drawRect.left(), drawRect.top());
+
+                        painter->drawPath(path);
+
+                    } else if(select_index - now_index == -1) {
+                        //select rect right
+                        drawRect.adjust(0, 0, tabOverlap, 0);
+
+                        QPainterPath path;
+                        int TabBarTab_Radius = 6;
+                        path.moveTo(drawRect.right(), drawRect.bottom());
+                        path.lineTo(drawRect.right(), drawRect.top());
+                        path.lineTo(drawRect.left() - TabBarTab_Radius, drawRect.top());
+                        path.arcTo(QRect(drawRect.left() - TabBarTab_Radius * 2, drawRect.top(), TabBarTab_Radius * 2, TabBarTab_Radius * 2), 90, -90);
+                        path.lineTo(drawRect.left(), drawRect.bottom() - TabBarTab_Radius);
+                        path.arcTo(QRect(drawRect.left(), drawRect.bottom() - TabBarTab_Radius * 2,
+                                         TabBarTab_Radius * 2, TabBarTab_Radius * 2), 180, 90);
+                        path.lineTo(drawRect.right(), drawRect.bottom());
+
+                        painter->drawPath(path);
+                    } else {
+                        painter->drawRect(drawRect);
+                    }
+                } else {
+                    painter->drawRect(drawRect);
+                }
             }
+
             painter->restore();
             return;
         }
@@ -2796,6 +2876,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             int iconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
             bool verticalTabs = tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::RoundedWest
                     || tab->shape == QTabBar::TriangularEast || tab->shape == QTabBar::TriangularWest;
+            bool useSeparateLine = true;
             uint alignment = Qt::AlignLeft | Qt::AlignVCenter;
             if (proxy()->styleHint(SH_UnderlineShortcut, option, widget))
                 alignment |= Qt::TextShowMnemonic;
@@ -2807,6 +2888,10 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             QRect textRect;
             tabLayout(tab, widget, proxy(), &textRect, &iconRect);
             textRect = proxy()->subElementRect(SE_TabBarTabText, option, widget);
+
+            if (widget && widget->property("useTabbarSeparateLine").isValid() && (!widget->property("useTabbarSeparateLine").toBool())){
+                useSeparateLine = false;
+            }
 
             painter->save();
             if (verticalTabs) {
@@ -2835,27 +2920,31 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             }
 
             proxy()->drawItemText(painter, textRect, alignment, tab->palette, tab->state & State_Enabled, tab->text, QPalette::WindowText);
-
-            if (!(tab->state & State_Selected)) {
-                int dis = ((verticalTabs ? drawRect.width() : drawRect.height()) - iconSize) / 2;
-                painter->save();
-                painter->resetTransform();
-                painter->setPen(tab->palette.color(QPalette::Active, QPalette::Midlight));
-                painter->setBrush(Qt::NoBrush);
-                if (verticalTabs) {
-                    if (tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::TriangularEast) {
-                        painter->drawLine(drawRect.x() + dis, drawRect.bottom(), drawRect.right() - dis, drawRect.bottom());
-                    } else {
-                        painter->drawLine(drawRect.x() + dis, drawRect.top(), drawRect.right() - dis, drawRect.top());
-                    }
-                } else if (tab->direction == Qt::RightToLeft) {
-                    painter->drawLine(drawRect.x(), drawRect.top() + dis, drawRect.x(), drawRect.bottom() - dis);
-                } else {
-                    painter->drawLine(drawRect.right(), drawRect.top() + dis, drawRect.right(), drawRect.bottom() - dis);
-                }
-                painter->restore();
-            }
             painter->restore();
+
+            //draw separate line
+            if (useSeparateLine) {
+                if (!(tab->state & State_Selected)) {
+                    int dis = ((verticalTabs ? drawRect.width() : drawRect.height()) - iconSize) / 2;
+                    painter->save();
+                    painter->resetTransform();
+                    painter->setPen(tab->palette.color(QPalette::Active, QPalette::Midlight));
+                    painter->setBrush(Qt::NoBrush);
+                    if (verticalTabs) {
+                        if (tab->shape == QTabBar::RoundedEast || tab->shape == QTabBar::TriangularEast) {
+                            painter->drawLine(drawRect.x() + dis, drawRect.bottom(), drawRect.right() - dis, drawRect.bottom());
+                        } else {
+                            painter->drawLine(drawRect.x() + dis, drawRect.top(), drawRect.right() - dis, drawRect.top());
+                        }
+                    } else if (tab->direction == Qt::RightToLeft) {
+                        painter->drawLine(drawRect.x(), drawRect.top() + dis, drawRect.x(), drawRect.bottom() - dis);
+                    } else {
+                        painter->drawLine(drawRect.right(), drawRect.top() + dis, drawRect.right(), drawRect.bottom() - dis);
+                    }
+                    painter->restore();
+                }
+            }
+
             return;
         }
         break;
@@ -3068,47 +3157,48 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             drawRect = drawRect.adjusted(MenuItem_HMargin, sp->MenuItem_MarginHeight, -MenuItem_HMargin, -sp->MenuItem_MarginHeight);
 
             //Checkable items draw
-            if (!isComboBox) {
-                if (menuItem->menuHasCheckableItems) {
-                    const bool checked = menuItem->checked;
-                    if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
-                        if (checked) {
-    //                        QStyleOptionButton radioOption;
-    //                        radioOption.QStyleOption::operator=(*option);
-    //                        radioOption.rect = drawRect;
-    //                        radioOption.state |= State_On;
-    //                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
-    //                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
-                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                            QIcon icon = QIcon::fromTheme("dialog-ok");
-                            QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
-                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
-                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                            painter->save();
-                            painter->setPen(Qt::NoPen);
-                            painter->setBrush(Qt::NoBrush);
-                            painter->drawPixmap(iconRect, drawPixmap);
-                            painter->restore();
-                        }
-                    } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
-                        if (checked) {
-                            int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
-                            QIcon icon = QIcon::fromTheme("dialog-ok");
-                            QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
-                            QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
-                            QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
-                            QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
-                            iconRect = visualRect(menuItem->direction, drawRect, iconRect);
-                            painter->save();
-                            painter->setPen(Qt::NoPen);
-                            painter->setBrush(Qt::NoBrush);
-                            painter->drawPixmap(iconRect, drawPixmap);
-                            painter->restore();
-                        }
+            if (menuItem->menuHasCheckableItems) {
+                const bool checked = menuItem->checked;
+                if (menuItem->checkType == QStyleOptionMenuItem::Exclusive) {
+                    if (checked) {
+//                        QStyleOptionButton radioOption;
+//                        radioOption.QStyleOption::operator=(*option);
+//                        radioOption.rect = drawRect;
+//                        radioOption.state |= State_On;
+//                        radioOption.rect = proxy()->subElementRect(SE_RadioButtonIndicator, &radioOption, widget);
+//                        proxy()->drawPrimitive(PE_IndicatorRadioButton, &radioOption, painter, widget);
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ?  QIcon::Active : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
+                    }
+                } else if (menuItem->checkType == QStyleOptionMenuItem::NonExclusive) {
+                    if (checked) {
+                        int iconWidth = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
+                        QIcon icon = QIcon::fromTheme("dialog-ok");
+                        QIcon::Mode mode = enable ? (selected ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+                        QPixmap pixmap = icon.pixmap(iconWidth, iconWidth, mode , QIcon::On);
+                        QPixmap drawPixmap = HighLightEffect::bothOrdinaryAndHoverGeneratePixmap(pixmap, option, widget);
+                        QRect iconRect(drawRect.x(), drawRect.y() + (drawRect.height() - iconWidth) / 2, iconWidth, iconWidth);
+                        iconRect = visualRect(menuItem->direction, drawRect, iconRect);
+                        painter->save();
+                        painter->setPen(Qt::NoPen);
+                        painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
+                        painter->drawPixmap(iconRect, drawPixmap);
+                        painter->restore();
                     }
                 }
+            }
 
                 if (menuItem->maxIconWidth != 0 && menuItem->checkType == QStyleOptionMenuItem::NotCheckable) {
                     int smallIconSize = proxy()->pixelMetric(PM_SmallIconSize, option, widget);
@@ -3123,6 +3213,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                         painter->save();
                         painter->setPen(menuItem->palette.color(QPalette::Active, QPalette::Text));
                         painter->setBrush(Qt::NoBrush);
+                        painter->setRenderHint(QPainter::Antialiasing);
                         painter->drawPixmap(iconRect, target);
                         painter->restore();
                     }
@@ -3134,7 +3225,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 } else {
                     drawRect = drawRect.adjusted(4, 0, -4, -0);//去除item边框
                 }
-            }
+
 
             if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu) {
                 int indWidth = proxy()->pixelMetric(PM_IndicatorWidth, option, widget);
@@ -4526,8 +4617,19 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 w += proxy()->pixelMetric(PM_IndicatorWidth, option, widget) + MenuItem_Spacing;
                 newSize.setHeight(qMax(newSize.height(), proxy()->pixelMetric(PM_IndicatorHeight, option, widget)));
 
+                int MenuItem_HMargin = 12 + 4;
+                int MenuItem_VMargin = 3;
+                w +=  MenuItem_HMargin;
+                newSize.setWidth(qMax(w, 152));
+
+                if(newSize.width() > widget->maximumWidth()) {
+                    //size no more than max size.At least set size 1
+                    newSize.setWidth((widget->maximumWidth() - 20 > 1)?widget->maximumWidth() - 20 : 1);
+                }
+
                 newSize.setWidth(qMax(w + sp->MenuItem_MarginWidth, sp->MenuItem_DefaultWidght));
                 newSize.setHeight(qMax(newSize.height() + sp->MenuItem_MarginHeight * 2, sp->MenuItem_DefaultHeight));
+
                 return newSize;
             }
 

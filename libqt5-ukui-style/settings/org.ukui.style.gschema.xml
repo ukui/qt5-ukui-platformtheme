@@ -11,7 +11,7 @@
             <description>Set palette for UKUI desktop environment. Have ukui-default ukui-light ukui-dark</description>
         </key>
         <key type="s" name="icon-theme-name">
-            <default>"ukui-icon-theme-default"</default>
+            <default>"ukui-icon-theme-lightseeking"</default>
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.Have ukui-icon-theme-default ukui-icon-theme-classical </description>
         </key>

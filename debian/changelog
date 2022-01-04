@@ -25,6 +25,92 @@ qt5-ukui-platformtheme (3.1.2-1.0) v101; urgency=medium
 
  -- xibowen <xibowen@kylinos.cn>  Thu, 18 Nov 2021 19:15:28 +0800
 
+qt5-ukui-platformtheme (1.0.6-12.6) v101; urgency=medium
+
+  * 调整透明按钮三态颜色
+  * 麒麟传书加入使用透明按钮队列
+  * 调整checkbox,progressbar,viewitem,QFrame圆角为6
+
+ -- xibowen <xibowen@kylinos.cn>  Fri, 31 Dec 2021 17:56:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-12.5) v101; urgency=medium
+
+  * BUG100013，按照设计稿调整toolbutton圆角为6
+  * 按照设计师要求，调整Windowstext下inactive状态的颜色
+  * tabbar添加分割线协议，应用可以配置属性来调整是否使用tabbar分割线
+  * 修改默认图标主题为寻光
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 29 Dec 2021 17:52:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-12.4) v101; urgency=medium
+
+  * BUG93795,89836,99012修改tabwidget切换动画的问题
+  * BUG98043，调整tabbar鼠标悬停颜色符合设计稿
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 27 Dec 2021 14:52:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-12.3) v101; urgency=medium
+
+  * BUG97140,96897,96220，暂时屏蔽QMessagebox模态同步配置，规避控制面板倒计时QMessagebox显示问题
+  * BUG97875，调整Windowstext调色板色值
+  * 根据设计稿修改控件三态颜色
+  * BUG97929，98043，根据设计稿，修改list、table、tabbar、tree控件的三态颜色样式
+  * 调整tabbar在设置颜色透明度下的动画效果
+  * 根据设计稿，调整tarbbar的最小高度
+
+ -- xibowen <xibowen@kylinos.cn>  Tue, 21 Dec 2021 15:28:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-12.2) v101; urgency=medium
+
+  * 调整UKUI3.1 text disable颜色色值
+  * BUG97700,BUG97680,麒麟影音移除特别列表，单独对麒麟影音添加透明按钮使用判断
+  * 修改三态规范，按照设计要求使用色板混色处理
+  * BUG93773,修改tabbar圆角问题
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 15 Dec 2021 19:00:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-12.1) v101; urgency=medium
+
+  * 依据设计师要求，修改主题框架UKUI3.1调色板
+  * 修稿tabbar鼠标悬停效果样式
+  * BUG96270，修改checkbox使用调色板里的颜色值
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 13 Dec 2021 09:50:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-11.9) v101; urgency=medium
+
+  * 主题框架使用UKUI3.1调色板规范
+  * BUG76681，麒麟影音加入透明按钮列表
+
+ -- xibowen <xibowen@kylinos.cn>  Thu, 09 Dec 2021 09:47:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-11.8) v101; urgency=medium
+
+  * BUG93845,BUG92312，修改lineedit、spinbox与combobox三态符合设计规范
+  * 修改combobox的下拉菜单没有check标识的问题
+  * 修改lineedit、spinbox、combobox与qmenuitem的圆角问题
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 08 Dec 2021 15:47:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-11.7) v101; urgency=medium
+
+  * 修改combobx,editline,spinbox配置调色板后不生效的问题
+  * 修改图标高亮反白使用widget的调色板，而不是qApp的调色板
+  * 修改Qmenu毛玻璃协议配置false时，取消Qmenu的透明度配置
+  * 修改应用配置非模态Qmessgabox不生效的问题
+  * BUG93699，修改toolbar缩进后的图标使用主题库的标准图标
+  * BUG90251，修改tabwidget切换主题后，tab切换会出现分割的问题
+  * BUG93795，修改tabwidget设置透明度切换后，有短暂黑背景的问题
+
+ -- xibowen <xibowen@kylinos.cn>  Tue, 07 Dec 2021 15:35:46 +0800
+
+qt5-ukui-platformtheme (1.0.6-11.6) v101; urgency=medium
+
+  * 修改Qmenu fixsize后导致的显示问题
+  * 同步修改intel修复的主题框架拖动的问题，bug号为#79817 #88959
+
+ -- xibowen <xibowen@kylinos.cn>  Fri, 19 Nov 2021 15:15:28 +0800
+
 qt5-ukui-platformtheme (1.0.6-11.5) v101; urgency=medium
 
   * bug:88670:【控制面板】【必现】125%缩放比1920*1080分辨率情况下，将分辨率修改为最低分辨率1024*768，控制面板闪退
