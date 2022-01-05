@@ -468,7 +468,6 @@ void Qt5UKUIStyle::controlPalette()
 }
 
 
-
 void Qt5UKUIStyle::setThemeColor(QString themeColor, QPalette &palette) const
 {
     if (themeColor == "daybreakBlue") {
@@ -4578,7 +4577,6 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
 
     return Style::subElementRect(element,option,widget);
 }
-
 
 
 // change control Qsize
