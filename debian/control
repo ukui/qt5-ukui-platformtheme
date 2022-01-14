@@ -18,32 +18,6 @@ Build-Depends: debhelper-compat (=12),
                qtchooser,
                qttools5-dev-tools,
                libqt5xdgiconloader-dev,
-                libxcb-xkb-dev,
-                libxcb-render-util0-dev,
-                libxcb-image0-dev,
-                libxcb-icccm4-dev,
-                libxcb-keysyms1-dev,
-                libegl1-mesa-dev,
-                libmtdev-dev,
-                libxkbcommon-x11-dev,
-                libdbus-1-dev,
-                libqt5opengl5-dev,
-                libudev-dev,
-                libxrender-dev,
-                libxi-dev,
-                libsm-dev,
-                libxcb-xinerama0-dev,
-                libfontconfig1-dev,
-                libfreetype6-dev,
-                libglib2.0-dev,
-                libxcb-damage0-dev,
-                libxcb-composite0-dev,
-                libcairo2-dev,
-                libxcb-xinput-dev,
-                libx11-xcb-dev,
-                libxcb-sync-dev,
-                libxcb-randr0-dev,
-                libxcb-util0-dev
 Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
@@ -65,12 +39,6 @@ Description: Qt5 QPA platform theme of UKUI
  animation, etc.
  .
  This package provides a qt5 qpa platform theme plugin.
-
-Package: ukui-qt5xcb-plugin
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Qt platform plugins
- Qt platform plugins for UKUI.
 
 Package: qt5-styles-ukui
 Architecture: any
