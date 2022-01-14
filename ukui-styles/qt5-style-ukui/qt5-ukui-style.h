@@ -157,13 +157,6 @@ private:
 
     void setThemeColor(QString themeColor, QPalette &palette) const;
 
-    void updatePalette();
-    void changePaletteName();
-    void changePaletteType();
-    void controlPalette();
-
-    QGSettings *paletteSettings = nullptr;
-
     // KAbstractStyleParameters
     KAbstractStyleParameters *sp = nullptr;
 

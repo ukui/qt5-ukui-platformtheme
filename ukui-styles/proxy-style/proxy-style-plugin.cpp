@@ -75,14 +75,6 @@ ProxyStylePlugin::ProxyStylePlugin()
                     styleName = "ukui-default";
                 }
 
-                if (styleName == "ukui-default") {
-                    settings->set("paletteName", "ukui-default");
-                } else if (styleName == "ukui-light") {
-                    settings->set("paletteName", "ukui-light");
-                } else if (styleName == "ukui-dark") {
-                    settings->set("paletteName", "ukui-dark");
-                }
-
                 for (auto keys : QStyleFactory::keys()) {
                     if (styleName.toLower() == keys.toLower()) {
                         qApp->setStyle(new QProxyStyle(styleName));
@@ -127,15 +119,6 @@ QStyle *ProxyStylePlugin::create(const QString &key)
                     m_current_style_name = "ukui-dark";
                 else if (m_current_style_name == "ukui-white")
                     m_current_style_name = "ukui-light";
-
-                if (m_current_style_name == "ukui-dark") {
-                    UKUIStyleSettings::globalInstance()->set("paletteName", "ukui-dark");
-                } else if(m_current_style_name == "ukui-light") {
-                    UKUIStyleSettings::globalInstance()->set("paletteName", "ukui-light");
-                } else {
-                    UKUIStyleSettings::globalInstance()->set("paletteName", "ukui-default");
-                }
-
 
                 if (m_current_style_name == "ukui-dark") {
                     qApp->setProperty("preferDark", true);
