@@ -25,6 +25,7 @@
 
 #include <QProxyStyle>
 
+
 class TabWidgetAnimationHelper;
 class ScrollBarAnimationHelper;
 class ButtonAnimationHelper;
@@ -37,7 +38,7 @@ class QDBusInterface;
 class KAbstractStyleParameters;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-#include<private/qfusionstyle_p.h>
+#include <private/qfusionstyle_p.h>
 #define Style QFusionStyle
 #else
 #define Style QProxyStyle
@@ -60,7 +61,9 @@ class Qt5UKUIStyle : public Style
 public:
     explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true, QString type = "fashion");
 
-    const QStringList specialList() const;
+    const QStringList useDarkPaletteList() const;
+    const QStringList useDefaultPaletteList() const;
+    const QStringList useTransparentButtonList() const;
 
     bool shouldBeTransparent(const QWidget *w) const;
 
@@ -119,7 +122,6 @@ public:
                            const QSize &size, const QWidget *widget) const;
 
 protected:
-    const QStringList useDefaultPalette() const;
 
     void realSetWindowSurfaceFormatAlpha(const QWidget *widget) const;
     void realSetMenuTypeToMenu(const QWidget *widget) const;
@@ -147,13 +149,13 @@ private:
 
     bool isUseDarkPalette() const;
 
-    QColor button_Click() const;
-    QColor button_Hover() const;
+    QColor button_Click(const QStyleOption *option) const;
+    QColor button_Hover(const QStyleOption *option) const;
     QColor button_DisableChecked() const;
-    QColor highLight_Click() const;
-    QColor highLight_Hover() const;
-    mutable QColor mHighLightClick;
-    mutable QColor mHighLightHover;
+    QColor closeButton_Click(const QStyleOption *option) const;
+    QColor closeButton_Hover(const QStyleOption *option) const;
+    QColor highLight_Click(const QStyleOption *option) const;
+    QColor highLight_Hover(const QStyleOption *option) const;
 
     void setThemeColor(QString themeColor, QPalette &palette) const;
 

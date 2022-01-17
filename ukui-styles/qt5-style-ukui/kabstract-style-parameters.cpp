@@ -22,23 +22,18 @@
 
 #include "kabstract-style-parameters.h"
 
+extern QColor mixColor(const QColor &c1, const QColor &c2, qreal bias);
+
 KAbstractStyleParameters::KAbstractStyleParameters(QObject *parent)
 {
 
 }
 
-
-
 KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 6;
 
-    HL_Blue_Default = QColor(55, 144, 250);
-    HL_Blue_Hover = QColor(55, 144, 250);
-    HL_Blue_Click = QColor(36, 109, 212);
-
-    ColoseButton_Hover = QColor(243, 34, 45);
-    ColoseButton_Click = QColor(204, 18, 34);
+    ColoseButtonColor = QColor(243, 34, 45);
 
     Menu_Radius = 8;
     MenuItem_Radius = 6;
@@ -48,17 +43,18 @@ KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractSty
 
 QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
 {
+    //ukui-light palette UKUI3.1
     QColor windowText_at(38, 38, 38),
-           windowText_iat(38, 38, 38),
-           windowText_dis(166, 166, 166),
+           windowText_iat(0, 0, 0, 255 * 0.55),
+           windowText_dis(0, 0, 0, 255 * 0.3),
            button_at(230, 230, 230),
            button_iat(230, 230, 230),
            button_dis(233, 233, 233),
            light_at(255, 255, 255),
            light_iat(255, 255, 255),
            light_dis(242, 242, 242),
-           midlight_at(217, 217, 217),
-           midlight_iat(217, 217, 217),
+           midlight_at(218, 218, 218),
+           midlight_iat(218, 218, 218),
            midlight_dis(230, 230, 230),
            dark_at(77, 77, 77),
            dark_iat(77, 77, 77),
@@ -68,10 +64,10 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
            mid_dis(102, 102, 102),
            text_at(38, 38, 38),
            text_iat(38, 38, 38),
-           text_dis(140, 140, 140),
-           brightText_at(89, 89, 89),
-           brightText_iat(89, 89, 89),
-           brightText_dis(77, 77, 77),
+           text_dis(0, 0, 0, 255 * 0.3),
+           brightText_at(0, 0, 0),
+           brightText_iat(0, 0, 0),
+           brightText_dis(0, 0, 0),
            buttonText_at(38, 38, 38),
            buttonText_iat(38, 38, 38),
            buttonText_dis(179, 179, 179),
@@ -81,12 +77,15 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
            window_at(245, 245, 245),
            window_iat(237, 237, 237),
            window_dis(230, 230, 230),
-           shadow_at(214, 214, 214),
-           shadow_iat(214, 214, 214),
-           shadow_dis(201, 201, 201),
+           shadow_at(0, 0, 0, 255 * 0.16),
+           shadow_iat(0, 0, 0, 255 * 0.16),
+           shadow_dis(0, 0, 0, 255 * 0.21),
+//           shadow_at(214, 214, 214),
+//           shadow_iat(214, 214, 214),
+//           shadow_dis(201, 201, 201),
            highLight_at(55, 144, 250),
            highLight_iat(55, 144, 250),
-           hightight_dis(233, 233, 233),
+           highLight_dis(233, 233, 233),
            highLightText_at(255, 255, 255),
            highLightText_iat(255, 255, 255),
            highLightText_dis(179, 179, 179),
@@ -96,33 +95,48 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
            linkVisited_at(114, 46, 209),
            linkVisited_iat(114, 46, 209),
            linkVisited_dis(114, 46, 209),
-           alternateBase_at(244, 245, 245),
+           alternateBase_at(245, 245, 245),
+           alternateBase_iat(245, 245, 245),
+           alternateBase_dis(245, 245, 245),
            noRale_at(240, 240, 240),
            noRole_iat(240, 240, 240),
            noRole_dis(217, 217, 217),
-           toolTipBase(255, 255, 255),
-           toolTipText(38, 38, 38),
-           placeholderText(38, 38, 38);
+           toolTipBase_at(255, 255, 255),
+           toolTipBase_iat(255, 255, 255),
+           toolTipBase_dis(255, 255, 255),
+           toolTipText_at(38, 38, 38),
+           toolTipText_iat(38, 38, 38),
+           toolTipText_dis(38, 38, 38),
+           placeholderText_at(0, 0, 0, 255 * 0.35),
+           placeholderText_iat(0, 0, 0, 255 * 0.35),
+           placeholderText_dis(0, 0, 0, 255 * 0.3);
 
+    //ukui-dark
     if (isDark) {
         windowText_at.setRgb(217, 217, 217);
-        windowText_iat.setRgb(217, 217, 217);
-        windowText_dis.setRgb(77, 77, 77);
+        windowText_iat.setRgb(255, 255, 255, 255 * 0.55);
+        windowText_dis.setRgb(255, 255, 255, 255 * 0.3);
         button_at.setRgb(55, 55, 59);
         button_iat.setRgb(55, 55, 59);
         button_dis.setRgb(46, 46, 48);
-        midlight_at.setRgb(77, 77, 77);
-        midlight_iat.setRgb(77, 77, 77);
-        midlight_dis.setRgb(64, 64, 64);
+        light_at.setRgb(255, 255, 255),
+        light_iat.setRgb(255, 255, 255),
+        light_dis.setRgb(242, 242, 242),
+        midlight_at.setRgb(95, 95, 98);
+        midlight_iat.setRgb(95, 95, 98);
+        midlight_dis.setRgb(79, 79, 82);
         dark_at.setRgb(38, 38, 38);
         dark_iat.setRgb(38, 38, 38);
         dark_dis.setRgb(26, 26, 26);
+        mid_at.setRgb(115, 115, 115);
+        mid_iat.setRgb(115, 115, 115);
+        mid_dis.setRgb(102, 102, 102);
         text_at.setRgb(217, 217, 217);
         text_iat.setRgb(217, 217, 217);
-        text_dis.setRgb(77, 77, 77);
+        text_dis.setRgb(255, 255, 255, 255 * 0.3);
         brightText_at.setRgb(255, 255, 255);
         brightText_iat.setRgb(255, 255, 255);
-        brightText_dis.setRgb(77, 77, 77);
+        brightText_dis.setRgb(255, 255, 255);
         buttonText_at.setRgb(217, 217, 217);
         buttonText_iat.setRgb(217, 217, 217);
         buttonText_dis.setRgb(76, 76, 79);
@@ -132,15 +146,39 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
         window_at.setRgb(35, 36, 38);
         window_iat.setRgb(26, 26, 26);
         window_dis.setRgb(18, 18, 18);
-        hightight_dis.setRgb(46, 46, 48);
+        shadow_at.setRgb(0, 0, 0, 255 * 0.16),
+        shadow_iat.setRgb(0, 0, 0, 255 * 0.16),
+        shadow_dis.setRgb(0, 0, 0, 255 * 0.21),
+//        shadow_at.setRgb(214, 214, 214);
+//        shadow_iat.setRgb(214, 214, 214);
+//        shadow_dis.setRgb(201, 201, 201);
+        highLight_at.setRgb(55, 144, 250);
+        highLight_iat.setRgb(55, 144, 250);
+        highLight_dis.setRgb(46, 46, 46);
+        highLightText_at.setRgb(255, 255, 255);
+        highLightText_iat.setRgb(255, 255, 255);
         highLightText_dis.setRgb(77, 77, 77);
+        link_at.setRgb(55, 144, 250);
+        link_iat.setRgb(55, 144, 250);
+        link_dis.setRgb(55, 144, 250);
+        linkVisited_at.setRgb(114, 46, 209);
+        linkVisited_iat.setRgb(114, 46, 209);
+        linkVisited_dis.setRgb(114, 46, 209);
         alternateBase_at.setRgb(38, 38, 38);
+        alternateBase_iat.setRgb(38, 38, 38);
+        alternateBase_dis.setRgb(38, 38, 38);
         noRale_at.setRgb(51, 51, 51);
         noRole_iat.setRgb(51, 51, 51);
-        noRole_dis.setRgb(60, 60, 64);
-        toolTipBase.setRgb(38, 38, 38);
-        toolTipText.setRgb(217, 217, 217);
-        placeholderText.setRgb(166, 166, 166);
+        noRole_dis.setRgb(60, 60, 60);
+        toolTipBase_at.setRgb(38, 38, 38);
+        toolTipBase_iat.setRgb(38, 38, 38);
+        toolTipBase_dis.setRgb(38, 38, 38);
+        toolTipText_at.setRgb(217, 217, 217);
+        toolTipText_iat.setRgb(217, 217, 217);
+        toolTipText_dis.setRgb(217, 217, 217);
+        placeholderText_at.setRgb(255, 255, 255, 255 * 0.35);
+        placeholderText_iat.setRgb(255, 255, 255, 255 * 0.35);
+        placeholderText_dis.setRgb(255, 255, 255, 255 * 0.3);
     }
 
     palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
@@ -193,7 +231,7 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
 
     palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
     palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
+    palette.setColor(QPalette::Disabled, QPalette::Highlight, highLight_dis);
 
     palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
     palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
@@ -207,56 +245,30 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
     palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
     palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
 
-    palette.setColor(QPalette::AlternateBase, alternateBase_at);
+    palette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
+    palette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
 
     palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
     palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
     palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
 
-    palette.setColor(QPalette::ToolTipBase, toolTipBase);
+    palette.setColor(QPalette::Active, QPalette::ToolTipBase, toolTipBase_at);
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, toolTipBase_iat);
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, toolTipBase_dis);
 
-    palette.setColor(QPalette::ToolTipText, toolTipText);
+    palette.setColor(QPalette::Active, QPalette::ToolTipText, toolTipText_at);
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipText, toolTipText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipText, toolTipText_dis);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setColor(QPalette::PlaceholderText, placeholderText);
+    palette.setColor(QPalette::Active, QPalette::PlaceholderText, placeholderText_at);
+    palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholderText_iat);
+    palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, placeholderText_dis);
 #endif
 
     return palette;
 }
-
-
-
-QColor KFashionStyleParameters::button_default(bool isDark)
-{
-    if (isDark) {
-        return QColor(55, 55, 59);
-    } else {
-        return QColor(230, 230, 230);
-    }
-}
-
-
-
-QColor KFashionStyleParameters::button_hover(bool isDark)
-{
-    if (isDark) {
-        return QColor(55, 55, 59);
-    } else {
-        return QColor(230, 230, 230);
-    }
-}
-
-
-
-QColor KFashionStyleParameters::button_click(bool isDark)
-{
-    if (isDark) {
-        return QColor(75, 75, 79);
-    } else {
-        return QColor(217, 217, 217);
-    }
-}
-
 
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)
@@ -269,18 +281,11 @@ QColor KFashionStyleParameters::radiobutton_default(bool isDark)
 }
 
 
-
-
-
 KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 4;
-    HL_Blue_Default = QColor(61, 107, 229);
-    HL_Blue_Hover = QColor(107, 142, 235);
-    HL_Blue_Click = QColor(50, 87, 202);
 
-    ColoseButton_Hover = QColor("#F86458");
-    ColoseButton_Click = QColor("#E44C50");
+    ColoseButtonColor = QColor("#F86458");
 
     Menu_Radius = 4;
     MenuItem_Radius = 2;
@@ -488,41 +493,6 @@ QPalette KDefaultStyleParameters::setPalette(QPalette &palette, bool isDark)
 
 
 
-
-QColor KDefaultStyleParameters::button_default(bool isDark)
-{
-    if (isDark) {
-        return QColor(61, 65, 81);
-    } else {
-        return QColor(204, 208, 218);
-    }
-}
-
-
-
-QColor KDefaultStyleParameters::button_hover(bool isDark)
-{
-    if (isDark) {
-        return QColor(61, 65, 81);
-    } else {
-        return QColor(204, 208, 218);
-    }
-}
-
-
-
-QColor KDefaultStyleParameters::button_click(bool isDark)
-{
-    if (isDark) {
-        return QColor(72, 77, 97);
-    } else {
-        return QColor(193, 198, 209);
-    }
-}
-
-
-
-
 QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 {
     if (isDark) {
@@ -535,13 +505,11 @@ QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 
 
 
-
 KClassicalStyleParameters::KClassicalStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
     radius = 0;
     CheckBox_Radius = 0;
 }
-
 
 
 
@@ -721,39 +689,6 @@ QPalette KClassicalStyleParameters::setPalette(QPalette &palette, bool isDark)
 #endif
 
     return palette;
-}
-
-
-
-QColor KClassicalStyleParameters::button_default(bool isDark)
-{
-    if (isDark) {
-        return QColor(55, 55, 59);
-    } else {
-        return QColor(230, 230, 230);
-    }
-}
-
-
-
-QColor KClassicalStyleParameters::button_hover(bool isDark)
-{
-    if (isDark) {
-        return QColor(55, 55, 59);
-    } else {
-        return QColor(230, 230, 230);
-    }
-}
-
-
-
-QColor KClassicalStyleParameters::button_click(bool isDark)
-{
-    if (isDark) {
-        return QColor(75, 75, 79);
-    } else {
-        return QColor(217, 217, 217);
-    }
 }
 
 

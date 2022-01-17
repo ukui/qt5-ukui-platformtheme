@@ -25,7 +25,7 @@
 
 #include <QObject>
 #include <QPalette>
-
+#include <QStyleOption>
 
 
 class KAbstractStyleParameters
@@ -36,14 +36,7 @@ public:
     // palette
     virtual QPalette setPalette(QPalette &palette, bool isDark) = 0;
 
-    // palette::HighLight
-    QColor HL_Blue_Default = QColor(55, 144, 250);
-    QColor HL_Blue_Hover = QColor(55, 144, 250);
-    QColor HL_Blue_Click = QColor(36, 109, 212);
     // palette::Button
-    virtual QColor button_default(bool isDark) = 0;
-    virtual QColor button_hover(bool isDark) = 0;
-    virtual QColor button_click(bool isDark) = 0;
     virtual QColor radiobutton_default(bool isDark) = 0;
 
     // radius
@@ -64,8 +57,7 @@ public:
     int Button_DefaultHeight = 36;
     int ToolButton_DefaultWidth = 60;
     int IconButton_DefaultWidth = 36;
-    QColor ColoseButton_Hover = QColor(243, 34, 45);
-    QColor ColoseButton_Click = QColor(204, 18, 34);
+    QColor ColoseButtonColor = QColor(243, 34, 45);
 
     // menu
     int Menu_MarginHeight = 4 + 5;
@@ -136,9 +128,6 @@ public:
 
     QPalette setPalette(QPalette &palette, bool isDark) override;
 
-    QColor button_default(bool isDark) override;
-    QColor button_hover(bool isDark) override;
-    QColor button_click(bool isDark) override;
     QColor radiobutton_default(bool isDark) override;
 };
 
@@ -151,9 +140,6 @@ public:
 
     QPalette setPalette(QPalette &palette, bool isDark) override;
 
-    QColor button_default(bool isDark) override;
-    QColor button_hover(bool isDark) override;
-    QColor button_click(bool isDark) override;
     QColor radiobutton_default(bool isDark) override;
 };
 
@@ -166,9 +152,6 @@ public:
 
     QPalette setPalette(QPalette &palette, bool isDark) override;
 
-    QColor button_default(bool isDark) override;
-    QColor button_hover(bool isDark) override;
-    QColor button_click(bool isDark) override;
     QColor radiobutton_default(bool isDark) override;
 };
 
