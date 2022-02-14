@@ -1,3 +1,13 @@
+qt5-ukui-platformtheme (3.1.2-1.5) jammy; urgency=medium
+
+  * 改动：
+    BUG号：95779，按照3.1设计稿修改button按钮样式
+    需求号：55234,55232,55243,55240，修改tree、tabs、table、list控件样式
+    其他改动：主题框架去除xcb插件文件，同步SP2主题框架调色板
+    影响域：桌面全局所有跟随主题的应用，主要为使用了按钮，tree、tabs、table、list控件的应用
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 14 Feb 2022 16:22:08 +0800
+
 qt5-ukui-platformtheme (3.1.2-1.4) v101; urgency=medium
 
   * 同步SP2代码,并进行UKUI3.1相关适配.
