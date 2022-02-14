@@ -1430,14 +1430,14 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 path.moveTo(width / 4 + checkbox->rect.left(), heigth / 2 + checkbox->rect.top());
                 path.lineTo(width * 0.45 + checkbox->rect.left(), heigth * 3 / 4 + checkbox->rect.top());
                 path.lineTo(width * 3 / 4 + checkbox->rect.left(), heigth / 4 + checkbox->rect.top());
-            } else if (noChange){
+            } else if (noChange) {
                 path.moveTo(rect.left() + width / 4, rect.center().y());
                 path.lineTo(rect.right() - width / 4 , rect.center().y());
             }
 
             painter->save();
             painter->setClipRect(rect);
-            painter->setRenderHint(QPainter::Antialiasing,true);
+            painter->setRenderHint(QPainter::Antialiasing, true);
             if (enable) {
                 if (on | noChange) {
                     if (sunKen) {
@@ -1463,16 +1463,16 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                         painter->setBrush(button_Click(option));
                     } else if (mouseOver) {
                         painter->setPen(sp->radiobutton_default(useDarkPalette));
-                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Button));
+                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Base));
                     } else {
                         painter->setPen(sp->radiobutton_default(useDarkPalette));
-                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Button));
+                        painter->setBrush(checkbox->palette.brush(QPalette::Active, QPalette::Base));
                     }
                     painter->drawRoundedRect(rect, sp->CheckBox_Radius, sp->CheckBox_Radius);
                 }
             } else {
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(checkbox->palette.brush(QPalette::Disabled, QPalette::Button));
+                painter->setPen(sp->radiobutton_default(useDarkPalette));
+                painter->setBrush(checkbox->palette.brush(QPalette::Disabled, QPalette::Base));
                 painter->drawRoundedRect(rect, sp->CheckBox_Radius, sp->CheckBox_Radius);
                 if (on | noChange) {
                     painter->setPen(QPen(checkbox->palette.brush(QPalette::Disabled, QPalette::ButtonText), 2,
@@ -1661,11 +1661,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->setBrush(highLight_Click(option));
                     painter->drawPath(path);
                 } else if (hover) {
-                    if (qobject_cast<const QTableView *>(widget) || qobject_cast<const QTableWidget *>(widget)) {
-                        painter->setBrush(highLight_Hover(option));
-                    } else {
-                        painter->setBrush(vi->palette.brush(QPalette::Disabled, QPalette::Midlight));
-                    }
+                    painter->setBrush(vi->palette.brush(QPalette::Disabled, QPalette::Midlight));
                     painter->drawPath(path);
                 }
                 painter->restore();
