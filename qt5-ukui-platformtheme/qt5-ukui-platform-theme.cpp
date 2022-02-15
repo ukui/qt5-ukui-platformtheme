@@ -29,8 +29,8 @@
 #include <QFontDatabase>
 #include <QApplication>
 #include <QTimer>
-
-#include <qt5xdgiconloader/3.4.0/private/xdgiconloader/xdgiconloader_p.h>
+#include <QPluginLoader>
+#include <QIconEnginePlugin>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QFileInfo>
@@ -181,7 +181,15 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 
 QIconEngine *Qt5UKUIPlatformTheme::createIconEngine(const QString &iconName) const
 {
-    return new XdgIconLoaderEngine(iconName);
+    QPluginLoader l(XDG_ICON_ENGINE_PATH);
+    if (l.instance()) {
+        auto p = dynamic_cast<QIconEnginePlugin *>(l.instance());
+        auto engine = p->create();
+        qDebug()<<engine;
+    } else {
+        return QPlatformTheme::createIconEngine(iconName);
+    }
+    //return new XdgIconLoaderEngine(iconName);
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
