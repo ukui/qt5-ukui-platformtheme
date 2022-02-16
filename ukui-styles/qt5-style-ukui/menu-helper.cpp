@@ -1,5 +1,6 @@
 #include <KWindowEffects>
 #include <QApplication>
+#include <QPainterPath>
 
 #include "qt5-ukui-style.h"
 #include "ukui-style-settings.h"

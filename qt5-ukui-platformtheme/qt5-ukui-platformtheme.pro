@@ -21,6 +21,9 @@ include(../libqt5-ukui-style/libqt5-ukui-style.pri)
 
 DEFINES += QT5UKUIPLATFORMTHEME_LIBRARY
 
+XDG_ICON_ENGINE = $$[QT_INSTALL_PLUGINS]/iconengines/libQt5XdgIconPlugin.so
+DEFINES += XDG_ICON_ENGINE_PATH='\\"$${XDG_ICON_ENGINE}\\"'
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the

@@ -29,6 +29,7 @@ Architecture: any
 Depends: libqt5-ukui-style1,
          qt5-styles-ukui,
          qt5-gesture-extensions,
+         libqt5xdgiconloader3,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Qt5 QPA platform theme of UKUI
