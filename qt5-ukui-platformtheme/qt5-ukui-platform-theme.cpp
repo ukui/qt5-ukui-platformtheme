@@ -185,7 +185,7 @@ QIconEngine *Qt5UKUIPlatformTheme::createIconEngine(const QString &iconName) con
     if (l.instance()) {
         auto p = dynamic_cast<QIconEnginePlugin *>(l.instance());
         auto engine = p->create();
-        qDebug()<<engine;
+        return engine;
     } else {
         return QPlatformTheme::createIconEngine(iconName);
     }
