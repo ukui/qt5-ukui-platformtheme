@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Kylin Team <team+kylin@tracker.debian.org>
 Uploaders: handsome_feng <jianfengli@ubuntukylin.com>
-Build-Depends: debhelper-compat (=12),
+Build-Depends: debhelper-compat (= 13),
                pkg-kde-tools,
                libglib2.0-dev,
                libqt5x11extras5-dev,
@@ -18,7 +18,7 @@ Build-Depends: debhelper-compat (=12),
                qtchooser,
                qttools5-dev-tools,
                libqt5xdgiconloader-dev
-Standards-Version: 4.5.1
+Standards-Version: 4.6.0.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
 Vcs-Git: https://github.com/ukui/qt5-ukui-platformtheme.git
