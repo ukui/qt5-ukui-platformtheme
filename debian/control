@@ -17,7 +17,8 @@ Build-Depends: debhelper-compat (= 13),
                qtbase5-private-dev,
                qtchooser,
                qttools5-dev-tools,
-               libqt5xdgiconloader-dev
+               libqt5xdgiconloader-dev,
+               qtbase5-private-dev
 Standards-Version: 4.6.0.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
@@ -28,7 +29,6 @@ Package: qt5-ukui-platformtheme
 Architecture: any
 Depends: libqt5-ukui-style1,
          qt5-styles-ukui,
-         libqt5xdgiconloader3,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Qt5 QPA platform theme of UKUI
