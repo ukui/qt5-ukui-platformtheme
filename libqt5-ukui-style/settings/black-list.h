@@ -27,14 +27,16 @@
 
 static const QStringList blackAppList() {
     QStringList l;
-    //l<<"ukui-control-center";
+//  l<<"ukui-control-center";
     l<<"ubuntu-kylin-software-center.py";
-//    l<<"kylin-burner";
+//  l<<"kylin-burner";
     l<<"assistant";
     l<<"sogouIme-configtool";
     l<<"Ime Setting";
-//    l<<"kylin-user-guide";
+//  l<<"kylin-user-guide";
     l<<"biometric-authentication";
+    l<<"qtcreator";
+
     return l;
 }
 
