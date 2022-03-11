@@ -1,4 +1,14 @@
-qt5-ukui-platformtheme (3.1.2-1.5.2) jammy; urgency=medium
+qt5-ukui-platformtheme (3.1.2-1.5.3) v101; urgency=medium
+
+  * 改动：
+    BUG号：无
+    需求号：56598，修改平台对话框Qmessagebox样式
+    其他改动：无
+    影响域：所有使用到的QMessagebox的应用
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 16 Feb 2022 09:40:48 +0800
+
+qt5-ukui-platformtheme (3.1.2-1.5.2) v101; urgency=medium
 
   * 改动：
     BUG号：无
@@ -8,7 +18,7 @@ qt5-ukui-platformtheme (3.1.2-1.5.2) jammy; urgency=medium
 
  -- xibowen <xibowen@kylinos.cn>  Wed, 16 Feb 2022 09:39:48 +0800
 
-qt5-ukui-platformtheme (3.1.2-1.5.1) jammy; urgency=medium
+qt5-ukui-platformtheme (3.1.2-1.5.1) v101; urgency=medium
 
   * 改动：
     BUG号：无
@@ -18,7 +28,7 @@ qt5-ukui-platformtheme (3.1.2-1.5.1) jammy; urgency=medium
 
  -- xibowen <xibowen@kylinos.cn>  Mon, 14 Feb 2022 16:23:08 +0800
 
-qt5-ukui-platformtheme (3.1.2-1.5) jammy; urgency=medium
+qt5-ukui-platformtheme (3.1.2-1.5) v101; urgency=medium
 
   * 改动：
     BUG号：95779，按照3.1设计稿修改button按钮样式
