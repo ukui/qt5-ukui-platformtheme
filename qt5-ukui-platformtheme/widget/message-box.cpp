@@ -1324,6 +1324,7 @@ bool MessageBoxHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality wind
     foreach (QAbstractButton *ab, mMessageBox->buttons()) {
         if (QPushButton *pb = qobject_cast<QPushButton *>(ab)) {
             if (pb->isDefault()) {
+                pb->setProperty("isImportant", true);
                 mMessageBox->setDefaultButton(pb);
             }
         }
