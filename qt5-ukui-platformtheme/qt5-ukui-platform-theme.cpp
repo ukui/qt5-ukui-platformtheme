@@ -80,9 +80,10 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 QString icontheme = settings->get("icon-theme-name").toString();
                 if (icontheme == "ukui") {
                     icontheme = "ukui-icon-theme-default";
-                }
-                else if (icontheme == "ukui-classical") {
+                } else if (icontheme == "ukui-classical") {
                     icontheme = "ukui-icon-theme-classical";
+                } else if (icontheme == "ukui-fashion") {
+                    icontheme = "ukui-icon-theme-fashion";
                 }
 
                 QIcon::setThemeName(icontheme);
