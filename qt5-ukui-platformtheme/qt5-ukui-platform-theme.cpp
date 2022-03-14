@@ -44,6 +44,8 @@
 #include <QDebug>
 #include <private/qgenericunixthemes_p.h>
 
+#include <QQuickStyle>
+
 #include "widget/message-box.h"
 
 
@@ -117,6 +119,11 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
                 }
             }
         });
+    }
+
+    // add qqc2 style
+    if (QFile::exists(QString("%1/kf5/kirigami/org.kylin.style.so").arg(QT_PLUGIN_INSTALL_DIRS))) {
+        QQuickStyle::setStyle("org.kylin.style");
     }
 }
 

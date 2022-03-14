@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets dbus gui-private widgets-private x11extras
+QT       += widgets dbus gui-private widgets-private x11extras quick quickcontrols2
 
 greaterThan(QT_MAJOR_VERSION, 5)|greaterThan(QT_MINOR_VERSION, 7): \
     QT += theme_support-private
@@ -23,6 +23,9 @@ DEFINES += QT5UKUIPLATFORMTHEME_LIBRARY
 
 XDG_ICON_ENGINE = $$[QT_INSTALL_PLUGINS]/iconengines/libQt5XdgIconPlugin.so
 DEFINES += XDG_ICON_ENGINE_PATH='\\"$${XDG_ICON_ENGINE}\\"'
+
+QT_PLUGIN_INSTALL_DIRS = $$[QT_INSTALL_PLUGINS]
+DEFINES += QT_PLUGIN_INSTALL_DIRS='\\"$${QT_PLUGIN_INSTALL_DIRS}\\"'
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
