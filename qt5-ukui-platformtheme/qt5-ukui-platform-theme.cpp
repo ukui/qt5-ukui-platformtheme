@@ -78,13 +78,6 @@ Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
         connect(settings, &QGSettings::changed, this, [=](const QString &key){
             if (key == "iconThemeName") {
                 QString icontheme = settings->get("icon-theme-name").toString();
-                if (icontheme == "ukui") {
-                    icontheme = "ukui-icon-theme-default";
-                } else if (icontheme == "ukui-classical") {
-                    icontheme = "ukui-icon-theme-classical";
-                } else if (icontheme == "ukui-fashion") {
-                    icontheme = "ukui-icon-theme-fashion";
-                }
 
                 QIcon::setThemeName(icontheme);
 
@@ -167,12 +160,7 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             if (auto settings = UKUIStyleSettings::globalInstance()) {
                 QString icontheme = settings->get("icon-theme-name").toString();
-                if (icontheme == "ukui") {
-                    return QStringList()<<"ukui-icon-theme-default";
-                }
-                else if (icontheme == "ukui-classical") {
-                    return QStringList()<<"ukui-icon-theme-classical";
-                }
+
                 return QStringList()<<icontheme;
             }
         }
@@ -192,16 +180,20 @@ QVariant Qt5UKUIPlatformTheme::themeHint(ThemeHint hint) const
 
 QIconEngine *Qt5UKUIPlatformTheme::createIconEngine(const QString &iconName) const
 {
-    QPluginLoader l(XDG_ICON_ENGINE_PATH);
-    if (l.instance()) {
-        auto p = dynamic_cast<QIconEnginePlugin *>(l.instance());
-        auto engine = p->create();
-//        qDebug()<<engine;
-        return engine;
-    } else {
-        return QPlatformTheme::createIconEngine(iconName);
-    }
-    //return new XdgIconLoaderEngine(iconName);
+//    QPluginLoader l(XDG_ICON_ENGINE_PATH);
+//    if (l.instance()) {
+//        auto p = dynamic_cast<QIconEnginePlugin *>(l.instance());
+//        auto engine = p->create();
+//        qDebug()<<"use my engine";
+//        return engine;
+//    } else {
+//        qDebug()<<"use common engine";
+//        return QPlatformTheme::createIconEngine(iconName);
+//    }
+
+//    //return new XdgIconLoaderEngine(iconName);
+
+    return QPlatformTheme::createIconEngine(iconName);
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
