@@ -1,3 +1,13 @@
+qt5-ukui-platformtheme (3.1.3-1~0315) jammy; urgency=medium
+
+  * 改动：
+    BUG号：无
+    需求号：无
+    其他改：添加qtdeclarative5-dev依赖,添加qml主题加载模块
+    影响域：主题框架编译
+
+ -- xibowen <xibowen@kylinos.cn>  Tue, 15 Apr 2022 11:44:48 +0800
+
 qt5-ukui-platformtheme (3.1.3-1~0314) jammy; urgency=medium
 
   * 改动：
