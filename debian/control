@@ -18,7 +18,8 @@ Build-Depends: debhelper-compat (=12),
                qtchooser,
                qttools5-dev-tools,
                libqt5xdgiconloader-dev,
-               qtquickcontrols2-5-dev
+               qtquickcontrols2-5-dev,
+               qtdeclarative5-dev
 Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Homepage: https://www.ukui.org
