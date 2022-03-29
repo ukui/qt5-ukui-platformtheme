@@ -54,7 +54,7 @@ using namespace UKUI::TabWidget;
  */
 DefaultSlideAnimator::DefaultSlideAnimator(QObject *parent) : QVariantAnimation (parent)
 {
-    setDuration(400);
+    setDuration(200);
     setEasingCurve(QEasingCurve::OutQuad);
     setStartValue(0.0);
     setEndValue(1.0);
