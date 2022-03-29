@@ -75,15 +75,18 @@ ProxyStylePlugin::ProxyStylePlugin()
                     styleName = "ukui-default";
                 }
 
-                for (auto keys : QStyleFactory::keys()) {
-                    if (styleName.toLower() == keys.toLower()) {
-                        qApp->setStyle(new QProxyStyle(styleName));
-                        return;
-                    }
-                }
-
-                qApp->setStyle(new QProxyStyle("fusion"));
+                qApp->setStyle(new ProxyStyle(styleName));
                 return;
+
+//                for (auto keys : QStyleFactory::keys()) {
+//                    if (styleName.toLower() == keys.toLower()) {
+//                        qApp->setStyle(new QProxyStyle(styleName));
+//                        return;
+//                    }
+//                }
+
+//                qApp->setStyle(new QProxyStyle("fusion"));
+//                return;
             }
 
             if (key == "systemPalette") {
