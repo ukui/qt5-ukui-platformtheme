@@ -1,3 +1,13 @@
+qt5-ukui-platformtheme (3.1.3-1~0406) jammy; urgency=medium
+
+  * 改动：
+    BUG号：98045，96922，96915
+    需求号：无
+    其他改：修改combobox下拉框与QFrame圆角为8
+    影响域：combobox下拉框样式
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 06 Apr 2022 11:10:43 +0800
+
 qt5-ukui-platformtheme (3.1.3-1~0329) jammy; urgency=medium
 
   * 改动：
