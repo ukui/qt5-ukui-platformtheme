@@ -61,7 +61,7 @@ public:
 
     // menu
     int Menu_MarginHeight = 4 + 5;
-    int Menu_Combobox_Popup_MarginHeight = 6 - 1;
+    int Menu_Combobox_Popup_MarginHeight = 5;
     int Menu_MarginWidth = 4 + 5;
     int Menu_MarginPanelWidth = 0;
     int Menu_Radius = 8;

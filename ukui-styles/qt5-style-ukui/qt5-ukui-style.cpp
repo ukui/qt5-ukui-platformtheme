@@ -3637,7 +3637,6 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_MenuVMargin:
     {
         if (qobject_cast<const QComboBox*>(widget)) {
-            //conbobox pupop Margin size has default 1px
             return sp->Menu_Combobox_Popup_MarginHeight;
         }
         return sp->Menu_MarginHeight;
