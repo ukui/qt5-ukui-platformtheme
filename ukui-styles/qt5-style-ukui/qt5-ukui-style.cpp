@@ -643,7 +643,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (qobject_cast<const QFrame*>(widget)) {
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+            painter->setBrush(option->palette.color(QPalette::Active, QPalette::Base).lighter(300));
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->drawRoundedRect(option->rect, sp->Menu_Radius, sp->Menu_Radius);
             painter->restore();
@@ -3032,7 +3032,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
             if (enable && isComboBox) {
                 painter->save();
                 painter->setPen(Qt::NoPen);
-                painter->setBrush(menuItem->palette.brush(QPalette::Active, QPalette::Base));
+                painter->setBrush(menuItem->palette.color(QPalette::Active, QPalette::Base).lighter(300));
                 painter->drawRect(drawRect);
                 painter->restore();
             }
