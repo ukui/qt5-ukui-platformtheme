@@ -154,6 +154,8 @@ private:
     QColor button_DisableChecked() const;
     QColor closeButton_Click(const QStyleOption *option) const;
     QColor closeButton_Hover(const QStyleOption *option) const;
+    QColor transparentButton_Click(const QStyleOption *option) const;
+    QColor transparentButton_Hover(const QStyleOption *option) const;
     QColor highLight_Click(const QStyleOption *option) const;
     QColor highLight_Hover(const QStyleOption *option) const;
 

@@ -320,6 +320,10 @@ QColor Qt5UKUIStyle::button_Click(const QStyleOption *option) const
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
+    if (isUseDarkPalette()) {
+        return mixColor(button, mix, 0.05);
+    }
+
     return mixColor(button, mix, 0.2);
 }
 
@@ -330,14 +334,18 @@ QColor Qt5UKUIStyle::button_Hover(const QStyleOption *option) const
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
-    return mixColor(button, mix, 0.1);
+    if (isUseDarkPalette()) {
+        return mixColor(button, mix, 0.2);
+    }
+
+    return mixColor(button, mix, 0.05);
 }
 
 
 
 QColor Qt5UKUIStyle::button_DisableChecked() const
 {
-    if (!useDefaultPaletteList().contains(qAppName()) && (m_drak_palette || (m_default_palette && useDarkPaletteList().contains(qAppName())))) {
+    if (isUseDarkPalette()) {
         return QColor(61, 61, 64);
     } else {
         return QColor(224, 224, 224);
@@ -350,6 +358,10 @@ QColor Qt5UKUIStyle::closeButton_Click(const QStyleOption *option) const
     QColor button = sp->ColoseButtonColor;
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
+    if (isUseDarkPalette()) {
+        return mixColor(button, mix, 0.05);
+    }
+
     return mixColor(button, mix, 0.2);
 }
 
@@ -359,7 +371,38 @@ QColor Qt5UKUIStyle::closeButton_Hover(const QStyleOption *option) const
     QColor button = sp->ColoseButtonColor;
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
-    return mixColor(button, mix, 0.1);
+    if (isUseDarkPalette()) {
+        return mixColor(button, mix, 0.2);
+    }
+
+    return mixColor(button, mix, 0.05);
+}
+
+
+QColor Qt5UKUIStyle::transparentButton_Click(const QStyleOption *option) const
+{
+    QColor button = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (isUseDarkPalette()) {
+        button.setAlphaF(0.15);
+    } else {
+        button.setAlphaF(0.28);
+    }
+
+    return button;
+}
+
+QColor Qt5UKUIStyle::transparentButton_Hover(const QStyleOption *option) const
+{
+    QColor button = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (isUseDarkPalette()) {
+        button.setAlphaF(0.28);
+    } else {
+        button.setAlphaF(0.15);
+    }
+
+    return button;
 }
 
 
@@ -367,6 +410,10 @@ QColor Qt5UKUIStyle::highLight_Click(const QStyleOption *option) const
 {
     QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    if (isUseDarkPalette()) {
+        return mixColor(highlight, mix, 0.05);
+    }
 
     return mixColor(highlight, mix, 0.2);
 }
@@ -378,7 +425,11 @@ QColor Qt5UKUIStyle::highLight_Hover(const QStyleOption *option) const
     QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
     QColor mix    = option->palette.color(QPalette::Active, QPalette::BrightText);
 
-    return mixColor(highlight, mix, 0.1);
+    if (isUseDarkPalette()) {
+        return mixColor(highlight, mix, 0.2);
+    }
+
+    return mixColor(highlight, mix, 0.05);
 }
 
 
@@ -751,9 +802,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     if (isWindowColoseButton) {
                         painter->setBrush(closeButton_Click(option));
                     } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                        QColor color = button->palette.color(QPalette::BrightText);
-                        color.setAlphaF(0.28);
-                        painter->setBrush(color);
+                        painter->setBrush(transparentButton_Click(option));
                     } else {
                         if (isImportant) {
                             painter->setBrush(highLight_Click(option));
@@ -767,9 +816,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     if (isWindowColoseButton) {
                         painter->setBrush(closeButton_Hover(option));
                     } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                        QColor color = button->palette.color(QPalette::BrightText);
-                        color.setAlphaF(0.15);
-                        painter->setBrush(color);
+                        painter->setBrush(transparentButton_Hover(option));
                     } else {
                         if (isImportant) {
                             painter->setBrush(highLight_Hover(option));
@@ -806,10 +853,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     hoverColor = closeButton_Hover(option);
                     sunkenColor = closeButton_Click(option);
                 } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                    hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
-                    hoverColor.setAlphaF(0.15);
-                    sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
-                    sunkenColor.setAlphaF(0.28);
+                    hoverColor = transparentButton_Hover(option);
+                    sunkenColor = transparentButton_Click(option);
                 } else {
                     if (isImportant) {
                         hoverColor = highLight_Hover(option);
@@ -850,8 +895,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (isWindowColoseButton) {
                     painter->setBrush(closeButton_Hover(option));
                 } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
-                    color.setAlphaF(0.15);
+                    QColor color = transparentButton_Hover(option);
                     painter->setBrush(color);
                 } else {
                     if (isImportant) {
@@ -1029,8 +1073,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             if (sunken || on) {
                 if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
-                    color.setAlphaF(0.28);
+                    QColor color = transparentButton_Click(option);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(closeButton_Click(option));
@@ -1041,8 +1084,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 }
             } else if (hover) {
                 if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                    QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
-                    color.setAlphaF(0.15);
+                    QColor color = transparentButton_Hover(option);
                     painter->setBrush(color);
                 } else if (isWindowColoseButton) {
                     painter->setBrush(closeButton_Hover(option));
@@ -1076,10 +1118,8 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setPen(Qt::NoPen);
             if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                hoverColor = option->palette.color(QPalette::Active, QPalette::BrightText);
-                hoverColor.setAlphaF(0.15);
-                sunkenColor = option->palette.color(QPalette::Active, QPalette::BrightText);
-                sunkenColor.setAlphaF(0.28);
+                hoverColor = transparentButton_Hover(option);
+                sunkenColor = transparentButton_Click(option);
             } else if (isWindowColoseButton) {
                 hoverColor = closeButton_Hover(option);
                 sunkenColor = closeButton_Click(option);
@@ -1115,8 +1155,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->setPen(Qt::NoPen);
             painter->setOpacity(opacity);
             if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
-                QColor color = option->palette.color(QPalette::Active, QPalette::BrightText);
-                color.setAlphaF(0.15);
+                QColor color = transparentButton_Hover(option);
                 painter->setBrush(color);
             } else if (isWindowColoseButton) {
                 painter->setBrush(closeButton_Hover(option));
@@ -1873,7 +1912,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
         if (const QStyleOptionComboBox *comboBox = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             const bool enable = comboBox->state & State_Enabled;
             const bool on = comboBox->state & State_On;
-            const bool hover = comboBox->state & State_MouseOver;
+//            const bool hover = comboBox->state & State_MouseOver;
 
             if (!enable) {
                 painter->save();
@@ -2974,7 +3013,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 proxy()->drawItemText(painter, mbi->rect, alignment, mbi->palette, mbi->state & State_Enabled,
                                       mbi->text, QPalette::ButtonText);
 
-            bool act = mbi->state & State_Selected && mbi->state & State_Sunken | mbi->state & State_HasFocus;
+            bool act = (mbi->state & State_Selected) && ((mbi->state & State_Sunken) | (mbi->state & State_HasFocus));
             bool dis = !(mbi->state & State_Enabled);
 
 
@@ -3219,7 +3258,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 painter->setBrush(tb->palette.color(QPalette::Disabled,QPalette::Button));
             }
 
-            if (tb->direction != Qt::RightToLeft|tb->direction != Qt::RightToLeft) {
+            if (tb->direction != Qt::RightToLeft || tb->direction != Qt::RightToLeft) {
                 painter->drawRoundedRect(option->rect,4,4);
             }
             painter->restore();
@@ -4516,7 +4555,7 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
                 newSize.setHeight(qMax(newSize.height(), proxy()->pixelMetric(PM_IndicatorHeight, option, widget)));
 
                 int MenuItem_HMargin = 12 + 4;
-                int MenuItem_VMargin = 3;
+//                int MenuItem_VMargin = 3;
                 w +=  MenuItem_HMargin;
                 newSize.setWidth(qMax(w, 152));
 
@@ -4846,7 +4885,7 @@ void Qt5UKUIStyle::realSetWindowSurfaceFormatAlpha(const QWidget *widget) const
     if (widget->testAttribute(Qt::WA_WState_Created))
         return;
 
-    if (auto menu = qobject_cast<const QMenu *>(widget)) {
+    if (qobject_cast<const QMenu *>(widget)) {
         const_cast<QWidget *>(widget)->setAttribute(Qt::WA_TranslucentBackground);
     }
 
@@ -4857,18 +4896,17 @@ void Qt5UKUIStyle::realSetWindowSurfaceFormatAlpha(const QWidget *widget) const
 void Qt5UKUIStyle::realSetMenuTypeToMenu(const QWidget *widget) const
 {
     if (auto menu = qobject_cast<const QMenu *>(widget)) {
-        if (!qobject_cast<const QMenu*>(widget)
-                || widget->testAttribute(Qt::WA_X11NetWmWindowTypeMenu)
-                || !widget->windowHandle())
+        if (menu->testAttribute(Qt::WA_X11NetWmWindowTypeMenu)
+                || !menu->windowHandle())
             return;
 
         int wmWindowType = 0;
-        if (widget->testAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu))
+        if (menu->testAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu))
             wmWindowType |= QXcbWindowFunctions::DropDownMenu;
-        if (widget->testAttribute(Qt::WA_X11NetWmWindowTypePopupMenu))
+        if (menu->testAttribute(Qt::WA_X11NetWmWindowTypePopupMenu))
             wmWindowType |= QXcbWindowFunctions::PopupMenu;
         if (wmWindowType == 0) return;
-        QXcbWindowFunctions::setWmWindowType(widget->windowHandle(),
+        QXcbWindowFunctions::setWmWindowType(menu->windowHandle(),
                                              static_cast<QXcbWindowFunctions::WmWindowType>(wmWindowType));
     }
 }
