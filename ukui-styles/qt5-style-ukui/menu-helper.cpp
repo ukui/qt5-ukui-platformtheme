@@ -24,7 +24,7 @@ void Qt5UKUIStyle::drawMenuPrimitive(const QStyleOption *option, QPainter *paint
     QPainter pixmapPainter(&pixmap);
     pixmapPainter.setRenderHint(QPainter::Antialiasing);
     pixmapPainter.setPen(Qt::transparent);
-    pixmapPainter.setBrush(Qt::black);
+    pixmapPainter.setBrush(option->palette.color(QPalette::Active, QPalette::BrightText));
     pixmapPainter.drawPath(rectPath);
     pixmapPainter.end();
 
