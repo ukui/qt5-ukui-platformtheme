@@ -81,6 +81,7 @@ public:
 
     // progressbar
     int ProgressBar_DefaultLength = 388;
+    int ProgressBar_DefaultThick = 16;
 
     // slider
     int Slider_DefaultLength = 94;

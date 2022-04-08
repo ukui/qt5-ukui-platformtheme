@@ -3362,7 +3362,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                 reverse = !reverse;
 
             QColor startColor = option->palette.color(QPalette::Active, QPalette::Highlight);
-            QColor endColor = highLight_Click(option);
+            QColor endColor = option->palette.color(QPalette::Active, QPalette::Highlight).lighter(120);
             QLinearGradient linearGradient;
             linearGradient.setColorAt(0, startColor);
             linearGradient.setColorAt(1, endColor);
@@ -4452,7 +4452,16 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     case SE_ProgressBarContents:
     case SE_ProgressBarLabel:
     {
-        return option->rect;
+        if (const QStyleOptionProgressBar *pb = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+            //QT progressbar default minimun thick is 25.We need to cut it first.
+            int thick = (25 - sp->ProgressBar_DefaultThick)/2;
+            if (pb->orientation == Qt::Vertical) {
+                return option->rect.adjusted(thick, 0, -thick, 0);
+            } else {
+                return option->rect.adjusted(0, thick, 0, -thick);
+            }
+        }
+        break;
     }
 
     case SE_HeaderLabel:
