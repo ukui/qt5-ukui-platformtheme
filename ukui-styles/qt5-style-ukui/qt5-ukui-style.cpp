@@ -1825,14 +1825,10 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             QRect handle = proxy()->subControlRect(CC_Slider, option, SC_SliderHandle, widget);
             const bool horizontal = slider->orientation == Qt::Horizontal;
             const bool enable = slider->state & State_Enabled;
-            QColor sColor = highLight_Click(option);
-            QColor hColor = slider->palette.color(QPalette::Active, QPalette::Highlight);
+            const bool hover = slider->state & State_MouseOver;
+            const bool suken = slider->state & State_Sunken;
+            QColor sColor = slider->palette.color(QPalette::Active, QPalette::Highlight);
             QColor gColor = slider->palette.color(QPalette::Active, QPalette::Button);
-            if (!enable) {
-                sColor = slider->palette.color(QPalette::Disabled, QPalette::ButtonText);
-                hColor = slider->palette.color(QPalette::Disabled, QPalette::ButtonText);
-                gColor = slider->palette.color(QPalette::Disabled, QPalette::Button);
-            }
             if (slider->subControls & SC_SliderGroove) {
                 QRect sRect, gRect;
                 if (horizontal) {
@@ -1895,6 +1891,15 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
             }
 
             if (slider->subControls & SC_SliderHandle) {
+                QColor hColor = slider->palette.color(QPalette::Active, QPalette::Highlight);
+                if (!enable) {
+                    hColor = slider->palette.color(QPalette::Disabled, QPalette::ButtonText);
+                } else if (suken) {
+                    hColor = highLight_Click(option);
+                } else if (hover) {
+                    hColor = highLight_Hover(option);
+                }
+
                 painter->save();
                 painter->setRenderHint(QPainter::Antialiasing, true);
                 painter->setPen(Qt::NoPen);
