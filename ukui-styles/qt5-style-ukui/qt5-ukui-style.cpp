@@ -156,12 +156,12 @@ const QStringList Qt5UKUIStyle::useDarkPaletteList() const
 {
     //use dark palette in default style.
     QStringList l;
-    l<<"ukui-menu";
-    l<<"ukui-panel";
-    l<<"ukui-sidebar";
-    l<<"ukui-volume-control-applet-qt";
-    l<<"ukui-power-manager-tray";
-    l<<"kylin-nm";
+//    l<<"ukui-menu";
+//    l<<"ukui-panel";
+//    l<<"ukui-sidebar";
+//    l<<"ukui-volume-control-applet-qt";
+//    l<<"ukui-power-manager-tray";
+//    l<<"kylin-nm";
     l<<"ukui-flash-disk";
 //    l<<"ukui-bluetooth";
     l<<"mktip";
