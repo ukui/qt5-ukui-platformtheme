@@ -1,3 +1,14 @@
+qt5-ukui-platformtheme (3.1.3-1~0411) jammy; urgency=medium
+
+  * 改动：
+    BUG号：98044,114290,96764,96763,98312,114211
+    需求号：无
+    其他改：修改进度条progressbar最小厚度为16，主题框架暗主题黑名单移除ukui-menu,ukui-panel,ukui-sidebar,ukui-volume-control-applet-qt,ukui-power-manager-tray,ky
+    lin-nm
+    影响域：应用ukui-menu,ukui-panel,ukui-sidebar,ukui-volume-control-applet-qt,ukui-power-manager-tray,kylin-nm
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 11 Apr 2022 09:50:00 +0800
+
 qt5-ukui-platformtheme (3.1.3-1~0406) jammy; urgency=medium
 
   * 改动：
