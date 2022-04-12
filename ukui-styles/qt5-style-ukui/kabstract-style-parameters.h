@@ -122,18 +122,6 @@ public:
 
 
 
-class KFashionStyleParameters : public KAbstractStyleParameters
-{
-public:
-    KFashionStyleParameters(QObject *parent);
-
-    QPalette setPalette(QPalette &palette, bool isDark) override;
-
-    QColor radiobutton_default(bool isDark) override;
-};
-
-
-
 class KDefaultStyleParameters : public KAbstractStyleParameters
 {
 public:
@@ -156,4 +144,14 @@ public:
     QColor radiobutton_default(bool isDark) override;
 };
 
+
+class KFashionStyleParameters : public KAbstractStyleParameters
+{
+public:
+    KFashionStyleParameters(QObject *parent);
+
+    QPalette setPalette(QPalette &palette, bool isDark) override;
+
+    QColor radiobutton_default(bool isDark) override;
+};
 #endif // KABSTRACTSTYLEPARAMETERS_H

@@ -64,7 +64,7 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     //FIXME:
     bool dark = false;
     bool useDefault = false;
-    QString type = "fashion";
+    QString type = "default";
 
     if (key == "ukui-light") {
         dark = false;
@@ -76,7 +76,7 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
         useDefault = true;
     }
 
-    type = "fashion";
+    type = "default";
 
     return new Qt5UKUIStyle(dark, useDefault, type);
 }
