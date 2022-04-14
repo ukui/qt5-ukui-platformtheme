@@ -489,12 +489,12 @@ QColor KClassicalStyleParameters::radiobutton_default(bool isDark)
 
 KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
 {
-    radius = 4;
+    radius = 0;
 
     ColoseButtonColor = QColor("#F86458");
 
-    Menu_Radius = 4;
-    MenuItem_Radius = 2;
+    Menu_Radius = 0;
+    MenuItem_Radius = 0;
 }
 
 

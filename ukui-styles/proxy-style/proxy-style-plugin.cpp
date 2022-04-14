@@ -41,7 +41,7 @@ ProxyStylePlugin::ProxyStylePlugin()
     if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
         auto settings = UKUIStyleSettings::globalInstance();
         connect(settings, &UKUIStyleSettings::changed, this, [=](const QString &key) {
-            if (key == "styleName") {
+            if (key == "styleName" || key == "themeName") {
                 if (blackList().contains(qAppName()) || qAppName() == "biometric-manager" || qAppName() == "kylin-software-center.py")
                     return;
 
@@ -54,6 +54,7 @@ ProxyStylePlugin::ProxyStylePlugin()
                     return;
 
                 auto styleName = settings->get("styleName").toString();
+                auto themeName = settings->get("theme-name").toString();
 
                 if (styleName == "ukui-default" || styleName == "ukui-dark" || styleName == "ukui-white"
                         || styleName == "ukui-black" || styleName == "ukui-light" || styleName == "ukui") {
@@ -65,14 +66,14 @@ ProxyStylePlugin::ProxyStylePlugin()
                     else if (styleName == "ukui-white")
                         styleName = "ukui-light";
 
-                    if (styleName == "ukui-dark") {
-                        qApp->setProperty("preferDark", true);
-                    } else {
-                        qApp->setProperty("preferDark", QVariant());
-                    }
-
                 } else {
                     styleName = "ukui-default";
+                }
+
+                if (themeName == "default" || themeName == "classical" || themeName == "fashion") {
+                    qApp->setProperty("themeName", themeName);
+                } else {
+                    qApp->setProperty("themeName", "default");
                 }
 
                 qApp->setStyle(new ProxyStyle(styleName));
@@ -107,10 +108,7 @@ QStyle *ProxyStylePlugin::create(const QString &key)
     if (key == "ukui") {
         if (UKUIStyleSettings::isSchemaInstalled("org.ukui.style")) {
             m_current_style_name = UKUIStyleSettings::globalInstance()->get("styleName").toString();
-
-//            if (m_current_style_name == "ukui-classical" || m_current_style_name == "ukui-default"
-//                    || m_current_style_name == "ukui-fashion")
-//                return new ProxyStyle(m_current_style_name);
+            m_current_theme_name = UKUIStyleSettings::globalInstance()->get("themeName").toString();
 
             if (m_current_style_name == "ukui-default" || m_current_style_name == "ukui-dark"
                     || m_current_style_name == "ukui-white" || m_current_style_name == "ukui-black"
@@ -123,15 +121,16 @@ QStyle *ProxyStylePlugin::create(const QString &key)
                 else if (m_current_style_name == "ukui-white")
                     m_current_style_name = "ukui-light";
 
-                if (m_current_style_name == "ukui-dark") {
-                    qApp->setProperty("preferDark", true);
+                if (m_current_theme_name == "default" ||
+                        m_current_theme_name == "classical" ||
+                        m_current_theme_name == "fashion") {
+                    qApp->setProperty("themeName", m_current_theme_name);
                 } else {
-                    qApp->setProperty("preferDark", QVariant());
+                    qApp->setProperty("themeName", "default");
                 }
 
                 return new ProxyStyle(m_current_style_name);
             }
-
 
             for (auto styleName : QStyleFactory::keys()) {
                 if (styleName.toLower() == m_current_style_name.toLower())

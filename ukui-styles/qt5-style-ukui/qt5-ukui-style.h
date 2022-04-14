@@ -135,11 +135,6 @@ private:
     ShadowHelper *m_shadow_helper;
     ProgressBarAnimationHelper *m_animation_helper;
 
-    /*!
-     * \brief m_drak_palette
-     * \deprecated
-     * use qApp->property("preferDark") instead. link to: #63026.
-     */
     bool m_drak_palette = false;
     bool m_default_palette = false;
     QString m_type = "fashion";

@@ -10,6 +10,11 @@
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.Have ukui ukui-classical ukui-fashion</description>
         </key>
+        <key type="s" name="theme-name">
+            <default>"default"</default>
+            <summary>Current theme name</summary>
+            <description>Set system theme. Have default,classical and fashion</description>
+        </key>
         <key type="s" name="system-font">
             <default>"Noto Sans CJK SC"</default>
             <summary>System Font for Qt Applications.</summary>

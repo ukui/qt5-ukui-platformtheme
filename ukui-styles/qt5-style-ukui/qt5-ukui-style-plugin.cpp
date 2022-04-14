@@ -76,7 +76,10 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
         useDefault = true;
     }
 
-    type = "default";
+
+    if (qApp->property("themeName").isValid()) {
+        type = qApp->property("themeName").toString();
+    }
 
     return new Qt5UKUIStyle(dark, useDefault, type);
 }

@@ -45,6 +45,8 @@ public:
     QStyle *create(const QString &key) override;
 
     const QStringList blackList();
+
+private:
 };
 
 #endif // QT5UKUISTYLEPLUGIN_H

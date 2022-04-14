@@ -47,6 +47,7 @@ public slots:
 
 private:
     QString m_current_style_name;
+    QString m_current_theme_name;
 };
 
 }
