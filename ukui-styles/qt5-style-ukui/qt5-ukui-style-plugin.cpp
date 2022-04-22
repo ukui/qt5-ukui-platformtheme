@@ -77,8 +77,8 @@ QStyle *Qt5UKUIStylePlugin::create(const QString &key)
     }
 
 
-    if (qApp->property("themeName").isValid()) {
-        type = qApp->property("themeName").toString();
+    if (qApp->property("widgetThemeName").isValid()) {
+        type = qApp->property("widgetThemeName").toString();
     }
 
     return new Qt5UKUIStyle(dark, useDefault, type);

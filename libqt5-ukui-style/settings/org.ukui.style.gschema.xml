@@ -10,9 +10,9 @@
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.Have ukui ukui-classical ukui-fashion</description>
         </key>
-        <key type="s" name="theme-name">
+        <key type="s" name="widget-theme-name">
             <default>"default"</default>
-            <summary>Current theme name</summary>
+            <summary>Current widget theme name</summary>
             <description>Set system theme. Have default,classical and fashion</description>
         </key>
         <key type="s" name="system-font">
