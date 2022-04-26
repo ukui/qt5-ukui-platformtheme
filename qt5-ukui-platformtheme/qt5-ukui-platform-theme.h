@@ -82,7 +82,7 @@ public:
     virtual QPlatformMenuBar* createPlatformMenuBar() const;
 #endif
 
-#ifdef DBUS_TRAY
+#if !defined(QT_NO_DBUS) && !defined(QT_NO_SYSTEMTRAYICON)
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override;
 #endif
 

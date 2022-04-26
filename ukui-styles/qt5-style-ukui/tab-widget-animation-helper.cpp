@@ -31,21 +31,33 @@ TabWidgetAnimationHelper::TabWidgetAnimationHelper(QObject *parent) : AnimationH
 bool TabWidgetAnimationHelper::registerWidget(QWidget *w)
 {
     auto animator = new UKUI::TabWidget::DefaultSlideAnimator;
-    if (!animator->bindWidget(w))
-        return false;
-    m_animators->insert(w, animator);
-    return true;
+    bool result = animator->bindWidget(w);
+    if (!result)
+    {
+        animator->deleteLater();
+    }
+    else
+    {
+        m_animators->insert(w, animator);
+    }
+
+    connect(w, &QWidget::destroyed, this, [=](){
+       unregisterWidget(w);
+    });
+
+    return result;
 }
 
 bool TabWidgetAnimationHelper::unregisterWidget(QWidget *w)
 {
-    auto animator = m_animators->value(w);
+    auto animator= m_animators->value(w);
+    bool result = false;
     if (animator) {
-        animator->unboundWidget();
+        result = animator->unboundWidget();
         delete animator;
     }
     m_animators->remove(w);
-    return true;
+    return result;
 }
 
 AnimatorIface *TabWidgetAnimationHelper::animator(const QWidget *w)

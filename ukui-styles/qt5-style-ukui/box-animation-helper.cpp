@@ -43,6 +43,11 @@ bool BoxAnimationHelper::registerWidget(QWidget *w)
     {
         m_animators->insert(w, animator);
     }
+
+    connect(w, &QWidget::destroyed, this, [=](){
+       unregisterWidget(w);
+    });
+
     return result;
 }
 

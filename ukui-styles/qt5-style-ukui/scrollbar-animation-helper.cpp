@@ -43,16 +43,23 @@ bool ScrollBarAnimationHelper::registerWidget(QWidget *w)
     {
         m_animators->insert(w, animator);
     }
+
+    connect(w, &QWidget::destroyed, this, [=](){
+       unregisterWidget(w);
+    });
+
     return result;
 }
 
 bool ScrollBarAnimationHelper::unregisterWidget(QWidget *w)
 {
-    auto animator = w->findChild<UKUI::ScrollBar::DefaultInteractionAnimator*>("ukui_scrollbar_default_interaction_animator", Qt::FindDirectChildrenOnly);
+//    auto animator = w->findChild<UKUI::ScrollBar::DefaultInteractionAnimator*>("ukui_scrollbar_default_interaction_animator", Qt::FindDirectChildrenOnly);
+    auto animator = m_animators->value(w);
     bool result = false;
     if (animator) {
         result = animator->unboundWidget();
-        animator->deleteLater();
+//        animator->deleteLater();
+        delete animator;
     }
     m_animators->remove(w);
     return result;

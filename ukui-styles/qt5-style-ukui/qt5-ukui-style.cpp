@@ -174,7 +174,7 @@ const QStringList Qt5UKUIStyle::useDefaultPaletteList() const
     //use light palette
     QStringList l;
     l<<"kybackup";
-    l<<"biometric-manager";
+//    l<<"biometric-manager";
 //    l<<"kylin-video";
 
     return l;
@@ -189,6 +189,7 @@ const QStringList Qt5UKUIStyle::useTransparentButtonList() const
     l<<"kylin-video";
     l<<"kylin-ipmsg";
     l<<"kylin-weather";
+    l<<"kylin-recorder";
 
     return l;
 }
@@ -482,7 +483,10 @@ void Qt5UKUIStyle::polish(QWidget *widget)
     }
 
     if (qobject_cast<QScrollBar*>(widget)) {
+        //set scroll must have mouse_hover state
         widget->setAttribute(Qt::WA_Hover);
+        //cancel scroll menu
+        widget->setContextMenuPolicy(Qt::NoContextMenu);
         m_scrollbar_animation_helper->registerWidget(widget);
     }
 
@@ -549,7 +553,6 @@ void Qt5UKUIStyle::unpolish(QWidget *widget)
     }
 
     if (qobject_cast<QScrollBar*>(widget)) {
-        widget->setAttribute(Qt::WA_Hover, false);
         m_scrollbar_animation_helper->unregisterWidget(widget);
     }
 
@@ -605,6 +608,12 @@ QIcon Qt5UKUIStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption
         {
             //toolbar horizontal extension button icon
             return QIcon::fromTheme(QLatin1String("ukui-end-symbolic"));
+        }break;
+
+        case SP_LineEditClearButton:
+        {
+            //lineedit close button icon
+            return QIcon::fromTheme(QLatin1String("edit-clear-symbolic"));
         }break;
 
         default:
@@ -714,9 +723,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
     case PE_Frame:{
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
-        painter->setPen(QPen(option->palette.color(QPalette::Normal, QPalette::Dark), 1));
+        painter->setPen(QPen(option->palette.color(QPalette::Active, QPalette::Midlight), 1));
         painter->setBrush(Qt::NoBrush);
-        painter->drawRoundedRect(option->rect, sp->Menu_Radius, sp->Menu_Radius);
+        painter->drawRect(option->rect);
         painter->restore();
         return;
     }
@@ -924,7 +933,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->save();
             painter->setRenderHint(QPainter::Antialiasing);
             QPainterPath rectPath;
-            rectPath.addRoundedRect(option->rect.adjusted(+3,+3,-3,-3), sp->radius, sp->radius);
+            rectPath.addRoundedRect(option->rect.adjusted(+3, +3, -3, -3), sp->radius, sp->radius);
 
             // Draw a black floor
             QPixmap pixmap(option->rect.size());
@@ -932,7 +941,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QPainter pixmapPainter(&pixmap);
             pixmapPainter.setRenderHint(QPainter::Antialiasing);
             pixmapPainter.setPen(Qt::transparent);
-            pixmapPainter.setBrush(Qt::black);
+            pixmapPainter.setBrush(option->palette.color(QPalette::Active, QPalette::BrightText));
             pixmapPainter.drawPath(rectPath);
             pixmapPainter.end();
 
@@ -977,7 +986,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             QPainterPath path;
             auto region = widget->mask();
             if (region.isEmpty()) {
-                path.addRoundedRect(opt.rect.adjusted(+3,+3,-3,-3), sp->radius, sp->radius);
+                path.addRoundedRect(opt.rect.adjusted(+3, +3, -3, -3), sp->radius, sp->radius);
             } else {
                 path.addRegion(region);
             }
@@ -1619,9 +1628,9 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             if (isIconMode) {
                 if (select) {
                     int Margin_Height = 2;
-                    const int Margin = proxy()->pixelMetric(QStyle::PM_FocusFrameHMargin, option, widget) + 1;
+                    const int Margin = proxy()->pixelMetric(QStyle::PM_FocusFrameHMargin, option, widget);
                     iconRect.setRect(option->rect.x(), option->rect.y(), option->rect.width(), iconRect.height() + Margin + Margin_Height);
-                    textRect.setRect(option->rect.x(), iconRect.bottom() + 1, option->rect.width(), textRect.height() + Margin_Height);
+                    textRect.setRect(option->rect.x(), iconRect.bottom() + 1, option->rect.width(), option->rect.height() - iconRect.height());
                     QPainterPath iconPath, textPath;
                     iconPath.moveTo(iconRect.x(), iconRect.y() + iconMode_Radius);
                     iconPath.arcTo(iconRect.x(), iconRect.y(), iconMode_Radius * 2, iconMode_Radius * 2, 180, -90);
@@ -1645,22 +1654,10 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                     painter->save();
                     painter->setPen(Qt::NoPen);
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    if (sunken) {
-                        painter->setBrush(button_Click(option));
-                        painter->drawPath(iconPath);
-                        painter->setBrush(highLight_Click(option));
-                        painter->drawPath(textPath);
-                    } else if (hover) {
-                        painter->setBrush(button_Hover(option));
-                        painter->drawPath(iconPath);
-                        painter->setBrush(highLight_Hover(option));
-                        painter->drawPath(textPath);
-                    } else {
-                        painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Button));
-                        painter->drawPath(iconPath);
-                        painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
-                        painter->drawPath(textPath);
-                    }
+                    painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Button));
+                    painter->drawPath(iconPath);
+                    painter->setBrush(vi->palette.brush(QPalette::Active, QPalette::Highlight));
+                    painter->drawPath(textPath);
                     painter->restore();
                 } else {
                     painter->save();
@@ -2829,9 +2826,8 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
 
             QRect drawRect = tab->rect;
             QRect iconRect;
-            QRect textRect;
+            QRect textRect = proxy()->subElementRect(SE_TabBarTabText, option, widget);
             tabLayout(tab, widget, proxy(), &textRect, &iconRect);
-            textRect = proxy()->subElementRect(SE_TabBarTabText, option, widget);
 
             if (widget && widget->property("useTabbarSeparateLine").isValid() && (!widget->property("useTabbarSeparateLine").toBool())){
                 useSeparateLine = false;
@@ -3718,7 +3714,8 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
 
     case PM_MenuBarItemSpacing:return 16;
     case PM_MenuBarVMargin:return 4;
-    case PM_ToolTipLabelFrameWidth:return 7;
+    case PM_ToolTipLabelFrameWidth:
+        return sp->ToolTip_DefaultMargin;
 
     case PM_LayoutLeftMargin:
     case PM_LayoutTopMargin:
@@ -3750,10 +3747,10 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
         return 1;
 
     case PM_TabBarScrollButtonWidth:
-        return 16;
+        return sp->TabBar_ScrollButtonWidth;
 
     case PM_TabBar_ScrollButtonOverlap:
-        return 3;
+        return sp->TabBar_ScrollButtonOverlap;
 
     case PM_TabBarIconSize:
         return 16;
@@ -3810,7 +3807,7 @@ int Qt5UKUIStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *op
     case PM_IconViewIconSize:
         return 32;
     case PM_FocusFrameHMargin:
-        return 2;
+        return 4;
 
     case PM_TreeViewIndentation:
         return 20;
@@ -4071,8 +4068,9 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
         const int buttonWidth = qMax(proxy()->pixelMetric(QStyle::PM_TabBarScrollButtonWidth, 0, widget), QApplication::globalStrut().width());
         const int lap = proxy()->pixelMetric(QStyle::PM_TabBar_ScrollButtonOverlap, 0, widget);
         QRect rect = verticalTabs ? QRect(-lap, option->rect.height() - (buttonWidth * 2), option->rect.width() + 2 * lap, buttonWidth)
-                                  : QStyle::visualRect(option->direction, option->rect, QRect(option->rect.width() - (buttonWidth * 2), -lap,
-                                                                                              buttonWidth, option->rect.height() + 2 * lap));
+                                  : QStyle::visualRect(option->direction, option->rect,
+                                                       QRect(option->rect.left() + lap, option->rect.top() + lap,
+                                                             buttonWidth, option->rect.height() - 2 * lap));
         return rect;
     }
 
@@ -4084,7 +4082,8 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
 
         QRect rect = verticalTabs ? QRect(-lap, option->rect.height() - buttonWidth, option->rect.width() + 2 * lap, buttonWidth)
                                   : QStyle::visualRect(option->direction, option->rect,
-                                                       QRect(option->rect.width() - buttonWidth, -lap, buttonWidth, option->rect.height() + 2 * lap));
+                                                       QRect(option->rect.right() - buttonWidth - lap, option->rect.top() + lap,
+                                                             buttonWidth, option->rect.height() - 2 * lap));
         return rect;
     }
 
@@ -4167,10 +4166,10 @@ QRect Qt5UKUIStyle::subElementRect(SubElement element, const QStyleOption *optio
     case SE_TabBarTabText:
     {
         if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(option)) {
-            QRect rect = tab->rect;
-            QRect iconRect = tab->rect;
-            tabLayout(tab, widget, proxy(), &rect, &iconRect);
-            return rect;
+//            QRect rect = tab->rect;
+//            QRect iconRect = tab->rect;
+//            tabLayout(tab, widget, proxy(), &rect, &iconRect);
+            return tab->rect;
         }
         break;
     }
@@ -4628,6 +4627,12 @@ QSize Qt5UKUIStyle::sizeFromContents(ContentsType ct, const QStyleOption *option
             } else {
                 newSize.setWidth(qMax(newSize.width() + padding, sp->TabBar_DefaultWidth));
                 newSize.setHeight(qMax(newSize.height(), sp->TabBar_DefaultHeight));
+            }
+
+            if (qobject_cast<const QTabBar*>(widget)) {
+                //set height between min and max
+                newSize.setHeight(qMax(newSize.height(), widget->minimumHeight()));
+                newSize.setHeight(qMin(newSize.height(), widget->maximumHeight()));
             }
             return newSize;
         }

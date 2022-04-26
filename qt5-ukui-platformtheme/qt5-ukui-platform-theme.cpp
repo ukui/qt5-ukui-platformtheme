@@ -43,11 +43,25 @@
 
 #include <QDebug>
 #include <private/qgenericunixthemes_p.h>
+#include <private/qdbustrayicon_p.h>
 
 #include <QQuickStyle>
 
 #include "widget/message-box.h"
 
+#if !defined(QT_NO_DBUS) && !defined(QT_NO_SYSTEMTRAYICON)
+static bool isDBusTrayAvailable() {
+    static bool dbusTrayAvailable = false;
+    static bool dbusTrayAvailableKnown = false;
+    if (!dbusTrayAvailableKnown) {
+        QDBusMenuConnection conn;
+        if (conn.isStatusNotifierHostRegistered())
+            dbusTrayAvailable = true;
+        dbusTrayAvailableKnown = true;
+    }
+    return dbusTrayAvailable;
+}
+#endif
 
 Qt5UKUIPlatformTheme::Qt5UKUIPlatformTheme(const QStringList &args)
 {
@@ -250,10 +264,11 @@ QPlatformMenuBar *Qt5UKUIPlatformTheme::createPlatformMenuBar() const
 }
 #endif
 
-#ifdef DBUS_TRAY
+#if !defined(QT_NO_DBUS) && !defined(QT_NO_SYSTEMTRAYICON)
 QPlatformSystemTrayIcon *Qt5UKUIPlatformTheme::createPlatformSystemTrayIcon() const
 {
-    QGnomeTheme *gnomeTheme = new QGnomeTheme();
-    return gnomeTheme->createPlatformSystemTrayIcon();
+    if (isDBusTrayAvailable())
+        return new QDBusTrayIcon();
+    return nullptr;
 }
 #endif

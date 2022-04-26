@@ -118,6 +118,11 @@ public:
     // tabbar
     int TabBar_DefaultWidth = 168;
     int TabBar_DefaultHeight = 40;
+    int TabBar_ScrollButtonWidth = 16;
+    int TabBar_ScrollButtonOverlap = 2;
+
+    // tooltip
+    int ToolTip_DefaultMargin = 8;
 };
 
 
