@@ -6,7 +6,7 @@
             <description>Set style for UKUI desktop environment. Have ukui-dark ukui-default ukui-light</description>
         </key>
         <key type="s" name="icon-theme-name">
-            <default>"ukui"</default>
+            <default>"ukui-icon-theme-default"</default>
             <summary>Icon Theme for Qt Applications.</summary>
             <description>Icon Theme for Qt Applications.Have ukui ukui-classical ukui-fashion</description>
         </key>
