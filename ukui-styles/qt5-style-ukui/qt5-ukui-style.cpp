@@ -48,6 +48,8 @@
 #include "highlight-effect.h"
 
 #include "kabstract-style-parameters.h"
+#include "black-list.h"
+
 
 #include <QIcon>
 #include <QStyleOptionViewItem>
@@ -77,6 +79,8 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QApplication>
+#include <KWindowEffects>
+
 
 #include <private/qlineedit_p.h>
 
@@ -973,6 +977,11 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 if (!blurEnable) {
                     color.setAlphaF(1);
                 }
+            }
+
+            //if blur effect is not supported, do not use transparent color.
+            if (!KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) || blackAppListWithBlurHelper().contains(qAppName())) {
+                color.setAlphaF(1);
             }
 
             opt.palette.setColor(QPalette::ToolTipBase, color);

@@ -212,7 +212,7 @@ void BlurHelper::onBlurEnableChanged(bool enable)
 {
     m_blur_enable = enable;
 
-    if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) && enable) {
+    if (enable) {
         qApp->setProperty("blurEnable", true);
     } else {
         qApp->setProperty("blurEnable", false);
@@ -320,7 +320,7 @@ void BlurHelper::confirmBlurEnableDelay()
 {
     QTimer::singleShot(3000, this, [=]() {
         bool enable = m_blur_enable;
-        if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind) && enable) {
+        if (enable) {
             qApp->setProperty("blurEnable", true);
         } else {
             qApp->setProperty("blurEnable", false);
