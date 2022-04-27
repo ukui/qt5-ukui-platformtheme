@@ -1,3 +1,13 @@
+qt5-ukui-platformtheme (3.1.4-1~0427) v101; urgency=medium
+
+  * 改动：
+    BUG号：无
+    需求号：无
+    其他改：修改默认主题图标名称ukui为ukui-icon-theme-default，修改开关毛玻璃特效后导致的毛玻璃问题
+    影响域：默认主题图标名，控制面板毛玻璃特效开关
+
+ -- xibowen <xibowen@kylinos.cn>  Wed, 27 Apr 2022 18:10:00 +0800
+
 qt5-ukui-platformtheme (3.1.4-1~0426) v101; urgency=medium
 
   * 改动：
