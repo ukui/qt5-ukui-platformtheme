@@ -177,7 +177,7 @@ const QStringList Qt5UKUIStyle::useDefaultPaletteList() const
 {
     //use light palette
     QStringList l;
-    l<<"kybackup";
+//    l<<"kybackup";
 //    l<<"biometric-manager";
 //    l<<"kylin-video";
 
