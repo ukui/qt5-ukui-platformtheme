@@ -31,13 +31,7 @@
 class KAbstractStyleParameters
 {
 public:
-    KAbstractStyleParameters(QObject *parent);
-
-    // palette
-    virtual QPalette setPalette(QPalette &palette, bool isDark) = 0;
-
-    // palette::Button
-    virtual QColor radiobutton_default(bool isDark) = 0;
+    KAbstractStyleParameters(QObject *parent, bool isDark);
 
     // radius
     int radius = 6;
@@ -123,28 +117,36 @@ public:
 
     // tooltip
     int ToolTip_DefaultMargin = 8;
-};
 
+    QPalette defaultPalette;
+
+
+
+
+    QPalette setPalette(QPalette &palette);
+    virtual QColor radiobutton_default(bool isDark) = 0;// palette::Button
+
+    virtual void initPalette(bool isDark);
+};
 
 
 class KDefaultStyleParameters : public KAbstractStyleParameters
 {
 public:
-    KDefaultStyleParameters(QObject *parent);
+    KDefaultStyleParameters(QObject *parent, bool isDark);
 
-    QPalette setPalette(QPalette &palette, bool isDark) override;
+    void initPalette(bool isDark) override;
 
     QColor radiobutton_default(bool isDark) override;
 };
 
 
-
 class KClassicalStyleParameters : public KAbstractStyleParameters
 {
 public:
-    KClassicalStyleParameters(QObject *parent);
+    KClassicalStyleParameters(QObject *parent, bool isDark);
 
-    QPalette setPalette(QPalette &palette, bool isDark) override;
+    void initPalette(bool isDark) override;
 
     QColor radiobutton_default(bool isDark) override;
 };
@@ -153,9 +155,9 @@ public:
 class KFashionStyleParameters : public KAbstractStyleParameters
 {
 public:
-    KFashionStyleParameters(QObject *parent);
+    KFashionStyleParameters(QObject *parent, bool isDark);
 
-    QPalette setPalette(QPalette &palette, bool isDark) override;
+    void initPalette(bool isDark) override;
 
     QColor radiobutton_default(bool isDark) override;
 };

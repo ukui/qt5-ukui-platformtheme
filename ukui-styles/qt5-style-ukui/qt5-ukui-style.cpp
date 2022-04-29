@@ -131,13 +131,13 @@ Qt5UKUIStyle::Qt5UKUIStyle(bool dark, bool useDefault, QString type) : QProxySty
     }
 
     if (m_type == "default") {
-        sp = new KDefaultStyleParameters(this);
+        sp = new KDefaultStyleParameters(this, dark);
     } else if (m_type == "classical") {
-        sp = new KClassicalStyleParameters(this);
+        sp = new KClassicalStyleParameters(this, dark);
     } else if (m_type == "fashion"){
-        sp = new KFashionStyleParameters(this);
+        sp = new KFashionStyleParameters(this, dark);
     } else {
-        sp = new KDefaultStyleParameters(this);
+        sp = new KDefaultStyleParameters(this, dark);
     }
 
     if (auto settings = UKUIStyleSettings::globalInstance()) {
@@ -302,7 +302,7 @@ void Qt5UKUIStyle::polish(QPalette &palette){
 QPalette Qt5UKUIStyle::standardPalette() const
 {
     auto palette = Style::standardPalette();
-    sp->setPalette(palette, isUseDarkPalette());
+    sp->setPalette(palette);
 
     if (auto settings = UKUIStyleSettings::globalInstance()) {
         QString themeColor = settings->get("themeColor").toString();

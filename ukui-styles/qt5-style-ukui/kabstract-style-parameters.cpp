@@ -22,15 +22,105 @@
 
 #include "kabstract-style-parameters.h"
 
-extern QColor mixColor(const QColor &c1, const QColor &c2, qreal bias);
-
-KAbstractStyleParameters::KAbstractStyleParameters(QObject *parent)
+KAbstractStyleParameters::KAbstractStyleParameters(QObject *parent, bool isDark)
 {
 
 }
 
+QPalette KAbstractStyleParameters::setPalette(QPalette &palette)
+{
+    palette.setColor(QPalette::Active, QPalette::WindowText, defaultPalette.color(QPalette::Active, QPalette::WindowText));
+    palette.setColor(QPalette::Inactive, QPalette::WindowText, defaultPalette.color(QPalette::Inactive, QPalette::WindowText));
+    palette.setColor(QPalette::Disabled, QPalette::WindowText, defaultPalette.color(QPalette::Disabled, QPalette::WindowText));
 
-KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
+    palette.setColor(QPalette::Active, QPalette::Button, defaultPalette.color(QPalette::Active, QPalette::Button));
+    palette.setColor(QPalette::Inactive, QPalette::Button, defaultPalette.color(QPalette::Inactive, QPalette::Button));
+    palette.setColor(QPalette::Disabled, QPalette::Button, defaultPalette.color(QPalette::Disabled, QPalette::Button));
+
+    palette.setColor(QPalette::Active, QPalette::Light, defaultPalette.color(QPalette::Active, QPalette::Light));
+    palette.setColor(QPalette::Inactive, QPalette::Light, defaultPalette.color(QPalette::Inactive, QPalette::Light));
+    palette.setColor(QPalette::Disabled, QPalette::Light, defaultPalette.color(QPalette::Disabled, QPalette::Light));
+
+    palette.setColor(QPalette::Active, QPalette::Midlight, defaultPalette.color(QPalette::Active, QPalette::Midlight));
+    palette.setColor(QPalette::Inactive, QPalette::Midlight, defaultPalette.color(QPalette::Inactive, QPalette::Midlight));
+    palette.setColor(QPalette::Disabled, QPalette::Midlight, defaultPalette.color(QPalette::Disabled, QPalette::Midlight));
+
+    palette.setColor(QPalette::Active, QPalette::Dark, defaultPalette.color(QPalette::Active, QPalette::Dark));
+    palette.setColor(QPalette::Inactive, QPalette::Dark, defaultPalette.color(QPalette::Inactive, QPalette::Dark));
+    palette.setColor(QPalette::Disabled, QPalette::Dark, defaultPalette.color(QPalette::Disabled, QPalette::Dark));
+
+    palette.setColor(QPalette::Active, QPalette::Mid, defaultPalette.color(QPalette::Active, QPalette::Mid));
+    palette.setColor(QPalette::Inactive, QPalette::Mid, defaultPalette.color(QPalette::Inactive, QPalette::Mid));
+    palette.setColor(QPalette::Disabled, QPalette::Mid, defaultPalette.color(QPalette::Disabled, QPalette::Mid));
+
+    palette.setColor(QPalette::Active, QPalette::Text, defaultPalette.color(QPalette::Active, QPalette::Text));
+    palette.setColor(QPalette::Inactive, QPalette::Text, defaultPalette.color(QPalette::Inactive, QPalette::Text));
+    palette.setColor(QPalette::Disabled, QPalette::Text, defaultPalette.color(QPalette::Disabled, QPalette::Text));
+
+    palette.setColor(QPalette::Active, QPalette::BrightText, defaultPalette.color(QPalette::Active, QPalette::BrightText));
+    palette.setColor(QPalette::Inactive, QPalette::BrightText, defaultPalette.color(QPalette::Inactive, QPalette::BrightText));
+    palette.setColor(QPalette::Disabled, QPalette::BrightText, defaultPalette.color(QPalette::Disabled, QPalette::BrightText));
+
+    palette.setColor(QPalette::Active, QPalette::ButtonText, defaultPalette.color(QPalette::Active, QPalette::ButtonText));
+    palette.setColor(QPalette::Inactive, QPalette::ButtonText, defaultPalette.color(QPalette::Inactive, QPalette::ButtonText));
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, defaultPalette.color(QPalette::Disabled, QPalette::ButtonText));
+
+    palette.setColor(QPalette::Active, QPalette::Base, defaultPalette.color(QPalette::Active, QPalette::Base));
+    palette.setColor(QPalette::Inactive, QPalette::Base, defaultPalette.color(QPalette::Inactive, QPalette::Base));
+    palette.setColor(QPalette::Disabled, QPalette::Base, defaultPalette.color(QPalette::Disabled, QPalette::Base));
+
+    palette.setColor(QPalette::Active, QPalette::Window, defaultPalette.color(QPalette::Active, QPalette::Window));
+    palette.setColor(QPalette::Inactive, QPalette::Window, defaultPalette.color(QPalette::Inactive, QPalette::Window));
+    palette.setColor(QPalette::Disabled, QPalette::Window, defaultPalette.color(QPalette::Disabled, QPalette::Window));
+
+    palette.setColor(QPalette::Active, QPalette::Shadow, defaultPalette.color(QPalette::Active, QPalette::Shadow));
+    palette.setColor(QPalette::Inactive, QPalette::Shadow, defaultPalette.color(QPalette::Inactive, QPalette::Shadow));
+    palette.setColor(QPalette::Disabled, QPalette::Shadow, defaultPalette.color(QPalette::Disabled, QPalette::Shadow));
+
+    palette.setColor(QPalette::Active, QPalette::Highlight, defaultPalette.color(QPalette::Active, QPalette::Highlight));
+    palette.setColor(QPalette::Inactive, QPalette::Highlight, defaultPalette.color(QPalette::Inactive, QPalette::Highlight));
+    palette.setColor(QPalette::Disabled, QPalette::Highlight, defaultPalette.color(QPalette::Disabled, QPalette::Highlight));
+
+    palette.setColor(QPalette::Active, QPalette::HighlightedText, defaultPalette.color(QPalette::Active, QPalette::HighlightedText));
+    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, defaultPalette.color(QPalette::Inactive, QPalette::HighlightedText));
+    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, defaultPalette.color(QPalette::Disabled, QPalette::HighlightedText));
+
+    palette.setColor(QPalette::Active, QPalette::Link, defaultPalette.color(QPalette::Active, QPalette::Link));
+    palette.setColor(QPalette::Inactive, QPalette::Link, defaultPalette.color(QPalette::Inactive, QPalette::Link));
+    palette.setColor(QPalette::Disabled, QPalette::Link, defaultPalette.color(QPalette::Disabled, QPalette::Link));
+
+    palette.setColor(QPalette::Active, QPalette::LinkVisited, defaultPalette.color(QPalette::Active, QPalette::LinkVisited));
+    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, defaultPalette.color(QPalette::Inactive, QPalette::LinkVisited));
+    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, defaultPalette.color(QPalette::Disabled, QPalette::LinkVisited));
+
+    palette.setColor(QPalette::Active, QPalette::AlternateBase, defaultPalette.color(QPalette::Active, QPalette::AlternateBase));
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, defaultPalette.color(QPalette::Inactive, QPalette::AlternateBase));
+    palette.setColor(QPalette::Disabled, QPalette::AlternateBase, defaultPalette.color(QPalette::Disabled, QPalette::AlternateBase));
+
+    palette.setColor(QPalette::Active, QPalette::NoRole, defaultPalette.color(QPalette::Active, QPalette::NoRole));
+    palette.setColor(QPalette::Inactive, QPalette::NoRole, defaultPalette.color(QPalette::Inactive, QPalette::NoRole));
+    palette.setColor(QPalette::Disabled, QPalette::NoRole, defaultPalette.color(QPalette::Disabled, QPalette::NoRole));
+
+    palette.setColor(QPalette::Active, QPalette::ToolTipBase, defaultPalette.color(QPalette::Active, QPalette::ToolTipBase));
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, defaultPalette.color(QPalette::Inactive, QPalette::ToolTipBase));
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, defaultPalette.color(QPalette::Disabled, QPalette::ToolTipBase));
+
+    palette.setColor(QPalette::Active, QPalette::ToolTipText, defaultPalette.color(QPalette::Active, QPalette::ToolTipText));
+    palette.setColor(QPalette::Inactive, QPalette::ToolTipText, defaultPalette.color(QPalette::Inactive, QPalette::ToolTipText));
+    palette.setColor(QPalette::Disabled, QPalette::ToolTipText, defaultPalette.color(QPalette::Disabled, QPalette::ToolTipText));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
+    palette.setColor(QPalette::Active, QPalette::PlaceholderText, defaultPalette.color(QPalette::Active, QPalette::PlaceholderText));
+    palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, defaultPalette.color(QPalette::Inactive, QPalette::PlaceholderText));
+    palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, defaultPalette.color(QPalette::Disabled, QPalette::PlaceholderText));
+#endif
+
+    return palette;
+}
+
+
+//Default theme
+KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent, bool isDark) : KAbstractStyleParameters(parent, isDark)
 {
     radius = 6;
 
@@ -38,13 +128,12 @@ KDefaultStyleParameters::KDefaultStyleParameters(QObject *parent) : KAbstractSty
 
     Menu_Radius = 8;
     MenuItem_Radius = 6;
+
+    initPalette(isDark);
 }
 
-
-
-QPalette KDefaultStyleParameters::setPalette(QPalette &palette, bool isDark)
+void KDefaultStyleParameters::initPalette(bool isDark)
 {
-
     //ukui-light palette UKUI3.1
     QColor windowText_at(38, 38, 38),
            windowText_iat(0, 0, 0, 255 * 0.55),
@@ -183,96 +272,91 @@ QPalette KDefaultStyleParameters::setPalette(QPalette &palette, bool isDark)
         placeholderText_dis.setRgb(255, 255, 255, 255 * 0.3);
     }
 
-    palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Button, button_at);
-    palette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Button, button_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Light, light_at);
-    palette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Light, light_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Dark, dark_at);
-    palette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Dark, dark_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Mid, mid_at);
-    palette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Mid, mid_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Text, text_at);
-    palette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Text, text_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
 
-    palette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Base, base_at);
-    palette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Base, base_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Window, window_at);
-    palette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Window, window_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
-    palette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, highLight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Highlight, highLight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Link, link_at);
-    palette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Link, link_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
 
-    palette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
 
-    palette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
-    palette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
 
-    palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
-    palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
-    palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
 
-    palette.setColor(QPalette::Active, QPalette::ToolTipBase, toolTipBase_at);
-    palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, toolTipBase_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, toolTipBase_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::ToolTipBase, toolTipBase_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::ToolTipBase, toolTipBase_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::ToolTipBase, toolTipBase_dis);
 
-    palette.setColor(QPalette::Active, QPalette::ToolTipText, toolTipText_at);
-    palette.setColor(QPalette::Inactive, QPalette::ToolTipText, toolTipText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ToolTipText, toolTipText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::ToolTipText, toolTipText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::ToolTipText, toolTipText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::ToolTipText, toolTipText_dis);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setColor(QPalette::Active, QPalette::PlaceholderText, placeholderText_at);
-    palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholderText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, placeholderText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::PlaceholderText, placeholderText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholderText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::PlaceholderText, placeholderText_dis);
 #endif
-
-    return palette;
-
-
-
 }
 
 
@@ -287,18 +371,18 @@ QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 }
 
 
-
-
-KClassicalStyleParameters::KClassicalStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
+//Classical theme
+KClassicalStyleParameters::KClassicalStyleParameters(QObject *parent, bool isDark) : KAbstractStyleParameters(parent, isDark)
 {
     radius = 0;
     CheckBox_Radius = 0;
+
+    initPalette(isDark);
 }
 
-
-
-QPalette KClassicalStyleParameters::setPalette(QPalette &palette, bool isDark)
+void KClassicalStyleParameters::initPalette(bool isDark)
 {
+
     QColor windowText_at(38, 38, 38),
            windowText_iat(38, 38, 38),
            windowText_dis(166, 166, 166),
@@ -394,85 +478,83 @@ QPalette KClassicalStyleParameters::setPalette(QPalette &palette, bool isDark)
         placeholderText.setRgb(166, 166, 166);
     }
 
-    palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Button, button_at);
-    palette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Button, button_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Light, light_at);
-    palette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Light, light_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Dark, dark_at);
-    palette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Dark, dark_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Mid, mid_at);
-    palette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Mid, mid_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Text, text_at);
-    palette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Text, text_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
 
-    palette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Base, base_at);
-    palette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Base, base_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Window, window_at);
-    palette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Window, window_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
-    palette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Link, link_at);
-    palette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Link, link_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
 
-    palette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
 
-    palette.setColor(QPalette::AlternateBase, alternateBase_at);
+    defaultPalette.setColor(QPalette::AlternateBase, alternateBase_at);
 
-    palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
-    palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
-    palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
 
-    palette.setColor(QPalette::ToolTipBase, toolTipBase);
+    defaultPalette.setColor(QPalette::ToolTipBase, toolTipBase);
 
-    palette.setColor(QPalette::ToolTipText, toolTipText);
+    defaultPalette.setColor(QPalette::ToolTipText, toolTipText);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setColor(QPalette::PlaceholderText, placeholderText);
+    defaultPalette.setColor(QPalette::PlaceholderText, placeholderText);
 #endif
-
-    return palette;
 }
 
 
@@ -487,7 +569,7 @@ QColor KClassicalStyleParameters::radiobutton_default(bool isDark)
 }
 
 
-KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractStyleParameters(parent)
+KFashionStyleParameters::KFashionStyleParameters(QObject *parent, bool isDark) : KAbstractStyleParameters(parent, isDark)
 {
     radius = 0;
 
@@ -495,11 +577,11 @@ KFashionStyleParameters::KFashionStyleParameters(QObject *parent) : KAbstractSty
 
     Menu_Radius = 0;
     MenuItem_Radius = 0;
+
+    initPalette(isDark);
 }
 
-
-
-QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
+void KFashionStyleParameters::initPalette(bool isDark)
 {
 
     QColor windowText_at(5, 9, 19),
@@ -615,89 +697,87 @@ QPalette KFashionStyleParameters::setPalette(QPalette &palette, bool isDark)
         placeholderText.setRgb(95, 100, 114);
     }
 
-    palette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
-    palette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::WindowText, windowText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::WindowText, windowText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::WindowText, windowText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Button, button_at);
-    palette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Button, button_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Button, button_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Button, button_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Light, light_at);
-    palette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Light, light_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Light, light_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Light, light_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Midlight, midlight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Midlight, midlight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Midlight, midlight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Dark, dark_at);
-    palette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Dark, dark_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Dark, dark_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Dark, dark_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Mid, mid_at);
-    palette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Mid, mid_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Mid, mid_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Mid, mid_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Text, text_at);
-    palette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Text, text_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Text, text_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Text, text_dis);
 
-    palette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::BrightText, brightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::BrightText, brightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::BrightText, brightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
-    palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::ButtonText, buttonText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::ButtonText, buttonText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Base, base_at);
-    palette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Base, base_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Base, base_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Base, base_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Window, window_at);
-    palette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Window, window_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Window, window_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Window, window_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
-    palette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Shadow, shadow_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Shadow, shadow_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Shadow, shadow_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
-    palette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Highlight, highLight_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Highlight, highLight_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Highlight, hightight_dis);
 
-    palette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
-    palette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
-    palette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::HighlightedText, highLightText_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::HighlightedText, highLightText_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, highLightText_dis);
 
-    palette.setColor(QPalette::Active, QPalette::Link, link_at);
-    palette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
-    palette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::Link, link_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::Link, link_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::Link, link_dis);
 
-    palette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
-    palette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
-    palette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::LinkVisited, linkVisited_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::LinkVisited, linkVisited_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::LinkVisited, linkVisited_dis);
 
-    palette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
-    palette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::AlternateBase, alternateBase_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::AlternateBase, alternateBase_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::AlternateBase, alternateBase_dis);
 
-    palette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
-    palette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
-    palette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
+    defaultPalette.setColor(QPalette::Active, QPalette::NoRole, noRale_at);
+    defaultPalette.setColor(QPalette::Inactive, QPalette::NoRole, noRole_iat);
+    defaultPalette.setColor(QPalette::Disabled, QPalette::NoRole, noRole_dis);
 
-    palette.setColor(QPalette::ToolTipBase, toolTipBase);
+    defaultPalette.setColor(QPalette::ToolTipBase, toolTipBase);
 
-    palette.setColor(QPalette::ToolTipText, toolTipText);
+    defaultPalette.setColor(QPalette::ToolTipText, toolTipText);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    palette.setColor(QPalette::PlaceholderText, placeholderText);
+    defaultPalette.setColor(QPalette::PlaceholderText, placeholderText);
 #endif
 
-    return palette;
 }
-
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)
 {
