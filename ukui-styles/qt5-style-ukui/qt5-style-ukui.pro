@@ -41,6 +41,7 @@ SOURCES += \
     tab-widget-animation-helper.cpp \
     scrollbar-animation-helper.cpp \
     qt5-ukui-style-helper.cpp \
+    toolbutton-parameters.cpp \
     view-helper.cpp
 
 HEADERS += \
@@ -55,7 +56,8 @@ HEADERS += \
     shadow-helper.h \
     tab-widget-animation-helper.h \
     scrollbar-animation-helper.h \
-    qt5-ukui-style-helper.h
+    qt5-ukui-style-helper.h \
+    toolbutton-parameters.h
 DISTFILES += qt5-style-ukui.json 
 
 unix {

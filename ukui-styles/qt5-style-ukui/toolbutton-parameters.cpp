@@ -16,38 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this library.  If not, see <https://www.gnu.org/licenses/>.
  *
- * Authors: Xibowen <lanyue@kylinos.cn>
+ * Authors: Xibowen <xibowen@kylinos.cn>
  *
  */
 
+#include "toolbutton-parameters.h"
 
-
-#ifndef PUSHBUTTONPARAMETERS_H
-#define PUSHBUTTONPARAMETERS_H
-
-#include <QBrush>
-
-class PushButtonParameters
+ToolButtonParameters::ToolButtonParameters()
 {
-public:
-    PushButtonParameters();
 
-//private:
-    int radius;
-
-    QBrush pushButtonDefaultBrush;
-    QBrush pushButtonHoverBrush;
-    QBrush pushButtonClickBrush;
-    QBrush pushButtonDisableBrush;
-    QBrush pushButtonDisableOnBrush;
-
-//    QColor PushButtonInactiveColor;
-
-//    QColor PushButtonTextDefaultColor;
-//    QColor PushButtonTextHoverColor;
-//    QColor PushButtonTextClickColor;
-//    QColor PushButtonTextInactiveColor;
-//    QColor PushButtonTextDisableColor;
-};
-
-#endif // PUSHBUTTONPARAMETERS_H
+}

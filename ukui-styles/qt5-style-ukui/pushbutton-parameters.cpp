@@ -19,6 +19,7 @@
  * Authors: Xibowen <xibowen@kylinos.cn>
  *
  */
+
 #include "pushbutton-parameters.h"
 
 PushButtonParameters::PushButtonParameters()

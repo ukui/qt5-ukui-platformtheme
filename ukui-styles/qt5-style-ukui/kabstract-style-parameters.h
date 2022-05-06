@@ -28,16 +28,13 @@
 #include <QStyleOption>
 
 #include "pushbutton-parameters.h"
+#include "toolbutton-parameters.h"
 
 
 class KAbstractStyleParameters
 {
 public:
     KAbstractStyleParameters(QObject *parent, bool isDark);
-
-    PushButtonParameters pushbuttonParameters;
-
-
 
     // radius
     int radius = 6;
@@ -124,7 +121,13 @@ public:
     // tooltip
     int ToolTip_DefaultMargin = 8;
 
+
+
+
     QPalette defaultPalette;
+
+    PushButtonParameters pushButtonParameters;
+    ToolButtonParameters toolButtonParameters;
 
 
 
@@ -134,6 +137,7 @@ public:
 
     virtual void initPalette(bool isDark) = 0;
     virtual void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
+    virtual void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
 };
 
 
@@ -146,6 +150,7 @@ public:
 
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -158,7 +163,7 @@ public:
 
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
-
+    void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -171,5 +176,6 @@ public:
 
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 #endif // KABSTRACTSTYLEPARAMETERS_H

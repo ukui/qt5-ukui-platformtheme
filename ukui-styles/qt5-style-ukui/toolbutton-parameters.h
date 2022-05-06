@@ -21,33 +21,24 @@
  */
 
 
-
-#ifndef PUSHBUTTONPARAMETERS_H
-#define PUSHBUTTONPARAMETERS_H
+#ifndef TOOLBUTTONPARAMETERS_H
+#define TOOLBUTTONPARAMETERS_H
 
 #include <QBrush>
 
-class PushButtonParameters
+class ToolButtonParameters
 {
 public:
-    PushButtonParameters();
+    ToolButtonParameters();
 
 //private:
     int radius;
 
-    QBrush pushButtonDefaultBrush;
-    QBrush pushButtonHoverBrush;
-    QBrush pushButtonClickBrush;
-    QBrush pushButtonDisableBrush;
-    QBrush pushButtonDisableOnBrush;
-
-//    QColor PushButtonInactiveColor;
-
-//    QColor PushButtonTextDefaultColor;
-//    QColor PushButtonTextHoverColor;
-//    QColor PushButtonTextClickColor;
-//    QColor PushButtonTextInactiveColor;
-//    QColor PushButtonTextDisableColor;
+    QBrush toolButtonDefaultBrush;
+    QBrush toolButtonHoverBrush;
+    QBrush toolButtonClickBrush;
+    QBrush toolButtonDisableBrush;
+    QBrush toolButtonDisableOnBrush;
 };
 
-#endif // PUSHBUTTONPARAMETERS_H
+#endif // TOOLBUTTONPARAMETERS_H

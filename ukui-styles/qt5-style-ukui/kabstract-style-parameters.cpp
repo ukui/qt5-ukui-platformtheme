@@ -22,6 +22,7 @@
 
 
 #include <QPushButton>
+#include <QToolButton>
 #include <QApplication>
 
 
@@ -370,7 +371,7 @@ void KDefaultStyleParameters::initPalette(bool isDark)
 
 void KDefaultStyleParameters::initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
 {
-    pushbuttonParameters.radius = 6;
+    pushButtonParameters.radius = 6;
 
     QBrush defaultBrush;
     QBrush clickBrush;
@@ -414,8 +415,91 @@ void KDefaultStyleParameters::initPushButtonParameters(bool isDark, const QStyle
             useButtonPalette = widget->property("useButtonPalette").toBool();
         }
 
+        if (isWindowColoseButton) {
+            QColor ColoseButton = ColoseButtonColor;
+
+            if (isDark) {
+                hoverBrush = QBrush(mixColor(ColoseButton, mix, 0.2));
+                clickBrush = QBrush(mixColor(ColoseButton, mix, 0.05));
+            } else {
+                hoverBrush = QBrush(mixColor(ColoseButton, mix, 0.05));
+                clickBrush = QBrush(mixColor(ColoseButton, mix, 0.2));
+            }
+        } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
+            if (isDark) {
+                mix.setAlphaF(0.28);
+                hoverBrush = QBrush(mix);
+                mix.setAlphaF(0.15);
+                clickBrush = QBrush(mix);
+            } else {
+                mix.setAlphaF(0.15);
+                hoverBrush = QBrush(mix);
+                mix.setAlphaF(0.28);
+                clickBrush = QBrush(mix);
+            }
+        } else if (useButtonPalette || isWindowButton) {
+            QColor button = option->palette.color(QPalette::Active, QPalette::Button);
+
+            if (isDark) {
+                hoverBrush = QBrush(mixColor(button, mix, 0.2));
+                clickBrush = QBrush(mixColor(button, mix, 0.05));
+            } else {
+                hoverBrush = QBrush(mixColor(button, mix, 0.05));
+                clickBrush = QBrush(mixColor(button, mix, 0.2));
+            }
+        }
+
         if (isImportant) {
-            defaultBrush = option->palette.brush(QPalette::Active, QPalette::Highlight);
+            defaultBrush = highlight;
+        }
+    }
+
+    pushButtonParameters.pushButtonDefaultBrush   = defaultBrush;
+    pushButtonParameters.pushButtonClickBrush     = clickBrush;
+    pushButtonParameters.pushButtonHoverBrush     = hoverBrush;
+    pushButtonParameters.pushButtonDisableBrush   = disableBrush;
+    pushButtonParameters.pushButtonDisableOnBrush = disableOnBrush;
+}
+
+void KDefaultStyleParameters::initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    toolButtonParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush clickBrush;
+    QBrush hoverBrush;
+    QBrush disableBrush;
+    QBrush disableOnBrush;
+
+    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
+    QColor mix = option->palette.color(QPalette::Active, QPalette::BrightText);
+    if (isDark) {
+        hoverBrush = QBrush(mixColor(highlight, mix, 0.2));
+        clickBrush = QBrush(mixColor(highlight, mix, 0.05));
+    } else {
+        hoverBrush = QBrush(mixColor(highlight, mix, 0.05));
+        clickBrush = QBrush(mixColor(highlight, mix, 0.2));
+    }
+    defaultBrush = option->palette.brush(QPalette::Active, QPalette::Button);
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disableOnBrush = option->palette.brush(QPalette::Disabled, QPalette::NoRole);
+
+    if (qobject_cast<const QToolButton *>(widget)) {
+        bool isWindowButton = false;
+        bool isWindowColoseButton = false;
+        bool useButtonPalette = false;
+
+        if (widget->property("isWindowButton").isValid()) {
+            if (widget->property("isWindowButton").toInt() == 0x01) {
+                isWindowButton = true;
+            }
+            if (widget->property("isWindowButton").toInt() == 0x02) {
+                isWindowColoseButton = true;
+            }
+        }
+
+        if (widget->property("useButtonPalette").isValid()) {
+            useButtonPalette = widget->property("useButtonPalette").toBool();
         }
 
         if (isWindowColoseButton) {
@@ -453,11 +537,11 @@ void KDefaultStyleParameters::initPushButtonParameters(bool isDark, const QStyle
         }
     }
 
-    pushbuttonParameters.PushButtonDefaultBrush   = defaultBrush;
-    pushbuttonParameters.PushButtonClickBrush     = clickBrush;
-    pushbuttonParameters.PushButtonHoverBrush     = hoverBrush;
-    pushbuttonParameters.PushButtonDisableBrush   = disableBrush;
-    pushbuttonParameters.PushButtonDisableOnBrush = disableOnBrush;
+    toolButtonParameters.toolButtonDefaultBrush   = defaultBrush;
+    toolButtonParameters.toolButtonClickBrush     = clickBrush;
+    toolButtonParameters.toolButtonHoverBrush     = hoverBrush;
+    toolButtonParameters.toolButtonDisableBrush   = disableBrush;
+    toolButtonParameters.toolButtonDisableOnBrush = disableOnBrush;
 }
 
 
@@ -662,6 +746,11 @@ void KClassicalStyleParameters::initPushButtonParameters(bool isDark, const QSty
 
 }
 
+void KClassicalStyleParameters::initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+
+}
+
 QColor KClassicalStyleParameters::radiobutton_default(bool isDark)
 {
     if (isDark) {
@@ -708,9 +797,9 @@ void KFashionStyleParameters::initPalette(bool isDark)
            text_at(5, 9, 20),
            text_iat(5, 9, 20),
            text_dis(169, 173, 183),
-           brightText_at(238, 242, 253),
-           brightText_iat(238, 242, 253),
-           brightText_dis(169, 173, 183),
+           brightText_at(0, 0, 0),
+           brightText_iat(0, 0, 0),
+           brightText_dis(0, 0, 0),
            buttonText_at(5, 9, 20),
            buttonText_iat(5, 9, 20),
            buttonText_dis(169, 173, 183),
@@ -767,9 +856,9 @@ void KFashionStyleParameters::initPalette(bool isDark)
         text_at.setRgb(219, 222, 233);
         text_iat.setRgb(219, 222, 233);
         text_dis.setRgb(77, 77, 77);
-        brightText_at.setRgb(219, 222, 233);
-        brightText_iat.setRgb(219, 222, 233);
-        brightText_dis.setRgb(77, 77, 77);
+        brightText_at.setRgb(255, 255, 255);
+        brightText_iat.setRgb(255, 255, 255);
+        brightText_dis.setRgb(255, 255, 255);
         buttonText_at.setRgb(219, 222, 233);
         buttonText_iat.setRgb(219, 222, 233);
         buttonText_dis.setRgb(76, 76, 79);
@@ -884,7 +973,7 @@ void KFashionStyleParameters::initPalette(bool isDark)
 
 void KFashionStyleParameters::initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
 {
-    pushbuttonParameters.radius = 6;
+    pushButtonParameters.radius = 6;
 
     QBrush defaultBrush;
     QBrush clickBrush;
@@ -894,11 +983,31 @@ void KFashionStyleParameters::initPushButtonParameters(bool isDark, const QStyle
 
     QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
     QColor mix = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    QColor startColor;
+    QColor endColor;
+    QLinearGradient linearGradient;
+    linearGradient.setStart(option->rect.topLeft());
+    linearGradient.setFinalStop(option->rect.bottomLeft());
     if (isDark) {
-        hoverBrush = QBrush(mixColor(highlight, mix, 0.2));
+        //hover
+        startColor = mixColor(highlight, QColor(Qt::white), 0.2);
+        endColor = highlight;
+        linearGradient.setColorAt(0, startColor);
+        linearGradient.setColorAt(1, endColor);
+        hoverBrush = QBrush(linearGradient);
+
+        //click
         clickBrush = QBrush(mixColor(highlight, mix, 0.05));
     } else {
-        hoverBrush = QBrush(mixColor(highlight, mix, 0.05));
+        //hover
+        startColor = mixColor(highlight, QColor(Qt::white), 0.2);
+        endColor = mixColor(highlight, QColor(Qt::black), 0.05);
+        linearGradient.setColorAt(0, startColor);
+        linearGradient.setColorAt(1, endColor);
+        hoverBrush = QBrush(linearGradient);
+
+        //click
         clickBrush = QBrush(mixColor(highlight, mix, 0.2));
     }
     defaultBrush = option->palette.brush(QPalette::Active, QPalette::Button);
@@ -927,18 +1036,28 @@ void KFashionStyleParameters::initPushButtonParameters(bool isDark, const QStyle
             useButtonPalette = widget->property("useButtonPalette").toBool();
         }
 
-        if (isImportant) {
-            defaultBrush = option->palette.brush(QPalette::Active, QPalette::Highlight);
-        }
-
         if (isWindowColoseButton) {
             QColor ColoseButton = ColoseButtonColor;
 
             if (isDark) {
-                hoverBrush = QBrush(mixColor(ColoseButton, mix, 0.2));
+                //hover
+                startColor = mixColor(ColoseButton, QColor(Qt::white), 0.2);
+                endColor = ColoseButton;
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
                 clickBrush = QBrush(mixColor(ColoseButton, mix, 0.05));
             } else {
-                hoverBrush = QBrush(mixColor(ColoseButton, mix, 0.05));
+                //hover
+                startColor = mixColor(ColoseButton, QColor(Qt::white), 0.2);
+                endColor = mixColor(ColoseButton, QColor(Qt::black), 0.05);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
                 clickBrush = QBrush(mixColor(ColoseButton, mix, 0.2));
             }
         } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
@@ -957,20 +1076,169 @@ void KFashionStyleParameters::initPushButtonParameters(bool isDark, const QStyle
             QColor button = option->palette.color(QPalette::Active, QPalette::Button);
 
             if (isDark) {
-                hoverBrush = QBrush(mixColor(button, mix, 0.2));
+                //hover
+                startColor = mixColor(button, QColor(Qt::white), 0.2);
+                endColor = mixColor(button, QColor(Qt::white), 0.1);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
                 clickBrush = QBrush(mixColor(button, mix, 0.05));
             } else {
-                hoverBrush = QBrush(mixColor(button, mix, 0.05));
+                //hover
+                startColor = mixColor(button, QColor(Qt::black), 0.1);
+                endColor = mixColor(button, QColor(Qt::black), 0.2);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
+                clickBrush = QBrush(mixColor(button, mix, 0.2));
+            }
+        }
+
+        if (isImportant) {
+            defaultBrush = highlight;
+        }
+    }
+
+    pushButtonParameters.pushButtonDefaultBrush   = defaultBrush;
+    pushButtonParameters.pushButtonClickBrush     = clickBrush;
+    pushButtonParameters.pushButtonHoverBrush     = hoverBrush;
+    pushButtonParameters.pushButtonDisableBrush   = disableBrush;
+    pushButtonParameters.pushButtonDisableOnBrush = disableOnBrush;
+}
+
+void KFashionStyleParameters::initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    toolButtonParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush clickBrush;
+    QBrush hoverBrush;
+    QBrush disableBrush;
+    QBrush disableOnBrush;
+
+    QColor highlight = option->palette.color(QPalette::Active, QPalette::Highlight);
+    QColor mix = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    QColor startColor;
+    QColor endColor;
+    QLinearGradient linearGradient;
+    linearGradient.setStart(option->rect.topLeft());
+    linearGradient.setFinalStop(option->rect.bottomLeft());
+    if (isDark) {
+        //hover
+        startColor = mixColor(highlight, QColor(Qt::white), 0.2);
+        endColor = highlight;
+        linearGradient.setColorAt(0, startColor);
+        linearGradient.setColorAt(1, endColor);
+        hoverBrush = QBrush(linearGradient);
+
+        //click
+        clickBrush = QBrush(mixColor(highlight, mix, 0.05));
+    } else {
+        //hover
+        startColor = mixColor(highlight, QColor(Qt::white), 0.2);
+        endColor = mixColor(highlight, QColor(Qt::black), 0.05);
+        linearGradient.setColorAt(0, startColor);
+        linearGradient.setColorAt(1, endColor);
+        hoverBrush = QBrush(linearGradient);
+
+        //click
+        clickBrush = QBrush(mixColor(highlight, mix, 0.2));
+    }
+    defaultBrush = option->palette.brush(QPalette::Active, QPalette::Button);
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disableOnBrush = option->palette.brush(QPalette::Disabled, QPalette::NoRole);
+
+    if (qobject_cast<const QToolButton *>(widget)) {
+        bool isWindowButton = false;
+        bool isWindowColoseButton = false;
+        bool useButtonPalette = false;
+
+        if (widget->property("isWindowButton").isValid()) {
+            if (widget->property("isWindowButton").toInt() == 0x01) {
+                isWindowButton = true;
+            }
+            if (widget->property("isWindowButton").toInt() == 0x02) {
+                isWindowColoseButton = true;
+            }
+        }
+
+        if (widget->property("useButtonPalette").isValid()) {
+            useButtonPalette = widget->property("useButtonPalette").toBool();
+        }
+
+        if (isWindowColoseButton) {
+            QColor ColoseButton = ColoseButtonColor;
+
+            if (isDark) {
+                //hover
+                startColor = mixColor(ColoseButton, QColor(Qt::white), 0.2);
+                endColor = ColoseButton;
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
+                clickBrush = QBrush(mixColor(ColoseButton, mix, 0.05));
+            } else {
+                //hover
+                startColor = mixColor(ColoseButton, QColor(Qt::white), 0.2);
+                endColor = mixColor(ColoseButton, QColor(Qt::black), 0.05);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
+                clickBrush = QBrush(mixColor(ColoseButton, mix, 0.2));
+            }
+        } else if (isWindowButton && useTransparentButtonList().contains(qAppName())) {
+            if (isDark) {
+                mix.setAlphaF(0.28);
+                hoverBrush = QBrush(mix);
+                mix.setAlphaF(0.15);
+                clickBrush = QBrush(mix);
+            } else {
+                mix.setAlphaF(0.15);
+                hoverBrush = QBrush(mix);
+                mix.setAlphaF(0.28);
+                clickBrush = QBrush(mix);
+            }
+        } else if (useButtonPalette || isWindowButton) {
+            QColor button = option->palette.color(QPalette::Active, QPalette::Button);
+
+            if (isDark) {
+                //hover
+                startColor = mixColor(button, QColor(Qt::white), 0.2);
+                endColor = mixColor(button, QColor(Qt::white), 0.1);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
+                clickBrush = QBrush(mixColor(button, mix, 0.05));
+            } else {
+                //hover
+                startColor = mixColor(button, QColor(Qt::black), 0.1);
+                endColor = mixColor(button, QColor(Qt::black), 0.2);
+                linearGradient.setColorAt(0, startColor);
+                linearGradient.setColorAt(1, endColor);
+                hoverBrush = QBrush(linearGradient);
+
+                //click
                 clickBrush = QBrush(mixColor(button, mix, 0.2));
             }
         }
     }
 
-    pushbuttonParameters.PushButtonDefaultBrush   = defaultBrush;
-    pushbuttonParameters.PushButtonClickBrush     = clickBrush;
-    pushbuttonParameters.PushButtonHoverBrush     = hoverBrush;
-    pushbuttonParameters.PushButtonDisableBrush   = disableBrush;
-    pushbuttonParameters.PushButtonDisableOnBrush = disableOnBrush;
+    toolButtonParameters.toolButtonDefaultBrush   = defaultBrush;
+    toolButtonParameters.toolButtonClickBrush     = clickBrush;
+    toolButtonParameters.toolButtonHoverBrush     = hoverBrush;
+    toolButtonParameters.toolButtonDisableBrush   = disableBrush;
+    toolButtonParameters.toolButtonDisableOnBrush = disableOnBrush;
 }
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)
