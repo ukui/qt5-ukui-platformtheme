@@ -40,7 +40,7 @@ static const QStringList blackAppList() {
     return l;
 }
 
-static const QStringList blackAppListWithBlurHelper(){
+static const QStringList blackAppListWithBlurHelper() {
     QStringList l;
     l<<"youker-assistant";
     l<<"kylin-assistant";
@@ -49,6 +49,45 @@ static const QStringList blackAppListWithBlurHelper(){
     l<<"ubuntu-kylin-software-center.py";
 //    l<<"kylin-burner";
     l<<"ukui-clipboard";
+    return l;
+}
+
+static const QStringList useDarkPaletteList() {
+    //use dark palette in default style.
+    QStringList l;
+//    l<<"ukui-menu";
+//    l<<"ukui-panel";
+//    l<<"ukui-sidebar";
+//    l<<"ukui-volume-control-applet-qt";
+//    l<<"ukui-power-manager-tray";
+//    l<<"kylin-nm";
+    l<<"ukui-flash-disk";
+//    l<<"ukui-bluetooth";
+    l<<"mktip";
+
+    return l;
+}
+
+static const QStringList useDefaultPaletteList() {
+    //use light palette
+    QStringList l;
+//    l<<"kybackup";
+//    l<<"biometric-manager";
+//    l<<"kylin-video";
+
+    return l;
+}
+
+static const QStringList useTransparentButtonList() {
+    //use transparent button
+    QStringList l;
+    l<<"kybackup";
+    l<<"biometric-manager";
+    l<<"kylin-video";
+    l<<"kylin-ipmsg";
+    l<<"kylin-weather";
+    l<<"kylin-recorder";
+
     return l;
 }
 

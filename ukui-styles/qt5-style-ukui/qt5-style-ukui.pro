@@ -34,7 +34,8 @@ SOURCES += \
     menu-helper.cpp \
     progressbar-animation-helper.cpp \
     progressbar-animation.cpp \
-        qt5-ukui-style-plugin.cpp \
+    pushbutton-parameters.cpp \
+    qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
     shadow-helper.cpp \
     tab-widget-animation-helper.cpp \
@@ -48,7 +49,8 @@ HEADERS += \
     kabstract-style-parameters.h \
     progressbar-animation-helper.h \
     progressbar-animation.h \
-        qt5-ukui-style-plugin.h \
+    pushbutton-parameters.h \
+    qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \
     shadow-helper.h \
     tab-widget-animation-helper.h \

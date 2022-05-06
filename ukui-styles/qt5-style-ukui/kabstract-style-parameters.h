@@ -27,11 +27,17 @@
 #include <QPalette>
 #include <QStyleOption>
 
+#include "pushbutton-parameters.h"
+
 
 class KAbstractStyleParameters
 {
 public:
     KAbstractStyleParameters(QObject *parent, bool isDark);
+
+    PushButtonParameters pushbuttonParameters;
+
+
 
     // radius
     int radius = 6;
@@ -126,7 +132,8 @@ public:
     QPalette setPalette(QPalette &palette);
     virtual QColor radiobutton_default(bool isDark) = 0;// palette::Button
 
-    virtual void initPalette(bool isDark);
+    virtual void initPalette(bool isDark) = 0;
+    virtual void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
 };
 
 
@@ -135,9 +142,10 @@ class KDefaultStyleParameters : public KAbstractStyleParameters
 public:
     KDefaultStyleParameters(QObject *parent, bool isDark);
 
-    void initPalette(bool isDark) override;
-
     QColor radiobutton_default(bool isDark) override;
+
+    void initPalette(bool isDark) override;
+    void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -146,9 +154,11 @@ class KClassicalStyleParameters : public KAbstractStyleParameters
 public:
     KClassicalStyleParameters(QObject *parent, bool isDark);
 
-    void initPalette(bool isDark) override;
-
     QColor radiobutton_default(bool isDark) override;
+
+    void initPalette(bool isDark) override;
+    void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+
 };
 
 
@@ -157,8 +167,9 @@ class KFashionStyleParameters : public KAbstractStyleParameters
 public:
     KFashionStyleParameters(QObject *parent, bool isDark);
 
-    void initPalette(bool isDark) override;
-
     QColor radiobutton_default(bool isDark) override;
+
+    void initPalette(bool isDark) override;
+    void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 #endif // KABSTRACTSTYLEPARAMETERS_H

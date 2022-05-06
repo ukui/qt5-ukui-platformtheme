@@ -61,10 +61,6 @@ class Qt5UKUIStyle : public Style
 public:
     explicit Qt5UKUIStyle(bool dark = false, bool useDefault = true, QString type = "fashion");
 
-    const QStringList useDarkPaletteList() const;
-    const QStringList useDefaultPaletteList() const;
-    const QStringList useTransparentButtonList() const;
-
     bool shouldBeTransparent(const QWidget *w) const;
 
     //debuger
@@ -142,6 +138,9 @@ private:
     bool m_is_tablet_mode = false;
     QDBusInterface *m_statusManagerDBus = nullptr;
 
+    // KAbstractStyleParameters
+    KAbstractStyleParameters *sp = nullptr;
+
     bool isUseDarkPalette() const;
 
     QColor button_Click(const QStyleOption *option) const;
@@ -155,9 +154,6 @@ private:
     QColor highLight_Hover(const QStyleOption *option) const;
 
     void setThemeColor(QString themeColor, QPalette &palette) const;
-
-    // KAbstractStyleParameters
-    KAbstractStyleParameters *sp = nullptr;
 
     // menu
     void drawMenuPrimitive(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
