@@ -167,7 +167,7 @@ const QColor HighLightEffect::defaultStyleDark(const QStyleOption *option)
     }
 
     windowText.getHsvF(&h, &s, &v);
-    return QColor::fromHsvF(h, s*0.85, v, 0.7);
+    return QColor::fromHsvF(h, s, v);
 }
 
 QPixmap HighLightEffect::generatePixmap(const QPixmap &pixmap, const QStyleOption *option, const QWidget *widget, bool force, EffectMode mode)
