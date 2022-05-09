@@ -1,3 +1,19 @@
+qt5-ukui-platformtheme (3.1.4-1~0509) v101; urgency=medium
+
+  * 改动：
+    BUG号：113049(处理图标加了透明度的问题)
+    需求号：77049(寻光、和印主题)，一键切换
+    其他改：主题框架代码结构逻辑调整，实现一键切换
+            实现combobox的和印和寻光切换
+            实现spinbox的和印和寻光切换
+            实现lineedit的和印和寻光切换
+            实现toolbutton与pushbutton的和印和寻光切换
+            备份还原移除黑名单
+            修改combobox图标没有反白的问题
+    影响域：所有应用UI样式，combobox、spinbox、lineedit、toolbutton与pushbutton一键切换，通过gsetting widget-theme-name
+
+ -- xibowen <xibowen@kylinos.cn>  Mon, 09 May 2022 17:05:00 +0800
+
 qt5-ukui-platformtheme (3.1.4-1~0427) v101; urgency=medium
 
   * 改动：
