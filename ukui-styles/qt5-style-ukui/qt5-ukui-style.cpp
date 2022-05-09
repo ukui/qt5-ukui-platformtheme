@@ -2798,6 +2798,7 @@ void Qt5UKUIStyle::drawControl(QStyle::ControlElement element, const QStyleOptio
                     iconRect.setRect(editRect.x(), editRect.y(), comboBox->iconSize.width(), editRect.height());
                     editRect.setRect(editRect.x() + iconRect.width() + 8, editRect.y(), editRect.width() - iconRect.width() - 8, editRect.height());
                 }
+                pixmap = HighLightEffect::ordinaryGeneratePixmap(pixmap, option, widget);
                 proxy()->drawItemPixmap(painter, iconRect, Qt::AlignCenter, pixmap);
             }
 
