@@ -39,6 +39,7 @@ SOURCES += \
     qt5-ukui-style-plugin.cpp \
     qt5-ukui-style.cpp \
     shadow-helper.cpp \
+    spinbox-parameters.cpp \
     tab-widget-animation-helper.cpp \
     scrollbar-animation-helper.cpp \
     qt5-ukui-style-helper.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     qt5-ukui-style-plugin.h \
     qt5-ukui-style.h \
     shadow-helper.h \
+    spinbox-parameters.h \
     tab-widget-animation-helper.h \
     scrollbar-animation-helper.h \
     qt5-ukui-style-helper.h \

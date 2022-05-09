@@ -587,6 +587,49 @@ void KDefaultStyleParameters::initLineEditParameters(bool isDark, const QStyleOp
     lineEditParameters.lineEditDisablePen = disablePen;
 }
 
+void KDefaultStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    spinBoxParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush focusBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen focusPen;
+    QPen disablePen;
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    hoverBrush = defaultBrush;
+    hoverPen = defaultPen;
+
+    //focus state
+    focusBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    focusPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    spinBoxParameters.spinBoxDefaultBrush = defaultBrush;
+    spinBoxParameters.spinBoxHoverBrush = hoverBrush;;
+    spinBoxParameters.spinBoxFocusBrush = focusBrush;;
+    spinBoxParameters.spinBoxDisableBrush = disableBrush;
+
+    spinBoxParameters.spinBoxDefaultPen = defaultPen;
+    spinBoxParameters.spinBoxHoverPen = hoverPen;
+    spinBoxParameters.spinBoxFocusPen = focusPen;
+    spinBoxParameters.spinBoxDisablePen = disablePen;
+}
+
 QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 {
     if (isDark) {
@@ -794,6 +837,11 @@ void KClassicalStyleParameters::initToolButtonParameters(bool isDark, const QSty
 }
 
 void KClassicalStyleParameters::initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+
+}
+
+void KClassicalStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
 {
 
 }
@@ -1329,6 +1377,49 @@ void KFashionStyleParameters::initLineEditParameters(bool isDark, const QStyleOp
     lineEditParameters.lineEditHoverPen = hoverPen;
     lineEditParameters.lineEditFocusPen = focusPen;
     lineEditParameters.lineEditDisablePen = disablePen;
+}
+
+void KFashionStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    spinBoxParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush focusBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen focusPen;
+    QPen disablePen;
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    hoverBrush = defaultBrush;
+    hoverPen = defaultPen;
+
+    //focus state
+    focusBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    focusPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    spinBoxParameters.spinBoxDefaultBrush = defaultBrush;
+    spinBoxParameters.spinBoxHoverBrush = hoverBrush;;
+    spinBoxParameters.spinBoxFocusBrush = focusBrush;;
+    spinBoxParameters.spinBoxDisableBrush = disableBrush;
+
+    spinBoxParameters.spinBoxDefaultPen = defaultPen;
+    spinBoxParameters.spinBoxHoverPen = hoverPen;
+    spinBoxParameters.spinBoxFocusPen = focusPen;
+    spinBoxParameters.spinBoxDisablePen = disablePen;
 }
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)

@@ -1141,6 +1141,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
             sp->initLineEditParameters(isUseDarkPalette(), option, widget);
             const bool enable = f->state & State_Enabled;
+            const bool hover = f->state & State_MouseOver;
             const bool focus = f->state & State_HasFocus;
 
             if (!enable) {
@@ -1172,6 +1173,13 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
                 painter->setBrush(sp->lineEditParameters.lineEditFocusBrush);
                 painter->drawRoundedRect(option->rect.adjusted(width, width, -width, -width),
                                          sp->lineEditParameters.radius, sp->lineEditParameters.radius);
+                painter->restore();
+            } else if (hover) {
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->setPen(sp->lineEditParameters.lineEditHoverPen);
+                painter->setBrush(sp->lineEditParameters.lineEditHoverBrush);
+                painter->drawRoundedRect(option->rect, sp->lineEditParameters.radius, sp->lineEditParameters.radius);
                 painter->restore();
             } else {
                 painter->save();
@@ -1849,9 +1857,11 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     case CC_SpinBox:
     {
         if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
+            sp->initSpinBoxParameters(isUseDarkPalette(), option, widget);
             bool enable = sb->state & State_Enabled;
             bool up = sb->activeSubControls == SC_SpinBoxUp;
             bool down = sb->activeSubControls == SC_SpinBoxDown;
+            bool hover = sb->state & State_MouseOver;
             bool focus = sb->state & State_HasFocus;
             QRect upRect = proxy()->subControlRect(CC_SpinBox, sb, SC_SpinBoxUp, widget);
             QRect downRect = proxy()->subControlRect(CC_SpinBox, sb, SC_SpinBoxDown, widget);
@@ -1863,37 +1873,35 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                 upOption.state = State_None;
                 downOption.state = State_None;
                 painter->save();
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(sb->palette.brush(QPalette::Disabled, QPalette::Button));
+                painter->setPen(sp->spinBoxParameters.spinBoxDisablePen);
+                painter->setBrush(sp->spinBoxParameters.spinBoxDisableBrush);
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
+                painter->drawRoundedRect(option->rect, sp->spinBoxParameters.radius, sp->spinBoxParameters.radius);
                 painter->restore();
             } else {
                 if (focus) {
+                    int width = sp->spinBoxParameters.spinBoxFocusPen.width();
                     painter->save();
-                    painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
-                                         2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                    painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                    painter->setPen(sp->spinBoxParameters.spinBoxFocusPen);
+                    painter->setBrush(sp->spinBoxParameters.spinBoxFocusBrush);
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
+                    painter->drawRoundedRect(option->rect.adjusted(width, width, -width, -width),
+                                             sp->spinBoxParameters.radius, sp->spinBoxParameters.radius);
+                    painter->restore();
+                } else if (hover) {
+                    painter->save();
+                    painter->setPen(sp->spinBoxParameters.spinBoxHoverPen);
+                    painter->setBrush(sp->spinBoxParameters.spinBoxHoverBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect, sp->spinBoxParameters.radius, sp->spinBoxParameters.radius);
                     painter->restore();
                 } else {
-                    QStyleOptionButton button;
-                    button.state = option->state & ~(State_Sunken | State_On);
-                    button.rect = option->rect;
-                    button.palette = option->palette;
-                    proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
-
-//                    if (hover) {
-//                        QRectF rect = sb->rect;
-//                        painter->save();
-//                        painter->setPen(QPen(sb->palette.brush(QPalette::Active, QPalette::Highlight),
-//                                             1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-//                        painter->setBrush(Qt::NoBrush);
-//                        painter->setRenderHint(QPainter::Antialiasing, true);
-//                        painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
-//                        painter->restore();
-//                    }
+                    painter->save();
+                    painter->setPen(sp->spinBoxParameters.spinBoxDefaultPen);
+                    painter->setBrush(sp->spinBoxParameters.spinBoxDefaultBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect, sp->spinBoxParameters.radius, sp->spinBoxParameters.radius);
+                    painter->restore();
                 }
             }
 
@@ -1911,7 +1919,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     upPath.lineTo(upRect.left(), upRect.bottom());
                     upPath.lineTo(upRect.left(), upRect.top() - sp->radius);
                     upOption.state |= State_Enabled;
-                    if (up) {
+                    if (up && enable) {
                         painter->setBrush(this->highLight_Hover(option));
                         upOption.state |= State_MouseOver;
                         if (option->state & State_Sunken) {
@@ -1934,7 +1942,7 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
                     downPath.lineTo(downRect.left(), downRect.top());
                     downPath.lineTo(downRect.left(), downRect.bottom() - sp->radius);
                     downOption.state |= State_Enabled;
-                    if (down) {
+                    if (down && enable) {
                         painter->setBrush(this->highLight_Hover(option));
                         downOption.state |= State_MouseOver;
                         if (option->state & State_Sunken) {
@@ -3898,14 +3906,14 @@ QRect Qt5UKUIStyle::subControlRect(QStyle::ComplexControl control, const QStyleO
             {
                 if (sb->buttonSymbols == QAbstractSpinBox::NoButtons)
                     return QRect();
-                rect = QRect(rect.right() + 1 - buttonWidth, rect.top(), buttonWidth, center);
+                rect = QRect(rect.right() - buttonWidth, rect.top(), buttonWidth, center);
                 break;
             }
             case SC_SpinBoxDown:
             {
                 if (sb->buttonSymbols == QAbstractSpinBox::NoButtons)
                     return QRect();
-                rect = QRect(rect.right() + 1 - buttonWidth, rect.top() + center, buttonWidth, center);
+                rect = QRect(rect.right() - buttonWidth, rect.top() + center, buttonWidth, center);
                 break;
             }
             case SC_SpinBoxEditField:
