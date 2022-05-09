@@ -1794,61 +1794,62 @@ void Qt5UKUIStyle::drawComplexControl(QStyle::ComplexControl control, const QSty
     case CC_ComboBox:
     {
         if (const QStyleOptionComboBox *comboBox = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+            sp->initComboBoxParameters(isUseDarkPalette(), option, widget);
             const bool enable = comboBox->state & State_Enabled;
             const bool on = comboBox->state & State_On;
-//            const bool hover = comboBox->state & State_MouseOver;
+            const bool hover = comboBox->state & State_MouseOver;
 
             if (!enable) {
                 painter->save();
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(comboBox->palette.brush(QPalette::Disabled, QPalette::Button));
+                painter->setPen(sp->comboBoxParameters.comboBoxDisablePen);
+                painter->setBrush(sp->comboBoxParameters.comboBoxDisableBrush);
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
+                painter->drawRoundedRect(option->rect, sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
                 painter->restore();
                 return;
             }
 
             if (comboBox->editable) {
-                painter->save();
                 if (comboBox->state & (State_HasFocus | State_On)) {
-                    painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
-                                         2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                    painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
+                    int width = sp->comboBoxParameters.comboBoxEditPen.width();
+                    painter->save();
+                    painter->setPen(sp->comboBoxParameters.comboBoxEditPen);
+                    painter->setBrush(sp->comboBoxParameters.comboBoxEditBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect.adjusted(width, width, -width, -width), sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
+                    painter->restore();
                 } else {
-                    painter->setPen(Qt::NoPen);
-                    painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Button));
+                    painter->save();
+                    painter->setPen(sp->comboBoxParameters.comboBoxDefaultPen);
+                    painter->setBrush(sp->comboBoxParameters.comboBoxDefaultBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect, sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
+                    painter->restore();
                 }
-                painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
-                painter->restore();
             } else {
-                QStyleOptionButton button;
-                button.state = option->state;
-                button.rect = option->rect;
-                button.palette = option->palette;
-                proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
                 if (on) {
                     painter->save();
-                    painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
-                                         2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                    painter->setBrush(Qt::NoBrush);
+                    painter->setPen(sp->comboBoxParameters.comboBoxOnPen);
+                    painter->setBrush(sp->comboBoxParameters.comboBoxOnBrush);
                     painter->setRenderHint(QPainter::Antialiasing, true);
-                    painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
+                    painter->drawRoundedRect(option->rect, sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
+                    painter->restore();
+                } else if (hover) {
+                     painter->save();
+                     painter->setPen(sp->comboBoxParameters.comboBoxHoverPen);
+                     painter->setBrush(sp->comboBoxParameters.comboBoxHoverBrush);
+                     painter->setRenderHint(QPainter::Antialiasing, true);
+                     painter->drawRoundedRect(option->rect, sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
+                     painter->restore();
+                 } else {
+                    painter->save();
+                    painter->setPen(sp->comboBoxParameters.comboBoxDefaultPen);
+                    painter->setBrush(sp->comboBoxParameters.comboBoxDefaultBrush);
+                    painter->setRenderHint(QPainter::Antialiasing, true);
+                    painter->drawRoundedRect(option->rect, sp->comboBoxParameters.radius, sp->comboBoxParameters.radius);
                     painter->restore();
                 }
             }
-//            if (hover) {
-//                QRectF rect = comboBox->rect;
-//                painter->save();
-//                painter->setPen(QPen(comboBox->palette.brush(QPalette::Active, QPalette::Highlight),
-//                                     1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-//                painter->setBrush(Qt::NoBrush);
-//                painter->setRenderHint(QPainter::Antialiasing,true);
-//                painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), x_Radius, y_Radius);
-//                painter->restore();
-//            }
-            
-
             return;
         }
         break;

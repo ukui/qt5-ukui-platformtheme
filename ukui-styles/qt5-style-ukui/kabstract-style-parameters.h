@@ -31,6 +31,8 @@
 #include "toolbutton-parameters.h"
 #include "lineedit-parameters.h"
 #include "spinbox-parameters.h"
+#include "combobox-parameters.h"
+
 
 
 class KAbstractStyleParameters
@@ -132,6 +134,8 @@ public:
     ToolButtonParameters toolButtonParameters;
     LineEditParameters lineEditParameters;
     SpinBoxParameters spinBoxParameters;
+    ComboBoxParameters comboBoxParameters;
+
 
 
 
@@ -145,6 +149,7 @@ public:
     virtual void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
     virtual void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
     virtual void initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
+    virtual void initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
 };
 
 
@@ -160,6 +165,7 @@ public:
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -175,6 +181,7 @@ public:
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -190,5 +197,6 @@ public:
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 #endif // KABSTRACTSTYLEPARAMETERS_H

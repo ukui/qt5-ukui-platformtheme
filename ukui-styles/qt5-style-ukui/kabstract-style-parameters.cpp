@@ -630,6 +630,68 @@ void KDefaultStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOpt
     spinBoxParameters.spinBoxDisablePen = disablePen;
 }
 
+void KDefaultStyleParameters::initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    comboBoxParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush onBrush;
+    QBrush editBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen onPen;
+    QPen editPen;
+    QPen disablePen;
+
+    QColor button = option->palette.color(QPalette::Active, QPalette::Button);
+    QColor mix = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    if (isDark) {
+        hoverBrush = QBrush(mixColor(button, mix, 0.2));
+    } else {
+        hoverBrush = QBrush(mixColor(button, mix, 0.05));
+    }
+    hoverPen = QPen(Qt::NoPen);
+
+    //on state
+    if (isDark) {
+        onBrush = QBrush(mixColor(button, mix, 0.05));
+    } else {
+        onBrush = QBrush(mixColor(button, mix, 0.2));
+    }
+    onPen = QPen(Qt::NoPen);
+
+    //focus and on state,edit mode
+    editBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    editPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    comboBoxParameters.comboBoxDefaultBrush = defaultBrush;
+    comboBoxParameters.comboBoxHoverBrush = hoverBrush;
+    comboBoxParameters.comboBoxOnBrush = onBrush;;
+    comboBoxParameters.comboBoxEditBrush = editBrush;
+    comboBoxParameters.comboBoxDisableBrush = disableBrush;
+
+    comboBoxParameters.comboBoxDefaultPen = defaultPen;
+    comboBoxParameters.comboBoxHoverPen = hoverPen;
+    comboBoxParameters.comboBoxOnPen = onPen;
+    comboBoxParameters.comboBoxEditPen = editPen;
+    comboBoxParameters.comboBoxDisablePen = disablePen;
+}
+
 QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 {
     if (isDark) {
@@ -842,6 +904,11 @@ void KClassicalStyleParameters::initLineEditParameters(bool isDark, const QStyle
 }
 
 void KClassicalStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+
+}
+
+void KClassicalStyleParameters::initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
 {
 
 }
@@ -1369,8 +1436,8 @@ void KFashionStyleParameters::initLineEditParameters(bool isDark, const QStyleOp
 
 
     lineEditParameters.lineEditDefaultBrush = defaultBrush;
-    lineEditParameters.lineEditHoverBrush = hoverBrush;;
-    lineEditParameters.lineEditFocusBrush = focusBrush;;
+    lineEditParameters.lineEditHoverBrush = hoverBrush;
+    lineEditParameters.lineEditFocusBrush = focusBrush;
     lineEditParameters.lineEditDisableBrush = disableBrush;
 
     lineEditParameters.lineEditDefaultPen = defaultPen;
@@ -1412,14 +1479,76 @@ void KFashionStyleParameters::initSpinBoxParameters(bool isDark, const QStyleOpt
 
 
     spinBoxParameters.spinBoxDefaultBrush = defaultBrush;
-    spinBoxParameters.spinBoxHoverBrush = hoverBrush;;
-    spinBoxParameters.spinBoxFocusBrush = focusBrush;;
+    spinBoxParameters.spinBoxHoverBrush = hoverBrush;
+    spinBoxParameters.spinBoxFocusBrush = focusBrush;
     spinBoxParameters.spinBoxDisableBrush = disableBrush;
 
     spinBoxParameters.spinBoxDefaultPen = defaultPen;
     spinBoxParameters.spinBoxHoverPen = hoverPen;
     spinBoxParameters.spinBoxFocusPen = focusPen;
     spinBoxParameters.spinBoxDisablePen = disablePen;
+}
+
+void KFashionStyleParameters::initComboBoxParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    comboBoxParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush onBrush;
+    QBrush editBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen onPen;
+    QPen editPen;
+    QPen disablePen;
+
+    QColor button = option->palette.color(QPalette::Active, QPalette::Button);
+    QColor mix = option->palette.color(QPalette::Active, QPalette::BrightText);
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    if (isDark) {
+        hoverBrush = QBrush(mixColor(button, mix, 0.2));
+    } else {
+        hoverBrush = QBrush(mixColor(button, mix, 0.05));
+    }
+    hoverPen = QPen(Qt::NoPen);
+
+    //on state
+    if (isDark) {
+        onBrush = QBrush(mixColor(button, mix, 0.05));
+    } else {
+        onBrush = QBrush(mixColor(button, mix, 0.2));
+    }
+    onPen = QPen(Qt::NoPen);
+
+    //focus and on state,edit mode
+    editBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    editPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    comboBoxParameters.comboBoxDefaultBrush = defaultBrush;
+    comboBoxParameters.comboBoxHoverBrush = hoverBrush;
+    comboBoxParameters.comboBoxOnBrush = onBrush;;
+    comboBoxParameters.comboBoxEditBrush = editBrush;
+    comboBoxParameters.comboBoxDisableBrush = disableBrush;
+
+    comboBoxParameters.comboBoxDefaultPen = defaultPen;
+    comboBoxParameters.comboBoxHoverPen = hoverPen;
+    comboBoxParameters.comboBoxOnPen = onPen;
+    comboBoxParameters.comboBoxEditPen = editPen;
+    comboBoxParameters.comboBoxDisablePen = disablePen;
 }
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)

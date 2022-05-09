@@ -30,6 +30,7 @@ DEFINES += QT_MESSAGELOGCONTEXT
 SOURCES += \
     box-animation-helper.cpp \
     button-animation-helper.cpp \
+    combobox-parameters.cpp \
     kabstract-style-parameters.cpp \
     lineedit-parameters.cpp \
     menu-helper.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
 HEADERS += \
     box-animation-helper.h \
     button-animation-helper.h \
+    combobox-parameters.h \
     kabstract-style-parameters.h \
     lineedit-parameters.h \
     progressbar-animation-helper.h \
