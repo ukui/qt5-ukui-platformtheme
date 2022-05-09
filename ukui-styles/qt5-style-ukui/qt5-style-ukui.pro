@@ -31,6 +31,7 @@ SOURCES += \
     box-animation-helper.cpp \
     button-animation-helper.cpp \
     kabstract-style-parameters.cpp \
+    lineedit-parameters.cpp \
     menu-helper.cpp \
     progressbar-animation-helper.cpp \
     progressbar-animation.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     box-animation-helper.h \
     button-animation-helper.h \
     kabstract-style-parameters.h \
+    lineedit-parameters.h \
     progressbar-animation-helper.h \
     progressbar-animation.h \
     pushbutton-parameters.h \

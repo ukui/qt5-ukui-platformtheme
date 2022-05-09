@@ -29,6 +29,7 @@
 
 #include "pushbutton-parameters.h"
 #include "toolbutton-parameters.h"
+#include "lineedit-parameters.h"
 
 
 class KAbstractStyleParameters
@@ -128,6 +129,7 @@ public:
 
     PushButtonParameters pushButtonParameters;
     ToolButtonParameters toolButtonParameters;
+    LineEditParameters lineEditParameters;
 
 
 
@@ -138,6 +140,7 @@ public:
     virtual void initPalette(bool isDark) = 0;
     virtual void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
     virtual void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
+    virtual void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) = 0;
 };
 
 
@@ -151,6 +154,7 @@ public:
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -164,6 +168,7 @@ public:
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 
 
@@ -177,5 +182,6 @@ public:
     void initPalette(bool isDark) override;
     void initPushButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
     void initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
+    void initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget) override;
 };
 #endif // KABSTRACTSTYLEPARAMETERS_H

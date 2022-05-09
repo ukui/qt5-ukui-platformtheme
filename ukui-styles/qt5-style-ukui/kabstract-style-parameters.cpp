@@ -544,6 +544,48 @@ void KDefaultStyleParameters::initToolButtonParameters(bool isDark, const QStyle
     toolButtonParameters.toolButtonDisableOnBrush = disableOnBrush;
 }
 
+void KDefaultStyleParameters::initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    lineEditParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush focusBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen focusPen;
+    QPen disablePen;
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    hoverBrush = defaultBrush;
+    hoverPen = defaultPen;
+
+    //focus state
+    focusBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    focusPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    lineEditParameters.lineEditDefaultBrush = defaultBrush;
+    lineEditParameters.lineEditHoverBrush = hoverBrush;;
+    lineEditParameters.lineEditFocusBrush = focusBrush;;
+    lineEditParameters.lineEditDisableBrush = disableBrush;
+
+    lineEditParameters.lineEditDefaultPen = defaultPen;
+    lineEditParameters.lineEditHoverPen = hoverPen;
+    lineEditParameters.lineEditFocusPen = focusPen;
+    lineEditParameters.lineEditDisablePen = disablePen;
+}
 
 QColor KDefaultStyleParameters::radiobutton_default(bool isDark)
 {
@@ -747,6 +789,11 @@ void KClassicalStyleParameters::initPushButtonParameters(bool isDark, const QSty
 }
 
 void KClassicalStyleParameters::initToolButtonParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+
+}
+
+void KClassicalStyleParameters::initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
 {
 
 }
@@ -1239,6 +1286,49 @@ void KFashionStyleParameters::initToolButtonParameters(bool isDark, const QStyle
     toolButtonParameters.toolButtonHoverBrush     = hoverBrush;
     toolButtonParameters.toolButtonDisableBrush   = disableBrush;
     toolButtonParameters.toolButtonDisableOnBrush = disableOnBrush;
+}
+
+void KFashionStyleParameters::initLineEditParameters(bool isDark, const QStyleOption *option, const QWidget *widget)
+{
+    lineEditParameters.radius = 6;
+
+    QBrush defaultBrush;
+    QBrush hoverBrush;
+    QBrush focusBrush;
+    QBrush disableBrush;
+
+    QPen defaultPen;
+    QPen hoverPen;
+    QPen focusPen;
+    QPen disablePen;
+
+    //default state
+    defaultBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    defaultPen = QPen(Qt::NoPen);
+
+    //hover state
+    hoverBrush = defaultBrush;
+    hoverPen = defaultPen;
+
+    //focus state
+    focusBrush = option->palette.brush(QPalette::Active, QPalette::Base);
+    focusPen = QPen(option->palette.brush(QPalette::Active, QPalette::Highlight),
+                    1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+    //disable state
+    disableBrush = option->palette.brush(QPalette::Disabled, QPalette::Button);
+    disablePen = QPen(Qt::NoPen);
+
+
+    lineEditParameters.lineEditDefaultBrush = defaultBrush;
+    lineEditParameters.lineEditHoverBrush = hoverBrush;;
+    lineEditParameters.lineEditFocusBrush = focusBrush;;
+    lineEditParameters.lineEditDisableBrush = disableBrush;
+
+    lineEditParameters.lineEditDefaultPen = defaultPen;
+    lineEditParameters.lineEditHoverPen = hoverPen;
+    lineEditParameters.lineEditFocusPen = focusPen;
+    lineEditParameters.lineEditDisablePen = disablePen;
 }
 
 QColor KFashionStyleParameters::radiobutton_default(bool isDark)

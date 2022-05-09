@@ -21,34 +21,29 @@
  */
 
 
+#ifndef LINEEDITPARAMETERS_H
+#define LINEEDITPARAMETERS_H
 
-#ifndef PUSHBUTTONPARAMETERS_H
-#define PUSHBUTTONPARAMETERS_H
 
 #include <QBrush>
 #include <QPen>
 
-class PushButtonParameters
+class LineEditParameters
 {
 public:
-    PushButtonParameters();
+    LineEditParameters();
 
 //private:
     int radius;
+    QBrush lineEditDefaultBrush;
+    QBrush lineEditHoverBrush;
+    QBrush lineEditFocusBrush;
+    QBrush lineEditDisableBrush;
 
-    QBrush pushButtonDefaultBrush;
-    QBrush pushButtonHoverBrush;
-    QBrush pushButtonClickBrush;
-    QBrush pushButtonDisableBrush;
-    QBrush pushButtonDisableOnBrush;
-
-//    QColor PushButtonInactiveColor;
-
-//    QColor PushButtonTextDefaultColor;
-//    QColor PushButtonTextHoverColor;
-//    QColor PushButtonTextClickColor;
-//    QColor PushButtonTextInactiveColor;
-//    QColor PushButtonTextDisableColor;
+    QPen lineEditDefaultPen;
+    QPen lineEditHoverPen;
+    QPen lineEditFocusPen;
+    QPen lineEditDisablePen;
 };
 
-#endif // PUSHBUTTONPARAMETERS_H
+#endif // LINEEDITPARAMETERS_H

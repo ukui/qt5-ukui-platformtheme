@@ -292,7 +292,6 @@ QColor Qt5UKUIStyle::button_Click(const QStyleOption *option) const
 }
 
 
-
 QColor Qt5UKUIStyle::button_Hover(const QStyleOption *option) const
 {
     QColor button = option->palette.color(QPalette::Active, QPalette::Button);
@@ -303,17 +302,6 @@ QColor Qt5UKUIStyle::button_Hover(const QStyleOption *option) const
     }
 
     return mixColor(button, mix, 0.05);
-}
-
-
-
-QColor Qt5UKUIStyle::button_DisableChecked() const
-{
-    if (isUseDarkPalette()) {
-        return QColor(61, 61, 64);
-    } else {
-        return QColor(224, 224, 224);
-    }
 }
 
 
@@ -1151,43 +1139,47 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
         }
 
         if (const QStyleOptionFrame *f = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+            sp->initLineEditParameters(isUseDarkPalette(), option, widget);
             const bool enable = f->state & State_Enabled;
             const bool focus = f->state & State_HasFocus;
 
             if (!enable) {
                 painter->save();
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(f->palette.brush(QPalette::Disabled, QPalette::Button));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
+                painter->setPen(sp->lineEditParameters.lineEditDisablePen);
+                painter->setBrush(sp->lineEditParameters.lineEditDisableBrush);
+                painter->drawRoundedRect(option->rect, sp->lineEditParameters.radius, sp->lineEditParameters.radius);
                 painter->restore();
                 return;
             }
 
-            if (f->state & State_ReadOnly) {
-                painter->save();
-                painter->setPen(Qt::NoPen);
-                painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
-                painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
-                painter->restore();
-                return;
-            }
+//            //read only mode
+//            if (f->state & State_ReadOnly) {
+//                painter->save();
+//                painter->setRenderHint(QPainter::Antialiasing, true);
+//                painter->setPen(Qt::NoPen);
+//                painter->setBrush(f->palette.brush(QPalette::Active, QPalette::Button));
+//                painter->drawRoundedRect(option->rect, sp->radius, sp->radius);
+//                painter->restore();
+//                return;
+//            }
 
             if (focus) {
+                int width = sp->lineEditParameters.lineEditFocusPen.width();
                 painter->save();
-                painter->setPen(QPen(f->palette.brush(QPalette::Active, QPalette::Highlight),
-                                     2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                painter->setBrush(option->palette.brush(QPalette::Active, QPalette::Base));
                 painter->setRenderHint(QPainter::Antialiasing, true);
-                painter->drawRoundedRect(option->rect.adjusted(1, 1, -1, -1), sp->radius, sp->radius);
+                painter->setPen(sp->lineEditParameters.lineEditFocusPen);
+                painter->setBrush(sp->lineEditParameters.lineEditFocusBrush);
+                painter->drawRoundedRect(option->rect.adjusted(width, width, -width, -width),
+                                         sp->lineEditParameters.radius, sp->lineEditParameters.radius);
                 painter->restore();
             } else {
-                QStyleOptionButton button;
-                button.state = option->state & ~(State_Sunken | State_On);
-                button.rect = option->rect;
-                button.palette = option->palette;
-                proxy()->drawPrimitive(PE_PanelButtonCommand, &button, painter, widget);
+                painter->save();
+                painter->setRenderHint(QPainter::Antialiasing, true);
+                painter->setPen(sp->lineEditParameters.lineEditDefaultPen);
+                painter->setBrush(sp->lineEditParameters.lineEditDefaultBrush);
+                painter->drawRoundedRect(option->rect, sp->lineEditParameters.radius, sp->lineEditParameters.radius);
+                painter->restore();
             }
             return;
         }
