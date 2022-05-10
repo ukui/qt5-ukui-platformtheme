@@ -188,20 +188,32 @@ bool Qt5UKUIStyle::eventFilter(QObject *obj, QEvent *e)
         return true;
     }
 
-    if (qobject_cast<QPushButton *>(obj) || qobject_cast<QToolButton *>(obj)) {
-        if (e->type() == QEvent::Hide) {
+//    //button animation cancel temporary
+//    if (qobject_cast<QPushButton *>(obj) || qobject_cast<QToolButton *>(obj)) {
+//        if (e->type() == QEvent::Hide) {
+//            if (QWidget *w = qobject_cast<QWidget *>(obj)) {
+//                auto animator = m_button_animation_helper->animator(w);
+//                if (animator) {
+//                    animator->stopAnimator("SunKen");
+//                    animator->stopAnimator("MouseOver");
+//                    animator->setAnimatorCurrentTime("SunKen", 0);
+//                    animator->setAnimatorCurrentTime("MouseOver", 0);
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+    if (qobject_cast<QSlider *>(obj)) {
+        if (e->type() == QEvent::Wheel) {
             if (QWidget *w = qobject_cast<QWidget *>(obj)) {
-                auto animator = m_button_animation_helper->animator(w);
-                if (animator) {
-                    animator->stopAnimator("SunKen");
-                    animator->stopAnimator("MouseOver");
-                    animator->setAnimatorCurrentTime("SunKen", 0);
-                    animator->setAnimatorCurrentTime("MouseOver", 0);
+                if (!w->hasFocus()) {
+                    return true;
                 }
             }
         }
-        return false;
     }
+
     return false;
 }
 
@@ -730,7 +742,7 @@ void Qt5UKUIStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleO
             painter->restore();
             return;
 
-//            //button animation
+//            //button animation cancel temporary
 //            if (sunken || on || animator->isRunning("SunKen") || animator->value("SunKen") == 1.0) {
 //                double opacity = animator->value("SunKen").toDouble();
 //                if (sunken || on) {
